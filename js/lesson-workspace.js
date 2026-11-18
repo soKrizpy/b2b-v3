@@ -1,6 +1,6 @@
 /**
  * B2B LEARNING ENGINE - LESSON WORKSPACE & STUDENT CONTROLLER
- * Controls the Student Dashboard, Quest Map, and 6-stage continuous Lesson Workspace.
+ * Controls the Student Dashboard, Peta Petualangan, and 6-stage continuous Lesson Workspace.
  * Adheres strictly to Section 4, 5, 6, 7, 8, 9, 14 of PROJECT_RULES.md.
  */
 
@@ -127,23 +127,29 @@ export class LessonWorkspace {
   }
 
   bindKeyboardNav() {
-    document.addEventListener('keydown', (e) => {
+    this._keyboardNavHandler = (e) => {
       if (this.currentScreen !== 'workspace') return;
       if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
       const stage = this.stages[this.currentStageIndex];
       if (!stage || stage.id !== 'materials') return;
-
-      if (e.key === 'ArrowRight') {
-        const slides = stage.slides || [];
-        if (this.currentSlideIndex < slides.length - 1) {
-          this.goToSlide(this.currentSlideIndex + 1);
-        }
-      } else if (e.key === 'ArrowLeft') {
-        if (this.currentSlideIndex > 0) {
-          this.goToSlide(this.currentSlideIndex - 1);
-        }
+      if (e.key === 'ArrowRight' && this.currentSlideIndex < (stage.slides || []).length - 1) {
+        this.goToSlide(this.currentSlideIndex + 1);
+      } else if (e.key === 'ArrowLeft' && this.currentSlideIndex > 0) {
+        this.goToSlide(this.currentSlideIndex - 1);
       }
-    });
+    };
+    document.addEventListener('keydown', this._keyboardNavHandler);
+  }
+
+  destroy() {
+    if (this._keyboardNavHandler) {
+      document.removeEventListener('keydown', this._keyboardNavHandler);
+      this._keyboardNavHandler = null;
+    }
+    if (this._unsubscribeStore) {
+      this._unsubscribeStore();
+      this._unsubscribeStore = null;
+    }
   }
 
   loadProgress() {
@@ -215,12 +221,12 @@ export class LessonWorkspace {
      ========================================================================== */
   renderDashboard() {
     const progressLabels = {
-      'not-started':          { text: 'Not Started',         badgeClass: 'badge-not-started',       pct: '0%' },
-      'in-progress':          { text: 'In Progress',         badgeClass: 'badge-in-progress',        pct: '35%' },
-      'practice-completed':   { text: 'Practice Completed',  badgeClass: 'badge-practice-completed', pct: '75%' },
-      'submitted':            { text: 'Submitted',           badgeClass: 'badge-submitted',          pct: '100%' },
-      'revision-required':    { text: 'Revision Required',   badgeClass: 'badge-revision-required',  pct: '85%' },
-      'approved':             { text: 'Approved',            badgeClass: 'badge-approved',           pct: '100%' }
+      'not-started':          { text: 'Belum dimulai',         badgeClass: 'badge-not-started',       pct: '0%' },
+      'in-progress':          { text: 'Sedang berjalan',         badgeClass: 'badge-in-progress',        pct: '35%' },
+      'practice-completed':   { text: 'Latihan selesai',  badgeClass: 'badge-practice-completed', pct: '75%' },
+      'submitted':            { text: 'Sudah dikirim',           badgeClass: 'badge-submitted',          pct: '100%' },
+      'revision-required':    { text: 'Perlu diperbaiki',   badgeClass: 'badge-revision-required',  pct: '85%' },
+      'approved':             { text: 'Disetujui',            badgeClass: 'badge-approved',           pct: '100%' }
     };
     const cp = progressLabels[this.progressState] || progressLabels['in-progress'];
 
@@ -236,14 +242,14 @@ export class LessonWorkspace {
           </div>
           <div class="hero-profile-info">
             <div class="hero-badge-row">
-              <span class="badge badge-level">Lv.3 • Scratch Cadet</span>
+              <span class="badge badge-level">Level 3 • Jago Scratch</span>
               <span class="badge badge-scratch">Jalur: Scratch Starter</span>
             </div>
             <h2 class="hero-greeting-title">Halo, Alex! Siap Lanjut Berpetualang? 🚀</h2>
             <p class="hero-greeting-sub">Jelajahi kepulauan koding, kumpulkan bintang, dan kuasai logika pemrograman!</p>
             <div class="hero-xp-container">
               <div class="hero-xp-label">
-                <span>Level Progress: <strong>450 / 600 XP</strong></span>
+                <span>Poin menuju level berikutnya: <strong>450 / 600 poin</strong></span>
                 <span class="hero-xp-pct">75% → Level 4</span>
               </div>
               <div class="hero-xp-bar-bg" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
@@ -258,13 +264,13 @@ export class LessonWorkspace {
               <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_STREAK}</div>
               <div class="stat-pill-data">
                 <span class="stat-pill-value">5 Hari</span>
-                <span class="stat-pill-label">Streak</span>
+                <span class="stat-pill-label">Hari belajar</span>
               </div>
             </div>
             <div class="stat-pill stat-pill--gold">
               <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_STAR}</div>
               <div class="stat-pill-data">
-                <span class="stat-pill-value">450 XP</span>
+                <span class="stat-pill-value">450 poin</span>
                 <span class="stat-pill-label">Total Poin</span>
               </div>
             </div>
@@ -317,7 +323,7 @@ export class LessonWorkspace {
                   <div class="active-mission-meta">
                     <span class="meta-tag">Alat: Scratch 3.0 MIT</span>
                     <span class="meta-tag">Tingkat: Pemula</span>
-                    <span class="meta-tag reward-tag">+50 XP</span>
+                    <span class="meta-tag reward-tag">+50 poin</span>
                   </div>
                 </div>
               </div>
@@ -427,14 +433,14 @@ export class LessonWorkspace {
                   <div class="task-check-icon" aria-hidden="true">${SVG_ICON_CHECK}</div>
                   <div class="task-info">
                     <span class="task-title">Buka 1 Materi Modul Koding</span>
-                    <span class="task-xp">+20 XP didapatkan</span>
+                    <span class="task-xp">+20 poin didapatkan</span>
                   </div>
                 </div>
                 <div class="daily-task">
                   <div class="task-check-empty" aria-hidden="true"></div>
                   <div class="task-info">
                     <span class="task-title">Kirim 1 Tantangan Proyek</span>
-                    <span class="task-xp">+50 XP saat dikirim</span>
+                    <span class="task-xp">+50 poin saat dikirim</span>
                   </div>
                 </div>
               </div>
@@ -490,7 +496,7 @@ export class LessonWorkspace {
             <span class="badge ${cp.badgeClass}">Status: ${cp.text}</span>
           </div>
 
-          <!-- GAS Island Quest Map — 7-island grid with status overlays -->
+          <!-- GAS Island Peta Petualangan — 7-island grid with status overlays -->
           <div class="gas-quest-map" aria-label="Peta kepulauan koding — 7 wilayah">
 
             <!-- Island 1: Scratch Forest — ACTIVE -->
@@ -601,14 +607,14 @@ export class LessonWorkspace {
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                       ${this.lesson.estimatedDurationMinutes} Menit
                     </span>
-                    <span class="chip-item chip-xp">${SVG_ICON_STAR} +50 XP</span>
+                    <span class="chip-item chip-xp">${SVG_ICON_STAR} +50 poin</span>
                     <span class="chip-item chip-badge">${SVG_ICON_BADGE_SHIELD} Lencana Gerak</span>
                   </div>
                 </div>
               </div>
               <div class="quest-node-action">
                 <button type="button" class="btn btn-primary btn-enter-lesson" id="btn-enter-lesson-node">
-                  Buka Workspace →
+                  Mulai Misi →
                 </button>
               </div>
             </div>
@@ -619,9 +625,9 @@ export class LessonWorkspace {
               <div class="bonus-node-info">
                 <span class="badge badge-xp">Peti Harta Karun</span>
                 <h5>Tantangan Kuis Sempurna (Skor 3/3)</h5>
-                <p>Dapatkan +30 XP dan status Akurasi Emas jika menjawab kuis tanpa kesalahan.</p>
+                <p>Dapatkan +30 poin dan status Akurasi Emas jika menjawab kuis tanpa kesalahan.</p>
               </div>
-              <span class="bonus-status-pill">${SVG_ICON_STAR} Bonus +30 XP</span>
+              <span class="bonus-status-pill">${SVG_ICON_STAR} Bonus +30 poin</span>
             </div>
 
             <!-- Node 2: Locked -->
@@ -638,7 +644,7 @@ export class LessonWorkspace {
                   <p>Pelajari pergantian kostum dan efek visual pada sprite.</p>
                   <div class="node-reward-chips">
                     <span class="chip-item">Syarat: Selesaikan Misi 1</span>
-                    <span class="chip-item chip-xp">${SVG_ICON_STAR} +60 XP</span>
+                    <span class="chip-item chip-xp">${SVG_ICON_STAR} +60 poin</span>
                   </div>
                 </div>
               </div>
@@ -661,7 +667,7 @@ export class LessonWorkspace {
                   <p>Gunakan blok perulangan agar karakter berpatroli bolak-balik.</p>
                   <div class="node-reward-chips">
                     <span class="chip-item">Syarat: Selesaikan Misi 2</span>
-                    <span class="chip-item chip-xp">${SVG_ICON_STAR} +75 XP</span>
+                    <span class="chip-item chip-xp">${SVG_ICON_STAR} +75 poin</span>
                   </div>
                 </div>
               </div>
@@ -705,10 +711,10 @@ export class LessonWorkspace {
 
     this.container.innerHTML = `
       <div class="lesson-workspace">
-        <!-- Top Workspace Bar (Back to Quest Map) -->
+        <!-- Top Workspace Bar (Back to Peta Petualangan) -->
         <div class="workspace-top-bar">
           <button type="button" class="btn btn-ghost btn-sm" id="btn-back-to-quest">
-            ← Kembali ke Quest Map
+            ← Kembali ke Peta Petualangan
           </button>
           <div style="display: flex; align-items: center; gap: var(--space-2);">
             <span class="badge ${progressBadges[this.progressState] || 'badge-in-progress'}">
@@ -716,7 +722,7 @@ export class LessonWorkspace {
             </span>
             <a href="${lesson.requiredTool ? lesson.requiredTool.url : '#'}" target="_blank" rel="noopener noreferrer"
                class="btn btn-secondary btn-sm">
-              🔗 Buka Scratch 3.0 ↗
+              🔗 Buka Scratch ↗
             </a>
           </div>
         </div>
@@ -972,7 +978,7 @@ export class LessonWorkspace {
       this.saveProgress({ state: 'practice-completed', checkpoints: this.checkpointStates });
       showToast({
         title: 'Status Diperbarui 🎉',
-        message: 'Semua checkpoint praktik selesai! Status: Practice Completed.',
+        message: 'Semua langkah latihan selesai! Status: Latihan selesai.',
         type: 'success',
         duration: 3500
       });
@@ -980,7 +986,7 @@ export class LessonWorkspace {
       const badgeEl = this.container.querySelector('.workspace-top-bar .badge');
       if (badgeEl) {
         badgeEl.className = 'badge badge-practice-completed';
-        badgeEl.textContent = 'Status: Practice Completed';
+        badgeEl.textContent = 'Status: Latihan selesai';
       }
     }
   }
@@ -1045,8 +1051,8 @@ export class LessonWorkspace {
     const storeSub = StateStore.getStudentLessonSubmission(this.currentUser.id, this.lesson.id) || this.activeStoreSubmission;
     const status = (storeSub && storeSub.status) || this.progressState;
 
-    const isSubmitted = status === 'submitted';
-    const isApproved = status === 'approved';
+    const isSudah dikirim = status === 'submitted';
+    const isDisetujui = status === 'approved';
     const isRevision = status === 'revision-required';
 
     const projectUrl = (storeSub && storeSub.projectUrl) || (this.submissionData && this.submissionData.link) || '';
@@ -1055,7 +1061,7 @@ export class LessonWorkspace {
     const reviewerName = (storeSub && storeSub.reviewerName) || 'Kak Sarah';
 
     let statusCardHtml = '';
-    if (isApproved) {
+    if (isDisetujui) {
       statusCardHtml = `
         <div class="submission-status-card submission-status-card--approved">
           <div class="submission-status-card-header">
@@ -1066,7 +1072,7 @@ export class LessonWorkspace {
                 <p style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin: 0;">Selamat! Karyamu telah diperiksa dan disetujui oleh ${escapeHtml(reviewerName)}.</p>
               </div>
             </div>
-            <span class="badge badge-approved">Approved</span>
+            <span class="badge badge-approved">Disetujui</span>
           </div>
           ${teacherFeedback ? `
             <div class="submission-feedback-box">
@@ -1087,7 +1093,7 @@ export class LessonWorkspace {
                 <p style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin: 0;">Guru telah memeriksa karyamu dan memberikan catatan perbaikan di bawah ini.</p>
               </div>
             </div>
-            <span class="badge badge-revision-required">Revision Required</span>
+            <span class="badge badge-revision-required">Perlu diperbaiki</span>
           </div>
           ${teacherFeedback ? `
             <div class="submission-feedback-box">
@@ -1097,7 +1103,7 @@ export class LessonWorkspace {
           ` : ''}
         </div>
       `;
-    } else if (isSubmitted) {
+    } else if (isSudah dikirim) {
       statusCardHtml = `
         <div class="submission-status-card">
           <div class="submission-status-card-header">
@@ -1108,17 +1114,17 @@ export class LessonWorkspace {
                 <p style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin: 0;">Karyamu saat ini berada di antrean review guru.</p>
               </div>
             </div>
-            <span class="badge badge-submitted">Submitted</span>
+            <span class="badge badge-submitted">Sudah dikirim</span>
           </div>
         </div>
       `;
     }
 
     // Input fields are disabled only when submitted or approved (re-enabled on revision-required so student can update!)
-    const isFormDisabled = isSubmitted || isApproved;
-    const submitBtnText = isApproved
+    const isFormDisabled = isSudah dikirim || isDisetujui;
+    const submitBtnText = isDisetujui
       ? '✓ Proyek Telah Disetujui'
-      : (isSubmitted ? '✓ Sudah Dikumpulkan' : (isRevision ? 'Kirim Ulang Hasil Revisi →' : 'Kirim Proyek ke Guru →'));
+      : (isSudah dikirim ? '✓ Sudah Dikumpulkan' : (isRevision ? 'Kirim Ulang Hasil Revisi →' : 'Kirim Proyek ke Guru →'));
 
     return `
       <div class="submission-container">
@@ -1254,7 +1260,7 @@ export class LessonWorkspace {
 
         showToast({
           title: 'Proyek Berhasil Dikumpulkan! 🎉',
-          message: 'Status berubah menjadi Submitted. Guru akan segera memeriksa karyamu.',
+          message: 'Status berubah menjadi Sudah dikirim. Guru akan segera memeriksa karyamu.',
           type: 'success',
           duration: 4000
         });
@@ -1299,12 +1305,12 @@ export class LessonWorkspace {
 
   formatProgressState(state) {
     const map = {
-      'not-started': 'Not Started',
-      'in-progress': 'In Progress',
-      'practice-completed': 'Practice Completed',
-      'submitted': 'Submitted',
-      'revision-required': 'Revision Required',
-      'approved': 'Approved'
+      'not-started': 'Belum dimulai',
+      'in-progress': 'Sedang berjalan',
+      'practice-completed': 'Latihan selesai',
+      'submitted': 'Sudah dikirim',
+      'revision-required': 'Perlu diperbaiki',
+      'approved': 'Disetujui'
     };
     return map[state] || state;
   }

@@ -8,15 +8,15 @@
   "trackTitle": "Scratch Starter Adventure",
   "order": 1,
   "status": "in-progress",
-  "skillLevel": "Beginner",
+  "skillLevel": "Pemula",
   "estimatedDurationMinutes": 45,
   "version": "1.0.0",
   "requiredTool": {
-    "name": "Scratch Web Editor",
+    "name": "Scratch",
     "version": "Scratch 3.0",
     "type": "web",
     "url": "https://scratch.mit.edu/projects/editor/",
-    "instructions": "Buka Scratch di tab baru di sebelah jendela ini agar kamu dapat menyimak panduan sambil langsung mencoba."
+    "instructions": "Buka Scratch di tab baru agar kamu bisa membaca panduan sambil langsung mencoba."
   },
   "prerequisites": [
     "Dapat menggunakan mouse/trackpad",
@@ -39,7 +39,7 @@
         "overview": "Selamat datang di petualangan koding pertamamu! Di misi ini, kamu akan menjadi sutradara bagi seekor kucing oranye bernama 'Scratch Cat'. Tugasmu adalah memberinya instruksi langkah demi langkah agar ia bisa berjalan dan meluncur melintasi layar komputer.",
         "toolNotice": "Kita akan membuat koding nyata menggunakan alat resmi Scratch 3.0 dari MIT. Tidak ada emulator buatan di sini—kamu menggunakan alat asli yang dipakai para programmer muda di seluruh dunia!",
         "keySteps": [
-          "Buka Scratch Web Editor di tab baru browser.",
+          "Buka Scratch di tab baru tab baru.",
           "Pelajari cara kerja sumbu koordinat X (kanan/kiri) dan Y (atas/bawah).",
           "Rangkai blok 'Events' dan 'Motion' pertama kamu.",
           "Uji coba gerakan kucing dengan menekan bendera hijau.",
@@ -289,7 +289,7 @@
       "title": "Guided Practice",
       "badge": "Praktik Terbimbing",
       "content": {
-        "instructions": "Buka Scratch di tab baru browser kamu, lalu ikuti 4 langkah terpandu berikut. Centang setiap langkah setelah kamu berhasil melakukannya di Scratch!",
+        "instructions": "Buka Scratch di tab baru tab baru kamu, lalu ikuti 4 langkah terpandu berikut. Centang setiap langkah setelah kamu berhasil melakukannya di Scratch!",
         "toolButton": {
           "text": "Buka Scratch Editor (Tab Baru)",
           "url": "https://scratch.mit.edu/projects/editor/"
