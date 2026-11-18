@@ -102,3 +102,40 @@ npx serve .
 - [ ] **Phase 5 — Admin Experience**: Manajemen kurikulum, authoring modul & lesson berbasis data JSON.
 - [ ] **Phase 6 — Verification & QA**: Audit performa, responsive test, aksesibilitas keyboard, dan uji alur end-to-end.
 
+
+
+---
+
+## 🧭 Track Migrasi React
+
+Repository ini sekarang mempertahankan aplikasi Vanilla sebagai **legacy reference**, sekaligus menyediakan aplikasi baru **Vite + React + TypeScript** di folder `vite-app/`.
+
+### Menjalankan aplikasi Vite
+
+Persyaratan: Node.js 20 atau lebih baru.
+
+```bash
+cd vite-app
+npm install
+npm run dev
+```
+
+Buka `http://localhost:5173`.
+
+Perintah lain:
+- `npm run typecheck` — pemeriksaan tipe TypeScript.
+- `npm run build` — pemeriksaan tipe dan production build.
+- `npm run preview` — menjalankan hasil build secara lokal.
+
+### Status migrasi
+
+- [x] Fondasi Vite, React, dan TypeScript.
+- [x] React entry point dan portal pemilihan workspace.
+- [x] Reuse design tokens, stylesheet, dan logo dari aplikasi Vanilla.
+- [ ] Migrasi Admin Workspace.
+- [ ] Migrasi Teacher Workspace.
+- [ ] Migrasi Student Workspace dan Lesson Engine.
+- [ ] Migrasi Parent Hub.
+- [ ] Integrasi backend setelah desain data dan keamanan disetujui.
+
+Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.

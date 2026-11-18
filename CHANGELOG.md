@@ -241,3 +241,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PROJECT_RULES.md` verified and aligned.
   - `README.md` updated with architecture, preview instructions, and phase roadmap.
 
+
+
+---
+
+## [0.1.0] - Vite + React Migration Foundation - 2026-11-19
+
+### Added
+- Added isolated `vite-app/` with Vite, React, and strict TypeScript configuration.
+- Added React application entry point and role-selection portal for Admin, Tutor, Student, and Parent.
+- Added accessible light/dark theme toggle and responsive role-card layout.
+- Reused the existing design-token and component stylesheets plus the existing Bits2Bytes logos.
+- Added local development, typecheck, build, and preview scripts with migration documentation.
+
+### Preserved
+- Existing Vanilla HTML/CSS/JavaScript application and mock data remain unchanged.
+- No production Supabase configuration, database, or deployment was changed.
+
+### Status
+- This is the first migrated React vertical slice, not a completed conversion of all workspaces.
+- Build and browser behavior still require execution in a Node.js environment before being marked verified.
