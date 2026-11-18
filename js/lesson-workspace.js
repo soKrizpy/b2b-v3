@@ -1051,8 +1051,8 @@ export class LessonWorkspace {
     const storeSub = StateStore.getStudentLessonSubmission(this.currentUser.id, this.lesson.id) || this.activeStoreSubmission;
     const status = (storeSub && storeSub.status) || this.progressState;
 
-    const isSudah dikirim = status === 'submitted';
-    const isDisetujui = status === 'approved';
+    const isSubmitted = status === 'submitted';
+    const isApproved = status === 'approved';
     const isRevision = status === 'revision-required';
 
     const projectUrl = (storeSub && storeSub.projectUrl) || (this.submissionData && this.submissionData.link) || '';
@@ -1061,7 +1061,7 @@ export class LessonWorkspace {
     const reviewerName = (storeSub && storeSub.reviewerName) || 'Kak Sarah';
 
     let statusCardHtml = '';
-    if (isDisetujui) {
+    if (isApproved) {
       statusCardHtml = `
         <div class="submission-status-card submission-status-card--approved">
           <div class="submission-status-card-header">
@@ -1103,7 +1103,7 @@ export class LessonWorkspace {
           ` : ''}
         </div>
       `;
-    } else if (isSudah dikirim) {
+    } else if (isSubmitted) {
       statusCardHtml = `
         <div class="submission-status-card">
           <div class="submission-status-card-header">
@@ -1121,10 +1121,10 @@ export class LessonWorkspace {
     }
 
     // Input fields are disabled only when submitted or approved (re-enabled on revision-required so student can update!)
-    const isFormDisabled = isSudah dikirim || isDisetujui;
-    const submitBtnText = isDisetujui
+    const isFormDisabled = isSubmitted || isApproved;
+    const submitBtnText = isApproved
       ? '✓ Proyek Telah Disetujui'
-      : (isSudah dikirim ? '✓ Sudah Dikumpulkan' : (isRevision ? 'Kirim Ulang Hasil Revisi →' : 'Kirim Proyek ke Guru →'));
+      : (isSubmitted ? '✓ Sudah Dikumpulkan' : (isRevision ? 'Kirim Ulang Hasil Revisi →' : 'Kirim Proyek ke Guru →'));
 
     return `
       <div class="submission-container">

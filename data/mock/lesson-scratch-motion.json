@@ -39,7 +39,7 @@
         "overview": "Selamat datang di petualangan koding pertamamu! Di misi ini, kamu akan menjadi sutradara bagi seekor kucing oranye bernama 'Scratch Cat'. Tugasmu adalah memberinya instruksi langkah demi langkah agar ia bisa berjalan dan meluncur melintasi layar komputer.",
         "toolNotice": "Kita akan membuat koding nyata menggunakan alat resmi Scratch 3.0 dari MIT. Tidak ada emulator buatan di sini—kamu menggunakan alat asli yang dipakai para programmer muda di seluruh dunia!",
         "keySteps": [
-          "Buka Scratch di tab baru tab baru.",
+          "Buka Scratch di tab baru.",
           "Pelajari cara kerja sumbu koordinat X (kanan/kiri) dan Y (atas/bawah).",
           "Rangkai blok 'Events' dan 'Motion' pertama kamu.",
           "Uji coba gerakan kucing dengan menekan bendera hijau.",
@@ -289,7 +289,7 @@
       "title": "Guided Practice",
       "badge": "Praktik Terbimbing",
       "content": {
-        "instructions": "Buka Scratch di tab baru tab baru kamu, lalu ikuti 4 langkah terpandu berikut. Centang setiap langkah setelah kamu berhasil melakukannya di Scratch!",
+        "instructions": "Buka Scratch di tab baru, lalu ikuti 4 langkah terpandu berikut. Centang setiap langkah setelah kamu berhasil melakukannya di Scratch!",
         "toolButton": {
           "text": "Buka Scratch Editor (Tab Baru)",
           "url": "https://scratch.mit.edu/projects/editor/"
