@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Direction Preview — Bits2Bytes Bright Adventure</title>
+  <script>
+    (function() {
+      var theme = localStorage.getItem('proto_theme');
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="preview-header">
+    <div class="preview-brand">
+      <img src="logo-b2b-light.svg" alt="Bits2Bytes" class="logo-light" height="32">
+      <img src="logo-b2b-dark.svg" alt="Bits2Bytes" class="logo-dark" height="32">
+    </div>
+    <nav class="preview-nav" aria-label="Design preview">
+      <button class="nav-item" data-target="admin" aria-current="page">
+        <i class="fas fa-gauge-high"></i><span>Admin</span>
+      </button>
+      <button class="nav-item" data-target="tutor">
+        <i class="fas fa-chalkboard-user"></i><span>Tutor</span>
+      </button>
+      <button class="nav-item" data-target="student">
+        <i class="fas fa-map"></i><span>Student</span>
+      </button>
+      <button class="nav-item" data-target="parent">
+        <i class="fas fa-heart"></i><span>Parent</span>
+      </button>
+    </nav>
+    <button class="theme-toggle" aria-label="Toggle dark mode">
+      <i class="fas fa-sun"></i>
+      <i class="fas fa-moon"></i>
+    </button>
+  </header>
+
+  <section data-view="admin">
+    <div class="view-container">
+      <div class="page-heading">
+        <h1>Control Center</h1>
+        <p class="page-subtitle">Halo, Dewi 👋 Ini ringkasan platform hari ini.</p>
+      </div>
+
+      <div class="admin-layout">
+        <div class="admin-main">
+          <!-- Stats Grid — 4 cards with trend indicators -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon" style="background:#e0f2fe;color:#0284c7"><i class="fas fa-users"></i></div>
+                <span class="stat-trend stat-trend-up"><i class="fas fa-arrow-up"></i> 8%</span>
+              </div>
+              <div class="stat-value">2,481</div>
+              <div class="stat-label">Pengguna Aktif</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon" style="background:#ede9fe;color:#8b5cf6"><i class="fas fa-graduation-cap"></i></div>
+                <span class="stat-trend stat-trend-up"><i class="fas fa-arrow-up"></i> 12%</span>
+              </div>
+              <div class="stat-value">410</div>
+              <div class="stat-label">Total Siswa</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon" style="background:#d1fae5;color:#10b981"><i class="fas fa-chalkboard-user"></i></div>
+                <span class="stat-trend stat-trend-neutral"><i class="fas fa-minus"></i> 0%</span>
+              </div>
+              <div class="stat-value">38</div>
+              <div class="stat-label">Total Tutor</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon" style="background:#fef3c7;color:#f59e0b"><i class="fas fa-user-plus"></i></div>
+                <span class="stat-trend stat-trend-up"><i class="fas fa-arrow-up"></i> 24</span>
+              </div>
+              <div class="stat-value">+24</div>
+              <div class="stat-label">Pendaftaran Baru</div>
+            </div>
+          </div>
+
+          <!-- Users Table -->
+          <div class="section-card">
+            <div class="section-card-header">
+              <h2>Pengguna Terdaftar</h2>
+              <button class="btn btn-secondary btn-sm"><i class="fas fa-download"></i> Export</button>
+            </div>
+            <div class="tab-strip">
+              <button class="tab-btn active">Semua</button>
+              <button class="tab-btn">Siswa</button>
+              <button class="tab-btn">Tutor</button>
+            </div>
+            <!-- Desktop: table view (hidden on mobile) -->
+            <div class="table-scroll-wrapper users-table-desktop">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Peran</th>
+                  <th>Status</th>
+                  <th>Bergabung</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="user-cell"><div class="user-avatar" style="background:#e0f2fe;color:#0284c7">AP</div><strong>Andi Pratama</strong></div></td>
+                  <td><span class="role-badge role-siswa">Siswa</span></td>
+                  <td><span class="badge badge-approved">Aktif</span></td>
+                  <td style="color:var(--color-text-muted);font-size:12px">3 Nov 2026</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-avatar" style="background:#ede9fe;color:#8b5cf6">SN</div><strong>Siti Nurhaliza</strong></div></td>
+                  <td><span class="role-badge role-tutor">Tutor</span></td>
+                  <td><span class="badge badge-approved">Aktif</span></td>
+                  <td style="color:var(--color-text-muted);font-size:12px">1 Okt 2026</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-avatar" style="background:#fef3c7;color:#b45309">BS</div><strong>Budi Santoso</strong></div></td>
+                  <td><span class="role-badge role-siswa">Siswa</span></td>
+                  <td><span class="badge badge-pending">Nonaktif</span></td>
+                  <td style="color:var(--color-text-muted);font-size:12px">15 Sep 2026</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-avatar" style="background:#ecfdf5;color:#15803d">DR</div><strong>Dewi Rahayu</strong></div></td>
+                  <td><span class="role-badge role-admin">Admin</span></td>
+                  <td><span class="badge badge-approved">Aktif</span></td>
+                  <td style="color:var(--color-text-muted);font-size:12px">1 Jan 2026</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-avatar" style="background:#e0f2fe;color:#0284c7">FR</div><strong>Faisal Rahman</strong></div></td>
+                  <td><span class="role-badge role-siswa">Siswa</span></td>
+                  <td><span class="badge badge-approved">Aktif</span></td>
+                  <td style="color:var(--color-text-muted);font-size:12px">8 Nov 2026</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <!-- Mobile: stacked user cards (hidden on desktop) -->
+            <div class="users-cards-mobile">
+              <div class="user-card-row">
+                <div class="user-card-top">
+                  <div class="user-avatar" style="background:#e0f2fe;color:#0284c7">AP</div>
+                  <strong class="user-card-name">Andi Pratama</strong>
+                </div>
+                <div class="user-card-meta">
+                  <span class="role-badge role-siswa">Siswa</span>
+                  <span class="badge badge-approved">Aktif</span>
+                  <span class="user-card-date">3 Nov 2026</span>
+                </div>
+              </div>
+              <div class="user-card-row">
+                <div class="user-card-top">
+                  <div class="user-avatar" style="background:#ede9fe;color:#8b5cf6">SN</div>
+                  <strong class="user-card-name">Siti Nurhaliza</strong>
+                </div>
+                <div class="user-card-meta">
+                  <span class="role-badge role-tutor">Tutor</span>
+                  <span class="badge badge-approved">Aktif</span>
+                  <span class="user-card-date">1 Okt 2026</span>
+                </div>
+              </div>
+              <div class="user-card-row">
+                <div class="user-card-top">
+                  <div class="user-avatar" style="background:#fef3c7;color:#b45309">BS</div>
+                  <strong class="user-card-name">Budi Santoso</strong>
+                </div>
+                <div class="user-card-meta">
+                  <span class="role-badge role-siswa">Siswa</span>
+                  <span class="badge badge-pending">Nonaktif</span>
+                  <span class="user-card-date">15 Sep 2026</span>
+                </div>
+              </div>
+              <div class="user-card-row">
+                <div class="user-card-top">
+                  <div class="user-avatar" style="background:#ecfdf5;color:#15803d">DR</div>
+                  <strong class="user-card-name">Dewi Rahayu</strong>
+                </div>
+                <div class="user-card-meta">
+                  <span class="role-badge role-admin">Admin</span>
+                  <span class="badge badge-approved">Aktif</span>
+                  <span class="user-card-date">1 Jan 2026</span>
+                </div>
+              </div>
+              <div class="user-card-row">
+                <div class="user-card-top">
+                  <div class="user-avatar" style="background:#e0f2fe;color:#0284c7">FR</div>
+                  <strong class="user-card-name">Faisal Rahman</strong>
+                </div>
+                <div class="user-card-meta">
+                  <span class="role-badge role-siswa">Siswa</span>
+                  <span class="badge badge-approved">Aktif</span>
+                  <span class="user-card-date">8 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Activity Feed -->
+        <aside class="activity-feed">
+          <div class="section-card-header">
+            <h2>Aktivitas Terbaru</h2>
+            <span style="font-size:11px;color:var(--color-text-muted)">Hari ini</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#e0f2fe;color:#0284c7"><i class="fas fa-user-plus"></i></div>
+            <div class="activity-meta">
+              <div class="activity-name">Andi Pratama bergabung</div>
+              <div class="activity-time">2 menit lalu</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#ecfdf5;color:#15803d"><i class="fas fa-check-circle"></i></div>
+            <div class="activity-meta">
+              <div class="activity-name">Submission Scratch Motion disetujui</div>
+              <div class="activity-time">15 menit lalu</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#e0f2fe;color:#0284c7"><i class="fas fa-user-plus"></i></div>
+            <div class="activity-meta">
+              <div class="activity-name">Lina Kusuma bergabung</div>
+              <div class="activity-time">1 jam lalu</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:#ede9fe;color:#8b5cf6"><i class="fas fa-book"></i></div>
+            <div class="activity-meta">
+              <div class="activity-name">Konten Python Lab diperbarui</div>
+              <div class="activity-time">3 jam lalu</div>
+            </div>
+          </div>
+
+          <!-- Quick Stats summary -->
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--color-border-subtle)">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-muted);margin-bottom:12px">Ringkasan Hari Ini</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;font-size:13px">
+                <span style="color:var(--color-text-secondary)">Sesi berjalan</span>
+                <strong style="color:var(--color-primary)">12</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px">
+                <span style="color:var(--color-text-secondary)">Submission masuk</span>
+                <strong style="color:var(--color-warning)">7</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px">
+                <span style="color:var(--color-text-secondary)">Registrasi baru</span>
+                <strong style="color:var(--color-success)">3</strong>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section data-view="tutor">
+    <div class="view-container">
+      <div class="page-heading">
+        <h1>Teaching Workspace</h1>
+        <p class="page-subtitle">Halo, Siti 👩‍🏫 Kamu punya 1 submission yang menunggu review.</p>
+      </div>
+
+      <div class="tutor-layout">
+        <!-- Hero CTA Card with gradient -->
+        <div class="next-action-card">
+          <div class="next-action-inner">
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:8px">⏰ Aksi Selanjutnya</div>
+              <h2>1 Submission Menunggu Review</h2>
+              <div class="session-info">
+                📅 Sesi berikutnya: <strong>Rabu, 14:00</strong> · Andi Pratama · Scratch Motion
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+                <button class="btn-white"><i class="fas fa-folder-open"></i> Buka Review</button>
+                <button class="btn-outline-white"><i class="fas fa-calendar"></i> Lihat Jadwal</button>
+              </div>
+            </div>
+            <div class="next-action-stat">
+              <div style="font-size:48px;font-weight:800;line-height:1">1</div>
+              <div style="font-size:12px;opacity:0.85;margin-top:4px">pending</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submissions list -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <h2>Submission Tertunda</h2>
+            <span class="badge badge-pending">1 baru</span>
+          </div>
+          <div class="tab-strip">
+            <button class="tab-btn active" data-tab="pending">Menunggu Review</button>
+            <button class="tab-btn" data-tab="reviewed">Sudah Direview</button>
+            <button class="tab-btn" data-tab="all">Semua</button>
+            <button class="tab-btn" data-tab="jadwal">Jadwal</button>
+          </div>
+
+          <div class="submission-item" data-submission-status="pending">
+            <div class="student-avatar">AP</div>
+            <div class="submission-info">
+              <div class="submission-student">Andi Pratama</div>
+              <div class="submission-lesson"><i class="fas fa-code" style="color:#0ea5e9;margin-right:4px"></i>Scratch Motion · Level 2</div>
+            </div>
+            <span class="badge badge-pending">Menunggu Review</span>
+            <div class="submission-actions">
+              <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Review</button>
+              <button class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Approve</button>
+            </div>
+          </div>
+
+          <div class="submission-item" data-submission-status="reviewed">
+            <div class="student-avatar" style="background:#ede9fe;color:#8b5cf6">BS</div>
+            <div class="submission-info">
+              <div class="submission-student">Budi Santoso</div>
+              <div class="submission-lesson"><span class="lesson-icon-py">Py</span>Python Basics · Level 1</div>
+            </div>
+            <span class="badge badge-reviewed">Sudah Direview</span>
+            <div class="submission-actions">
+              <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Review</button>
+            </div>
+          </div>
+
+          <div class="submission-item" data-submission-status="approved">
+            <div class="student-avatar" style="background:#d1fae5;color:#10b981">CL</div>
+            <div class="submission-info">
+              <div class="submission-student">Citra Lestari</div>
+              <div class="submission-lesson"><i class="fas fa-gamepad" style="color:#ef4444;margin-right:4px"></i>Roblox Intro · Level 1</div>
+            </div>
+            <span class="badge badge-approved">Disetujui</span>
+            <div class="submission-actions">
+              <button class="btn btn-secondary btn-sm" disabled style="opacity:0.6;cursor:default"><i class="fas fa-check-double"></i> Selesai</button>
+            </div>
+          </div>
+
+          <!-- Empty state: shown when Jadwal tab is active -->
+          <div class="submission-empty-state" hidden>
+            <div class="empty-state-icon">📅</div>
+            <div class="empty-state-title">Belum ada jadwal</div>
+            <div class="empty-state-desc">Jadwal sesi akan muncul di sini setelah disusun bersama siswa.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-view="student">
+    <div class="view-container">
+      <div class="quest-header">
+        <div class="quest-title">🗺️ Peta Petualanganmu</div>
+        <div class="quest-subtitle">Jelajahi realm baru dan kumpulkan XP untuk naik level!</div>
+      </div>
+
+      <div class="student-layout">
+        <!-- Left: Quest Map -->
+        <div>
+          <div class="quest-map-container">
+            <svg class="quest-map" viewBox="0 0 540 460" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <style>
+                  .path-dotted { stroke-dasharray: 8 5; stroke-linecap: round; }
+                  .island-label { font-family: system-ui,-apple-system,sans-serif; font-weight: 700; }
+                  .node-locked { opacity: 0.4; }
+                </style>
+                <!-- Sky gradient -->
+                <linearGradient id="skyBg" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#bae6fd"/>
+                  <stop offset="60%" stop-color="#e0f2fe"/>
+                  <stop offset="100%" stop-color="#f0f9ff"/>
+                </linearGradient>
+                <linearGradient id="skyBgDark" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#0c2340"/>
+                  <stop offset="50%" stop-color="#1a3a5c"/>
+                  <stop offset="100%" stop-color="#1e3a5f"/>
+                </linearGradient>
+                <!-- Island 1 shadow -->
+                <radialGradient id="shadow1" cx="50%" cy="80%" r="50%">
+                  <stop offset="0%" stop-color="#0284c7" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+                </radialGradient>
+                <!-- Island 2 shadow -->
+                <radialGradient id="shadow2" cx="50%" cy="80%" r="50%">
+                  <stop offset="0%" stop-color="#ef4444" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+                </radialGradient>
+                <!-- Glow for active island -->
+                <filter id="glow">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+              </defs>
+
+              <!-- Sky background -->
+              <rect width="540" height="460" rx="20" fill="url(#skyBg)" class="quest-map-sky"/>
+
+              <!-- Cloud decorations -->
+              <ellipse cx="70" cy="45" rx="45" ry="20" fill="white" opacity="0.85" class="quest-cloud"/>
+              <ellipse cx="90" cy="38" rx="30" ry="17" fill="white" opacity="0.9" class="quest-cloud"/>
+              <ellipse cx="45" cy="38" rx="28" ry="15" fill="white" opacity="0.8" class="quest-cloud"/>
+
+              <ellipse cx="440" cy="35" rx="40" ry="18" fill="white" opacity="0.8" class="quest-cloud"/>
+              <ellipse cx="460" cy="28" rx="28" ry="15" fill="white" opacity="0.85" class="quest-cloud"/>
+
+              <ellipse cx="280" cy="22" rx="35" ry="14" fill="white" opacity="0.75" class="quest-cloud"/>
+
+              <!-- Stars/sparkles decoration -->
+              <text x="195" y="88" font-size="12" opacity="0.6">✨</text>
+              <text x="380" y="78" font-size="10" opacity="0.5">⭐</text>
+
+              <!-- DOTTED PATHS between islands -->
+              <!-- Path 1→2 (Scratch → Roblox) — ACTIVE path, bright -->
+              <path d="M 165 200 Q 270 140 345 170" fill="none" stroke="#38bdf8" stroke-width="3.5" class="path-dotted"/>
+              <!-- Path 2→3 (Roblox → Python) — locked, faded -->
+              <path d="M 375 185 Q 430 240 410 310" fill="none" stroke="#94a3b8" stroke-width="2.5" class="path-dotted node-locked"/>
+              <!-- Path 3→4 (Python → Game Dev) — locked, faded -->
+              <path d="M 390 340 Q 330 345 255 320" fill="none" stroke="#94a3b8" stroke-width="2.5" class="path-dotted node-locked"/>
+
+              <!-- ===== ISLAND 1: Scratch Forest — COMPLETED ===== -->
+              <g data-node-id="n1" data-node-state="completed">
+                <!-- Island base shadow -->
+                <ellipse cx="118" cy="215" rx="78" ry="22" fill="url(#shadow1)"/>
+                <!-- Island water rim -->
+                <ellipse cx="118" cy="208" rx="72" ry="20" fill="#38bdf8" opacity="0.4"/>
+                <!-- Island body -->
+                <ellipse cx="118" cy="198" rx="64" ry="30" fill="#0ea5e9"/>
+                <!-- Green hilltop -->
+                <ellipse cx="118" cy="184" rx="50" ry="22" fill="#059669"/>
+                <!-- Trees (3 trees with varied heights) -->
+                <!-- Tree 1 (left) -->
+                <rect x="88" y="162" width="6" height="20" rx="2" fill="#78350f"/>
+                <ellipse cx="91" cy="158" rx="11" ry="13" fill="#16a34a"/>
+                <ellipse cx="91" cy="153" rx="8" ry="10" fill="#22c55e"/>
+                <!-- Tree 2 (center, tallest) -->
+                <rect x="113" y="155" width="7" height="24" rx="2" fill="#78350f"/>
+                <ellipse cx="117" cy="150" rx="13" ry="16" fill="#15803d"/>
+                <ellipse cx="117" cy="143" rx="10" ry="12" fill="#22c55e"/>
+                <!-- Tree 3 (right) -->
+                <rect x="138" y="163" width="6" height="18" rx="2" fill="#78350f"/>
+                <ellipse cx="141" cy="160" rx="10" ry="12" fill="#16a34a"/>
+                <ellipse cx="141" cy="155" rx="7" ry="9" fill="#22c55e"/>
+                <!-- Completed badge (green checkmark) -->
+                <circle cx="118" cy="140" r="14" fill="#15803d" stroke="white" stroke-width="2.5"/>
+                <text x="118" y="145" text-anchor="middle" font-size="13" fill="white" font-weight="700">✓</text>
+                <!-- Labels -->
+                <text x="118" y="242" text-anchor="middle" font-size="13" font-weight="700" fill="#0369a1" class="island-label island-label-scratch">Scratch Forest</text>
+                <text x="118" y="256" text-anchor="middle" font-size="10" fill="#0284c7" class="island-sublabel-scratch">Level 1–3 · Selesai ✓</text>
+              </g>
+
+              <!-- ===== ISLAND 2: Roblox Kingdom — ACTIVE ===== -->
+              <g data-node-id="n2" data-node-state="available" filter="url(#glow)">
+                <!-- Pulsing ring (active indicator) -->
+                <ellipse cx="358" cy="192" rx="78" ry="24" fill="#f59e0b" opacity="0.15" class="pulse-ring"/>
+                <!-- Island water rim -->
+                <ellipse cx="358" cy="184" rx="70" ry="20" fill="#fca5a5" opacity="0.5"/>
+                <!-- Island body -->
+                <ellipse cx="358" cy="174" rx="62" ry="28" fill="#ef4444"/>
+                <!-- Castle base -->
+                <rect x="332" y="145" width="52" height="28" rx="3" fill="#dc2626"/>
+                <!-- Castle battlements -->
+                <rect x="332" y="140" width="10" height="10" rx="1" fill="#b91c1c"/>
+                <rect x="345" y="140" width="10" height="10" rx="1" fill="#b91c1c"/>
+                <rect x="358" y="140" width="10" height="10" rx="1" fill="#b91c1c"/>
+                <rect x="371" y="140" width="10" height="10" rx="1" fill="#b91c1c"/>
+                <!-- Castle gate -->
+                <rect x="348" y="155" width="20" height="18" rx="10" fill="#7f1d1d"/>
+                <!-- Tower left -->
+                <rect x="324" y="130" width="14" height="38" rx="2" fill="#b91c1c"/>
+                <polygon points="324,130 338,130 331,118" fill="#dc2626"/>
+                <!-- Tower right -->
+                <rect x="378" y="128" width="14" height="40" rx="2" fill="#b91c1c"/>
+                <polygon points="378,128 392,128 385,116" fill="#dc2626"/>
+                <!-- Flag on right tower -->
+                <line x1="385" y1="116" x2="385" y2="100" stroke="#f59e0b" stroke-width="2"/>
+                <polygon points="385,100 400,106 385,112" fill="#f59e0b"/>
+                <!-- Active "PLAY" badge -->
+                <circle cx="358" cy="109" r="14" fill="#f59e0b" stroke="white" stroke-width="2.5"/>
+                <text x="358" y="114" text-anchor="middle" font-size="12" fill="white" font-weight="700">▶</text>
+                <!-- Labels -->
+                <text x="358" y="228" text-anchor="middle" font-size="13" font-weight="700" fill="#b91c1c" class="island-label island-label-roblox">Roblox Kingdom</text>
+                <text x="358" y="242" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="700" class="island-sublabel-roblox">⚡ Aktif sekarang!</text>
+              </g>
+
+              <!-- ===== ISLAND 3: Python Lab — LOCKED ===== -->
+              <g data-node-id="n3" data-node-state="locked" class="node-locked">
+                <!-- Island body -->
+                <ellipse cx="400" cy="330" rx="60" ry="26" fill="#10b981"/>
+                <!-- Lab building -->
+                <rect x="370" y="300" width="60" height="30" rx="4" fill="#059669"/>
+                <!-- Roof -->
+                <polygon points="365,300 435,300 430,288 370,288" fill="#047857"/>
+                <!-- Chimney -->
+                <rect x="420" y="278" width="8" height="14" rx="2" fill="#065f46"/>
+                <!-- Lab windows (lit green) -->
+                <rect x="378" y="308" width="10" height="10" rx="2" fill="#34d399"/>
+                <rect x="396" y="308" width="10" height="10" rx="2" fill="#34d399"/>
+                <rect x="414" y="308" width="10" height="10" rx="2" fill="#6ee7b7"/>
+                <!-- Lab door -->
+                <rect x="392" y="316" width="16" height="14" rx="2" fill="#065f46"/>
+                <!-- Lock badge -->
+                <circle cx="400" cy="284" r="13" fill="#94a3b8" stroke="white" stroke-width="2.5"/>
+                <text x="400" y="289" text-anchor="middle" font-size="12" fill="white">🔒</text>
+                <!-- Labels -->
+                <text x="400" y="368" text-anchor="middle" font-size="13" font-weight="700" fill="#94a3b8" class="island-label island-label-locked">Python Lab</text>
+                <text x="400" y="382" text-anchor="middle" font-size="10" fill="#94a3b8" class="island-sublabel-locked">Terkunci</text>
+              </g>
+
+              <!-- ===== ISLAND 4: Game Dev Realm — LOCKED ===== -->
+              <g data-node-id="n4" data-node-state="locked" class="node-locked">
+                <!-- Island body -->
+                <ellipse cx="220" cy="330" rx="58" ry="24" fill="#8b5cf6"/>
+                <!-- Portal frame outer -->
+                <ellipse cx="220" cy="308" rx="30" ry="38" fill="#7c3aed" opacity="0.5"/>
+                <!-- Portal frame inner glow -->
+                <ellipse cx="220" cy="308" rx="24" ry="31" fill="#6d28d9" opacity="0.6"/>
+                <!-- Portal core -->
+                <ellipse cx="220" cy="308" rx="17" ry="22" fill="#ede9fe"/>
+                <!-- Portal sparkles -->
+                <text x="192" y="295" font-size="10">✨</text>
+                <text x="234" y="288" font-size="10">✨</text>
+                <text x="206" y="322" font-size="8">⭐</text>
+                <!-- Lock badge -->
+                <circle cx="220" cy="282" r="13" fill="#94a3b8" stroke="white" stroke-width="2.5"/>
+                <text x="220" y="287" text-anchor="middle" font-size="12" fill="white">🔒</text>
+                <!-- Labels -->
+                <text x="220" y="366" text-anchor="middle" font-size="13" font-weight="700" fill="#94a3b8" class="island-label island-label-locked">Game Dev Realm</text>
+                <text x="220" y="380" text-anchor="middle" font-size="10" fill="#94a3b8" class="island-sublabel-locked">Terkunci</text>
+              </g>
+
+              <!-- LEGEND -->
+              <g transform="translate(16, 388)">
+                <rect x="0" y="-2" width="200" height="20" rx="10" fill="white" opacity="0.6" class="quest-map-legend-bg"/>
+                <circle cx="14" cy="8" r="6" fill="#15803d"/>
+                <text x="24" y="12" font-size="10" fill="#334155" class="quest-map-legend-text">Selesai</text>
+                <circle cx="78" cy="8" r="6" fill="#f59e0b"/>
+                <text x="88" y="12" font-size="10" fill="#334155" class="quest-map-legend-text">Aktif</text>
+                <circle cx="130" cy="8" r="6" fill="#94a3b8"/>
+                <text x="140" y="12" font-size="10" fill="#334155" class="quest-map-legend-text">Terkunci</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Right: Progress Panel -->
+        <aside class="progress-panel">
+          <!-- XP / Level Card -->
+          <div class="xp-card" data-gamification-category="progress">
+            <div class="xp-level">Level 4 · Explorer 🧭</div>
+            <div class="xp-value">320 XP</div>
+            <div style="font-size:12px;opacity:0.8;margin-top:2px">180 XP lagi untuk Level 5</div>
+            <div class="xp-bar"><div class="xp-fill"></div></div>
+            <div class="streak-row">
+              <span>🔥</span> <strong>7-day streak!</strong> Pertahankan!
+            </div>
+          </div>
+
+          <!-- Achievement Card -->
+          <div class="gamification-card" data-gamification-category="achievement">
+            <h3>Achievement Terbaru</h3>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--color-primary-subtle);border-radius:var(--radius-md)">
+              <span style="font-size:32px;line-height:1">🏆</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--color-text-primary)">Scratch Explorer</div>
+                <div style="font-size:11px;color:var(--color-text-muted);margin-top:3px">earned 2 hari lalu</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <span style="font-size:20px" title="Explorer">🗺️</span>
+              <span style="font-size:20px" title="Scratch">🐱</span>
+              <span style="font-size:20px;opacity:0.3" title="Locked">🔒</span>
+              <span style="font-size:20px;opacity:0.3" title="Locked">🔒</span>
+            </div>
+          </div>
+
+          <!-- Mission Card -->
+          <div class="gamification-card" data-gamification-category="mission">
+            <h3>Misi Aktif 🎯</h3>
+            <div style="font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:10px">
+              Selesaikan Roblox Kingdom Level 1
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-muted);margin-bottom:6px">
+              <span>Progress</span><span style="font-weight:700;color:var(--color-text-primary)">60%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="--pct:60%;background:var(--color-rpg-streak)"></div>
+            </div>
+            <div style="margin-top:12px;padding:10px;background:var(--color-rpg-xp-bg, #fef3c7);border-radius:var(--radius-sm)">
+              <div style="font-size:11px;font-weight:700;color:var(--color-rpg-xp);text-transform:uppercase;letter-spacing:0.5px">🎁 Reward Misi</div>
+              <div style="font-size:13px;font-weight:600;color:var(--color-text-primary);margin-top:4px">+50 XP · Badge Roblox Knight</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section data-view="parent">
+    <div class="view-container">
+      <div class="page-heading">
+        <h1>Progress Belajar</h1>
+        <p class="page-subtitle">Pantau perkembangan belajar anak Anda secara real-time.</p>
+      </div>
+
+      <div class="parent-layout">
+        <!-- Child Hero Card -->
+        <div class="child-hero">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:24px;color:white;font-weight:800;flex-shrink:0">A</div>
+            <div>
+              <div class="child-name">Andi Pratama</div>
+              <div style="font-size:13px;color:var(--color-text-muted);margin-top:2px">Kelas 5 SD · Bergabung sejak Nov 2026</div>
+            </div>
+            <div style="margin-left:auto">
+              <span class="badge badge-approved"><i class="fas fa-fire" style="color:#f97316;margin-right:3px"></i>7-day streak</span>
+            </div>
+          </div>
+          <div class="child-overview">
+            <div class="overview-pill">
+              <span class="overview-label">Pelajaran Selesai</span>
+              <span class="overview-value">72%</span>
+            </div>
+            <div class="overview-pill" style="background:var(--color-rpg-xp-bg, #fef3c7)">
+              <span class="overview-label">Total XP</span>
+              <span class="overview-value" style="color:var(--color-rpg-xp)">320 XP</span>
+            </div>
+            <div class="overview-pill overview-pill-realm">
+              <span class="overview-label">Realm Selesai</span>
+              <span class="overview-value">1 / 4</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="section-card">
+          <h2>Progress Belajar</h2>
+          <div class="progress-section" style="margin-bottom:20px">
+            <div class="progress-label-row">
+              <span style="font-weight:600">Minggu Ini</span>
+              <span style="font-weight:700;color:var(--color-primary)">80%</span>
+            </div>
+            <div class="progress-bar" style="height:12px;margin-top:6px">
+              <div class="progress-fill" style="--pct:80%"></div>
+            </div>
+            <div style="font-size:12px;color:var(--color-text-muted);margin-top:4px">Target: 5 pelajaran · Tercapai: 4 pelajaran</div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-label-row">
+              <span style="font-weight:600">Bulan Ini</span>
+              <span style="font-weight:700;color:var(--color-primary)">52%</span>
+            </div>
+            <div class="progress-bar" style="height:12px;margin-top:6px">
+              <div class="progress-fill" style="--pct:52%"></div>
+            </div>
+            <div style="font-size:12px;color:var(--color-text-muted);margin-top:4px">12 dari 23 pelajaran</div>
+          </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        <div class="section-card">
+          <h2>Sesi Belajar Terbaru</h2>
+          <div class="session-item">
+            <div class="session-date">10 Nov</div>
+            <div class="session-tile session-tile-scratch">🐱</div>
+            <div class="session-info">
+              <div class="session-lesson">Scratch Motion</div>
+              <div class="session-duration">45 menit · Scratch Forest · Level 3</div>
+            </div>
+            <span class="session-status completed"><i class="fas fa-check-circle"></i> Selesai</span>
+          </div>
+          <div class="session-item">
+            <div class="session-date">7 Nov</div>
+            <div class="session-tile session-tile-python">🐍</div>
+            <div class="session-info">
+              <div class="session-lesson">Python Basics</div>
+              <div class="session-duration">30 menit · Python Lab · Level 1</div>
+            </div>
+            <span class="session-status ongoing"><i class="fas fa-clock"></i> Sedang berjalan</span>
+          </div>
+          <div class="session-item">
+            <div class="session-date">3 Nov</div>
+            <div class="session-tile session-tile-roblox">🎮</div>
+            <div class="session-info">
+              <div class="session-lesson">Roblox Intro</div>
+              <div class="session-duration">60 menit · Roblox Kingdom · Level 1</div>
+            </div>
+            <span class="session-status completed"><i class="fas fa-check-circle"></i> Selesai</span>
+          </div>
+        </div>
+
+        <!-- Achievement Showcase -->
+        <div class="section-card">
+          <h2>Achievement Andi</h2>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <span style="font-size:32px">🏆</span>
+              <span style="font-size:11px;font-weight:600;color:var(--color-text-secondary);text-align:center">Scratch<br>Explorer</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <span style="font-size:32px">🗺️</span>
+              <span style="font-size:11px;font-weight:600;color:var(--color-text-secondary);text-align:center">Penjelajah<br>Peta</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.35">
+              <span style="font-size:32px">🔒</span>
+              <span style="font-size:11px;font-weight:600;color:var(--color-text-muted);text-align:center">Belum<br>dibuka</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.35">
+              <span style="font-size:32px">🔒</span>
+              <span style="font-size:11px;font-weight:600;color:var(--color-text-muted);text-align:center">Belum<br>dibuka</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

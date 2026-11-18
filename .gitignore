@@ -1,0 +1,84 @@
+# ============================================================
+# B2B LEARNING ENGINE — .gitignore
+# Repo: soKrizpy/b2b-v3
+# ============================================================
+
+# ── Environment & Credentials ──
+# Exclude all .env files with real values
+# .env.example (empty template) is re-included below
+.env
+.env.*
+!.env.example
+
+# Credentials & cryptographic keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ── Database Dumps & Backups ──
+# NOTE: *.sql is NOT excluded globally.
+# Supabase migration SQL (supabase/migrations/*.sql) will be tracked.
+# Only specific dump/backup patterns are excluded.
+*.dump
+*.bak
+*.backup
+db_backup_*
+
+# ── OS Files ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE Files ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Node.js & Build Artifacts ──
+# NOTE: package-lock.json is NOT excluded — lockfiles must be committable.
+node_modules/
+dist/
+build/
+.next/
+.cache/
+.turbo/
+coverage/
+
+# ── Logs ──
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── QA Screenshots (root level) ──
+screenshots/
+
+# ── Kiro Bugfix Specs (resolved, no lasting architecture value) ──
+.kiro/specs/admin-bindevents-bugfix/
+.kiro/specs/admin-workspace-bind-events-fix/
+
+# ── Scratch Directory ──
+# Exclude everything, then whitelist relevant files
+scratch/*
+
+# Whitelist: Design direction prototype (source code + README, no screenshots)
+!scratch/design-direction-preview/
+scratch/design-direction-preview/screenshots/
+
+# Whitelist: 13 relevant test scripts
+!scratch/test-phase1-cleanup.cjs
+!scratch/test-parent-hub.cjs
+!scratch/test-phase4-rbac.cjs
+!scratch/test-session-store.cjs
+!scratch/test-state-store.cjs
+!scratch/test-student-standalone.cjs
+!scratch/test-teacher-standalone.cjs
+!scratch/test-tutor-session-flow.cjs
+!scratch/test-end-to-end-cycle.cjs
+!scratch/test-drawer-a11y-focus.cjs
+!scratch/test-responsive-audit.cjs
+!scratch/verify-phase3-suite.cjs
+!scratch/user-acceptance-test.cjs

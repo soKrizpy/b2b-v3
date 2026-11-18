@@ -1,0 +1,79 @@
+/**
+ * B2B LEARNING ENGINE — PROTOTYPE INTEGRATION
+ * Refined after visual acceptance audit (18 Nov 2026).
+ *
+ * Only rules with confirmed live DOM targets are kept:
+ *   1. html theme transition (global)
+ *   2. Dark mode card border separation (global .card)
+ *   3. Dark mode shadow hierarchy (global tokens)
+ *   4. Quest map card dark mode (student view)
+ *   5. Logo theme switching (.logo-light / .logo-dark — Task 1)
+ *
+ * Removed (confirmed zero live DOM match):
+ *   Sections 2–8, 10–17, 21, 23–25 — orphaned prototype selectors.
+ *   Section 9 (.activity-item) — conflicted with teacher.css definition;
+ *   teacher.css is the authoritative source for .activity-item.
+ *
+ * Load order: last in <head>, after all other CSS files.
+ */
+
+/* ==========================================================================
+   1. SMOOTH THEME TRANSITION
+   Prevents flash of unstyled content on theme toggle.
+   Applies globally to all pages.
+   ========================================================================== */
+html {
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* ==========================================================================
+   2. DARK MODE — CARD BORDER SEPARATION
+   .card is used in admin-workspace.js, teacher-workspace.js,
+   parent-hub.js, and lesson-workspace.js output.
+   Hairline border on dark navy canvas so cards read as elevated.
+   ========================================================================== */
+[data-theme="dark"] .card {
+  border-color: var(--color-border-subtle);
+}
+
+/* ==========================================================================
+   3. DARK MODE — SHADOW HIERARCHY
+   Differentiates four elevation levels so they don't all look identical.
+   These override the default dark shadow tokens from design-tokens.css.
+   ========================================================================== */
+[data-theme="dark"] {
+  --shadow-sm:   0 2px 6px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md:   0 6px 16px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3),
+                 0 0 0 1px rgba(56, 189, 248, 0.07);
+  --shadow-lg:   0 16px 36px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================================
+   4. DARK MODE — QUEST MAP CARD (student view, lesson-workspace.js)
+   .quest-map-card is rendered by renderDashboard() in lesson-workspace.js.
+   The SVG-specific fill rules (quest-map-sky, island-label-*) are removed
+   because the live student view uses the GAS CSS tile grid, not an SVG map.
+   ========================================================================== */
+[data-theme="dark"] .quest-map-card {
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-subtle);
+}
+
+/* ==========================================================================
+   5. LOGO THEME SWITCHING
+   Targets <img class="brand-logo logo-light"> and
+   <img class="brand-logo logo-dark"> added to all 4 sidebar headers
+   in index.html, student.html, teacher.html, parent.html (Task 1).
+   ========================================================================== */
+.logo-light { display: inline-block; }
+.logo-dark  { display: none; }
+
+[data-theme="dark"] .logo-light { display: none; }
+[data-theme="dark"] .logo-dark  { display: inline-block; }
+
+.logo-light,
+.logo-dark {
+  /* Sizing and shape are handled by .brand-logo in views.css.
+     These rules only control display visibility for theme switching. */
+}

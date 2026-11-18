@@ -1,0 +1,108 @@
+[
+  {
+    "id": "ses_004",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "sessionNumber": 4,
+    "date": "2026-11-14",
+    "formattedDate": "Sabtu, 14 November 2026",
+    "time": "15:30 - 17:00 WIB",
+    "tutorId": "usr_tea_001",
+    "tutorName": "Kak Sarah",
+    "tutorAvatar": "KS",
+    "topic": "Gerak & Animasi Karakter Scratch (Basic Motion & Key Event)",
+    "moduleName": "Modul 1: Petualangan Dasar Sprite Scratch",
+    "attendance": "Hadir Tepat Waktu",
+    "activities": [
+      "Mempelajari sistem koordinat X dan Y pada kanvas panggung Scratch",
+      "Menghubungkan event blok 'when [key] pressed' dengan pergerakan 'change x by' dan 'change y by'",
+      "Membuat kontrol 4 arah (panah atas, bawah, kanan, kiri) untuk karakter Cat",
+      "Menyelesaikan tantangan checkpoint praktik mandiri dan kuis logika koordinat"
+    ],
+    "achievements": [
+      "Memahami dengan baik hubungan nilai positif/negatif pada sumbu X (kiri/kanan) dan Y (atas/bawah)",
+      "Berhasil membuat karakter kucing bergerak fleksibel dan memantul ketika menyentuh dinding panggung",
+      "Meraih skor sempurna 3/3 pada kuis pemahaman konsep logika gerak"
+    ],
+    "difficulties": "Alex sempat tertukar antara sumbu X dan Y saat membuat sprite bergerak ke bawah. Setelah diberikan analogi lift (naik-turun = Y) dan mobil (maju-mundur = X), Alex langsung paham dan memperbaiki kodenya sendiri tanpa dibantu.",
+    "parentRecommendations": "Ayah/Bunda dapat meminta Alex mendemonstrasikan hasil proyek geraknya di laptop rumah. Tanyakan: 'Bagaimana caranya agar kucingnya bisa bergerak mundur?'. Melatih anak menjelaskan proses logika buatannya sendiri akan memperkuat kepercayaan diri dan pemahaman komputasionalnya."
+  },
+  {
+    "id": "ses_003",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "sessionNumber": 3,
+    "date": "2026-11-07",
+    "formattedDate": "Sabtu, 7 November 2026",
+    "time": "15:30 - 17:00 WIB",
+    "tutorId": "usr_tea_001",
+    "tutorName": "Kak Sarah",
+    "tutorAvatar": "KS",
+    "topic": "Kostum Sprite & Efek Animasi Sederhana",
+    "moduleName": "Modul 1: Petualangan Dasar Sprite Scratch",
+    "attendance": "Hadir Tepat Waktu",
+    "activities": [
+      "Mengenal tab Costumes dan cara mengganti tampilan sprite secara berurutan",
+      "Menggunakan blok 'next costume' di dalam perulangan 'repeat' dan 'wait 0.2 seconds'",
+      "Menambahkan efek suara 'meow' dan efek visual perubahan warna saat sprite disentuh"
+    ],
+    "achievements": [
+      "Mampu membuat efek berjalan yang terlihat natural dengan kombinasi kostum dan jeda waktu",
+      "Mengeksplorasi palet warna kostum secara kreatif sesuai imajinasi Alex"
+    ],
+    "difficulties": "Animasi awalnya bergerak terlalu cepat seperti kilat karena Alex lupa menambahkan jeda blok waktu. Alex berhasil menemukan bug ini setelah melihat kode bersama Kak Sarah.",
+    "parentRecommendations": "Ajak Alex memperhatikan kartun atau animasi favoritnya di TV dan diskusikan bagaimana gambar diam yang diganti cepat bisa menjadi gerakan hidup."
+  },
+  {
+    "id": "ses_002",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "sessionNumber": 2,
+    "date": "2026-10-31",
+    "formattedDate": "Sabtu, 31 Oktober 2026",
+    "time": "15:30 - 17:00 WIB",
+    "tutorId": "usr_tea_001",
+    "tutorName": "Kak Sarah",
+    "tutorAvatar": "KS",
+    "topic": "Pengenalan Antarmuka Scratch & Blok Pertama",
+    "moduleName": "Modul 1: Petualangan Dasar Sprite Scratch",
+    "attendance": "Hadir Tepat Waktu",
+    "activities": [
+      "Mengenal area kerja: Stage, Sprite Pane, Backdrop, dan Blocks Palette",
+      "Mencoba blok gerak dasar 'move 10 steps' dan 'turn 15 degrees'",
+      "Membuat program pertama: Sprite menyapa 'Halo Dunia Koding!'"
+    ],
+    "achievements": [
+      "Sangat antusias dan cepat beradaptasi dengan lingkungan visual Scratch",
+      "Menyelesaikan mini-quest pertama dalam waktu 15 menit"
+    ],
+    "difficulties": "Tidak ada kendala berarti. Alex sangat aktif bertanya tentang fungsi masing-masing kategori warna blok.",
+    "parentRecommendations": "Berikan apresiasi atas rasa ingin tahu Alex yang tinggi terhadap susunan puzzle koding."
+  },
+  {
+    "id": "ses_001",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "sessionNumber": 1,
+    "date": "2026-10-24",
+    "formattedDate": "Sabtu, 24 Oktober 2026",
+    "time": "15:30 - 17:00 WIB",
+    "tutorId": "usr_tea_001",
+    "tutorName": "Kak Sarah",
+    "tutorAvatar": "KS",
+    "topic": "Orientasi Kelas & Pengenalan Computational Thinking",
+    "moduleName": "Orientasi: Gerbang Dunia Pemrograman",
+    "attendance": "Hadir Tepat Waktu",
+    "activities": [
+      "Perkenalan kelas, tutor, dan teman belajar sekelas",
+      "Game logika tanpa komputer: Mengurutkan resep robot pembuat roti lapis",
+      "Pemasangan akun belajar dan persiapan materi Scratch"
+    ],
+    "achievements": [
+      "Memahami 4 pilar Computational Thinking: Dekomposisi, Pengenalan Pola, Abstraksi, dan Algoritma secara sederhana",
+      "Mampu mengutarakan langkah-langkah instruksi dengan runtut"
+    ],
+    "difficulties": "Awalnya sempat malu untuk berbicara di depan forum kelas daring, namun setelah permainan ice-breaking Alex menjadi sangat bersemangat.",
+    "parentRecommendations": "Dukung keberanian Alex untuk berpendapat dan memecahkan teka-teki logika di kehidupan sehari-hari."
+  }
+]

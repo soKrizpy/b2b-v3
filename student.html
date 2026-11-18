@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bits2Bytes Learning Engine - Ruang Belajar Siswa">
+  <title>Ruang Belajar Siswa • B2B Learning Engine</title>
+
+  <!-- Centralized Design Tokens & Base CSS -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/views.css">
+  <link rel="stylesheet" href="./css/lesson.css">
+  <link rel="stylesheet" href="./css/parent-hub.css">
+  <link rel="stylesheet" href="./css/prototype-integration.css">
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- PERSISTENT SIDEBAR NAVIGATION (Section 5.7) -->
+    <aside class="app-sidebar" id="app-sidebar" aria-label="Navigasi Siswa">
+      <div class="sidebar-header">
+        <img src="./logo-b2b-light.svg" alt="Bits2Bytes" class="brand-logo logo-light" width="36" height="36">
+        <img src="./logo-b2b-dark.svg"  alt="Bits2Bytes" class="brand-logo logo-dark"  width="36" height="36">
+        <div>
+          <div class="brand-title">Learning Engine</div>
+        </div>
+        <button type="button" class="btn-mobile-menu" id="btn-sidebar-toggle" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="sidebar-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-content" id="sidebar-nav">
+        <!-- Section: Petualangan Belajar -->
+        <div>
+          <div class="nav-section-title">Petualangan Belajar</div>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#dashboard" class="nav-link active" data-student-nav="dashboard">
+                <span class="nav-icon" aria-hidden="true">🗺️</span>
+                <span>Dashboard & Quest</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#mission" class="nav-link" data-student-nav="mission">
+                <span class="nav-icon" aria-hidden="true">🚀</span>
+                <span>Misi: Scratch Motion</span>
+              </a>
+            </li>
+            <!-- Parent Hub link hidden from student UI, preserved for backward test compatibility -->
+            <li class="nav-item" style="display: none;" aria-hidden="true">
+              <a href="#parent-hub" class="nav-link" data-student-nav="parent-hub">
+                <span class="nav-icon" aria-hidden="true">👨‍👩‍👧</span>
+                <span>Parent Hub (Ruang Ortu)</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <small style="display: block; color: var(--color-text-muted); font-size: var(--font-size-xs);">
+          Antigravity Engine &bull; v0.4.5
+        </small>
+      </div>
+    </aside>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+      <!-- PERSISTENT HEADER (Section 5) -->
+      <header class="app-header">
+        <div class="header-left">
+          <h1 id="page-heading"
+            style="font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin: 0;">
+            Ruang Belajar Siswa &bull; Scratch Starter Adventure
+          </h1>
+        </div>
+
+        <div class="header-right">
+          <!-- Theme Toggle (Light / Dark mode) -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-theme-toggle" data-theme-toggle
+            aria-label="Ganti tema">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+            <span class="theme-label">Dark Mode</span>
+          </button>
+
+          <!-- User Avatar Badge -->
+          <div class="user-profile-badge" id="user-badge">
+            <div class="avatar-circle" id="user-avatar" aria-hidden="true">AP</div>
+            <div style="line-height: 1.2;">
+              <div id="user-name" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Alex Pratama</div>
+              <div id="user-role-label" style="font-size: 10px; color: var(--color-text-muted);">Siswa &bull; Grade 5</div>
+            </div>
+          </div>
+
+          <!-- Logout Button (Phase 4.5 Clean Navigation) -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" aria-label="Keluar dari akun">
+            Keluar
+          </button>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT VIEWPORT -->
+      <main class="app-main" id="main-content">
+        <!-- STUDENT EXPERIENCE VIEW -->
+        <section id="view-student" class="view-section is-active" aria-labelledby="page-heading">
+          <div id="student-container">
+            <!-- Dynamically populated by LessonWorkspace (Dashboard / Quest Map / Continuous Workspace) -->
+            <div class="card" style="text-align: center; padding: var(--space-12);">
+              <p style="color: var(--color-text-muted); font-size: var(--font-size-sm);">Memuat petualangan belajar siswa...</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- SAMPLE ACCESSIBLE MODAL (Section 5.10) -->
+  <div class="modal-backdrop" id="sample-modal" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="modal-sample-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-sample-title">Konfirmasi Aksi</h3>
+        <button type="button" class="btn btn-ghost btn-sm" data-modal-close aria-label="Tutup modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Accessible Modal Dialog memenuhi standar Section 5.10 & 13.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENT APPLICATION ENTRYPOINT -->
+  <script type="module" src="./js/student/student-app.js"></script>
+</body>
+
+</html>

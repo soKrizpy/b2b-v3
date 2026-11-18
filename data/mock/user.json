@@ -1,0 +1,52 @@
+{
+  "currentUser": {
+    "id": "usr_stu_001",
+    "name": "Alex Pratama",
+    "email": "alex.pratama@example.edu",
+    "role": "student",
+    "avatar": "AP",
+    "gradeLevel": "Grade 5",
+    "level": 3,
+    "levelTitle": "Scratch Cadet",
+    "xp": 450,
+    "nextLevelXp": 600,
+    "streakDays": 5,
+    "dailyGoalCompleted": 1,
+    "dailyGoalTotal": 2,
+    "badgesCount": 4,
+    "enrolledTracks": ["track_scratch_starter"]
+  },
+  "roles": [
+    {
+      "id": "student",
+      "name": "Student",
+      "defaultUser": {
+        "id": "usr_stu_001",
+        "name": "Alex Pratama",
+        "avatar": "AP",
+        "role": "student"
+      }
+    },
+    {
+      "id": "teacher",
+      "name": "Teacher",
+      "defaultUser": {
+        "id": "usr_tea_001",
+        "name": "Kak Sarah",
+        "avatar": "KS",
+        "role": "teacher"
+      }
+    },
+    {
+      "id": "admin",
+      "name": "Admin",
+      "defaultUser": {
+        "id": "usr_adm_001",
+        "name": "Admin B2B",
+        "avatar": "AD",
+        "role": "admin"
+      }
+    }
+  ]
+}
+

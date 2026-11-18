@@ -1,0 +1,405 @@
+{
+  "id": "les_scratch_motion_01",
+  "title": "Scratch — Basic Motion: Membuat Karakter Bergerak",
+  "subtitle": "Kuasai dasar koordinat, blok Motion, dan kontrol Sprite di Scratch 3.0",
+  "description": "Pelajari cara menggerakkan Sprite kucing di Scratch menggunakan blok Motion dan Events, lalu buat karaktermu bergerak bolak-balik saat tombol panah keyboard ditekan.",
+  "category": "Visual Block Programming",
+  "trackId": "track_scratch_starter",
+  "trackTitle": "Scratch Starter Adventure",
+  "order": 1,
+  "status": "in-progress",
+  "skillLevel": "Beginner",
+  "estimatedDurationMinutes": 45,
+  "version": "1.0.0",
+  "requiredTool": {
+    "name": "Scratch Web Editor",
+    "version": "Scratch 3.0",
+    "type": "web",
+    "url": "https://scratch.mit.edu/projects/editor/",
+    "instructions": "Buka Scratch di tab baru di sebelah jendela ini agar kamu dapat menyimak panduan sambil langsung mencoba."
+  },
+  "prerequisites": [
+    "Dapat menggunakan mouse/trackpad",
+    "Mengenal arah kanan dan kiri"
+  ],
+  "learningObjectives": [
+    "Memahami konsep koordinat posisi (X untuk horizontal, Y untuk vertikal) pada stage Scratch.",
+    "Menggunakan blok Event 'when green flag clicked' untuk memulai program.",
+    "Menerapkan blok Motion 'move 10 steps' dan 'change x by ()' untuk menggerakkan sprite.",
+    "Menambahkan kontrol interaktif menggunakan tombol keyboard (panah kanan dan kiri).",
+    "Menangani logika batas layar agar sprite berbalik arah saat menyentuh tepi."
+  ],
+  "stages": [
+    {
+      "id": "brief",
+      "number": 1,
+      "title": "Brief & Misi",
+      "badge": "Misi Awal",
+      "content": {
+        "overview": "Selamat datang di petualangan koding pertamamu! Di misi ini, kamu akan menjadi sutradara bagi seekor kucing oranye bernama 'Scratch Cat'. Tugasmu adalah memberinya instruksi langkah demi langkah agar ia bisa berjalan dan meluncur melintasi layar komputer.",
+        "toolNotice": "Kita akan membuat koding nyata menggunakan alat resmi Scratch 3.0 dari MIT. Tidak ada emulator buatan di sini—kamu menggunakan alat asli yang dipakai para programmer muda di seluruh dunia!",
+        "keySteps": [
+          "Buka Scratch Web Editor di tab baru browser.",
+          "Pelajari cara kerja sumbu koordinat X (kanan/kiri) dan Y (atas/bawah).",
+          "Rangkai blok 'Events' dan 'Motion' pertama kamu.",
+          "Uji coba gerakan kucing dengan menekan bendera hijau.",
+          "Selesaikan tantangan mandiri dan kumpulkan hasil karyamu!"
+        ]
+      }
+    },
+    {
+      "id": "materials",
+      "number": 2,
+      "title": "Materi Belajar",
+      "badge": "Slide Interaktif",
+      "slides": [
+        {
+          "id": "slide_1",
+          "title": "Mengenal Panggung (Stage) & Diagram Koordinat",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Di Scratch, area tempat karakter beraksi disebut **Stage** (Panggung). Di panggung ini, setiap titik memiliki alamat yang disebut **Koordinat (X, Y)**."
+            },
+            {
+              "type": "diagram",
+              "title": "Diagram Sumbu Koordinat Panggung Scratch",
+              "diagramType": "coordinate-grid",
+              "caption": "Sumbu mendatar adalah X (lebar 480px: -240 ke +240). Sumbu tegak adalah Y (tinggi 360px: -180 ke +180). Pusat tengah adalah (0,0)."
+            },
+            {
+              "type": "callout",
+              "variant": "info",
+              "title": "Aturan Koordinat X dan Y",
+              "text": "• Sumbu **X** mengatur gerakan mendatar (**Kanan = Nilai Positif / Tambah**, **Kiri = Nilai Negatif / Kurang**).\n• Sumbu **Y** mengatur gerakan tegak (**Atas = Positif**, **Bawah = Negatif**).\n• Titik tengah panggung tepat berada pada koordinat **(X: 0, Y: 0)**."
+            }
+          ]
+        },
+        {
+          "id": "slide_2",
+          "title": "Antarmuka Scratch & Blok 'When Green Flag Clicked'",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Mari kita lihat area kerja Scratch 3.0. Di sebelah kiri adalah palet blok, di tengah area susun kode (scripts), dan di kanan adalah panggung penampilan sprite."
+            },
+            {
+              "type": "image",
+              "src": "",
+              "alt": "Diagram Antarmuka Scratch 3.0: Block Palette di kiri, Code Area di tengah, Stage di kanan",
+              "caption": "Tata Letak Scratch 3.0: 1. Block Palette | 2. Code Area | 3. Stage & Sprite Info"
+            },
+            {
+              "type": "text",
+              "value": "Komputer membutuhkan sinyal untuk mulai menjalankan perintah. Di Scratch, sinyal mulai paling umum adalah blok kuning dari kategori **Events**."
+            },
+            {
+              "type": "scratch-block",
+              "category": "events",
+              "label": "when ⚑ clicked",
+              "description": "Blok ini diletakkan paling atas seperti topi. Ketika kamu menekan tombol bendera hijau di panggung, semua blok di bawahnya akan dieksekusi secara berurutan."
+            }
+          ]
+        },
+        {
+          "id": "slide_3",
+          "title": "Menggerakkan Karakter: Blok 'Move 10 Steps'",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Untuk membuat sprite melangkah ke depan sesuai arah hadapnya, gunakan blok biru dari kategori **Motion**."
+            },
+            {
+              "type": "scratch-block",
+              "category": "motion",
+              "label": "move (10) steps",
+              "description": "Setiap kali blok ini dieksekusi, sprite berpindah sejauh 10 pixel ke arah ia menghadap."
+            },
+            {
+              "type": "copyable-prompt",
+              "title": "Prompt AI Pendamping Belajar",
+              "label": "Tanyakan ke Gemini / ChatGPT",
+              "code": "Saya sedang belajar Scratch 3.0. Bagaimana cara membuat Sprite kucing melompat ke atas saat tombol spasi ditekan menggunakan koordinat Y?"
+            }
+          ]
+        },
+        {
+          "id": "slide_4",
+          "title": "Perbedaan 'Move' vs 'Change X By'",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Banyak pemula bingung antara blok <code>move () steps</code> dengan <code>change x by ()</code>. Mari kita pelajari perbedaannya:"
+            },
+            {
+              "type": "comparison-table",
+              "headers": ["Blok", "Fungsi", "Pengaruh Sudut Hadap"],
+              "rows": [
+                ["move (10) steps", "Melangkah maju ke depan", "Sangat bergantung pada arah hadap (Direction)"],
+                ["change x by (10)", "Menggeser posisi X ke arah kanan", "Pasti ke kanan terlepas dari arah hadap sprite"]
+              ]
+            },
+            {
+              "type": "video-embed",
+              "title": "Video Penjelasan: Konsep Gerak Mendatar Scratch",
+              "url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+              "duration": "2:15",
+              "description": "Simak demonstrasi animasi bagaimana koordinat X mengubah posisi sprite secara real-time di panggung."
+            }
+          ]
+        },
+        {
+          "id": "slide_5",
+          "title": "Cek Pemahaman Cepat (Quick Check)",
+          "type": "interactive-quiz",
+          "quizType": "mcq",
+          "question": "Jika kamu ingin membuat Sprite bergerak ke kiri sejauh 15 langkah secara mendatar, blok mana yang paling tepat digunakan?",
+          "options": [
+            { "id": "opt_a", "text": "change y by 15", "correct": false, "explanation": "Salah. Sumbu Y mengatur gerakan ke atas dan ke bawah, bukan ke samping." },
+            { "id": "opt_b", "text": "change x by -15", "correct": true, "explanation": "Tepat sekali! Nilai negatif pada sumbu X akan menggeser posisi sprite ke sebelah kiri." },
+            { "id": "opt_c", "text": "change x by 15", "correct": false, "explanation": "Kurang tepat. Angka positif 15 akan menggeser sprite ke kanan." },
+            { "id": "opt_d", "text": "set y to 0", "correct": false, "explanation": "Salah. Ini akan memindahkan posisi Y ke tengah panggung." }
+          ],
+          "hint": "Ingat: Sumbu X adalah garis horizontal. Nilai negatif ke kiri, nilai positif ke kanan."
+        },
+        {
+          "id": "slide_6",
+          "title": "Memutar Arah Hadap: 'Point in Direction'",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Agar sprite terlihat menghadap ke arah jalannya, kita mengatur arah hadap (Direction):"
+            },
+            {
+              "type": "scratch-block",
+              "category": "motion",
+              "label": "point in direction (90)",
+              "description": "• 90 = Menghadap ke Kanan\n• -90 = Menghadap ke Kiri\n• 0 = Menghadap ke Atas\n• 180 = Menghadap ke Bawah"
+            },
+            {
+              "type": "interactive-quiz",
+              "quizType": "true-false",
+              "question": "Benar atau Salah: Nilai sudut hadap 90 pada Scratch membuat sprite menghadap ke arah Kanan?",
+              "options": [
+                { "id": "tf_true", "text": "Benar (True)", "correct": true, "explanation": "Tepat sekali! Di Scratch, sudut 90 derajat adalah arah kanan standar." },
+                { "id": "tf_false", "text": "Salah (False)", "correct": false, "explanation": "Kurang tepat. Sudut 90 derajat mengarahkan sprite ke kanan, sedangkan -90 ke kiri." }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "slide_7",
+          "title": "Mencegah Kucing Terbalik (Rotation Style)",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Pernahkah karaktermu berjalan mundur atau kepalanya di bawah saat menghadap ke kiri (-90)? Itu karena gaya putarannya masih melingkar (all-around)."
+            },
+            {
+              "type": "scratch-block",
+              "category": "motion",
+              "label": "set rotation style [left-right v]",
+              "description": "Pasang blok ini di awal program agar karakter hanya berbalik arah kanan-kiri tanpa menjungkirbalikkan tubuhnya!"
+            }
+          ]
+        },
+        {
+          "id": "slide_8",
+          "title": "Kontrol Keyboard: 'When [key] Pressed'",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Sekarang buat karaktermu bisa dikendalikan oleh pemain menggunakan tombol panah keyboard!"
+            },
+            {
+              "type": "scratch-block",
+              "category": "events",
+              "label": "when [right arrow v] key pressed",
+              "description": "Dijalankan setiap kali tombol panah kanan di keyboard ditekan."
+            },
+            {
+              "type": "code-stack",
+              "title": "Rangkaian Blok Panah Kanan",
+              "blocks": [
+                { "category": "events", "text": "when [right arrow v] key pressed" },
+                { "category": "motion", "text": "point in direction (90)" },
+                { "category": "motion", "text": "move (10) steps" }
+              ]
+            },
+            {
+              "type": "interactive-quiz",
+              "quizType": "prediction",
+              "question": "Prediksi: Jika blok 'move (10) steps' dijalankan sebanyak 4 kali berturut-turut ke arah kanan, berapa total pixel pergeseran Sprite kucing?",
+              "options": [
+                { "id": "pred_a", "text": "10 pixel", "correct": false, "explanation": "Kurang tepat. 1 kali langkah = 10 pixel. Jika 4 kali, maka 4 x 10." },
+                { "id": "pred_b", "text": "40 pixel", "correct": true, "explanation": "Benar! 4 kali 10 langkah menghasilkan pergeseran total sebesar 40 pixel." },
+                { "id": "pred_c", "text": "14 pixel", "correct": false, "explanation": "Salah perhitungan. Langkah dikalikan, bukan dijumlahkan angka 4 dan 10." }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "slide_9",
+          "title": "Rangkaian Lengkap Panah Kiri",
+          "type": "concept",
+          "content": [
+            {
+              "type": "text",
+              "value": "Untuk kontrol panah kiri, kita cukup menyalin logika sebelumnya dengan arah dan sudut yang berlawanan:"
+            },
+            {
+              "type": "code-stack",
+              "title": "Rangkaian Blok Panah Kiri",
+              "blocks": [
+                { "category": "events", "text": "when [left arrow v] key pressed" },
+                { "category": "motion", "text": "point in direction (-90)" },
+                { "category": "motion", "text": "move (10) steps" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "slide_10",
+          "title": "Ringkasan Konsep Kunci",
+          "type": "summary",
+          "content": [
+            {
+              "type": "checklist-summary",
+              "items": [
+                "Sumbu X = Kanan (+) dan Kiri (-).",
+                "Blok Events (kuning) memicu kapan koding mulai dijalankan.",
+                "Blok Motion (biru) mengontrol perpindahan posisi dan arah hadap sprite.",
+                "Rotation Style 'left-right' menjaga agar sprite tidak jungkir balik."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "number": 3,
+      "title": "Guided Practice",
+      "badge": "Praktik Terbimbing",
+      "content": {
+        "instructions": "Buka Scratch di tab baru browser kamu, lalu ikuti 4 langkah terpandu berikut. Centang setiap langkah setelah kamu berhasil melakukannya di Scratch!",
+        "toolButton": {
+          "text": "Buka Scratch Editor (Tab Baru)",
+          "url": "https://scratch.mit.edu/projects/editor/"
+        },
+        "checkpoints": [
+          {
+            "id": "cp_1",
+            "title": "Langkah 1: Buka Scratch & Siapkan Sprite",
+            "description": "Buka Scratch 3.0. Pastikan karakter Kucing (Sprite 1) sudah berada di panggung.",
+            "expectedResult": "Sprite kucing terlihat di tengah panggung dengan posisi X: 0, Y: 0."
+          },
+          {
+            "id": "cp_2",
+            "title": "Langkah 2: Pasang Koding Tombol Panah Kanan",
+            "description": "Tarik blok 'when [right arrow] key pressed', lalu sambungkan di bawahnya dengan blok 'point in direction (90)' dan 'move (10) steps'.",
+            "expectedResult": "Saat tombol panah kanan di keyboard ditekan, kucing melangkah ke kanan."
+          },
+          {
+            "id": "cp_3",
+            "title": "Langkah 3: Pasang Koding Tombol Panah Kiri & Anti Terbalik",
+            "description": "Tarik blok 'when [left arrow] key pressed', sambungkan dengan 'point in direction (-90)' dan 'move (10) steps'. Tambahkan blok 'set rotation style [left-right]' pada blok 'when green flag clicked'.",
+            "expectedResult": "Kucing dapat berbalik arah ke kiri dengan tegak tanpa jungkir balik."
+          },
+          {
+            "id": "cp_4",
+            "title": "Langkah 4: Tambahkan Efek Memantul di Tepi",
+            "description": "Di bawah blok gerak, coba tambahkan blok 'if on edge, bounce' dari kategori Motion.",
+            "expectedResult": "Saat kucing berjalan sampai ke pinggir layar, ia akan otomatis memantul kembali ke dalam panggung."
+          }
+        ]
+      }
+    },
+    {
+      "id": "check",
+      "number": 4,
+      "title": "Comprehension Check",
+      "badge": "Uji Pemahaman",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "mcq",
+          "prompt": "1. Apa yang terjadi jika nilai koordinat X suatu sprite diubah dari 0 menjadi 50?",
+          "options": [
+            { "id": "q1_a", "text": "Sprite bergerak ke atas sejauh 50 pixel", "correct": false, "explanation": "Gerakan ke atas dikendalikan oleh sumbu Y, bukan X." },
+            { "id": "q1_b", "text": "Sprite bergeser ke kanan sejauh 50 pixel", "correct": true, "explanation": "Benar! Penambahan nilai positif pada sumbu X menggeser sprite ke arah kanan." },
+            { "id": "q1_c", "text": "Sprite bergeser ke kiri sejauh 50 pixel", "correct": false, "explanation": "Gerakan ke kiri terjadi jika nilai X berkurang (negatif)." },
+            { "id": "q1_d", "text": "Sprite berputar 50 derajat", "correct": false, "explanation": "Rotasi diatur oleh blok turn atau point in direction." }
+          ]
+        },
+        {
+          "id": "q2",
+          "type": "mcq",
+          "prompt": "2. Mengapa blok 'set rotation style [left-right]' sangat penting saat mengatur arah ke -90?",
+          "options": [
+            { "id": "q2_a", "text": "Supaya langkah sprite menjadi dua kali lebih cepat", "correct": false, "explanation": "Kecepatan diatur oleh jumlah steps, bukan rotation style." },
+            { "id": "q2_b", "text": "Supaya sprite tidak terbalik kepalanya ke bawah saat menghadap ke kiri", "correct": true, "explanation": "Tepat sekali! 'left-right' mengunci rotasi agar hanya membalik sisi kiri-kanan." },
+            { "id": "q2_c", "text": "Supaya suara kucing berbunyi otomatis", "correct": false, "explanation": "Suara diatur pada kategori Sound." },
+            { "id": "q2_d", "text": "Supaya warna latar belakang panggung berubah", "correct": false, "explanation": "Latar belakang panggung diatur pada tab Backdrop." }
+          ]
+        },
+        {
+          "id": "q3",
+          "type": "mcq",
+          "prompt": "3. Blok kategori apakah yang harus selalu berada paling atas untuk menerima masukan tombol keyboard dari pemain?",
+          "options": [
+            { "id": "q3_a", "text": "Motion (Biru)", "correct": false, "explanation": "Motion berisi perintah aksi gerak, bukan pemicu input." },
+            { "id": "q3_b", "text": "Events (Kuning)", "correct": true, "explanation": "Benar! Kategori Events mendeteksi pemicu seperti tombol ditekan atau bendera diklik." },
+            { "id": "q3_c", "text": "Looks (Ungu)", "correct": false, "explanation": "Looks mengatur kostum, ucapan, dan ukuran sprite." },
+            { "id": "q3_d", "text": "Sensing (Biru Muda)", "correct": false, "explanation": "Sensing memeriksa kondisi, tapi blok topi utama ada di Events." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "challenge",
+      "number": 5,
+      "title": "Project Challenge",
+      "badge": "Tantangan Mandiri",
+      "challenge": {
+        "title": "Tantangan Mandiri: Robot Patroli Cerdas",
+        "story": "Kini saatnya menguji kreativitas dan kemandirianmu! Kamu ditantang untuk membuat karakter yang bisa berpatroli menjelajahi panggung secara mandiri atau dengan kendali pemain.",
+        "requirements": [
+          "Gunakan 1 Sprite pilihanmu (bisa Kucing, Robot, Karakter Hewan, dsb.).",
+          "Karakter dapat digerakkan ke kanan dan ke kiri menggunakan tombol panah keyboard.",
+          "Karakter menghadap ke arah yang benar dan TIDAK terbalik saat berjalan ke kiri.",
+          "Tambahkan efek: Karakter berganti kostum (next costume) setiap kali melangkah agar terlihat seperti benar-benar berjalan!",
+          "Pastikan karakter tidak keluar dari batas layar (bisa menggunakan 'if on edge, bounce')."
+        ],
+        "bonusMission": "Misi Tambahan (Opsional): Tambahkan kontrol panah ATAS dan panah BAWAH menggunakan sumbu Y!",
+        "evaluationRubric": [
+          { "criteria": "Kontrol Gerakan", "description": "Sprite merespons tombol panah kanan dan kiri dengan mulus." },
+          { "criteria": "Arah Hadap & Rotasi", "description": "Sprite menghadap sesuai arah jalannya dan tidak jungkir balik." },
+          { "criteria": "Animasi Melangkah", "description": "Menggunakan blok 'next costume' atau variasi gerak." },
+          { "criteria": "Batas Panggung", "description": "Sprite tetap berada di dalam area panggung." }
+        ]
+      }
+    },
+    {
+      "id": "submission",
+      "number": 6,
+      "title": "Project Submission",
+      "badge": "Pengumpulan Proyek",
+      "submission": {
+        "instructions": "Setelah selesai menguji karyamu di Scratch, kumpulkan bukti hasil belajarmu di bawah ini agar guru pembimbing dapat memeriksa dan memberikan umpan balik (feedback).",
+        "allowedMethods": [
+          "Tautan Link Proyek Scratch (Pastikan sudah menekan tombol 'Share' di Scratch).",
+          "Tangkapan Layar (Screenshot) susunan blok koding.",
+          "Catatan refleksi belajar kamu."
+        ]
+      }
+    }
+  ]
+}

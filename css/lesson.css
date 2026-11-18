@@ -1,0 +1,2704 @@
+/**
+ * B2B LEARNING ENGINE - LESSON WORKSPACE & STUDENT DASHBOARD CSS
+ * Phase 2 — Student Experience (Remembero Visual Benchmark + Bright RPG Quest Map)
+ * Adheres strictly to Section 5, 6, 7, 8, 9, 12, 13, 14 of PROJECT_RULES.md.
+ */
+
+/* ==========================================================================
+   1. STUDENT DASHBOARD & REMEMBERO BENCHMARK
+   ========================================================================== */
+.student-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* EXPLORER HERO CARD */
+.dashboard-hero-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  transition: box-shadow var(--transition-fast);
+}
+
+.hero-mascot-col {
+  width: 90px;
+  height: 105px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-mascot-wrap {
+  width: 84px;
+  height: 98px;
+  filter: drop-shadow(0 4px 12px var(--color-rpg-path-glow));
+  animation: mascotHover 3s ease-in-out infinite alternate;
+}
+
+@keyframes mascotHover {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-5px); }
+}
+
+.hero-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 300px;
+}
+
+.hero-avatar-box {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.hero-avatar-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-rpg-island-scratch), var(--color-primary));
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.hero-level-chip {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background-color: var(--color-rpg-level);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--color-bg-surface);
+}
+
+.hero-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.hero-badge-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.hero-greeting-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.hero-greeting-sub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.hero-xp-container {
+  margin-top: var(--space-2);
+  max-width: 440px;
+}
+
+.hero-xp-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.hero-xp-pct {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.hero-xp-bar-bg {
+  width: 100%;
+  height: 10px;
+  background-color: var(--color-bg-surface-muted);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.hero-xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-rpg-xp), var(--color-rpg-streak));
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-slow);
+}
+
+/* QUICK STAT PILLS (REMEMBERO HABIT & STREAK COUNTERS) */
+.hero-stat-pills {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  min-width: 280px;
+}
+
+.stat-pill {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.stat-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border-default);
+}
+
+.stat-pill--fire {
+  border-left: 3px solid var(--color-rpg-streak);
+}
+
+.stat-pill--gold {
+  border-left: 3px solid var(--color-rpg-xp);
+}
+
+.stat-pill--red {
+  border-left: 3px solid var(--color-danger);
+}
+
+.stat-pill--purple {
+  border-left: 3px solid var(--color-rpg-level);
+}
+
+.stat-pill-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-pill-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stat-pill-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-pill-value {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.stat-pill-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+/* DASHBOARD MAIN CONTENT GRID */
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.dashboard-col-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.dashboard-col-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* FEATURED ACTIVE MISSION CARD */
+.active-mission-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.active-mission-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.active-mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.active-mission-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mission-duration-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.active-mission-body {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.active-mission-icon-box {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.active-mission-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--color-rpg-island-scratch), var(--color-primary-hover));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-glow-cyan);
+  padding: 10px;
+}
+
+.active-mission-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.icon-ring-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-rpg-island-scratch);
+  opacity: 0.5;
+  animation: pulseRing 2.4s infinite ease-out;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: scale(0.96);
+    opacity: 0.8;
+  }
+}
+
+.active-mission-details {
+  flex: 1;
+}
+
+.active-mission-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--space-1) 0;
+  color: var(--color-text-primary);
+}
+
+.active-mission-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-3) 0;
+  line-height: var(--line-height-normal);
+}
+
+.active-mission-meta {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  font-size: var(--font-size-xs);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-bg-surface-subtle);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-subtle);
+  font-weight: var(--font-weight-medium);
+}
+
+.meta-tag.reward-tag {
+  background-color: var(--color-rpg-xp-bg);
+  color: var(--color-rpg-xp);
+  border-color: var(--color-rpg-xp);
+  font-weight: var(--font-weight-bold);
+}
+
+.active-mission-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-top: 1.5px solid var(--color-border-subtle);
+  padding-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.mission-progress-box {
+  flex: 1;
+  min-width: 180px;
+  max-width: 280px;
+}
+
+.mission-progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+/* REALMS & TRACKS OVERVIEW */
+.realms-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+.realms-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.realms-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 2px 0;
+  color: var(--color-text-primary);
+}
+
+.realms-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.realms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.realm-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+  transition: all var(--transition-fast);
+}
+
+.realm-item.is-active {
+  border-color: var(--color-rpg-island-scratch);
+  background-color: var(--color-rpg-island-scratch-bg);
+  box-shadow: var(--shadow-xs);
+}
+
+.realm-item.is-locked {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.realm-island-art {
+  width: 72px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 2px;
+}
+
+.realm-island-art svg {
+  width: 100%;
+  height: 100%;
+}
+
+.realm-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.realm-info h5 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 2px 0;
+  color: var(--color-text-primary);
+}
+
+.realm-info p {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* DAILY GOALS & ROUTINE HABIT WIDGET */
+.daily-goals-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.daily-goals-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.daily-icon-wrap {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.daily-icon-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+.daily-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.daily-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.daily-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.daily-task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.daily-task.is-done {
+  border-color: var(--color-success-border);
+  background-color: var(--color-success-bg);
+}
+
+.task-check-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-check-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.task-check-empty {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-default);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.daily-task.is-done .task-checkbox {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+.task-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.task-xp {
+  font-size: 11px;
+  color: var(--color-rpg-xp);
+  font-weight: var(--font-weight-bold);
+}
+
+.daily-footer {
+  font-size: 11px;
+  text-align: center;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ACHIEVEMENTS CARD */
+.achievements-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+.achievements-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.achieve-icon-wrap {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.achieve-icon-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+.achieve-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.achievement-badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.badge-icon-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: var(--color-bg-surface-subtle);
+  border: 1.5px solid var(--color-border-subtle);
+  transition: transform var(--transition-fast);
+}
+
+.badge-icon-circle svg {
+  width: 100%;
+  height: 100%;
+}
+
+.badge-icon-circle.is-unlocked {
+  background-color: var(--color-rpg-xp-bg);
+  border-color: var(--color-rpg-xp);
+  box-shadow: var(--shadow-sm);
+}
+
+.achievement-badge-item:hover .badge-icon-circle {
+  transform: scale(1.1);
+}
+
+.badge-icon-circle.is-locked {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.badge-name {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   2. BRIGHT RPG QUEST MAP
+   ========================================================================== */
+.quest-map-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+.quest-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.quest-map-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.quest-map-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.quest-map-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ILLUSTRATED RPG MAP CANVAS (Reference 2: Duolingo-style 2D RPG Map) */
+.rpg-illustrated-map {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  border: 2px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--space-6);
+  background-color: var(--color-bg-surface-subtle);
+}
+
+.rpg-illustrated-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 340px;
+}
+
+.map-node-overlay {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 5;
+  transition: transform var(--transition-fast);
+}
+
+.map-node-overlay:hover {
+  transform: translate(-50%, -54%);
+}
+
+.map-node-scratch {
+  left: 20%;
+  top: 54%;
+}
+
+.map-node-roblox {
+  left: 62%;
+  top: 42%;
+}
+
+.map-node-python {
+  left: 84%;
+  top: 68%;
+}
+
+.map-node-bubble {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-surface);
+  border: 3px solid var(--color-rpg-island-scratch);
+  box-shadow: var(--shadow-card), var(--shadow-glow-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-node-bubble.map-node-active {
+  background: linear-gradient(135deg, var(--color-bg-surface), var(--color-bg-surface-subtle));
+  border-color: var(--color-rpg-island-scratch);
+}
+
+.map-node-bubble.map-node-locked {
+  border-color: var(--color-border-default);
+  background-color: var(--color-bg-surface-muted);
+  box-shadow: var(--shadow-sm);
+  opacity: 0.85;
+}
+
+.map-node-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-node-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.map-node-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.map-node-label span:nth-child(2) {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* REALM TABS */
+.realm-pill-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.realm-tab-btn {
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.realm-tab-btn:hover {
+  background-color: var(--color-bg-surface-hover);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.realm-tab-btn.is-active {
+  background-color: var(--color-rpg-island-scratch);
+  color: var(--color-text-inverse);
+  border-color: var(--color-rpg-island-scratch);
+  box-shadow: var(--shadow-sm);
+}
+
+/* RPG MAP CANVAS */
+.rpg-map-canvas {
+  position: relative;
+  background: linear-gradient(180deg, var(--color-bg-surface-subtle) 0%, var(--color-bg-canvas) 100%);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  overflow: hidden;
+}
+
+.rpg-cloud {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.65;
+  transition: opacity var(--transition-normal);
+}
+
+.rpg-cloud-1 {
+  top: 16px;
+  right: 48px;
+}
+
+.rpg-cloud-2 {
+  bottom: 24px;
+  left: 32px;
+}
+
+.quest-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  position: relative;
+  z-index: 2;
+}
+
+/* Dotted vertical connecting path between quest nodes */
+.quest-track-list::before {
+  content: '';
+  position: absolute;
+  left: 47px;        /* center of 56px icon-wrapper + 20px node padding */
+  top: 56px;         /* start below first icon */
+  bottom: 56px;      /* stop above last icon */
+  width: 3px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-rpg-path) 0px,
+    var(--color-rpg-path) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  border-radius: var(--radius-pill);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.quest-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--color-bg-surface);
+  border: 2px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+}
+
+.quest-node-badge-tag {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.quest-node:hover:not(.is-locked) {
+  border-color: var(--color-rpg-island-scratch);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.quest-node.is-active {
+  border-color: var(--color-rpg-island-scratch);
+  box-shadow: var(--shadow-card), var(--shadow-glow-cyan);
+}
+
+.quest-node.is-locked {
+  opacity: 0.68;
+  background-color: var(--color-bg-surface-subtle);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.quest-node-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.quest-node-icon-wrapper {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.quest-node-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1.5px solid var(--color-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.quest-node-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.quest-node.is-active .quest-node-icon {
+  background: linear-gradient(135deg, var(--color-rpg-island-scratch), var(--color-primary-hover));
+  color: var(--color-text-inverse);
+  border-color: var(--color-rpg-island-scratch);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.node-pulse-glow {
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-rpg-island-scratch);
+  opacity: 0.45;
+  animation: pulseRing 2s infinite ease-out;
+}
+
+.quest-node-info h4 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--space-1) 0;
+  color: var(--color-text-primary);
+}
+
+.quest-node-info p {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2) 0;
+  line-height: var(--line-height-normal);
+}
+
+.node-reward-chips {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.chip-item {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip-item svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.quest-node-action {
+  flex-shrink: 0;
+}
+
+/* CHECKPOINT BONUS NODE */
+.quest-bonus-node {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: linear-gradient(90deg, var(--color-rpg-xp-bg), var(--color-bg-surface));
+  border: 1.5px dashed var(--color-rpg-xp);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+.bonus-node-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.bonus-node-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.bonus-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-rpg-xp);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-rpg-xp);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.bonus-status-pill svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.bonus-node-info {
+  flex: 1;
+}
+
+.bonus-node-info h5 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: var(--space-1) 0 2px 0;
+}
+
+.bonus-node-info p {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.bonus-status-pill {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-rpg-xp);
+  background-color: var(--color-bg-surface);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-rpg-xp);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   3. LESSON WORKSPACE SHELL (Remembero Elevated Floating Workspace)
+   ========================================================================== */
+.lesson-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.workspace-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+}
+
+.lesson-header {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+.lesson-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.lesson-meta-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.lesson-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: var(--space-2) 0 var(--space-1) 0;
+  color: var(--color-text-primary);
+}
+
+.lesson-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.lesson-objectives {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.lesson-objectives-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.lesson-objectives-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.lesson-objectives-list li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding-left: var(--space-5);
+  position: relative;
+}
+
+.lesson-objectives-list li::before {
+  content: '🎯';
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* ==========================================================================
+   4. STAGE NAVIGATION (Floating Stepper Pill Bar)
+   ========================================================================== */
+.stage-nav {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  overflow-x: auto;
+}
+
+.stage-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.stage-nav-item:hover {
+  background-color: var(--color-bg-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.stage-nav-item.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-sm);
+}
+
+.stage-nav-item.completed {
+  color: var(--color-success);
+}
+
+.stage-nav-number {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  border: 1.5px solid var(--color-border-default);
+  background: transparent;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.stage-nav-item.active .stage-nav-number {
+  background-color: var(--color-text-inverse);
+  color: var(--color-primary);
+  border-color: var(--color-text-inverse);
+}
+
+.stage-nav-item.completed .stage-nav-number {
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+  border-color: var(--color-success);
+}
+
+/* ==========================================================================
+   5. STAGE CONTENT SHELL (White Elevated Card)
+   ========================================================================== */
+.stage-content {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-card);
+  min-height: 320px;
+}
+
+.stage-content-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.stage-content-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+/* ==========================================================================
+   5. CONTENT BLOCK RENDERER STYLING
+   ========================================================================== */
+.content-block {
+  margin-bottom: var(--space-5);
+}
+
+.content-block:last-child {
+  margin-bottom: 0;
+}
+
+.cb-text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.cb-text strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Callouts */
+.cb-callout {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+
+.cb-callout-info {
+  background-color: var(--color-info-bg);
+  border-left-color: var(--color-info);
+  color: var(--color-info-text);
+}
+
+.cb-callout-warning {
+  background-color: var(--color-warning-bg);
+  border-left-color: var(--color-warning);
+  color: var(--color-warning-text);
+}
+
+.cb-callout-success {
+  background-color: var(--color-success-bg);
+  border-left-color: var(--color-success);
+  color: var(--color-success-text);
+}
+
+.cb-callout-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.cb-callout-text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  white-space: pre-line;
+}
+
+/* Diagram (Coordinate Grid) */
+.cb-diagram-box {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cb-diagram-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.diagram-grid-visual {
+  width: 100%;
+  max-width: 420px;
+  height: 200px;
+  position: relative;
+  background-color: var(--color-bg-surface);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.diagram-axis-x {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.diagram-axis-y {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--color-primary);
+}
+
+.diagram-label {
+  position: absolute;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-surface-elevated);
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.diagram-label-center {
+  top: calc(50% + 6px);
+  left: calc(50% + 6px);
+  color: var(--color-primary);
+}
+
+.diagram-label-right {
+  top: calc(50% - 20px);
+  right: 8px;
+}
+
+.diagram-label-left {
+  top: calc(50% - 20px);
+  left: 8px;
+}
+
+.diagram-label-top {
+  top: 8px;
+  left: calc(50% + 6px);
+}
+
+.diagram-label-bottom {
+  bottom: 8px;
+  left: calc(50% + 6px);
+}
+
+.cb-diagram-caption {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: var(--line-height-normal);
+}
+
+/* Image Block with Fallback */
+.cb-image-box {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cb-image-placeholder {
+  width: 100%;
+  height: 160px;
+  background: linear-gradient(135deg, var(--color-bg-surface-muted), var(--color-bg-surface-hover));
+  border: 1px dashed var(--color-border-default);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  padding: var(--space-4);
+}
+
+.cb-image-caption {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Video Embed Block */
+.cb-video-box {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cb-video-placeholder {
+  width: 100%;
+  height: 220px;
+  background-color: var(--color-bg-surface-muted);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+}
+
+.video-play-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast);
+}
+
+.video-play-icon:hover {
+  transform: scale(1.08);
+}
+
+/* Authentic Scratch Blocks */
+.cb-scratch-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.scratch-block-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  width: fit-content;
+}
+
+.scratch-block-label[data-category="events"] {
+  background-color: var(--color-scratch-events);
+  color: var(--color-scratch-dark-text);
+}
+
+.scratch-block-label[data-category="motion"] {
+  background-color: var(--color-scratch-motion);
+  color: var(--color-text-inverse);
+}
+
+.scratch-block-label[data-category="looks"] {
+  background-color: var(--color-scratch-looks);
+  color: var(--color-text-inverse);
+}
+
+.scratch-block-label[data-category="control"] {
+  background-color: var(--color-scratch-control);
+  color: var(--color-scratch-dark-text);
+}
+
+.scratch-block-label[data-category="sensing"] {
+  background-color: var(--color-scratch-sensing);
+  color: var(--color-text-inverse);
+}
+
+.scratch-block-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  white-space: pre-line;
+}
+
+/* Code Stack */
+.cb-code-stack {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.code-stack-header {
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-surface-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.code-stack-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  background-color: var(--color-bg-surface-subtle);
+}
+
+.code-stack-block {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  width: fit-content;
+}
+
+/* Copyable Prompt */
+.cb-copyable {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.cb-copyable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.cb-copyable-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.cb-copyable-code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: inherit;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-copy:hover {
+  background-color: var(--color-bg-surface-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-copy.copied {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+/* Comparison Table */
+.cb-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.cb-comparison-table thead th {
+  background-color: var(--color-bg-surface-muted);
+  padding: var(--space-3);
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-border-subtle);
+}
+
+.cb-comparison-table tbody td {
+  padding: var(--space-3);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* Checklist Summary */
+.cb-checklist-summary {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cb-checklist-summary li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-3);
+  padding-left: calc(var(--space-3) + var(--space-5));
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+.cb-checklist-summary li::before {
+  content: '✓';
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ==========================================================================
+   6. INTERACTIVE QUIZ (SECTION 7)
+   ========================================================================== */
+.quiz-container {
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.quiz-type-badge {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.quiz-prompt {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.quiz-option:hover:not(.selected):not(.correct):not(.incorrect) {
+  border-color: var(--color-primary-border);
+  background-color: var(--color-primary-subtle);
+}
+
+.quiz-option.selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-subtle);
+  font-weight: var(--font-weight-medium);
+}
+
+.quiz-option.correct {
+  border-color: var(--color-success);
+  background-color: var(--color-success-bg);
+}
+
+.quiz-option.incorrect {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+}
+
+.quiz-option-marker {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.quiz-option.selected .quiz-option-marker {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.quiz-option.correct .quiz-option-marker {
+  border-color: var(--color-success);
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+.quiz-option.incorrect .quiz-option-marker {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger);
+  color: var(--color-text-inverse);
+}
+
+.quiz-explanation {
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  display: none;
+}
+
+.quiz-option.correct .quiz-explanation,
+.quiz-option.incorrect .quiz-explanation {
+  display: block;
+}
+
+.quiz-option.correct .quiz-explanation {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.quiz-option.incorrect .quiz-explanation {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.quiz-hint {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  background-color: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-warning-text);
+  display: none;
+}
+
+.quiz-hint.visible {
+  display: block;
+}
+
+.quiz-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+/* ==========================================================================
+   7. GUIDED PRACTICE CHECKPOINTS (SECTION 7)
+   ========================================================================== */
+.practice-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.practice-tool-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
+}
+
+.practice-tool-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.checkpoint {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-surface);
+  transition: all var(--transition-fast);
+}
+
+.checkpoint.checked {
+  border-color: var(--color-success-border);
+  background-color: var(--color-success-bg);
+}
+
+.checkpoint-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.checkpoint-check {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--transition-fast);
+  background: var(--color-bg-surface);
+}
+
+.checkpoint-check:hover {
+  border-color: var(--color-primary);
+}
+
+.checkpoint.checked .checkpoint-check {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+.checkpoint-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.checkpoint-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.checkpoint-expected {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.checkpoint-expected strong {
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   8. PROJECT CHALLENGE (SECTION 7)
+   ========================================================================== */
+.challenge-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.challenge-story {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.challenge-requirements {
+  padding: var(--space-5);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.challenge-req-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-3);
+}
+
+.challenge-req-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.challenge-req-list li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding-left: var(--space-5);
+  position: relative;
+}
+
+.challenge-req-list li::before {
+  content: '☐';
+  position: absolute;
+  left: 0;
+}
+
+.challenge-bonus {
+  padding: var(--space-4);
+  background-color: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-warning-text);
+}
+
+.challenge-rubric {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.challenge-rubric table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.challenge-rubric th {
+  background-color: var(--color-bg-surface-muted);
+  padding: var(--space-3);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  border-bottom: 2px solid var(--color-border-subtle);
+}
+
+.challenge-rubric td {
+  padding: var(--space-3);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* ==========================================================================
+   9. PROJECT SUBMISSION (SECTION 6 & 8)
+   ========================================================================== */
+.submission-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.submission-status-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.submission-status-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.submission-status-card--approved {
+  border-color: var(--color-success-border);
+  background-color: var(--color-success-bg);
+}
+
+.submission-status-card--revision {
+  border-color: var(--color-warning-border);
+  background-color: var(--color-warning-bg);
+}
+
+.submission-feedback-box {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+.submission-feedback-author {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.submission-feedback-body {
+  color: var(--color-text-secondary);
+}
+
+.submission-methods {
+  padding: var(--space-4);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.submission-methods-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.submission-methods-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.submission-methods-list li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding-left: var(--space-5);
+  position: relative;
+}
+
+.submission-methods-list li::before {
+  content: '✓';
+  position: absolute;
+  left: var(--space-1);
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+.submission-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ==========================================================================
+   10. SLIDE PRESENTER & NAVIGATION (SECTION 14 <= 300ms)
+   ========================================================================== */
+.slide-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.slide-counter {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.slide-dots {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.slide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-default);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.slide-dot.active {
+  background-color: var(--color-primary);
+  width: 20px;
+}
+
+.slide-dot.visited {
+  background-color: var(--color-primary);
+  opacity: 0.5;
+}
+
+.slide-content {
+  animation: slideFadeIn 200ms ease-out;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stage-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-5);
+  margin-top: var(--space-6);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Empty / Loading States */
+.state-box {
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   COMPACT DESKTOP SIDE COLUMN — Secondary elements reduced to save space.
+   Applies only at ≥993px (desktop). Mobile/tablet breakpoints below override
+   where needed. No content removed — icon tooltips preserve accessibility.
+   ========================================================================== */
+
+/* Narrow the side column from 340px to 280px to give main column more room */
+@media (min-width: 993px) {
+  .dashboard-content-grid {
+    grid-template-columns: 1fr 280px;
+  }
+
+  /* Prevent grid tracks from stretching beyond their allocated size */
+  .dashboard-col-main,
+  .dashboard-col-side {
+    min-width: 0;
+  }
+
+  /* ── Achievements card: icon-only grid ── */
+  /* 2×2 layout fits better in 280px than 4×1 */
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  /* Hide badge text labels — title attribute on each .achievement-badge-item
+     already provides the tooltip. aria-label is on the parent card. */
+  .badge-name {
+    display: none;
+  }
+
+  /* ── Daily goals card: hide secondary text ── */
+  /* .daily-sub is the subtitle below the header ("Capai target harian...") */
+  .daily-sub {
+    display: none;
+  }
+
+  /* .daily-footer is "Reset otomatis setiap tengah malam" */
+  .daily-footer {
+    display: none;
+  }
+
+  /* ── Realms card: hide description on locked islands only ── */
+  /* Keeps the island name and status badge; removes the subtitle text */
+  .realm-item.is-locked .realm-info p {
+    display: none;
+  }
+}
+
+/* Responsive Breakpoints (Remembero Responsive Tablet & Mobile Grid) */
+@media (max-width: 992px) {
+  .dashboard-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-profile-info {
+    min-width: 100%;
+  }
+
+  .hero-stat-pills {
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .dashboard-col-main,
+  .dashboard-col-side {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-mascot-col {
+    display: none;
+  }
+
+  .hero-stat-pills {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .realms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rpg-illustrated-map svg {
+    min-height: 200px;
+  }
+
+  .map-node-label span:nth-child(2) {
+    display: none;
+  }
+
+  .active-mission-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quest-node {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quest-node-action {
+    width: 100%;
+  }
+
+  .quest-node-action .btn {
+    width: 100%;
+  }
+
+  .lesson-workspace {
+    gap: var(--space-4);
+  }
+
+  .stage-content {
+    padding: var(--space-5);
+  }
+
+  .stage-nav {
+    gap: var(--space-1);
+    border-radius: var(--radius-lg);
+  }
+
+  .stage-nav-item {
+    padding: 0.4rem 0.6rem;
+    font-size: 11px;
+  }
+}
+
+/* ==========================================================================
+   UI POLISH FINAL — QUEST MAP & STUDENT DASHBOARD REFINEMENTS
+   ========================================================================== */
+
+/* Prevent Quest Map card from causing horizontal overflow */
+.quest-map-card {
+  overflow: hidden;
+}
+
+/* Constrain RPG map height more aggressively on small screens */
+@media (max-width: 1024px) {
+  .rpg-illustrated-map svg {
+    max-height: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .rpg-illustrated-map svg {
+    max-height: 200px;
+  }
+
+  .quest-map-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .student-dashboard {
+    gap: var(--space-4);
+  }
+
+  .dashboard-hero-card {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .hero-greeting-title {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .rpg-illustrated-map svg {
+    max-height: 160px;
+  }
+
+  .hero-stat-pills {
+    grid-template-columns: repeat(2, 1fr);
+    min-width: 0;
+  }
+
+  .hero-profile-info {
+    min-width: 0;
+  }
+
+  .hero-stat-pill {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .quest-map-card {
+    padding: var(--space-4);
+  }
+}
+
+/* ==========================================================================
+   GAS ISLAND QUEST MAP — 7-island isometric grid
+   Each island SVG uses viewBox="0 0 260 260". Status overlays are
+   rendered as siblings inside .gas-island-cell, not on top of the SVG
+   artwork itself, so the original geometry is never modified.
+   ========================================================================== */
+
+/* Realms grid override for 7-island layout */
+.realms-grid--gas {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .realms-grid--gas {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .realms-grid--gas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* GAS island art thumbnail in realms-grid */
+.realm-island-art--gas {
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  flex-shrink: 0;
+}
+
+.realm-island-art--gas svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Quest Map: GAS island grid ── */
+.gas-quest-map {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: linear-gradient(160deg, var(--color-bg-surface-subtle) 0%, var(--color-bg-canvas) 100%);
+  border-radius: var(--radius-2xl);
+  border: 1.5px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--space-6);
+}
+
+@media (min-width: 600px) {
+  .gas-quest-map {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .gas-quest-map {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .gas-quest-map {
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+/* Individual island cell */
+.gas-island-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: default;
+}
+
+.gas-island-cell.is-active {
+  border-color: var(--color-rpg-island-scratch);
+  background-color: var(--color-rpg-island-scratch-bg);
+  box-shadow: var(--shadow-sm), var(--shadow-glow-cyan);
+}
+
+.gas-island-cell.is-active:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover), var(--shadow-glow-cyan);
+  cursor: pointer;
+}
+
+.gas-island-cell.is-locked {
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .gas-island-cell.is-locked {
+  opacity: 0.45;
+}
+
+/* Island SVG art — full viewBox, no cropping */
+.gas-island-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.gas-island-art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Preserve all island geometry — no overflow:hidden, no clipping */
+  overflow: visible;
+}
+
+/* Status overlay — floated above artwork, not over it */
+.gas-island-status {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gas-island-status--active {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gas-island-status--locked {
+  /* lock icon sits in top-right corner */
+}
+
+.gas-island-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  line-height: 1.4;
+}
+
+.gas-lock-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.75;
+}
+
+.gas-lock-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Island name + subject label below artwork */
+.gas-island-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  padding: 0 var(--space-1);
+}
+
+.gas-island-label strong {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.gas-island-label span {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+/* Dark mode: active island glow uses primary border */
+[data-theme="dark"] .gas-island-cell.is-active {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-subtle);
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(56, 189, 248, 0.25);
+}
+
+/* Dark mode background of map canvas */
+[data-theme="dark"] .gas-quest-map {
+  background: linear-gradient(160deg, var(--color-bg-surface-subtle) 0%, var(--color-bg-canvas) 100%);
+}
+
+/* Mobile: 2-col grid is fine down to 390px; just ensure no overflow */
+@media (max-width: 480px) {
+  .gas-quest-map {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .gas-island-label strong {
+    font-size: 10px;
+  }
+
+  .gas-island-label span {
+    display: none; /* hide subject on smallest screens to save space */
+  }
+}

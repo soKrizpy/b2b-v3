@@ -1,0 +1,851 @@
+/**
+ * B2B LEARNING ENGINE - TEACHER WORKSPACE CSS
+ * Phase 3 — Teacher Experience (Remembero Visual Benchmark)
+ * Adheres strictly to Section 5, 10, 12, 13 of PROJECT_RULES.md.
+ * 100% Semantic Design Tokens - 0 Hardcoded Colors.
+ */
+
+/* ==========================================================================
+   1. TEACHER WORKSPACE SHELL & HEADER
+   ========================================================================== */
+.teacher-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.teacher-header-banner {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.teacher-header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.teacher-avatar-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-rpg-island-scratch));
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-glow-cyan);
+  flex-shrink: 0;
+}
+
+.teacher-greeting-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 2px 0;
+  color: var(--color-text-primary);
+}
+
+.teacher-greeting-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.teacher-class-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ==========================================================================
+   2. SUB-NAVIGATION TABS (Contextual Content Filter — synced with sidebar)
+   NOTE: data-teacher-tab attributes preserved for backward test compatibility.
+   ========================================================================== */
+.teacher-subnav-tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 2px solid var(--color-border-subtle);
+  padding-bottom: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.teacher-subnav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.teacher-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.teacher-tab-btn:hover {
+  background-color: var(--color-bg-surface-hover);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.teacher-tab-btn.is-active {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-badge-pill {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+}
+
+.teacher-tab-btn.is-active .tab-badge-pill {
+  background-color: color-mix(in srgb, var(--color-text-inverse) 22%, transparent);
+  color: var(--color-text-inverse);
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   3. FOUR SUMMARY METRIC CARDS (Remembero Elevated Stat Cards)
+   ========================================================================== */
+.teacher-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 1100px) {
+  .teacher-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .teacher-summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
+
+.summary-metric-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.summary-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.metric-card--total {
+  border-left: 4px solid var(--color-primary);
+}
+
+.metric-card--active {
+  border-left: 4px solid var(--color-rpg-island-scratch);
+}
+
+.metric-card--pending {
+  border-left: 4px solid var(--color-warning);
+}
+
+.metric-card--approved {
+  border-left: 4px solid var(--color-success);
+}
+
+.metric-icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 10px;
+}
+
+.metric-icon-box svg {
+  width: 100%;
+  height: 100%;
+}
+
+.metric-icon--total {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.metric-icon--active {
+  background-color: var(--color-rpg-island-scratch-bg);
+  color: var(--color-rpg-island-scratch);
+}
+
+.metric-icon--pending {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.metric-icon--approved {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.metric-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  margin-top: 2px;
+}
+
+.metric-subnote {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   4. TWO-COLUMN DASHBOARD CONTENT (Queue Preview + Activity Stream)
+   ========================================================================== */
+.teacher-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .teacher-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   5. SUBMISSION QUEUE PREVIEW CARD
+   ========================================================================== */
+.queue-preview-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.queue-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.queue-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.queue-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.queue-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 2px 0 0 0;
+}
+
+.queue-table-wrap {
+  overflow-x: auto;
+}
+
+.queue-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.queue-table th {
+  padding: var(--space-3);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  border-bottom: 2px solid var(--color-border-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.queue-table td {
+  padding: var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: middle;
+}
+
+.queue-table tr:hover {
+  background-color: var(--color-bg-surface-hover);
+}
+
+.student-meta-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.student-avatar-cell {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.student-name-text {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.student-grade-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.lesson-title-cell {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  max-width: 240px;
+}
+
+.submission-time-sub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   6. LIVE ACTIVITY STREAM CARD
+   ========================================================================== */
+.activity-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.activity-item {
+  display: flex;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  align-items: flex-start;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-surface-subtle);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.activity-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+}
+
+.activity-text strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.activity-time {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   7. PLACEHOLDER / NOTICE BANNER (Clean Transparence for 3.2 & 3.3)
+   ========================================================================== */
+.module-placeholder-box {
+  background-color: var(--color-bg-surface);
+  border: 1.5px dashed var(--color-border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.placeholder-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  padding: 12px;
+}
+
+.placeholder-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.placeholder-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  max-width: 440px;
+  margin: 0;
+}
+
+/* ==========================================================================
+   8. RESPONSIVE BREAKPOINTS (Desktop 1440px / Tablet 768px / Mobile)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .teacher-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .teacher-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .teacher-subnav-tabs {
+    flex-wrap: nowrap;
+    padding-bottom: var(--space-2);
+  }
+
+  .queue-table th:nth-child(2),
+  .queue-table td:nth-child(2) {
+    display: none; /* Sembunyikan kolom materi panjang pada tablet kecil */
+  }
+
+  .queue-table-wrap {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .queue-table {
+    min-width: 480px;
+  }
+}
+
+/* ==========================================================================
+   9. PHASE 3: TUTOR SESSION REPORTS & LOGGING STYLES
+   100% Semantic Design Tokens - Zero Hardcoded Colors
+   ========================================================================== */
+.session-reports-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.session-form-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.session-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: var(--space-4);
+}
+
+.session-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background-color: var(--color-bg-surface-elevated);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+}
+
+.session-section-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.session-form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.session-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.session-field-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.session-input,
+.session-select,
+.session-textarea {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.session-input:focus,
+.session-select:focus,
+.session-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.session-textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: var(--line-height-normal);
+}
+
+.competency-eval-card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: border-color var(--transition-fast);
+}
+
+.competency-eval-card.is-active {
+  border-color: var(--color-primary-border);
+}
+
+.competency-eval-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.competency-eval-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.competency-eval-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border-subtle);
+}
+
+.session-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-top: var(--space-2);
+}
+
+.report-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.report-item-card {
+  background-color: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.report-item-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.report-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: var(--space-3);
+}
+
+.report-student-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.report-student-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary-hover);
+  border: 1.5px solid var(--color-primary-border);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.report-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-3);
+}
+
+.report-preview-box {
+  background-color: var(--color-bg-surface-elevated);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.report-preview-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.report-preview-text {
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.report-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.reports-empty-box {
+  background-color: var(--color-bg-surface);
+  border: 2px dashed var(--color-border-default);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* ==========================================================================
+   RESPONSIVE — TABLET & MOBILE
+   ========================================================================== */
+@media (max-width: 768px) {
+  .teacher-workspace {
+    gap: var(--space-4);
+  }
+
+  .teacher-header-banner {
+    padding: var(--space-4);
+  }
+
+  .teacher-greeting-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .teacher-subnav-tabs {
+    gap: var(--space-1);
+    padding-bottom: var(--space-1);
+  }
+
+  .teacher-tab-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 11px;
+  }
+
+  .tab-badge-pill {
+    display: none;
+  }
+
+  .report-grid-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .report-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-metric-card {
+    padding: var(--space-4);
+  }
+
+  .metric-value {
+    font-size: var(--font-size-xl);
+  }
+}

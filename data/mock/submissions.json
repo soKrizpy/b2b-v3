@@ -1,0 +1,60 @@
+[
+  {
+    "id": "sub_001",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "studentGrade": "Grade 5",
+    "studentAvatar": "AP",
+    "lessonId": "les_scratch_motion_01",
+    "lessonTitle": "Scratch — Basic Motion: Membuat Karakter Bergerak",
+    "submittedAt": "Hari ini, 16:30",
+    "projectUrl": "https://scratch.mit.edu/projects/1098273645",
+    "studentNotes": "Saya membuat karakter kucing berjalan bolak-balik saat tombol spasi ditekan dan berputar saat tombol panah ditekan.",
+    "status": "submitted",
+    "checkpointsPassed": 4,
+    "checkpointsTotal": 4,
+    "quizScore": "3/3 (100%)",
+    "feedbackHistory": []
+  },
+  {
+    "id": "sub_002",
+    "studentId": "usr_stu_002",
+    "studentName": "Budi Santoso",
+    "studentGrade": "Grade 5",
+    "studentAvatar": "BS",
+    "lessonId": "les_scratch_motion_01",
+    "lessonTitle": "Scratch — Basic Motion: Membuat Karakter Bergerak",
+    "submittedAt": "Hari ini, 15:45",
+    "projectUrl": "https://scratch.mit.edu/projects/1098278891",
+    "studentNotes": "Karakter kucing sudah bisa bergerak ke kanan dan kiri dengan tombol panah. Saya menambahkan efek suara saat menabrak tepi.",
+    "status": "submitted",
+    "checkpointsPassed": 4,
+    "checkpointsTotal": 4,
+    "quizScore": "2/3 (67%)",
+    "feedbackHistory": []
+  },
+  {
+    "id": "sub_003",
+    "studentId": "usr_stu_004",
+    "studentName": "Doni Wijaya",
+    "studentGrade": "Grade 5",
+    "studentAvatar": "DW",
+    "lessonId": "les_scratch_motion_01",
+    "lessonTitle": "Scratch — Basic Motion: Membuat Karakter Bergerak",
+    "submittedAt": "Kemarin, 14:15",
+    "projectUrl": "https://scratch.mit.edu/projects/1098199201",
+    "studentNotes": "Animasi kucing sudah lancar bergerak ke segala arah.",
+    "status": "approved",
+    "checkpointsPassed": 4,
+    "checkpointsTotal": 4,
+    "quizScore": "3/3 (100%)",
+    "approvedAt": "Kemarin, 16:00",
+    "feedbackHistory": [
+      {
+        "teacherName": "Kak Sarah",
+        "date": "Kemarin, 16:00",
+        "comment": "Kerja bagus Doni! Gerakan sprite sangat halus dan kode blok terstruktur rapi."
+      }
+    ]
+  }
+]

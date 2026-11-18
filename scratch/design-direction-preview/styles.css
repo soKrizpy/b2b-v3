@@ -1,0 +1,1664 @@
+/* Design Direction Preview — Soft Modern Learning Workspace — Redesign v2 */
+
+/* ===== DESIGN TOKENS ===== */
+
+:root {
+  /* Background Surfaces */
+  --color-bg-canvas: #ebf5fb;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-elevated: #ffffff;
+  --color-bg-surface-muted: #e1effa;
+  --color-bg-surface-subtle: #f4f9fd;
+
+  /* Text */
+  --color-text-primary: #0f2742;
+  --color-text-secondary: #335372;
+  --color-text-muted: #5e7d9b;
+
+  /* Primary */
+  --color-primary: #0284c7;
+  --color-primary-hover: #0369a1;
+  --color-primary-subtle: #e0f2fe;
+
+  /* Semantic */
+  --color-success: #15803d;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #6ee7b7;
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+
+  /* Info (badge-reviewed uses info) */
+  --color-info: #0284c7;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #7dd3fc;
+
+  /* Borders */
+  --color-border-subtle: #d6e8f5;
+  --color-border-default: #b9d8ee;
+
+  /* RPG Island Colors */
+  --color-rpg-scratch: #0ea5e9;
+  --color-rpg-scratch-bg: #e0f2fe;
+  --color-rpg-roblox: #ef4444;
+  --color-rpg-roblox-bg: #fee2e2;
+  --color-rpg-python: #10b981;
+  --color-rpg-python-bg: #d1fae5;
+  --color-rpg-game: #8b5cf6;
+  --color-rpg-game-bg: #ede9fe;
+
+  /* RPG Gamification */
+  --color-rpg-xp: #f59e0b;
+  --color-rpg-xp-bg: #fef3c7;
+  --color-rpg-streak: #f97316;
+  --color-rpg-streak-bg: #ffedd5;
+  --color-rpg-level: #8b5cf6;
+  --color-rpg-level-bg: #ede9fe;
+  --color-rpg-path: #7dd3fc;
+
+  /* Shadows */
+  --shadow-sm: 0 3px 8px rgba(12, 74, 110, 0.06);
+  --shadow-md: 0 8px 18px -2px rgba(12, 74, 110, 0.08);
+  --shadow-card: 0 10px 25px -4px rgba(12, 74, 110, 0.08);
+  --shadow-lg: 0 16px 40px -6px rgba(12, 74, 110, 0.14);
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Typography Scale */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 28px;
+  --text-3xl: 32px;
+  --text-4xl: 40px;
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
+
+/* ===== DARK MODE ===== */
+
+[data-theme="dark"] {
+  --color-bg-canvas: #0a1326;
+  --color-bg-surface: #121e3a;
+  --color-bg-surface-elevated: #1a2a4f;
+  --color-bg-surface-muted: #1e335f;
+  --color-bg-surface-subtle: #152040;
+
+  --color-text-primary: #f0f7ff;
+  --color-text-secondary: #c2daf2;
+  --color-text-muted: #8ea8c2;
+
+  --color-primary: #38bdf8;
+  --color-primary-hover: #7dd3fc;
+  --color-primary-subtle: rgba(56, 189, 248, 0.15);
+
+  --color-success: #34d399;
+  --color-success-bg: rgba(52, 211, 153, 0.15);
+  --color-success-border: rgba(52, 211, 153, 0.3);
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.15);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(248, 113, 113, 0.15);
+
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(56, 189, 248, 0.15);
+  --color-info-border: rgba(56, 189, 248, 0.3);
+
+  --color-border-subtle: #1c335a;
+  --color-border-default: #2b4c80;
+
+  --color-rpg-scratch: #38bdf8;
+  --color-rpg-scratch-bg: rgba(56, 189, 248, 0.15);
+  --color-rpg-roblox: #f87171;
+  --color-rpg-roblox-bg: rgba(248, 113, 113, 0.15);
+  --color-rpg-python: #34d399;
+  --color-rpg-python-bg: rgba(52, 211, 153, 0.15);
+  --color-rpg-game: #a78bfa;
+  --color-rpg-game-bg: rgba(167, 139, 250, 0.15);
+
+  --color-rpg-xp: #fbbf24;
+  --color-rpg-xp-bg: rgba(251, 191, 36, 0.15);
+  --color-rpg-streak: #fb923c;
+  --color-rpg-streak-bg: rgba(251, 146, 60, 0.15);
+
+  --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 6px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.6);
+}
+
+/* ===== FOUC TRANSITION ===== */
+
+html {
+  transition: background-color 200ms, color 200ms;
+}
+
+/* ===== GLOBAL RESET ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-canvas);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+
+/* ===== TYPOGRAPHY ===== */
+
+h1 {
+  font-size: 24px;
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 16px;
+}
+
+h3 {
+  font-size: 14px;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  margin: 0 0 12px;
+}
+
+/* ===== PREVIEW HEADER ===== */
+
+.preview-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
+  padding: 10px 24px;
+  gap: 16px;
+}
+
+/* ===== BRAND ===== */
+
+.preview-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.preview-brand .brand-name {
+  font-weight: var(--font-bold);
+  font-size: 16px;
+  color: var(--color-primary);
+}
+
+/* ===== NAV ===== */
+
+.preview-nav {
+  display: flex;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 150ms;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.nav-item[aria-current="page"] {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: var(--font-semibold);
+}
+
+/* ===== THEME TOGGLE ===== */
+
+.theme-toggle {
+  background: var(--color-bg-surface-muted);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--color-primary-subtle);
+}
+
+.theme-toggle .fa-sun {
+  display: inline-block;
+}
+
+.theme-toggle .fa-moon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle .fa-sun {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle .fa-moon {
+  display: inline-block;
+}
+
+/* ===== VIEW SWITCHING ===== */
+
+[data-view] {
+  display: none;
+}
+
+[data-active-view="admin"]   [data-view="admin"],
+[data-active-view="tutor"]   [data-view="tutor"],
+[data-active-view="student"] [data-view="student"],
+[data-active-view="parent"]  [data-view="parent"] {
+  display: block;
+}
+
+/* ===== LAYOUT ===== */
+
+.view-container {
+  padding: 24px 24px 48px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ===== SHARED COMPONENTS ===== */
+
+/* Card */
+.card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+/* Section Card */
+.section-card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+}
+
+/* Stat Card */
+.stat-card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  border: 1.5px solid var(--color-border-default);
+}
+
+.btn-secondary:hover {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  gap: 4px;
+}
+
+.badge-pending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning-border);
+}
+
+.badge-reviewed {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid var(--color-info-border);
+}
+
+.badge-approved {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+/* Progress Bar */
+.progress-bar {
+  height: 10px;
+  background: var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: var(--pct);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  transition: width 300ms ease;
+}
+
+/* Internal Tabs */
+.tab-strip {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--color-border-subtle);
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 150ms;
+}
+
+.tab-btn:hover {
+  color: var(--color-primary);
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* ===== ADMIN VIEW ===== */
+
+[data-view="admin"] .admin-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+[data-view="admin"] .admin-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+[data-view="admin"] .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+[data-view="admin"] .users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+[data-view="admin"] .users-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--color-border-subtle);
+}
+
+[data-view="admin"] .users-table td {
+  padding: 12px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+[data-view="admin"] .users-table tr:last-child td {
+  border-bottom: none;
+}
+
+[data-view="admin"] .role-badge {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+}
+
+.role-siswa {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.role-tutor {
+  background: #ede9fe;
+  color: #8b5cf6;
+}
+
+.role-admin {
+  background: #ecfdf5;
+  color: #15803d;
+}
+
+[data-view="admin"] .activity-feed {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+  position: sticky;
+  top: 72px;
+}
+
+[data-view="admin"] .activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+[data-view="admin"] .activity-item:last-child {
+  border-bottom: none;
+}
+
+[data-view="admin"] .activity-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+[data-view="admin"] .activity-meta {
+  flex: 1;
+}
+
+[data-view="admin"] .activity-name {
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+[data-view="admin"] .activity-time {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ===== TUTOR VIEW ===== */
+
+[data-view="tutor"] .tutor-layout {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+[data-view="tutor"] .next-action-card {
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  border-radius: var(--radius-2xl);
+  padding: 28px 32px;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+}
+
+[data-view="tutor"] .next-action-card h2 {
+  color: #fff;
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+[data-view="tutor"] .next-action-card .session-info {
+  font-size: 14px;
+  opacity: 0.85;
+  margin-bottom: 20px;
+}
+
+[data-view="tutor"] .next-action-card .btn-white {
+  background: #fff;
+  color: var(--color-primary);
+  border: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-semibold);
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 150ms;
+}
+
+[data-view="tutor"] .next-action-card .btn-white:hover {
+  opacity: 0.9;
+}
+
+[data-view="tutor"] .next-action-card .btn-outline-white {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-semibold);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+[data-view="tutor"] .next-action-card .btn-outline-white:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+[data-view="tutor"] .submission-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+}
+
+[data-view="tutor"] .student-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-bold);
+  font-size: 15px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+[data-view="tutor"] .submission-info {
+  flex: 1;
+}
+
+[data-view="tutor"] .submission-student {
+  font-size: 14px;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+[data-view="tutor"] .submission-lesson {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+[data-view="tutor"] .submission-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ===== STUDENT VIEW ===== */
+
+[data-view="student"] .student-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
+}
+
+[data-view="student"] .quest-header {
+  text-align: center;
+  padding: 16px 0 24px;
+}
+
+[data-view="student"] .quest-title {
+  font-size: 28px;
+  font-weight: var(--font-extrabold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.5px;
+}
+
+[data-view="student"] .quest-subtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+[data-view="student"] .quest-map-container {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  overflow: visible;
+}
+
+[data-view="student"] .quest-map {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+[data-view="student"] .progress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+[data-view="student"] .xp-card {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+[data-view="student"] .xp-level {
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  opacity: 0.85;
+  letter-spacing: 1px;
+}
+
+[data-view="student"] .xp-value {
+  font-size: 28px;
+  font-weight: var(--font-extrabold);
+  margin: 4px 0;
+}
+
+[data-view="student"] .xp-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+[data-view="student"] .xp-fill {
+  height: 100%;
+  width: 64%;
+  background: #fff;
+  border-radius: var(--radius-pill);
+}
+
+[data-view="student"] .streak-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+[data-view="student"] .gamification-card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 16px 20px;
+}
+
+[data-view="student"] [data-gamification-category] h3 {
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  margin: 0 0 12px;
+}
+
+/* ===== PARENT VIEW ===== */
+
+[data-view="parent"] .parent-layout {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+[data-view="parent"] .child-hero {
+  background: linear-gradient(135deg, var(--color-bg-surface-muted), var(--color-bg-surface));
+  border-radius: var(--radius-2xl);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+}
+
+[data-view="parent"] .child-name {
+  font-size: 22px;
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+[data-view="parent"] .child-overview {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+[data-view="parent"] .overview-pill {
+  background: var(--color-primary-subtle);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+[data-view="parent"] .overview-label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+[data-view="parent"] .overview-value {
+  font-size: 18px;
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+}
+
+[data-view="parent"] .progress-section h2 {
+  font-size: 14px;
+  font-weight: var(--font-bold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px;
+}
+
+[data-view="parent"] .progress-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+[data-view="parent"] .session-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+[data-view="parent"] .session-item:last-child {
+  border-bottom: none;
+}
+
+[data-view="parent"] .session-date {
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  color: var(--color-text-muted);
+  width: 48px;
+  text-transform: uppercase;
+}
+
+[data-view="parent"] .session-info {
+  flex: 1;
+}
+
+[data-view="parent"] .session-lesson {
+  font-size: 14px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+[data-view="parent"] .session-duration {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+[data-view="parent"] .session-status {
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+}
+
+.session-status.completed {
+  color: var(--color-success);
+}
+
+.session-status.ongoing {
+  color: var(--color-warning);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  [data-view="admin"] .admin-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .view-container {
+    padding: 16px 16px 40px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  [data-view="student"] .student-layout {
+    grid-template-columns: 1fr;
+  }
+
+  [data-view="admin"] .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  [data-view="tutor"] .submission-item {
+    flex-wrap: wrap;
+  }
+
+  [data-view="parent"] .child-overview {
+    gap: 12px;
+  }
+
+  .preview-nav {
+    gap: 2px;
+  }
+
+  .nav-item {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Admin table: scroll container on mobile */
+  [data-view="admin"] .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  [data-view="admin"] .users-table {
+    min-width: 480px;
+  }
+  [data-view="admin"] .users-table th,
+  [data-view="admin"] .users-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  /* Section card header: stack on mobile */
+  [data-view="admin"] .section-card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  [data-view="student"] .quest-title {
+    font-size: 22px;
+  }
+
+  .nav-item span {
+    display: none;
+  }
+}
+
+/* ===== LOGO THEME SWITCHING ===== */
+
+/* Light mode: show light logo, hide dark logo */
+.logo-light { display: inline-block; }
+.logo-dark  { display: none; }
+
+/* Dark mode: swap logos */
+[data-theme="dark"] .logo-light { display: none; }
+[data-theme="dark"] .logo-dark  { display: inline-block; }
+
+/* Logo sizing — maintain aspect ratio, don't stretch */
+/* NOTE: do NOT set display here — logo-light/logo-dark rules control visibility */
+.logo-light,
+.logo-dark {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  max-width: 160px;
+}
+
+/* ===== PAGE HEADING ===== */
+
+.page-heading {
+  margin-bottom: 24px;
+}
+
+.page-subtitle {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
+/* ===== STAT CARD ENHANCEMENTS ===== */
+
+.stat-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stat-trend {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.stat-trend-up {
+  background: #ecfdf5;
+  color: #15803d;
+}
+
+.stat-trend-down {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.stat-trend-neutral {
+  background: var(--color-bg-surface-muted);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .stat-trend-up    { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+[data-theme="dark"] .stat-trend-down  { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+[data-theme="dark"] .stat-trend-neutral { background: var(--color-bg-surface-muted); color: var(--color-text-muted); }
+
+/* ===== TABLE USER CELL ===== */
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ===== SECTION CARD HEADER ===== */
+
+.section-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-card-header h2 {
+  margin: 0;
+}
+
+/* ===== TUTOR NEXT-ACTION INNER LAYOUT ===== */
+
+.next-action-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.next-action-stat {
+  text-align: center;
+  opacity: 0.9;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+@media (max-width: 540px) {
+  .next-action-inner {
+    flex-direction: column;
+  }
+  .next-action-stat {
+    display: none;
+  }
+}
+
+/* ===== RESPONSIVE: Activity feed sticky on desktop ===== */
+
+@media (min-width: 1100px) {
+  [data-view="admin"] .activity-feed {
+    position: sticky;
+    top: 72px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+}
+
+/* ===== STUDENT MAP DARK MODE ===== */
+/* Target the SVG background rect via CSS — override fill with twilight gradient */
+
+[data-theme="dark"] [data-view="student"] .quest-map-container {
+  background: #0f172a;
+}
+
+/* Dark sky gradient override — applied via a CSS class on the rect */
+[data-theme="dark"] .quest-map-sky {
+  fill: #1e3a5f;
+}
+
+/* Legend pill: dark mode — no blinding white box */
+[data-theme="dark"] .quest-map-legend-bg {
+  fill: rgba(30, 58, 95, 0.85);
+}
+[data-theme="dark"] .quest-map-legend-text {
+  fill: #c2daf2;
+}
+
+/* ===== PARENT PILL — DARK MODE FIX ===== */
+/* Replace hardcoded mint #ecfdf5 with token-aware dark surface */
+
+[data-view="parent"] .overview-pill-realm {
+  background: var(--color-rpg-python-bg);
+}
+
+[data-view="parent"] .overview-pill-realm .overview-value {
+  color: var(--color-rpg-python);
+}
+
+/* ===== FIX B: Admin mobile overflow — surgical additions ===== */
+
+/* Prevent any child of view-container overflowing horizontally on mobile */
+@media (max-width: 767px) {
+  [data-view="admin"] .view-container {
+    overflow-x: hidden;
+  }
+
+  /* admin-main must not exceed viewport */
+  [data-view="admin"] .admin-main {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* stats-grid stays 2 col and fills available width */
+  [data-view="admin"] .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  /* stat-card: ensure no overflow */
+  [data-view="admin"] .stat-card {
+    min-width: 0;
+  }
+
+  /* section-card must not overflow */
+  [data-view="admin"] .section-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* table scroll: enforce max-width on wrapper */
+  [data-view="admin"] .table-scroll-wrapper {
+    max-width: 100%;
+  }
+}
+
+/* ===== v4.1 FIX 1: Admin stacked user cards for mobile ===== */
+
+/* Desktop: show table, hide cards */
+.users-table-desktop { display: block; }
+.users-cards-mobile  { display: none; }
+
+/* Mobile: hide table, show cards */
+@media (max-width: 639px) {
+  .users-table-desktop { display: none !important; }
+  .users-cards-mobile  { display: block; }
+}
+
+.user-card-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-card-row:last-child {
+  border-bottom: none;
+}
+
+.user-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.user-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-left: 40px; /* align with name after avatar */
+}
+
+.user-card-date {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* ===== v4.1 FIX 2: Tutor — JS-driven tab filter ===== */
+/* Items hidden by JS get display:none; ensure smooth transition */
+.submission-item[hidden] { display: none !important; }
+
+/* ===== v4.1 FIX 5: Student map dark-mode label contrast ===== */
+
+/* Scratch Forest — bright cyan on dark sky */
+[data-theme="dark"] .island-label-scratch {
+  fill: #7dd3fc;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+[data-theme="dark"] .island-sublabel-scratch {
+  fill: #bae6fd;
+}
+
+/* Roblox Kingdom — coral on dark sky */
+[data-theme="dark"] .island-label-roblox {
+  fill: #fca5a5;
+}
+[data-theme="dark"] .island-sublabel-roblox {
+  fill: #fbbf24;
+}
+
+/* Locked islands (Python Lab, Game Dev) — lighter neutral */
+[data-theme="dark"] .island-label-locked {
+  fill: #94a3b8;
+}
+[data-theme="dark"] .island-sublabel-locked {
+  fill: #64748b;
+}
+
+/* Clouds — softer on dark sky (reduce harsh white) */
+[data-theme="dark"] .quest-cloud {
+  fill: #c2daf2;
+  opacity: 0.25;
+}
+
+/* Legend text in dark mode (already set in earlier fix but ensure locked text reads) */
+[data-theme="dark"] .quest-map-legend-text {
+  fill: #c2daf2;
+}
+
+/* ===== TUTOR — Jadwal Empty State (Bug 1 fix) ===== */
+
+[data-view="tutor"] .submission-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 12px;
+  text-align: center;
+}
+
+[data-view="tutor"] .submission-empty-state[hidden] {
+  display: none !important;
+}
+
+.empty-state-icon {
+  font-size: 40px;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.empty-state-title {
+  font-size: 15px;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+}
+
+.empty-state-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  max-width: 320px;
+}
+
+/* =================================================================
+   HIGH PRIORITY PHASE 1 — Visual Identity Refinement
+   P1-P7 — All changes are dark-mode-only unless stated otherwise
+   ================================================================= */
+
+/* ───────────────────────────────────────────────────────────────
+   P2: Dark Mode Shadow Hierarchy
+   Fix: all 4 shadows were identical. Now differentiated by depth.
+   ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* sm: subtle interaction shadow, barely perceptible */
+  --shadow-sm:   0 2px 6px rgba(0, 0, 0, 0.35),
+                 0 1px 3px rgba(0, 0, 0, 0.25);
+  /* md: used on floating elements (XP card) */
+  --shadow-md:   0 6px 16px rgba(0, 0, 0, 0.45),
+                 0 2px 6px  rgba(0, 0, 0, 0.3);
+  /* card: primary surface elevation */
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.45),
+                 0 2px 8px  rgba(0, 0, 0, 0.3),
+                 0 0 0 1px  rgba(56, 189, 248, 0.07);
+  /* lg: high-prominence cards (tutor hero) */
+  --shadow-lg:   0 16px 36px rgba(0, 0, 0, 0.55),
+                 0 4px 12px  rgba(0, 0, 0, 0.35);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   P1: Dark Mode Card Separation
+   Add subtle border to all card-like surfaces so they read against
+   the navy canvas. Uses border-subtle token (#1c335a → near-invisible
+   cool line that separates without shouting).
+   ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .card,
+[data-theme="dark"] .section-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] [data-view="admin"] .activity-feed,
+[data-theme="dark"] [data-view="student"] .gamification-card,
+[data-theme="dark"] [data-view="student"] .quest-map-container,
+[data-theme="dark"] [data-view="parent"] .child-hero {
+  border: 1px solid var(--color-border-default);
+}
+
+/* Submission items (Tutor) — lighter border, they already have shadow-sm */
+[data-theme="dark"] [data-view="tutor"] .submission-item {
+  border: 1px solid var(--color-border-subtle);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   P7: Header Border Visibility
+   Increase header border-bottom contrast in dark mode.
+   Current: 1px solid #1c335a (barely visible).
+   New: use border-default (#2b4c80) + a thin glow line.
+   ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .preview-header {
+  border-bottom-color: var(--color-border-default);
+  box-shadow: 0 1px 0 rgba(56, 189, 248, 0.08),
+              var(--shadow-sm);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   P5: Secondary Button Dark Mode
+   btn-secondary bg = --color-bg-surface (#121e3a) which matches card bg.
+   Add border-default + slightly lighter bg.
+   ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .btn-secondary {
+  background: var(--color-bg-surface-elevated);  /* #1a2a4f — one step lighter */
+  border-color: var(--color-border-default);      /* #2b4c80 — visible border */
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: var(--color-bg-surface-hover, #223868);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   P4: Avatar & Dot Dark Mode
+   Inline styles (style="background:#e0f2fe") cannot be overridden
+   by class selectors. Use CSS filter to dim overly-bright pastel
+   backgrounds without removing role-identity colours.
+   brightness(0.55): pastel → muted dark variant
+   saturate(0.75): reduce chroma slightly for dark context
+   ─────────────────────────────────────────────────────────────── */
+
+/* User avatars (table + mobile cards) */
+[data-theme="dark"] .user-avatar {
+  filter: brightness(0.5) saturate(0.7);
+}
+
+/* Activity dots in admin sidebar */
+[data-theme="dark"] [data-view="admin"] .activity-dot {
+  filter: brightness(0.55) saturate(0.7);
+}
+
+/* Stat icons in admin KPI cards */
+[data-theme="dark"] [data-view="admin"] .stat-icon {
+  filter: brightness(0.5) saturate(0.65);
+}
+
+/* Tutor submission student avatars (some have inline, some don't) */
+[data-theme="dark"] [data-view="tutor"] .student-avatar {
+  /* AP has no inline style (uses CSS class default) — keep but dim slightly */
+  filter: brightness(0.75) saturate(0.8);
+}
+
+/* Parent session emoji tiles (bg via inline) */
+[data-theme="dark"] [data-view="parent"] .session-item > div[style] {
+  filter: brightness(0.55) saturate(0.7);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   P6: Role Badge Tokenisation
+   Move hardcoded hex to dark-mode-aware values.
+   Light mode stays identical. Dark mode gets muted semi-transparent
+   versions consistent with other badge patterns.
+   ─────────────────────────────────────────────────────────────── */
+
+/* Light mode: unchanged (keep existing .role-siswa / .role-tutor / .role-admin) */
+
+/* Dark mode overrides */
+[data-theme="dark"] .role-siswa {
+  background: rgba(56, 189, 248, 0.15);   /* --color-rpg-scratch-bg dark */
+  color: #7dd3fc;                          /* --color-primary-hover dark */
+}
+
+[data-theme="dark"] .role-tutor {
+  background: rgba(167, 139, 250, 0.15);  /* --color-rpg-game-bg dark */
+  color: #a78bfa;                         /* --color-rpg-game dark */
+}
+
+[data-theme="dark"] .role-admin {
+  background: rgba(52, 211, 153, 0.15);  /* --color-success-bg dark */
+  color: #34d399;                        /* --color-success dark */
+}
+
+/* ───────────────────────────────────────────────────────────────
+   P3: Student Quest Map Twilight Gradient
+   Current: flat fill #1e3a5f via CSS override.
+   The SVG already has skyBgDark gradient defined in <defs> but the
+   rect fill="url(#skyBg)" is not swappable via CSS fill property
+   directly when using url() references.
+
+   Approach: CSS cannot change fill="url(#id)" to a different gradient
+   ID. Instead we use a layered trick:
+   1. Keep the CSS fill override removed (don't use fill on .quest-map-sky
+      in dark mode — let SVG's own fill stand, then use a pseudo-overlay).
+   2. Apply the dark sky *as a container background* seen through a
+      transparent SVG background — but SVG backgrounds are opaque.
+
+   Clean solution without touching app.js:
+   Override the CSS fill with a data-URI of the gradient stops encoded
+   as a simple vertical CSS gradient. We use a gradient that approximates
+   the skyBgDark stops already defined in the SVG defs.
+   
+   The .quest-map-container gets the gradient bg, and we make the
+   SVG rect transparent in dark mode so the container bg shows through.
+   ─────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] [data-view="student"] .quest-map-container {
+  /* Twilight gradient as container background */
+  background: linear-gradient(
+    to bottom,
+    #0c2340 0%,
+    #1a3a5c 45%,
+    #1e3a5f 70%,
+    #152344 100%
+  );
+  border-color: rgba(56, 189, 248, 0.12);
+}
+
+/* Make the SVG sky rect transparent so container bg shows through */
+[data-theme="dark"] .quest-map-sky {
+  fill: transparent;
+  /* Remove the previous flat fill override */
+}
+
+/* Clouds: in twilight sky — soft luminous clouds (not flat white) */
+[data-theme="dark"] .quest-cloud {
+  fill: #c8e6fa;
+  opacity: 0.18;
+}
+
+/* Additional night sky sparkle elements — enhance the adventure feel */
+/* Stars are ✨ text in SVG, style their fill/opacity */
+[data-theme="dark"] .quest-map text[font-size="12"],
+[data-theme="dark"] .quest-map text[font-size="10"][opacity] {
+  opacity: 0.75;
+}
+
+/* Active path in dark mode: brighter cyan glow */
+[data-theme="dark"] .quest-map .path-dotted:not(.node-locked) {
+  stroke: #7dd3fc;
+  stroke-opacity: 0.9;
+}
+
+/* Locked paths: dimmer in twilight */
+[data-theme="dark"] .quest-map .path-dotted.node-locked {
+  stroke: #2b4c80;
+  stroke-opacity: 0.6;
+}
+
+
+/* =================================================================
+   PHASE 2 — WP-1, WP-3, WP-4, WP-5, WP-6
+   CSS additions — appended after Phase 1 blocks
+   ================================================================= */
+
+/* ───────────────────────────────────────────────────────────────
+   WP-1: Python "Py" lesson identifier
+   Replaces broken fa-snake icon (not available in FA 6.4.0 Free)
+   ─────────────────────────────────────────────────────────────── */
+.lesson-icon-py {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--color-rpg-python);
+  background: var(--color-rpg-python-bg);
+  border-radius: var(--radius-xs);
+  margin-right: 4px;
+  flex-shrink: 0;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   WP-3: Dark mode filter refinement
+   Stat icons: raise brightness to retain color identity
+   Activity dots: raise brightness so green ≠ blue
+   Previous values were too aggressive (brightness 0.5–0.55)
+   ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] [data-view="admin"] .stat-icon {
+  filter: brightness(0.65) saturate(0.9);
+}
+
+[data-theme="dark"] [data-view="admin"] .activity-dot {
+  filter: brightness(0.7) saturate(0.85);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   WP-4: Tutor hero dark mode variant
+   Light gradient #0284c7→#0ea5e9 stays unchanged.
+   Dark variant uses deeper blues — all stops ≥ 4.5:1 vs white text.
+   #1565c0 = 5.75:1  |  #0369a1 = 5.93:1
+   Still vibrant, still blue, cohesive with navy canvas.
+   ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] [data-view="tutor"] .next-action-card {
+  background: linear-gradient(135deg, #1565c0 0%, #0369a1 100%);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   WP-5: Quest map active island pulse animation
+   Applied to .pulse-ring class on the pulsing-ring ellipse
+   inside [data-node-state="available"] island group.
+   - opacity-only animation: no transform, no SVG rendering artefacts
+   - 2.5s period: slow enough to not distract, fast enough to notice
+   - prefers-reduced-motion: animation stops entirely
+   ─────────────────────────────────────────────────────────────── */
+@keyframes island-pulse {
+  0%, 100% { opacity: 0.08; }
+  50%       { opacity: 0.28; }
+}
+
+.pulse-ring {
+  animation: island-pulse 2.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring {
+    animation: none;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────
+   WP-6: Parent session tile CSS classes
+   Replaces inline style="background:#..." with token-based classes.
+   Emoji characters are preserved inside each tile.
+   Dark mode: tokens already have rgba(0.15) variants that work
+   against the navy card surface.
+   ─────────────────────────────────────────────────────────────── */
+.session-tile {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.session-tile-scratch { background: var(--color-rpg-scratch-bg); }
+.session-tile-python  { background: var(--color-rpg-python-bg);  }
+.session-tile-roblox  { background: var(--color-rpg-roblox-bg);  }
+

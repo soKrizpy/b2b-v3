@@ -1,0 +1,88 @@
+[
+  {
+    "id": "week_004",
+    "weekNumber": 4,
+    "dateRange": "10 - 16 November 2026",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "topic": "Gerak Berarah & Interaktivitas Keyboard",
+    "moduleName": "Modul 1: Petualangan Dasar Sprite Scratch",
+    "sessionsHeld": 1,
+    "totalSessionsInWeek": 1,
+    "moduleProgressPct": 50,
+    "status": "Aktif / Berjalan Lancar",
+    "strengths": [
+      "Daya tangkap logika koordinat matematika (X dan Y) berkembang sangat pesat",
+      "Kemandirian tinggi: mampu men-debug kesalahan arah gerak sprite secara mandiri",
+      "Kreativitas modifikasi: berinisiatif menambahkan kontrol tombol lompat tanpa diminta"
+    ],
+    "areasToPractice": [
+      "Konsistensi memberi nama variabel atau sprite agar proyek yang kompleks tetap rapi",
+      "Membiasakan membaca instruksi tantangan secara menyeluruh sebelum mulai merangkai blok"
+    ],
+    "tutorNotes": "Alex menunjukkan lompatan pemahaman yang sangat membanggakan di minggu ke-4 ini. Belajar koding bukan sekadar menghafal blok, melainkan melatih cara berpikir runtut. Alex sudah mulai menunjukkan pola pikir analitis saat memecahkan masalah. Pertahankan semangat belajarnya ya Ayah/Bunda!"
+  },
+  {
+    "id": "week_003",
+    "weekNumber": 3,
+    "dateRange": "03 - 09 November 2026",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "topic": "Animasi Kostum & Efek Suara",
+    "moduleName": "Modul 1: Petualangan Dasar Sprite Scratch",
+    "sessionsHeld": 1,
+    "totalSessionsInWeek": 1,
+    "moduleProgressPct": 38,
+    "status": "Selesai",
+    "strengths": [
+      "Imajinasi visual sangat hidup dalam memadukan warna dan kostum karakter",
+      "Kemampuan memahami konsep urutan waktu (delay/wait) dalam perulangan"
+    ],
+    "areasToPractice": [
+      "Pengaturan durasi jeda waktu agar animasi tidak bergerak terlalu cepat atau lambat"
+    ],
+    "tutorNotes": "Alex sangat menikmati sesi animasi kostum minggu ini. Proyek ceritanya sangat unik dan penuh warna. Alex juga aktif berbagi ide dengan teman sekelasnya."
+  },
+  {
+    "id": "week_002",
+    "weekNumber": 2,
+    "dateRange": "27 Oktober - 02 November 2026",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "topic": "Pengenalan Blok Kode & Kanvas Panggung",
+    "moduleName": "Modul 1: Petualangan Dasar Sprite Scratch",
+    "sessionsHeld": 1,
+    "totalSessionsInWeek": 1,
+    "moduleProgressPct": 25,
+    "status": "Selesai",
+    "strengths": [
+      "Kecepatan navigasi antarmuka Scratch sangat baik",
+      "Antusiasme tinggi untuk mencoba setiap jenis blok warna baru"
+    ],
+    "areasToPractice": [
+      "Membiasakan diri menyusun blok dari atas ke bawah secara rapi"
+    ],
+    "tutorNotes": "Alex dapat menyerap antarmuka baru dengan sangat cepat tanpa rasa takut salah. Ini modal awal yang luar biasa untuk calon programmer muda!"
+  },
+  {
+    "id": "week_001",
+    "weekNumber": 1,
+    "dateRange": "20 - 26 Oktober 2026",
+    "studentId": "usr_stu_001",
+    "studentName": "Alex Pratama",
+    "topic": "Orientasi Kelas & Berpikir Komputasional",
+    "moduleName": "Orientasi: Gerbang Dunia Pemrograman",
+    "sessionsHeld": 1,
+    "totalSessionsInWeek": 1,
+    "moduleProgressPct": 12,
+    "status": "Selesai",
+    "strengths": [
+      "Logika pemecahan teka-teki unplugged (tanpa komputer) sangat kuat",
+      "Komunikasi yang sopan dan ramah"
+    ],
+    "areasToPractice": [
+      "Kepercayaan diri untuk presentasi dan berbicara di sesi awal"
+    ],
+    "tutorNotes": "Selamat bergabung di keluarga Bits2Bytes! Alex menunjukkan potensi besar dalam memahami alur algoritma sehari-hari."
+  }
+]

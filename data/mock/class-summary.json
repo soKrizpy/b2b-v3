@@ -1,0 +1,58 @@
+{
+  "totalStudents": 6,
+  "activeStudents": 4,
+  "pendingSubmissions": 2,
+  "approvedProjects": 1,
+  "recentActivities": [
+    {
+      "id": "act_001",
+      "studentName": "Alex Pratama",
+      "avatar": "AP",
+      "action": "mengirimkan proyek Scratch — Basic Motion",
+      "timestamp": "10 menit yang lalu",
+      "type": "submission",
+      "badge": "Submitted",
+      "badgeClass": "badge-submitted"
+    },
+    {
+      "id": "act_002",
+      "studentName": "Budi Santoso",
+      "avatar": "BS",
+      "action": "mengirimkan proyek Scratch — Basic Motion",
+      "timestamp": "35 menit yang lalu",
+      "type": "submission",
+      "badge": "Submitted",
+      "badgeClass": "badge-submitted"
+    },
+    {
+      "id": "act_003",
+      "studentName": "Citra Lestari",
+      "avatar": "CL",
+      "action": "menyelesaikan Checkpoint 2 (Gerak Sumbu X)",
+      "timestamp": "2 jam yang lalu",
+      "type": "checkpoint",
+      "badge": "In Progress",
+      "badgeClass": "badge-in-progress"
+    },
+    {
+      "id": "act_004",
+      "studentName": "Eva Rahma",
+      "avatar": "ER",
+      "action": "menyelesaikan 4 Checkpoint Praktik Terbimbing",
+      "timestamp": "4 jam yang lalu",
+      "type": "practice",
+      "badge": "Practice Done",
+      "badgeClass": "badge-practice-completed"
+    },
+    {
+      "id": "act_005",
+      "studentName": "Doni Wijaya",
+      "avatar": "DW",
+      "action": "proyek disetujui oleh Kak Sarah (Skor 100%)",
+      "timestamp": "Kemarin",
+      "type": "approval",
+      "badge": "Approved",
+      "badgeClass": "badge-approved"
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+/**
+ * B2B LEARNING ENGINE - DESIGN TOKENS
+ * Centralized design variables supporting Light & Dark modes.
+ * Adheres strictly to Section 12 of PROJECT_RULES.md.
+ */
+
+:root {
+  /* ==========================================================================
+     FONT & TYPOGRAPHY TOKENS
+     ========================================================================== */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-md: 1.125rem;   /* 18px */
+  --font-size-lg: 1.25rem;    /* 20px */
+  --font-size-xl: 1.5rem;     /* 24px */
+  --font-size-2xl: 1.875rem;  /* 30px */
+  --font-size-3xl: 2.25rem;   /* 36px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /* ==========================================================================
+     SPACING GRID (Base 4px)
+     ========================================================================== */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* ==========================================================================
+     BORDER RADIUS (Remembero Soft Rounded Geometry)
+     ========================================================================== */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* ==========================================================================
+     TRANSITION & ANIMATION TIMING (PROJECT_RULES <= 300ms)
+     ========================================================================== */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ==========================================================================
+     Z-INDEX LAYERING
+     ========================================================================== */
+  --z-nav: 100;
+  --z-dropdown: 200;
+  --z-sticky: 300;
+  --z-drawer-backdrop: 400;
+  --z-drawer: 450;
+  --z-modal-backdrop: 500;
+  --z-modal: 550;
+  --z-toast: 600;
+  --z-tooltip: 700;
+
+  /* ==========================================================================
+     BRAND PRIMITIVE PALETTE
+     ========================================================================== */
+  --brand-primary-50:  #eef2ff;
+  --brand-primary-100: #e0e7ff;
+  --brand-primary-200: #c7d2fe;
+  --brand-primary-300: #a5b4fc;
+  --brand-primary-400: #818cf8;
+  --brand-primary-500: #6366f1;
+  --brand-primary-600: #4f46e5;
+  --brand-primary-700: #4338ca;
+  --brand-primary-800: #3730a3;
+  --brand-primary-900: #312e81;
+
+  --accent-amber-500: #f59e0b;
+  --accent-amber-600: #d97706;
+
+  /* ==========================================================================
+     AUTHENTIC EXTERNAL TOOL PALETTE (SCRATCH 3.0 BLOCKS — SECTION 8)
+     ========================================================================== */
+  --color-scratch-motion:  #4c97ff;
+  --color-scratch-looks:   #9966ff;
+  --color-scratch-sound:   #cf63cf;
+  --color-scratch-events:  #ffbf00;
+  --color-scratch-control: #ffab19;
+  --color-scratch-sensing: #5cb1d6;
+  --color-scratch-dark-text: #1a1a00;
+}
+
+/* ==========================================================================
+   LIGHT MODE PALETTE (Default — Remembero-inspired Bright Adventure)
+   ========================================================================== */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Backgrounds & Surfaces (Sky-Blue Atmosphere & Elevated White Cards) */
+  --color-bg-canvas: #ebf5fb;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-elevated: #ffffff;
+  --color-bg-surface-muted: #e1effa;
+  --color-bg-surface-subtle: #f4f9fd;
+  --color-bg-surface-hover: #e8f4fc;
+  --color-bg-surface-active: #d4e9f7;
+
+  /* Borders & Dividers (Soft Tinted Sky Dividers) */
+  --color-border-subtle: #d6e8f5;
+  --color-border-default: #b9d8ee;
+  --color-border-strong: #85b8db;
+
+  /* Text & Foreground */
+  --color-text-primary: #0f2742;
+  --color-text-secondary: #335372;
+  --color-text-muted: #5e7d9b;
+  --color-text-placeholder: #8ea8c2;
+  --color-text-inverse: #ffffff;
+
+  /* Primary Brand Action (Bright Turquoise / Sky Action) */
+  --color-primary: #0284c7;
+  --color-primary-hover: #0369a1;
+  --color-primary-active: #075985;
+  --color-primary-subtle: #e0f2fe;
+  --color-primary-text: #ffffff;
+  --color-primary-border: #38bdf8;
+
+  /* Status Colors (Vibrant, Friendly) */
+  --color-success: #15803d;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #6ee7b7;
+  --color-success-text: #065f46;
+
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+  --color-warning-text: #92400e;
+
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fca5a5;
+  --color-danger-text: #991b1b;
+
+  --color-info: #0284c7;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #7dd3fc;
+  --color-info-text: #0369a1;
+
+  /* Bright RPG Adventure & Gamification Tokens */
+  --color-rpg-island-scratch: #0ea5e9;
+  --color-rpg-island-scratch-bg: #e0f2fe;
+  --color-rpg-island-roblox: #ef4444;
+  --color-rpg-island-roblox-bg: #fee2e2;
+  --color-rpg-island-python: #10b981;
+  --color-rpg-island-python-bg: #d1fae5;
+  --color-rpg-island-game: #8b5cf6;
+  --color-rpg-island-game-bg: #ede9fe;
+
+  --color-rpg-xp: #f59e0b;
+  --color-rpg-xp-bg: #fef3c7;
+  --color-rpg-streak: #f97316;
+  --color-rpg-streak-bg: #ffedd5;
+  --color-rpg-level: #8b5cf6;
+  --color-rpg-level-bg: #ede9fe;
+
+  --color-rpg-path: #7dd3fc;
+  --color-rpg-path-glow: rgba(14, 165, 233, 0.25);
+  --color-rpg-node-bg: #ffffff;
+  --color-rpg-node-border: #bae6fd;
+  --color-rpg-cloud: rgba(255, 255, 255, 0.9);
+
+  /* Interactive States */
+  --color-focus-ring: rgba(2, 132, 199, 0.35);
+  --color-disabled-bg: #e2e8f0;
+  --color-disabled-text: #8ea8c2;
+  --color-disabled-border: #b9d8ee;
+
+  /* Remembero Soft Multi-layer Shadows & Elevation */
+  --shadow-xs: 0 1px 2px rgba(12, 74, 110, 0.04);
+  --shadow-sm: 0 3px 8px rgba(12, 74, 110, 0.06), 0 1px 3px rgba(12, 74, 110, 0.04);
+  --shadow-md: 0 8px 18px -2px rgba(12, 74, 110, 0.08), 0 3px 6px -2px rgba(12, 74, 110, 0.04);
+  --shadow-lg: 0 14px 28px -4px rgba(12, 74, 110, 0.10), 0 6px 12px -4px rgba(12, 74, 110, 0.05);
+  --shadow-xl: 0 22px 42px -6px rgba(12, 74, 110, 0.12), 0 8px 16px -4px rgba(12, 74, 110, 0.05);
+  --shadow-card: 0 10px 25px -4px rgba(12, 74, 110, 0.08), 0 4px 10px -2px rgba(12, 74, 110, 0.04);
+  --shadow-card-hover: 0 18px 36px -6px rgba(12, 74, 110, 0.12), 0 8px 16px -4px rgba(12, 74, 110, 0.06);
+  --shadow-drawer: -8px 0 28px rgba(12, 74, 110, 0.14);
+  --shadow-glow-cyan: 0 0 20px rgba(14, 165, 233, 0.35);
+  --shadow-glow-amber: 0 0 20px rgba(245, 158, 11, 0.35);
+  --shadow-glow-green: 0 0 20px rgba(16, 185, 129, 0.35);
+
+  /* Backdrop Overlay */
+  --color-backdrop: rgba(15, 39, 66, 0.45);
+}
+
+/* ==========================================================================
+   DARK MODE PALETTE (Deep Twilight / Nocturnal Blue Realm)
+   ========================================================================== */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Backgrounds & Surfaces */
+  --color-bg-canvas: #0a1326;
+  --color-bg-surface: #121e3a;
+  --color-bg-surface-elevated: #1a2a4f;
+  --color-bg-surface-muted: #1e335f;
+  --color-bg-surface-subtle: #152344;
+  --color-bg-surface-hover: #223868;
+  --color-bg-surface-active: #29447c;
+
+  /* Borders & Dividers */
+  --color-border-subtle: #1c335a;
+  --color-border-default: #2b4c80;
+  --color-border-strong: #416aa8;
+
+  /* Text & Foreground */
+  --color-text-primary: #f0f7ff;
+  --color-text-secondary: #c2daf2;
+  --color-text-muted: #8ea8c2;
+  --color-text-placeholder: #5e7d9b;
+  --color-text-inverse: #0a1326;
+
+  /* Primary Brand Action (Vibrant Sky/Cyan on Dark) */
+  --color-primary: #38bdf8;
+  --color-primary-hover: #7dd3fc;
+  --color-primary-active: #bae6fd;
+  --color-primary-subtle: rgba(56, 189, 248, 0.15);
+  --color-primary-text: #082f49;
+  --color-primary-border: #0284c7;
+
+  /* Status Colors */
+  --color-success: #34d399;
+  --color-success-bg: rgba(52, 211, 153, 0.15);
+  --color-success-border: rgba(52, 211, 153, 0.35);
+  --color-success-text: #a7f3d0;
+
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.15);
+  --color-warning-border: rgba(251, 191, 36, 0.35);
+  --color-warning-text: #fef3c7;
+
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(248, 113, 113, 0.15);
+  --color-danger-border: rgba(248, 113, 113, 0.35);
+  --color-danger-text: #fecaca;
+
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(56, 189, 248, 0.15);
+  --color-info-border: rgba(56, 189, 248, 0.35);
+  --color-info-text: #bae6fd;
+
+  /* Bright RPG Adventure & Gamification Tokens in Dark Mode */
+  --color-rpg-island-scratch: #38bdf8;
+  --color-rpg-island-scratch-bg: rgba(56, 189, 248, 0.15);
+  --color-rpg-island-roblox: #f87171;
+  --color-rpg-island-roblox-bg: rgba(248, 113, 113, 0.15);
+  --color-rpg-island-python: #34d399;
+  --color-rpg-island-python-bg: rgba(52, 211, 153, 0.15);
+  --color-rpg-island-game: #a78bfa;
+  --color-rpg-island-game-bg: rgba(167, 139, 250, 0.15);
+
+  --color-rpg-xp: #fbbf24;
+  --color-rpg-xp-bg: rgba(251, 191, 36, 0.15);
+  --color-rpg-streak: #fb923c;
+  --color-rpg-streak-bg: rgba(251, 146, 60, 0.15);
+  --color-rpg-level: #a78bfa;
+  --color-rpg-level-bg: rgba(167, 139, 250, 0.15);
+
+  --color-rpg-path: #0284c7;
+  --color-rpg-path-glow: rgba(56, 189, 248, 0.3);
+  --color-rpg-node-bg: #121e3a;
+  --color-rpg-node-border: #2b4c80;
+  --color-rpg-cloud: rgba(26, 42, 79, 0.7);
+
+  /* Interactive States */
+  --color-focus-ring: rgba(56, 189, 248, 0.45);
+  --color-disabled-bg: #1c335a;
+  --color-disabled-text: #5e7d9b;
+  --color-disabled-border: #2b4c80;
+
+  /* Shadows & Elevation */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 14px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 24px -3px rgba(0, 0, 0, 0.55), 0 4px 6px -4px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 20px 36px -5px rgba(0, 0, 0, 0.65), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 10px 25px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.1);
+  --shadow-card-hover: 0 18px 36px -6px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(56, 189, 248, 0.25);
+  --shadow-drawer: -8px 0 28px rgba(0, 0, 0, 0.7);
+  --shadow-glow-cyan: 0 0 24px rgba(56, 189, 248, 0.4);
+  --shadow-glow-amber: 0 0 24px rgba(251, 191, 36, 0.4);
+  --shadow-glow-green: 0 0 24px rgba(52, 211, 153, 0.4);
+
+  /* Backdrop Overlay */
+  --color-backdrop: rgba(3, 7, 18, 0.75);
+}
+

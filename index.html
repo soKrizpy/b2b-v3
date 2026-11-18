@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bits2Bytes Learning Engine - Platform Pembelajaran Koding Terbimbing">
+  <title>B2B Learning Engine</title>
+
+  <!-- Centralized Design Tokens & Base CSS -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/views.css">
+  <link rel="stylesheet" href="./css/lesson.css">
+  <link rel="stylesheet" href="./css/teacher.css">
+  <link rel="stylesheet" href="./css/prototype-integration.css">
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- PERSISTENT SIDEBAR NAVIGATION (Section 5.7) -->
+    <aside class="app-sidebar" id="app-sidebar" aria-label="Navigasi Utama">
+      <div class="sidebar-header">
+        <img src="./logo-b2b-light.svg" alt="Bits2Bytes" class="brand-logo logo-light" width="36" height="36">
+        <img src="./logo-b2b-dark.svg"  alt="Bits2Bytes" class="brand-logo logo-dark"  width="36" height="36">
+        <div>
+          <div class="brand-title">Learning Engine</div>
+        </div>
+        <button type="button" class="btn-mobile-menu" id="btn-sidebar-toggle" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="sidebar-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-content" id="sidebar-nav">
+        <!-- Section: Portal Masuk (Phase 4.5) -->
+        <div>
+          <div class="nav-section-title">Akses Peran</div>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#entry" class="nav-link active" data-view-target="view-entry">
+                <span class="nav-icon" aria-hidden="true">🚪</span>
+                <span>Portal Masuk Demo</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#admin-accounts" class="nav-link" data-view-target="view-admin">
+                <span class="nav-icon" aria-hidden="true">👑</span>
+                <span>Manajemen Akun &amp; Akses</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: Phase 1 Verification -->
+        <div>
+          <div class="nav-section-title">Fondasi Sistem</div>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#foundation" class="nav-link" data-view-target="view-foundation">
+                <span class="nav-icon" aria-hidden="true">⚙️</span>
+                <span>Design System & Shell</span>
+              </a>
+            </li>
+            <!-- Hidden backward compatibility targets for legacy tests -->
+            <li class="nav-item" style="display: none;" aria-hidden="true">
+              <a href="#student-dashboard" class="nav-link" data-view-target="view-student">
+                <span class="nav-icon" aria-hidden="true">🗺️</span>
+                <span>Quest Map & Lessons</span>
+              </a>
+            </li>
+            <li class="nav-item" style="display: none;" aria-hidden="true">
+              <a href="#teacher-queue" class="nav-link" data-view-target="view-teacher">
+                <span class="nav-icon" aria-hidden="true">📋</span>
+                <span>Antrean Submission</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <small style="display: block; color: var(--color-text-muted); font-size: var(--font-size-xs);">
+          Antigravity Engine &bull; v0.4.5
+        </small>
+      </div>
+    </aside>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+      <!-- PERSISTENT HEADER (Section 5) -->
+      <header class="app-header">
+        <div class="header-left">
+          <h1 id="page-heading"
+            style="font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin: 0;">
+            Portal Masuk &bull; Bits2Bytes Learning Engine
+          </h1>
+        </div>
+
+        <div class="header-right">
+          <!-- Role Switcher (Phase 4 RBAC Demo Account Switcher - Entry Facility Only) -->
+          <div id="demo-switcher-mount"></div>
+
+          <!-- Theme Toggle (Light / Dark mode) -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-theme-toggle" data-theme-toggle
+            aria-label="Ganti tema">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+            <span class="theme-label">Dark Mode</span>
+          </button>
+
+          <!-- User Avatar Badge -->
+          <div class="user-profile-badge" id="user-badge">
+            <div class="avatar-circle" id="user-avatar" aria-hidden="true">AD</div>
+            <div style="line-height: 1.2;">
+              <div id="user-name" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Admin B2B</div>
+              <div id="user-role-label" style="font-size: 10px; color: var(--color-text-muted);">Administrator</div>
+            </div>
+          </div>
+
+          <!-- Logout Button (Phase 4.5 Clean Navigation) -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" aria-label="Keluar dari akun">
+            Keluar
+          </button>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT VIEWPORT -->
+      <main class="app-main" id="main-content">
+        <!-- VIEW 0: ENTRY / ROLE PORTAL (PHASE 4.5) -->
+        <section id="view-entry" class="view-section is-active" aria-labelledby="entry-title">
+          <div style="margin-bottom: var(--space-6);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);">
+              <h2 id="entry-title" style="margin: 0;">Portal Masuk Simulasi Mandiri</h2>
+              <span class="badge badge-completed">Phase 4.5 RBAC Separated</span>
+            </div>
+            <p style="color: var(--color-text-muted);">
+              Selamat datang di <strong>Bits2Bytes Learning Engine</strong>. Setiap peran pembelajaran memiliki dashboard dan alur kerja yang terpisah secara ketat sesuai tanggung jawabnya. Pilih salah satu peran di bawah untuk memulai:
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-5); margin-bottom: var(--space-8);">
+            <!-- Role 1: Admin -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--color-warning);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span style="font-size: 28px;" aria-hidden="true">👑</span>
+                  <span class="badge badge-warning">Administrator</span>
+                </div>
+                <h3 style="margin-bottom: var(--space-2); font-size: var(--font-size-md);">Admin Workspace</h3>
+                <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: 1.5;">
+                  Manajemen akun pengguna, penugasan tutor-siswa, tautan orang tua-anak, dan tata kelola platform secara terpusat.
+                </p>
+              </div>
+              <div style="margin-top: var(--space-4);">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%;" data-login-role="admin">
+                  Masuk Dashboard Admin &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Role 2: Tutor -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--color-primary);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span style="font-size: 28px;" aria-hidden="true">👩‍🏫</span>
+                  <span class="badge badge-scratch">Tutor</span>
+                </div>
+                <h3 style="margin-bottom: var(--space-2); font-size: var(--font-size-md);">Teacher Workspace</h3>
+                <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: 1.5;">
+                  Evaluasi submission siswa (Setujui/Revisi), berikan catatan umpan balik, dan buat laporan sesi pembelajaran berkala.
+                </p>
+              </div>
+              <div style="margin-top: var(--space-4);">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%;" data-login-role="tutor">
+                  Masuk Dashboard Guru &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Role 3: Student -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--color-success);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span style="font-size: 28px;" aria-hidden="true">🎒</span>
+                  <span class="badge badge-approved">Siswa</span>
+                </div>
+                <h3 style="margin-bottom: var(--space-2); font-size: var(--font-size-md);">Ruang Belajar Siswa</h3>
+                <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: 1.5;">
+                  Petualangan Quest Map, modul pembelajaran Scratch 6 tahapan terstruktur, dan pengumpulan proyek tantangan kreatif.
+                </p>
+              </div>
+              <div style="margin-top: var(--space-4);">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%;" data-login-role="student">
+                  Masuk Ruang Belajar &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Role 4: Parent -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--color-info);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2);">
+                  <span style="font-size: 28px;" aria-hidden="true">👨‍👩‍👧</span>
+                  <span class="badge badge-in-progress">Orang Tua</span>
+                </div>
+                <h3 style="margin-bottom: var(--space-2); font-size: var(--font-size-md);">Parent Hub (Ruang Ortu)</h3>
+                <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: 1.5;">
+                  Transparansi progres belajar anak secara read-only: ringkasan status, laporan sesi aktual, progres mingguan, dan evaluasi bulanan.
+                </p>
+              </div>
+              <div style="margin-top: var(--space-4);">
+                <button type="button" class="btn btn-primary btn-sm" style="width: 100%;" data-login-role="parent">
+                  Masuk Ruang Orang Tua &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 1: PHASE 1 DESIGN TOKENS & FOUNDATION WORKBENCH -->
+        <section id="view-foundation" class="view-section" aria-labelledby="foundation-title">
+          <div style="margin-bottom: var(--space-6);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);">
+              <h2 id="foundation-title" style="margin: 0;">Design Tokens & Shared Component Verification</h2>
+              <span class="badge badge-completed">Phase 1 Complete</span>
+            </div>
+            <p>
+              Halaman ini memvalidasi seluruh <strong>Design Tokens</strong> (Light & Dark Mode), komponen tombol,
+              kartu, input, badge status progres, serta interaksi modal, drawer, dan toast notifikasi sesuai dengan
+              aturan pada <code>PROJECT_RULES.md</code>.
+            </p>
+          </div>
+
+          <!-- GRID COMPONENT SHOWCASE -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6);">
+
+            <!-- CARD 1: BUTTONS & STATES -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">1. Button Hierarchy & States</h3>
+              </div>
+              <p style="font-size: var(--font-size-xs); margin-bottom: var(--space-4);">
+                Semua varian memiliki state default, hover, focus-visible, active, dan disabled dengan kontras
+                terverifikasi.
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <button type="button" class="btn btn-primary" id="demo-btn-primary">Primary Action</button>
+                <button type="button" class="btn btn-secondary" id="demo-btn-secondary">Secondary</button>
+                <button type="button" class="btn btn-ghost" id="demo-btn-ghost">Ghost</button>
+                <button type="button" class="btn btn-danger" id="demo-btn-danger">Danger</button>
+                <button type="button" class="btn btn-primary" disabled>Disabled State</button>
+              </div>
+              <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
+                Ukuran:
+                <button type="button" class="btn btn-primary btn-sm" style="margin-left: var(--space-2);">Small</button>
+                <button type="button" class="btn btn-primary" style="margin-left: var(--space-2);">Normal</button>
+              </div>
+            </div>
+
+            <!-- CARD 2: STATUS BADGES (SECTION 9 PROGRESS STATES) -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">2. Student Progress States</h3>
+              </div>
+              <p style="font-size: var(--font-size-xs); margin-bottom: var(--space-4);">
+                Status ketat sesuai Section 9 <code>PROJECT_RULES.md</code>:
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+                <span class="badge badge-not-started">● Not Started</span>
+                <span class="badge badge-in-progress">● In Progress</span>
+                <span class="badge badge-practice-completed">● Practice Completed</span>
+                <span class="badge badge-submitted">● Submitted</span>
+                <span class="badge badge-revision-required">● Revision Required</span>
+                <span class="badge badge-approved">● Approved</span>
+                <span class="badge badge-completed">● Completed</span>
+              </div>
+            </div>
+
+            <!-- CARD 3: TOAST NOTIFICATIONS (SECTION 5.11) -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">3. Lightweight Toasts</h3>
+              </div>
+              <p style="font-size: var(--font-size-xs); margin-bottom: var(--space-4);">
+                Umpan balik instan tanpa reload halaman dan tidak mengganggu alur belajar.
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-toast-success">Toast Success</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-toast-error">Toast Error</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-toast-warning">Toast Warning</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-toast-info">Toast Info</button>
+              </div>
+            </div>
+
+            <!-- CARD 4: OVERLAYS (MODAL & CONTEXTUAL DRAWER) -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">4. Modal & Contextual Drawer</h3>
+              </div>
+              <p style="font-size: var(--font-size-xs); margin-bottom: var(--space-4);">
+                Modal untuk konfirmasi singkat, Drawer untuk review kontekstual yang menjaga posisi antrean.
+              </p>
+              <div style="display: flex; gap: var(--space-3);">
+                <button type="button" class="btn btn-primary" data-modal-target="sample-modal">Buka Modal
+                  Dialog</button>
+                <button type="button" class="btn btn-secondary" data-drawer-target="sample-drawer">Buka Review
+                  Drawer</button>
+              </div>
+            </div>
+
+            <!-- CARD 5: FORM CONTROLS & CONTRAST -->
+            <div class="card" style="grid-column: 1 / -1;">
+              <div class="card-header">
+                <h3 class="card-title">5. Form Inputs & Accessible Contrast</h3>
+              </div>
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4);">
+                <div class="form-group">
+                  <label for="demo-input-text" class="form-label">Teks Masukan / Input</label>
+                  <input type="text" id="demo-input-text" class="form-control"
+                    placeholder="Contoh: https://scratch.mit.edu/projects/...">
+                </div>
+                <div class="form-group">
+                  <label for="demo-select" class="form-label">Pilihan Alat Eksternal</label>
+                  <select id="demo-select" class="form-control">
+                    <option>Scratch 3.0</option>
+                    <option>Roblox Studio</option>
+                    <option>Godot Engine</option>
+                    <option>Visual Studio Code</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="demo-disabled" class="form-label">Input Disabled</label>
+                  <input type="text" id="demo-disabled" class="form-control" value="Read-only token value" disabled>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- VIEW 2: STUDENT EXPERIENCE (PHASE 2) -->
+        <section id="view-student" class="view-section" aria-labelledby="student-title">
+          <div id="student-container">
+            <!-- Dynamically populated by LessonWorkspace (Dashboard / Quest Map / Continuous Workspace) -->
+            <div class="card" style="text-align: center; padding: var(--space-12);">
+              <p style="color: var(--color-text-muted); font-size: var(--font-size-sm);">Memuat ruang belajar siswa...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 3: TEACHER WORKSPACE (PHASE 3.1) -->
+        <section id="view-teacher" class="view-section" aria-labelledby="teacher-heading">
+          <div id="teacher-container"></div>
+        </section>
+
+        <!-- VIEW 4: ADMIN WORKSPACE (PHASE 4 RBAC) -->
+        <section id="view-admin" class="view-section" aria-labelledby="admin-heading">
+          <div id="admin-container"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- SAMPLE ACCESSIBLE MODAL (Section 5.10) -->
+  <div class="modal-backdrop" id="sample-modal" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="modal-sample-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-sample-title">Konfirmasi Aksi</h3>
+        <button type="button" class="btn btn-ghost btn-sm" data-modal-close aria-label="Tutup modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Ini adalah contoh <strong>Accessible Modal Dialog</strong> yang memenuhi standar Section 5.10 & 13.
+        </p>
+        <p style="margin-top: var(--space-2);">
+          Modal hanya digunakan untuk tugas singkat, konfirmasi terfokus, dan dapat ditutup melalui tombol
+          <code>Escape</code>, klik backdrop, atau tombol tutup.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close>Batal</button>
+        <button type="button" class="btn btn-primary" id="btn-modal-confirm">Konfirmasi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAMPLE CONTEXTUAL REVIEW DRAWER (Section 5.9, 5.13 & 10) -->
+  <div class="drawer-backdrop" id="sample-drawer" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="drawer-sample-title">
+    <aside class="drawer">
+      <div class="drawer-header">
+        <div>
+          <span class="badge badge-submitted" style="margin-bottom: var(--space-1);">Review Submission Siswa</span>
+          <h3 class="drawer-title" id="drawer-sample-title">Alex Pratama &bull; Scratch Basic Motion</h3>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" data-drawer-close aria-label="Tutup drawer">✕</button>
+      </div>
+      <div class="drawer-body">
+        <!-- Project Link Card -->
+        <div
+          style="margin-bottom: var(--space-4); background-color: var(--color-bg-surface-subtle); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-1);">
+            Link Hasil Proyek Scratch:</div>
+          <a id="drawer-project-link" href="https://scratch.mit.edu/projects/1098273645" target="_blank" rel="noopener noreferrer"
+            style="font-weight: var(--font-weight-semibold); word-break: break-all; color: var(--color-primary);">
+            https://scratch.mit.edu/projects/1098273645 ↗
+          </a>
+        </div>
+
+        <!-- Student Reflection Notes -->
+        <div style="margin-bottom: var(--space-4); background-color: var(--color-bg-surface-subtle); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-1);">
+            Catatan Refleksi Siswa:</div>
+          <p id="drawer-student-notes" style="font-size: var(--font-size-xs); color: var(--color-text-primary); margin: 0; line-height: var(--line-height-normal);">
+            Saya membuat karakter kucing berjalan bolak-balik saat tombol spasi ditekan dan berputar saat tombol panah ditekan.
+          </p>
+        </div>
+
+        <!-- Checkpoints & Quiz Meta -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div style="background-color: var(--color-bg-surface-subtle); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+            <div style="font-size: 11px; color: var(--color-text-muted);">Checkpoints Praktik</div>
+            <div id="drawer-checkpoints-info" style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-xs); color: var(--color-success); margin-top: 2px;">
+              4 dari 4 Terpenuhi
+            </div>
+          </div>
+          <div style="background-color: var(--color-bg-surface-subtle); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);">
+            <div style="font-size: 11px; color: var(--color-text-muted);">Skor Kuis Konsep</div>
+            <div id="drawer-quiz-score" style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-xs); color: var(--color-primary); margin-top: 2px;">
+              3/3 (100%)
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Input Form -->
+        <div class="form-group">
+          <label for="teacher-feedback-input" class="form-label">Catatan & Feedback Guru</label>
+          <textarea id="teacher-feedback-input" class="form-control" rows="4"
+            placeholder="Tuliskan umpan balik untuk siswa... Karakter kucing sudah berhasil bergerak ke kanan dan kiri!"></textarea>
+        </div>
+
+        <div
+          style="background-color: var(--color-info-bg); border: 1px solid var(--color-info-border); padding: var(--space-3); border-radius: var(--radius-md); font-size: var(--font-size-xs); color: var(--color-info-text);">
+          ℹ <strong>Preservasi Posisi (Section 5.13)</strong>: Menutup drawer ini akan mengembalikan fokus dan
+          mempertahankan posisi scroll serta filter antrean guru.
+        </div>
+      </div>
+      <div class="drawer-footer">
+        <button type="button" class="btn btn-secondary" id="btn-drawer-revision">Minta Revisi</button>
+        <button type="button" class="btn btn-primary" id="btn-drawer-approve">Setujui Proyek (Approve)</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- APPLICATION ENTRYPOINT -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+
+</html>

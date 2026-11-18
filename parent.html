@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bits2Bytes Learning Engine - Ruang Orang Tua (Parent Hub)">
+  <title>Ruang Orang Tua • Transparansi Belajar Siswa • B2B Learning Engine</title>
+
+  <!-- Centralized Design Tokens & Base CSS -->
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/views.css">
+  <link rel="stylesheet" href="./css/parent-hub.css">
+  <link rel="stylesheet" href="./css/prototype-integration.css">
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- PERSISTENT SIDEBAR NAVIGATION (Section 5.7) -->
+    <aside class="app-sidebar" id="app-sidebar" aria-label="Navigasi Orang Tua">
+      <div class="sidebar-header">
+        <img src="./logo-b2b-light.svg" alt="Bits2Bytes" class="brand-logo logo-light" width="36" height="36">
+        <img src="./logo-b2b-dark.svg"  alt="Bits2Bytes" class="brand-logo logo-dark"  width="36" height="36">
+        <div>
+          <div class="brand-title">Learning Engine</div>
+        </div>
+        <button type="button" class="btn-mobile-menu" id="btn-sidebar-toggle" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="sidebar-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-content" id="sidebar-nav">
+        <div>
+          <div class="nav-section-title">Transparansi Belajar</div>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#overview" class="nav-link active" data-parent-nav="overview">
+                <span class="nav-icon" aria-hidden="true">📊</span>
+                <span>Ringkasan Anak</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#sessions" class="nav-link" data-parent-nav="sessions">
+                <span class="nav-icon" aria-hidden="true">📝</span>
+                <span>Laporan Sesi Tutor</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#weekly" class="nav-link" data-parent-nav="weekly">
+                <span class="nav-icon" aria-hidden="true">📈</span>
+                <span>Progres Mingguan</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#monthly" class="nav-link" data-parent-nav="monthly">
+                <span class="nav-icon" aria-hidden="true">🎯</span>
+                <span>Evaluasi Bulanan</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <small style="display: block; color: var(--color-text-muted); font-size: var(--font-size-xs);">
+          Antigravity Engine &bull; v0.4.5
+        </small>
+      </div>
+    </aside>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+      <!-- PERSISTENT HEADER (Section 5) -->
+      <header class="app-header">
+        <div class="header-left">
+          <h1 id="page-heading"
+            style="font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin: 0;">
+            Ruang Orang Tua &bull; Transparansi Belajar Siswa
+          </h1>
+        </div>
+
+        <div class="header-right">
+          <!-- Theme Toggle (Light / Dark mode) -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-theme-toggle" data-theme-toggle
+            aria-label="Ganti tema">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+            <span class="theme-label">Dark Mode</span>
+          </button>
+
+          <!-- User Avatar Badge -->
+          <div class="user-profile-badge" id="user-badge">
+            <div class="avatar-circle" id="user-avatar" aria-hidden="true">HP</div>
+            <div style="line-height: 1.2;">
+              <div id="user-name" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Hendra Putra</div>
+              <div id="user-role-label" style="font-size: 10px; color: var(--color-text-muted);">Orang Tua &bull; Alex Pratama</div>
+            </div>
+          </div>
+
+          <!-- Logout Button (Phase 4.5 Clean Navigation) -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" aria-label="Keluar dari akun">
+            Keluar
+          </button>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT VIEWPORT -->
+      <main class="app-main" id="main-content">
+        <section id="view-parent" class="view-section is-active" aria-labelledby="page-heading">
+          <div id="parent-container">
+            <div class="card" style="text-align: center; padding: var(--space-12);">
+              <p style="color: var(--color-text-muted); font-size: var(--font-size-sm);">Memuat data transparansi belajar anak...</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Accessible Toast Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- PARENT APPLICATION ENTRYPOINT -->
+  <script type="module" src="./js/parent/parent-app.js"></script>
+</body>
+
+</html>

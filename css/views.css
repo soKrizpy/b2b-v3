@@ -1,0 +1,379 @@
+/**
+ * B2B LEARNING ENGINE - SHELL & VIEWS LAYOUT
+ * Persistent desktop-first layout adhering to Section 5 of PROJECT_RULES.md.
+ */
+
+/* ==========================================================================
+   APP SHELL LAYOUT
+   ========================================================================== */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-canvas);
+}
+
+/* ==========================================================================
+   PERSISTENT SIDEBAR NAVIGATION (SECTION 5.7)
+   ========================================================================== */
+.app-sidebar {
+  width: 260px;
+  background-color: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: var(--z-nav);
+  transition: width var(--transition-normal);
+}
+
+.sidebar-header {
+  height: 64px;
+  padding: 0 var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.brand-badge {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-rpg-island-scratch));
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Brand logo — SVG image replaces .brand-badge in sidebar */
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: var(--space-4) var(--space-3);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.nav-section-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.nav-item {
+  display: flex;
+}
+
+.nav-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.6rem var(--space-4);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  background-color: var(--color-bg-surface-hover);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+}
+
+/* ==========================================================================
+   APP MAIN CONTENT AREA & HEADER
+   ========================================================================== */
+.app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents flex overflow */
+}
+
+.app-header {
+  height: 64px;
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 0 var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.25rem 0.65rem;
+  background-color: var(--color-bg-surface-muted);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--brand-primary-500);
+  color: var(--color-text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+}
+
+.app-main {
+  flex: 1;
+  padding: var(--space-8);
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   VIEW SECTIONS (FOR INLINE SWITCHING WITHOUT FULL-PAGE RELOAD)
+   ========================================================================== */
+.view-section {
+  display: none;
+}
+
+.view-section.is-active {
+  display: block;
+}
+
+/* ==========================================================================
+   MOBILE MENU TOGGLE BUTTON (768px and below)
+   ========================================================================== */
+.btn-mobile-menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+.btn-mobile-menu:hover {
+  background-color: var(--color-bg-surface-hover);
+  color: var(--color-text-primary);
+}
+.btn-mobile-menu svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==========================================================================
+   TABLET & RESPONSIVE BREAKPOINTS (SECTION 5.1 & 5.2)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 220px;
+  }
+  .app-header,
+  .app-main {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-mobile-menu {
+    display: inline-flex;
+  }
+
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .sidebar-header {
+    justify-content: space-between;
+  }
+
+  .sidebar-content {
+    display: none;
+  }
+
+  .sidebar-content.mobile-open {
+    display: flex;
+  }
+
+  .app-header {
+    position: relative;
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    padding: var(--space-2) var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .header-left {
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .app-main {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  /* Truncate page heading on mobile */
+  #page-heading {
+    font-size: var(--font-size-xs) !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+  }
+
+  /* Compress header-right on mobile */
+  .header-right {
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* Hide theme label text on mobile, keep icon */
+  .theme-label {
+    display: none;
+  }
+
+  /* Compact user badge on mobile */
+  .user-profile-badge > div:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .header-right {
+    gap: var(--space-1);
+  }
+
+  /* On narrow mobile viewports, simplify the demo switcher trigger to fit */
+  .demo-switcher-pill-wrapper .badge-warning {
+    display: none !important;
+  }
+
+  #btn-open-demo-switcher > span:nth-child(2) {
+    display: none !important;
+  }
+
+  .user-profile-badge {
+    padding: 2px 4px;
+  }
+
+  .app-main {
+    padding: var(--space-4) var(--space-3);
+  }
+}
+
