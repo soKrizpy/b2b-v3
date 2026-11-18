@@ -1,114 +1,33 @@
-:root {
-  color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-}
-
-.b2b-vite-shell {
-  min-height: 100vh;
-}
-
-.b2b-vite-intro {
-  margin-bottom: var(--space-6);
-}
-
-.b2b-vite-intro h2 {
-  margin: var(--space-3) 0 var(--space-2);
-}
-
-.b2b-vite-intro p {
-  max-width: 760px;
-  color: var(--color-text-muted);
-  line-height: var(--line-height-relaxed);
-}
-
-.b2b-vite-role-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-5);
-}
-
-.b2b-vite-role-card {
-  min-height: 230px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-5);
-  border-top: 4px solid var(--color-primary);
-}
-
-.role-card--admin { border-top-color: var(--color-warning); }
-.role-card--tutor { border-top-color: var(--color-primary); }
-.role-card--student { border-top-color: var(--color-success); }
-.role-card--parent { border-top-color: var(--color-info); }
-
-.b2b-vite-role-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.b2b-vite-role-icon {
-  font-size: 1.75rem;
-  line-height: 1;
-}
-
-.b2b-vite-role-card h3 {
-  margin: 0 0 var(--space-2);
-  font-size: var(--font-size-md);
-}
-
-.b2b-vite-role-card p {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-}
-
-.b2b-vite-role-action {
-  width: 100%;
-}
-
-.b2b-vite-notice {
-  margin-top: var(--space-5);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-
-.b2b-vite-notice p {
-  margin: var(--space-1) 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.b2b-vite-sidebar-note {
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-5);
-}
-
-.b2b-vite-sidebar-note small {
-  color: var(--color-text-muted);
-  line-height: var(--line-height-normal);
-}
-
-@media (max-width: 768px) {
-  .b2b-vite-role-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .b2b-vite-notice {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .b2b-vite-notice .btn {
-    width: 100%;
-  }
-}
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+.b2b-vite-shell { min-height: 100vh; }
+.b2b-vite-intro { margin-bottom: var(--space-6); }
+.b2b-vite-intro h2 { margin: var(--space-3) 0 var(--space-2); }
+.b2b-vite-intro p { max-width: 760px; color: var(--color-text-muted); line-height: var(--line-height-relaxed); }
+.b2b-vite-role-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-5); }
+.b2b-vite-role-card { min-height:230px; display:flex; flex-direction:column; justify-content:space-between; gap:var(--space-5); border-top:4px solid var(--color-primary); }
+.role-card--admin { border-top-color:var(--color-warning); } .role-card--tutor { border-top-color:var(--color-primary); } .role-card--student { border-top-color:var(--color-success); }
+.b2b-vite-role-meta { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); margin-bottom:var(--space-3); }
+.b2b-vite-role-icon { font-size:1.75rem; line-height:1; }
+.b2b-vite-role-card h3 { margin:0 0 var(--space-2); font-size:var(--font-size-md); }
+.b2b-vite-role-card p { margin:0; color:var(--color-text-muted); font-size:var(--font-size-sm); line-height:var(--line-height-relaxed); }
+.b2b-vite-role-action { width:100%; }
+.b2b-vite-notice { margin-top:var(--space-5); display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); }
+.b2b-vite-notice p { margin:var(--space-1) 0 0; color:var(--color-text-muted); font-size:var(--font-size-sm); }
+.b2b-vite-sidebar-note { display:grid; gap:var(--space-2); margin-top:var(--space-5); }
+.b2b-vite-sidebar-note small { color:var(--color-text-muted); line-height:var(--line-height-normal); }
+.student-dashboard { display:grid; gap:var(--space-5); }
+.student-welcome { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); padding:clamp(1.25rem,4vw,2rem); background:var(--color-surface); border-left:5px solid var(--color-success); }
+.student-welcome h2 { margin:var(--space-3) 0 var(--space-2); }
+.student-welcome p { max-width:620px; margin:0; color:var(--color-text-muted); line-height:var(--line-height-relaxed); }
+.student-welcome-art { font-size:clamp(3rem,8vw,5rem); }
+.student-dashboard-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-4); }
+.student-feature-card { display:flex; flex-direction:column; align-items:flex-start; gap:var(--space-3); min-height:220px; }
+.student-card-icon { font-size:2rem; line-height:1; }
+.student-eyebrow { color:var(--color-text-muted); font-size:var(--font-size-xs); font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+.student-feature-card h3 { margin:var(--space-1) 0 var(--space-2); }
+.student-feature-card p { margin:0; color:var(--color-text-muted); line-height:var(--line-height-relaxed); }
+.student-card-hint { margin-top:auto; padding-top:var(--space-2); color:var(--color-text-muted); font-size:var(--font-size-xs); }
+.student-continue { border-top:4px solid var(--color-success); } .student-parent-hub { border-top:4px solid var(--color-info); }
+.student-dashboard-note { margin:0; color:var(--color-text-muted); line-height:var(--line-height-relaxed); }
+@media(max-width:768px) { .b2b-vite-role-grid,.student-dashboard-grid { grid-template-columns:1fr; } .b2b-vite-notice { align-items:flex-start; flex-direction:column; } .b2b-vite-notice .btn { width:100%; } .student-welcome { align-items:flex-start; } }

@@ -273,3 +273,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Preserved
 - No database, authentication, Supabase production configuration, or existing Vanilla files were changed.
+
+
+## [0.1.2] - Student Dashboard Language & First View
+
+- Replaced technical wording in the student-facing experience with friendly, child-readable Indonesian.
+- Added the first Student Workspace dashboard view with learning journey, Quest Map, achievements, and Parent Hub sections.
+- Kept Parent Hub inside Student Workspace; no separate parent role or workspace was added.
+- Clearly marked unfinished learning content as coming soon; no backend or production data was changed.
