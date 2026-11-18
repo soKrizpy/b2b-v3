@@ -135,7 +135,7 @@ Perintah lain:
 - [ ] Migrasi Admin Workspace.
 - [ ] Migrasi Teacher Workspace.
 - [ ] Migrasi Student Workspace dan Lesson Engine.
-- [ ] Migrasi Parent Hub.
+- [ ] Integrasi Parent Hub sebagai area khusus di dalam Student Workspace (bukan workspace/role terpisah).
 - [ ] Integrasi backend setelah desain data dan keamanan disetujui.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.

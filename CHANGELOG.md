@@ -261,3 +261,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Status
 - This is the first migrated React vertical slice, not a completed conversion of all workspaces.
 - Build and browser behavior still require execution in a Node.js environment before being marked verified.
+
+
+## [0.1.1] - Workspace Model Correction - 2026-11-19
+
+### Changed
+- Removed Parent as a top-level role and workspace from the Vite React portal.
+- Parent Hub is defined as a dedicated parent-facing area within Student Workspace, not a separate parent account or login.
+- Student Workspace scope includes per-session reports, monthly evaluations, and invoice history for the parent-facing area.
+- Updated migration documentation and roadmap to consistently define three top-level workspaces: Admin, Tutor, and Student.
+
+### Preserved
+- No database, authentication, Supabase production configuration, or existing Vanilla files were changed.

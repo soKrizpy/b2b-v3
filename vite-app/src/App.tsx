@@ -3,7 +3,7 @@ import logoLight from "../../logo-b2b-light.svg";
 import logoDark from "../../logo-b2b-dark.svg";
 
 type Role = {
-  id: "admin" | "tutor" | "student" | "parent";
+  id: "admin" | "tutor" | "student";
   icon: string;
   label: string;
   title: string;
@@ -35,19 +35,10 @@ const roles: Role[] = [
     id: "student",
     icon: "🎒",
     label: "Siswa",
-    title: "Ruang Belajar Siswa",
-    description: "Ikuti Quest Map, pelajari materi bertahap, kerjakan latihan, dan kumpulkan proyek.",
+    title: "Student Workspace",
+    description: "Ikuti Quest Map, pelajari materi, kerjakan proyek, dan akses Parent Hub untuk laporan sesi, evaluasi bulanan, serta riwayat invoice anak.",
     badgeClass: "badge-approved",
     accentClass: "role-card--student"
-  },
-  {
-    id: "parent",
-    icon: "👨‍👩‍👧",
-    label: "Orang Tua",
-    title: "Parent Hub",
-    description: "Pantau laporan sesi, evaluasi bulanan, dan perkembangan belajar anak.",
-    badgeClass: "badge-in-progress",
-    accentClass: "role-card--parent"
   }
 ];
 
@@ -166,6 +157,12 @@ export default function App() {
                     Workspace ini sedang dalam antrean migrasi. Fitur belum dinyatakan selesai
                     sebelum alur aslinya dipindahkan dan diuji.
                   </p>
+                  {selected.id === "student" && (
+                    <p>
+                      Parent Hub menjadi bagian dari Student Workspace, bukan workspace atau role
+                      terpisah. Akses laporan orang tua akan memakai area khusus di akun siswa.
+                    </p>
+                  )}
                 </div>
                 <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSelectedRole(null)}>
                   Tutup

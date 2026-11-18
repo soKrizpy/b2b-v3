@@ -26,5 +26,5 @@ Open http://localhost:5173.
 - The root-level Vanilla application remains unchanged and is the visual/behavioral reference.
 - Existing design-token and component CSS files are imported from the legacy project.
 - This app currently contains the first React vertical slice: the role-selection portal and theme toggle.
-- Role workspaces are not considered migrated until their actual workflows, data behavior, accessibility, and responsive states are ported and tested.
+- Admin, Tutor, and Student are the only top-level workspaces. Parent Hub belongs inside Student Workspace and will provide a dedicated parent-facing area for per-session reports, monthly evaluations, and invoice history. It is not a separate parent login or role. Workspaces are not considered migrated until their actual workflows, data behavior, access controls, accessibility, and responsive states are ported and tested.
 - No production Supabase connection is configured.
