@@ -477,6 +477,18 @@ export class LessonWorkspace {
                 </div>
               </div>
             </div>
+
+            <!-- PARENT HUB: parent-facing area remains inside Student Workspace -->
+            <section class="card parent-hub-entry-card" aria-labelledby="parent-hub-entry-title">
+              <div class="achievements-header">
+                <div class="achieve-icon-wrap" aria-hidden="true">💛</div>
+                <div>
+                  <h4 class="achieve-title" id="parent-hub-entry-title">Ruang Khusus Ayah/Bunda</h4>
+                  <span class="badge badge-in-progress">Sedang disiapkan</span>
+                </div>
+              </div>
+              <p class="daily-sub">Ayah dan Bunda nantinya bisa melihat laporan setiap pertemuan, perkembangan bulanan, dan riwayat tagihan di area khusus ini.</p>
+            </section>
           </div>
         </div>
 
