@@ -134,8 +134,8 @@ Perintah lain:
 - [x] Reuse design tokens, stylesheet, dan logo dari aplikasi Vanilla.
 - [ ] Migrasi Admin Workspace.
 - [ ] Migrasi Teacher Workspace.
-- [ ] Migrasi Student Workspace dan Lesson Engine.
-- [ ] Integrasi Parent Hub sebagai area khusus di dalam Student Workspace (bukan workspace/role terpisah).
+- [x] Student Workspace awal memakai kembali Lesson Engine dan data contoh yang sudah ada; penyempurnaan React bertahap.
+- [ ] Integrasi akses Parent Hub yang aman sebagai area khusus di dalam Student Workspace (bukan workspace/role terpisah).
 - [ ] Integrasi backend setelah desain data dan keamanan disetujui.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.
