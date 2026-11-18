@@ -1,8 +1,8 @@
 {
   "id": "les_scratch_motion_01",
-  "title": "Scratch — Basic Motion: Membuat Karakter Bergerak",
-  "subtitle": "Kuasai dasar koordinat, blok Motion, dan kontrol Sprite di Scratch 3.0",
-  "description": "Pelajari cara menggerakkan Sprite kucing di Scratch menggunakan blok Motion dan Events, lalu buat karaktermu bergerak bolak-balik saat tombol panah keyboard ditekan.",
+  "title": "Scratch — Gerak Dasar: Membuat Karakter Bergerak",
+  "subtitle": "Yuk, belajar memberi perintah agar karakter Scratch bisa bergerak sesuai keinginanmu!",
+  "description": "Ajak kucing Scratch bergerak ke kanan dan kiri dengan menyusun beberapa blok perintah dan mencoba tombol panah.",
   "category": "Visual Block Programming",
   "trackId": "track_scratch_starter",
   "trackTitle": "Scratch Starter Adventure",
@@ -33,7 +33,7 @@
     {
       "id": "brief",
       "number": 1,
-      "title": "Brief & Misi",
+      "title": "Kenalan dengan Misi",
       "badge": "Misi Awal",
       "content": {
         "overview": "Selamat datang di petualangan koding pertamamu! Di misi ini, kamu akan menjadi sutradara bagi seekor kucing oranye bernama 'Scratch Cat'. Tugasmu adalah memberinya instruksi langkah demi langkah agar ia bisa berjalan dan meluncur melintasi layar komputer.",
@@ -286,7 +286,7 @@
     {
       "id": "practice",
       "number": 3,
-      "title": "Guided Practice",
+      "title": "Ayo Praktik",
       "badge": "Praktik Terbimbing",
       "content": {
         "instructions": "Buka Scratch di tab baru, lalu ikuti 4 langkah terpandu berikut. Centang setiap langkah setelah kamu berhasil melakukannya di Scratch!",
@@ -325,7 +325,7 @@
     {
       "id": "check",
       "number": 4,
-      "title": "Comprehension Check",
+      "title": "Kuis Singkat",
       "badge": "Uji Pemahaman",
       "questions": [
         {
@@ -366,7 +366,7 @@
     {
       "id": "challenge",
       "number": 5,
-      "title": "Project Challenge",
+      "title": "Tantangan Karya",
       "badge": "Tantangan Mandiri",
       "challenge": {
         "title": "Tantangan Mandiri: Robot Patroli Cerdas",
@@ -390,7 +390,7 @@
     {
       "id": "submission",
       "number": 6,
-      "title": "Project Submission",
+      "title": "Kirim Karyamu",
       "badge": "Pengumpulan Proyek",
       "submission": {
         "instructions": "Setelah selesai menguji karyamu di Scratch, kumpulkan bukti hasil belajarmu di bawah ini agar guru pembimbing dapat memeriksa dan memberikan umpan balik (feedback).",
