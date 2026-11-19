@@ -627,7 +627,7 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
 
     await expect(page.getByText("Tagihan November 2026")).toBeVisible();
-    await expect(page.getByText(/Rp\\s?150\\.000/)).toBeVisible();
+    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toContainText("150.000");
     await expect(page.getByText("Lunas")).toBeVisible();
     await expect(page.getByText("Tagihan milik Budi")).toHaveCount(0);
     await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toBeVisible();
