@@ -7,9 +7,9 @@
 
 import { MockService } from './services/mock-service.js';
 import { LearningStateRepository } from './services/learning-state-repository.js';
-import { SessionStore, SessionReportRepository, MonthlyEvaluationStore, MonthlyEvaluationRepository } from './services/learning-record-repository.js';
+import { SessionReportRepository, MonthlyEvaluationRepository } from './services/learning-record-repository.js';
 import { IdentityRepository } from './services/identity-repository.js';
-import { ClassSessionStore, ClassSessionRepository } from './services/class-session-repository.js';
+import { ClassSessionRepository } from './services/class-session-repository.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -102,20 +102,20 @@ export class TeacherWorkspace {
 
       // Subscribe to operational class-session changes.
       if (!this._unsubscribeClassSessionStore) {
-        this._unsubscribeClassSessionStore = ClassSessionStore.subscribe(() => {
+        this._unsubscribeClassSessionStore = ClassSessionRepository.subscribe(() => {
           void this.refreshSchedule();
         });
       }
 
       if (!this._unsubscribeMonthlyEvaluationStore) {
-        this._unsubscribeMonthlyEvaluationStore = MonthlyEvaluationStore.subscribe(() => {
+        this._unsubscribeMonthlyEvaluationStore = MonthlyEvaluationRepository.subscribe(() => {
           void this.refreshMonthlyEvaluations();
         });
       }
 
       // Subscribe to SessionStore mutations
       if (!this._unsubscribeSessionStore) {
-        this._unsubscribeSessionStore = SessionStore.subscribe(() => {
+        this._unsubscribeSessionStore = SessionReportRepository.subscribe(() => {
           void this.refreshTutorReports();
         });
       }
