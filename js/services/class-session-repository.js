@@ -6,8 +6,14 @@
  */
 import { ClassSessionStore } from './class-session-store.js';
 
+export { ClassSessionStore };
+
 export const ClassSessionRepository = {
   async recordAttendance(sessionId, attendanceStatus, actor) {
     return ClassSessionStore.recordAttendance(sessionId, attendanceStatus, actor);
+  },
+
+  async cancelSession(sessionId, actor, reason = '') {
+    return ClassSessionStore.cancelSession(sessionId, actor, reason);
   }
 };
