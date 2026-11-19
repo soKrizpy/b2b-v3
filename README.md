@@ -144,7 +144,9 @@ Parent Hub versi demo terintegrasi sebagai area di dalam Student Workspace; sisw
 - [x] Admin dapat membuat tagihan bulanan dari sesi operasional yang benar-benar terlaksana dengan status kehadiran hadir/terlambat; nominal per item disimpan sebagai snapshot.
 - [x] Admin dapat menandai tagihan lunas tanpa memasukkan tanggal atau metode pembayaran; tagihan tidak dihapus.
 - [x] Parent Hub menampilkan riwayat tagihan milik siswa yang sedang masuk, termasuk tagihan lunas; data siswa lain tidak ditampilkan.
-- [ ] Evaluasi perkembangan bulanan masih menunggu alur input dan penyimpanan yang sebenarnya.
+- [x] Tutor dapat menyimpan draf evaluasi bulanan dan mengirim evaluasi berisi penilaian, ringkasan, hal yang sudah dikuasai, serta target bulan berikutnya.
+- [x] Parent Hub menampilkan hanya evaluasi berstatus terkirim milik siswa yang sedang masuk; draf dan evaluasi siswa lain tidak ditampilkan.
+- [ ] Penyimpanan evaluasi masih demo localStorage; validasi penugasan tutor dan akses Parent Hub harus ditegakkan di backend sebelum produksi.
 - [ ] Otorisasi Parent Hub yang aman di sisi server dan integrasi backend masih menunggu desain data serta keamanan disetujui. Implementasi saat ini tetap demo lokal berbasis localStorage.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.
