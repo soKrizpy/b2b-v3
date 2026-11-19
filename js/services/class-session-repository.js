@@ -15,5 +15,17 @@ export const ClassSessionRepository = {
 
   async cancelSession(sessionId, actor, reason = '') {
     return ClassSessionStore.cancelSession(sessionId, actor, reason);
+  },
+
+  async createRecurringSessionSeries(data) {
+    return ClassSessionStore.createRecurringSessionSeries(data);
+  },
+
+  async softDeleteSession(sessionId, actor) {
+    return ClassSessionStore.softDeleteSession(sessionId, actor);
+  },
+
+  async createReplacementSession(originalSessionId, data, actor) {
+    return ClassSessionStore.createReplacementSession(originalSessionId, data, actor);
   }
 };
