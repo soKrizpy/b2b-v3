@@ -1059,14 +1059,14 @@ test.describe("Local demo domain repository adapters", () => {
         sessionNumber: 1,
         studentId: "repository-billing-student",
         tutorId: tutor.id,
-        scheduledStartAt: "2026-12-22T09:00:00+07:00",
+        scheduledStartAt: "2026-10-22T09:00:00+07:00",
         durationMinutes: 60
       });
       const attendance = ClassSessionStore.recordAttendance("repository-billing-session", "present", tutor);
       const ratePromise = BillingRepository.setRate("repository-billing-student", 75000, admin);
       const rateIsPromise = ratePromise instanceof Promise;
       const rate = await ratePromise;
-      const draft = await BillingRepository.createInvoice("repository-billing-student", "2026-12", admin);
+      const draft = await BillingRepository.createInvoice("repository-billing-student", "2026-10", admin);
       const invoiceId = draft.invoice?.id;
       const issued = await BillingRepository.issueInvoice(invoiceId, admin);
       const paid = await BillingRepository.markPaid(invoiceId, admin);
