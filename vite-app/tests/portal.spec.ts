@@ -666,8 +666,9 @@ test.describe("Bits2Bytes demo portal", () => {
         invoices: {
           alex_invoice: {
             id: "alex_invoice", studentId: "usr_stu_001", period: "2026-11",
-            status: "paid", rateSnapshot: 75000, totalSessions: 2, totalAmount: 150000,
-            items: [{ sessionId: "alex-s1", sessionNumber: 1, sessionDate: "2026-11-10T09:00:00+07:00", amount: 75000 }],
+            status: "paid", rateSnapshot: 75000, totalSessions: 2, subtotalAmount: 150000,
+            discountAmount: 5000, additionalCharges: 10000, totalAmount: 155000,
+            adjustmentNote: "Biaya proyek khusus", items: [{ sessionId: "alex-s1", sessionNumber: 1, sessionDate: "2026-11-10T09:00:00+07:00", amount: 75000 }],
             createdAt: "2026-11-19T08:00:00.000Z"
           },
           alex_draft: {
@@ -690,7 +691,10 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
 
     await expect(page.getByText("Tagihan November 2026")).toBeVisible();
-    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toContainText("150.000");
+    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toContainText("155.000");
+    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toContainText("Diskon khusus");
+    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toContainText("Biaya tambahan");
+    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toContainText("Biaya proyek khusus");
     await expect(page.getByText("Lunas")).toBeVisible();
     await expect(page.getByText("Tagihan milik Budi")).toHaveCount(0);
     await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toBeVisible();
