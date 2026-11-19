@@ -117,6 +117,9 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations">
             👩‍🏫 Relasi Tutor &amp; Siswa (${assignments.length})
           </button>
+          <button type="button" class="btn btn-sm ${this.activeTab === 'schedule' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="schedule">
+            🗓️ Jadwal Sesi
+          </button>
           <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
             💳 Tarif &amp; Tagihan
           </button>
@@ -137,6 +140,8 @@ export class AdminWorkspace {
     switch (this.activeTab) {
       case 'tutor-relations':
         return this.renderTutorRelationsView();
+      case 'schedule':
+        return this.renderScheduleView();
       case 'billing':
         return this.renderBillingView();
       case 'users':
@@ -341,6 +346,123 @@ export class AdminWorkspace {
   }
 
   /* --------------------------------------------------------------------------
+     TAB: CLASS SCHEDULING
+     -------------------------------------------------------------------------- */
+  renderScheduleView() {
+    const students = IdentityStore.getAllUsers({ role: 'student' }).filter(user => user.status === 'active');
+    const tutors = IdentityStore.getAllUsers({ role: 'tutor' }).filter(user => user.status === 'active');
+    const usersById = new Map(IdentityStore.getAllUsers().map(user => [user.id, user]));
+    const sessions = ClassSessionStore.getAllSessions().sort((a, b) =>
+      new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime()
+    );
+    const today = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date());
+    const weekdays = [
+      { value: 1, label: 'Senin' }, { value: 2, label: 'Selasa' },
+      { value: 3, label: 'Rabu' }, { value: 4, label: 'Kamis' },
+      { value: 5, label: 'Jumat' }, { value: 6, label: 'Sabtu' },
+      { value: 0, label: 'Minggu' }
+    ];
+    const statusLabels = {
+      scheduled: 'Terjadwal', held: 'Terlaksana', not_held: 'Tidak terlaksana',
+      cancelled: 'Dibatalkan', soft_deleted: 'Dihapus administratif'
+    };
+
+    return `
+      <section style="display:flex;flex-direction:column;gap:var(--space-4);">
+        <div class="card" style="padding:var(--space-4);">
+          <h3 style="margin-top:0;">Buat seri jadwal kelas</h3>
+          <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);">
+            Pilih beberapa hari dan jumlah pertemuan. Jika tutor atau siswa bentrok, tanggal tersebut dilewati dan sistem mencari hari pilihan berikutnya sampai jumlah sesi terpenuhi. Waktu menggunakan WIB.
+          </p>
+          <form id="admin-create-series-form" style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--space-3);">
+              <label>Siswa
+                <select name="studentId" required style="width:100%;">
+                  <option value="">Pilih siswa</option>
+                  ${students.map(user => `<option value="${escapeHtml(user.id)}">${escapeHtml(user.displayName)}</option>`).join('')}
+                </select>
+              </label>
+              <label>Tutor
+                <select name="tutorId" required style="width:100%;">
+                  <option value="">Pilih tutor</option>
+                  ${tutors.map(user => `<option value="${escapeHtml(user.id)}">${escapeHtml(user.displayName)}</option>`).join('')}
+                </select>
+              </label>
+              <label>Tanggal mulai
+                <input name="startDate" type="date" min="${today}" value="${today}" required style="width:100%;">
+              </label>
+              <label>Jam mulai (WIB)
+                <input name="startTime" type="time" value="16:00" required style="width:100%;">
+              </label>
+              <label>Jumlah pertemuan
+                <input name="targetCount" type="number" min="1" max="100" value="12" required style="width:100%;">
+              </label>
+              <label>Durasi pertemuan (menit)
+                <input name="durationMinutes" type="number" min="1" max="480" value="60" required style="width:100%;">
+              </label>
+            </div>
+            <fieldset style="border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);padding:var(--space-3);">
+              <legend>Hari kelas berulang</legend>
+              <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;">
+                ${weekdays.map(day => `<label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="weekdays" value="${day.value}"> ${day.label}</label>`).join('')}
+              </div>
+            </fieldset>
+            <label>Link Meet / Zoom utama (opsional)
+              <input name="meetingUrl" type="url" placeholder="https://meet.google.com/..." style="width:100%;">
+            </label>
+            <button class="btn btn-primary" type="submit">Buat seri jadwal</button>
+          </form>
+        </div>
+
+        <div class="card" style="padding:var(--space-4);">
+          <h3 style="margin-top:0;">Daftar sesi</h3>
+          ${sessions.length ? `<div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            ${sessions.map(session => {
+              const student = usersById.get(session.studentId);
+              const tutor = usersById.get(session.tutorId);
+              const status = statusLabels[session.status] || session.status;
+              const replacementPending = session.replacementRequired && !session.replacementSessionId &&
+                ['cancelled', 'soft_deleted'].includes(session.status);
+              return `<article class="card" style="padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2);">
+                <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;">
+                  <div>
+                    <strong>Sesi ke-${Number(session.sessionNumber) || '-' } · ${escapeHtml(student ? student.displayName : session.studentId)}</strong>
+                    <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">
+                      ${escapeHtml(tutor ? tutor.displayName : session.tutorId)} · ${escapeHtml(formatSessionDateTime(session.scheduledStartAt))} · ${Number(session.durationMinutes)} menit
+                    </div>
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">
+                      Status: ${escapeHtml(status)} · Kehadiran: ${escapeHtml(session.attendanceStatus || 'belum dicatat')}
+                    </div>
+                    ${session.meetingUrl ? `<a href="${escapeHtml(session.meetingUrl)}" target="_blank" rel="noopener noreferrer">Buka link kelas</a>` : ''}
+                    ${session.cancellation?.reason ? `<div>Alasan pembatalan: ${escapeHtml(session.cancellation.reason)}</div>` : ''}
+                  </div>
+                  <div style="display:flex;gap:var(--space-2);align-items:start;flex-wrap:wrap;">
+                    ${session.status === 'scheduled' ? `
+                      <button type="button" class="btn btn-secondary btn-sm" data-cancel-session="${escapeHtml(session.id)}">Batalkan</button>
+                      <button type="button" class="btn btn-ghost btn-sm" data-soft-delete-session="${escapeHtml(session.id)}">Hapus administratif</button>
+                    ` : ''}
+                    ${session.replacementSessionId ? '<span class="badge badge-approved">Pengganti terhubung</span>' : ''}
+                  </div>
+                </div>
+                ${replacementPending ? `
+                  <form data-replacement-form="${escapeHtml(session.id)}" style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:end;border-top:1px solid var(--color-border-subtle);padding-top:var(--space-2);">
+                    <label>Waktu sesi pengganti (WIB)
+                      <input type="datetime-local" name="replacementStartAt" required>
+                    </label>
+                    <button type="submit" class="btn btn-primary btn-sm">Buat &amp; hubungkan pengganti</button>
+                  </form>
+                ` : ''}
+              </article>`;
+            }).join('')}
+          </div>` : '<p style="color:var(--color-text-muted);">Belum ada jadwal sesi.</p>'}
+        </div>
+      </section>
+    `;
+  }
+
+  /* --------------------------------------------------------------------------
      TAB 4: STUDENT RATES & INVOICES
      -------------------------------------------------------------------------- */
   renderBillingView() {
@@ -410,6 +532,86 @@ export class AdminWorkspace {
 
   bindActionEvents() {
     // Save per-student rates
+    const createSeriesForm = this.container.querySelector('#admin-create-series-form');
+    if (createSeriesForm) {
+      createSeriesForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(createSeriesForm);
+        const result = ClassSessionStore.createRecurringSessionSeries({
+          studentId: String(formData.get('studentId') || ''),
+          tutorId: String(formData.get('tutorId') || ''),
+          startDate: String(formData.get('startDate') || ''),
+          startTime: String(formData.get('startTime') || ''),
+          weekdays: formData.getAll('weekdays').map(Number),
+          targetCount: Number(formData.get('targetCount')),
+          durationMinutes: Number(formData.get('durationMinutes')),
+          meetingUrl: String(formData.get('meetingUrl') || '')
+        });
+        if (!result.success) {
+          showToast({ title: 'Jadwal gagal dibuat', message: result.message, type: 'error' });
+        } else {
+          const skipped = result.skippedSlots.filter(slot => slot.reason === 'CONFLICT').length;
+          showToast({
+            title: 'Seri jadwal berhasil dibuat',
+            message: `${result.sessions.length} sesi dibuat.${skipped ? ` ${skipped} slot bentrok dilewati.` : ''}`,
+            type: 'success'
+          });
+          this.render();
+        }
+      });
+    }
+
+    this.container.querySelectorAll('[data-cancel-session]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = ClassSessionStore.cancelSession(
+          button.getAttribute('data-cancel-session'),
+          AuthService.getCurrentSession()?.user
+        );
+        if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
+        else {
+          showToast({ title: 'Sesi dibatalkan', message: 'Sesi tidak masuk tagihan.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('[data-soft-delete-session]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = ClassSessionStore.softDeleteSession(
+          button.getAttribute('data-soft-delete-session'),
+          AuthService.getCurrentSession()?.user
+        );
+        if (!result.success) showToast({ title: 'Penghapusan gagal', message: result.message, type: 'error' });
+        else {
+          showToast({ title: 'Sesi dihapus administratif', message: 'Riwayat tetap tersimpan dan sesi pengganti diperlukan.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('[data-replacement-form]').forEach(form => {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const localStart = String(formData.get('replacementStartAt') || '');
+        const start = new Date(localStart);
+        if (!localStart || Number.isNaN(start.getTime())) {
+          showToast({ title: 'Waktu tidak valid', message: 'Pilih waktu sesi pengganti terlebih dahulu.', type: 'error' });
+          return;
+        }
+        const result = ClassSessionStore.createReplacementSession(
+          form.getAttribute('data-replacement-form'),
+          { scheduledStartAt: start.toISOString() },
+          AuthService.getCurrentSession()?.user
+        );
+        if (!result.success) showToast({ title: 'Sesi pengganti gagal dibuat', message: result.message, type: 'error' });
+        else {
+          showToast({ title: 'Sesi pengganti terhubung', message: 'Riwayat sesi asal tetap tersimpan.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
     this.container.querySelectorAll('[data-rate-form]').forEach(form => {
       form.addEventListener('submit', event => {
         event.preventDefault();
@@ -762,6 +964,16 @@ export class AdminWorkspace {
   handleStoreChange() {
     this.render();
   }
+}
+
+function formatSessionDateTime(value) {
+  if (!value) return 'Waktu tidak diketahui';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  }).format(date);
 }
 
 function formatInvoiceDate(value) {
