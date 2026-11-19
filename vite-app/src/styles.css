@@ -67,3 +67,13 @@
   .admin-workspace-host #admin-tab-body [style*="grid-template-columns"] { grid-template-columns:minmax(0,1fr) !important; }
   .admin-workspace-host .modal-dialog { max-height:calc(100dvh - 2rem); overflow:auto; }
 }
+
+
+/* Explicit demo sign-in — compact, clear, and responsive. */
+.b2b-vite-demo-note { margin-top:var(--space-4); color:var(--color-text-muted); font-size:var(--font-size-sm); }
+.b2b-login-panel { display:grid; gap:var(--space-4); max-width:560px; padding:clamp(1.25rem,4vw,2rem); }
+.b2b-login-panel .b2b-vite-intro { margin:0; }
+.b2b-login-panel .form-control { width:100%; min-height:44px; }
+.b2b-login-panel > .btn-primary { width:100%; min-height:44px; }
+.b2b-login-disclaimer { margin:0; padding:var(--space-3); color:var(--color-text-muted); background:var(--color-bg-surface-subtle); border-radius:var(--radius-md); font-size:var(--font-size-xs); line-height:var(--line-height-relaxed); }
+.b2b-login-error { margin:0; color:var(--color-danger); font-size:var(--font-size-sm); }
