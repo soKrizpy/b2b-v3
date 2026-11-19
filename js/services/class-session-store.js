@@ -200,6 +200,91 @@ export const ClassSessionStore = {
       : { success: false, error: 'WRITE_FAILED', message: 'Sesi gagal disimpan.' };
   },
 
+  createSessionSeries(data) {
+    if (!data || typeof data !== 'object' || !Array.isArray(data.sessions) || data.sessions.length === 0) {
+      return { success: false, error: 'INVALID_SERIES', message: 'Seri harus berisi minimal satu jadwal sesi.' };
+    }
+
+    const studentId = typeof data.studentId === 'string' ? data.studentId.trim() : '';
+    const tutorId = typeof data.tutorId === 'string' ? data.tutorId.trim() : '';
+    const seriesId = typeof data.seriesId === 'string' ? data.seriesId.trim() : '';
+    const duration = Number(data.durationMinutes);
+    if (!studentId || !tutorId || !seriesId) {
+      return { success: false, error: 'REQUIRED_FIELDS', message: 'Siswa, tutor, dan seri pertemuan wajib diisi.' };
+    }
+    if (!Number.isInteger(duration) || duration < 1 || duration > 480) {
+      return { success: false, error: 'INVALID_DURATION', message: 'Durasi sesi harus 1–480 menit.' };
+    }
+
+    const records = this._read();
+    const draftRecords = { ...records };
+    const ids = new Set();
+    const sessionNumbers = new Set();
+    const sessions = [];
+    const conflicts = [];
+    const now = new Date().toISOString();
+
+    for (const item of data.sessions) {
+      const start = item && typeof item.scheduledStartAt === 'string' ? new Date(item.scheduledStartAt) : null;
+      const sessionNumber = Number(item && item.sessionNumber);
+      const id = item && typeof item.id === 'string' && item.id.trim() ? item.id.trim() : makeId();
+
+      if (!start || Number.isNaN(start.getTime())) {
+        return { success: false, error: 'INVALID_START', message: 'Salah satu waktu mulai sesi tidak valid.' };
+      }
+      if (!Number.isInteger(sessionNumber) || sessionNumber < 1 || sessionNumbers.has(sessionNumber)) {
+        return { success: false, error: 'INVALID_SESSION_NUMBER', message: 'Nomor sesi harus unik dan berupa bilangan bulat positif.' };
+      }
+      if (records[id] || ids.has(id)) {
+        return { success: false, error: 'DUPLICATE_ID', message: 'ID sesi sudah digunakan.' };
+      }
+
+      const session = {
+        id, seriesId, sessionNumber, studentId, tutorId,
+        scheduledStartAt: start.toISOString(),
+        durationMinutes: duration,
+        meetingUrl: typeof item.meetingUrl === 'string'
+          ? item.meetingUrl.trim()
+          : (typeof data.meetingUrl === 'string' ? data.meetingUrl.trim() : ''),
+        status: 'scheduled',
+        attendanceStatus: 'not_recorded',
+        attendanceRecordedBy: null,
+        attendanceRecordedAt: null,
+        cancellation: null,
+        replacementRequired: false,
+        replacementSessionId: null,
+        replacementForSessionId: null,
+        deletedAt: null,
+        deletedBy: null,
+        createdAt: now,
+        updatedAt: now,
+        version: 1
+      };
+
+      const sessionConflicts = this._hasScheduleConflict(session, draftRecords);
+      if (sessionConflicts.length) {
+        conflicts.push({ sessionId: id, sessionNumber, conflicts: sessionConflicts });
+      }
+      ids.add(id);
+      sessionNumbers.add(sessionNumber);
+      draftRecords[id] = session;
+      sessions.push(session);
+    }
+
+    if (conflicts.length) {
+      return {
+        success: false,
+        error: 'SCHEDULE_CONFLICT',
+        message: 'Seri tidak disimpan karena satu atau lebih jadwal bentrok.',
+        conflicts
+      };
+    }
+
+    return this._write(draftRecords, 'createSeries', { seriesId, sessionIds: sessions.map(session => session.id) })
+      ? { success: true, seriesId, sessions }
+      : { success: false, error: 'WRITE_FAILED', message: 'Seri sesi gagal disimpan.' };
+  },
+
   recordAttendance(sessionId, attendanceStatus, actor) {
     if (!validActor(actor, ['tutor'])) {
       return { success: false, error: 'FORBIDDEN', message: 'Hanya tutor yang dapat mencatat kehadiran.' };
