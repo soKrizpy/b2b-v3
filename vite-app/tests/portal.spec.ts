@@ -184,7 +184,9 @@ test.describe("Bits2Bytes demo portal", () => {
 
     await expect(page.getByRole("heading", { name: "Ruang Khusus Ayah/Bunda" })).toBeVisible();
     await expect(page.getByText("Sedang disiapkan", { exact: true })).toBeVisible();
-    await expect(page.getByText(/laporan setiap pertemuan.*perkembangan bulanan.*riwayat tagihan/i)).toBeVisible();
+    const parentHubDescription = page.getByText(/laporan setiap pertemuan.*perkembangan bulanan.*riwayat tagihan/i);
+    await parentHubDescription.scrollIntoViewIfNeeded();
+    await expect(parentHubDescription).toBeVisible();
   });
 
   test("student can sign in and see the learning dashboard", async ({ page }) => {
