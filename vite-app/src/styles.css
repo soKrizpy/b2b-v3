@@ -35,3 +35,16 @@
 .student-experience { display: grid; gap: var(--space-4); }
 .student-loading { padding: var(--space-6); color: var(--color-text-secondary); }
 .student-portal-back { margin-top: var(--space-5); }
+
+/* React migration — keep tutor workspace readable on narrow screens. */
+.tutor-experience { display:grid; gap:var(--space-4); min-width:0; }
+.tutor-loading { padding:var(--space-6); color:var(--color-text-secondary); }
+.tutor-workspace-host { min-width:0; }
+.tutor-drawer-section { display:grid; gap:var(--space-2); margin-bottom:var(--space-4); padding:var(--space-4); background:var(--color-bg-surface-subtle); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); }
+.tutor-drawer-section p { margin:0; color:var(--color-text-secondary); }
+.tutor-drawer-section a { overflow-wrap:anywhere; }
+.tutor-drawer-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-3); margin-bottom:var(--space-4); }
+.tutor-drawer-stats > div { display:grid; gap:var(--space-1); padding:var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); }
+.tutor-drawer-stats small { color:var(--color-text-muted); }
+.workspace-portal-back { margin-top:var(--space-5); }
+@media(max-width:768px) { .tutor-drawer-stats { grid-template-columns:1fr 1fr; } }
