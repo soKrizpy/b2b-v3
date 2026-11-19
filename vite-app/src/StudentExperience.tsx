@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import lessonData from "../../data/mock/lesson-scratch-motion.json";
 import submissions from "../../data/mock/submissions.json";
+import { localDemoRepositories } from "./data/local-demo-repositories";
 // @ts-ignore - Existing JavaScript controller is reused during incremental migration.
 import { LessonWorkspace } from "../../js/lesson-workspace.js";
 // @ts-ignore - Existing JavaScript data store is reused during incremental migration.
 import { StateStore } from "../../js/services/state-store.js";
-// @ts-ignore - Validate the active role again at the workspace boundary.
-import { AuthService } from "../../js/services/auth-service.js";
 
 type StudentUser = { id: string; displayName: string; avatar?: string; gradeLevel?: string; role: string };
 type WorkspaceController = { init: () => void; destroy: () => void };
@@ -18,28 +17,38 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    let active = true;
+    let controller: WorkspaceController | null = null;
     const host = hostRef.current;
     if (!host) return;
-    try {
-      const session = AuthService.getCurrentSession();
-      if (user.role !== "student" || session?.user?.id !== user.id || session?.user?.role !== "student") {
-        throw new Error("Sesi siswa tidak valid. Silakan masuk kembali.");
+
+    void (async () => {
+      try {
+        // Re-read identity through the same repository boundary used by portal login.
+        const session = await localDemoRepositories.auth.getSession();
+        if (!active) return;
+        if (user.role !== "student" || session?.user?.id !== user.id || session?.user?.role !== "student") {
+          throw new Error("Sesi siswa tidak valid. Silakan masuk kembali.");
+        }
+
+        StateStore.seedSubmissionsIfEmpty(submissions);
+        controller = new LessonWorkspace(host, lessonData, {
+          id: user.id, name: user.displayName, avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
+          role: "student", gradeLevel: user.gradeLevel || "Siswa"
+        }) as WorkspaceController;
+        controllerRef.current = controller;
+        controller.init();
+        if (active) setReady(true);
+      } catch (error) {
+        console.error("Student experience failed to initialize:", error);
+        if (active) setFailed(true);
       }
-      StateStore.seedSubmissionsIfEmpty(submissions);
-      const controller = new LessonWorkspace(host, lessonData, {
-        id: user.id, name: user.displayName, avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
-        role: "student", gradeLevel: user.gradeLevel || "Siswa"
-      }) as WorkspaceController;
-      controllerRef.current = controller;
-      controller.init();
-      setReady(true);
-    } catch (error) {
-      console.error("Student experience failed to initialize:", error);
-      setFailed(true);
-    }
+    })();
+
     return () => {
-      controllerRef.current?.destroy();
-      controllerRef.current = null;
+      active = false;
+      controller?.destroy();
+      if (controllerRef.current === controller) controllerRef.current = null;
     };
   }, [user]);
 
