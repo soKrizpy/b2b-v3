@@ -102,7 +102,7 @@ Never treat a zero-row update as success. For update operations, verify the retu
 3. [x] Migrate Student Workspace session validation to `AuthRepository`; retain the legacy learning controller and data stores.
 4. [x] Migrate Tutor Workspace session validation to `AuthRepository`; retain the legacy tutor controller and domain stores.
 5. [x] Migrate Admin Workspace session validation and demo identity initialization to `AuthRepository`/`IdentityRepository`; retain the legacy admin controller and domain stores.
-6. [ ] Add direct adapter contract tests and migrate domain operations one use case at a time, preserving existing behavior.
+6. [x] Add browser coverage for the async attendance repository boundary and Tutor cancellation (required reason, assigned-tutor ownership, cancelled state, and replacement flag); migrate domain operations one use case at a time, preserving existing behavior.
 7. Start a local/development Supabase instance only after the user confirms the local environment is ready.
 8. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
 9. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
@@ -113,9 +113,9 @@ Never treat a zero-row update as success. For update operations, verify the retu
 ## 9. Current status and next gate
 
 - The portal auth/identity adapter is consumed by `vite-app/src/App.tsx`; `StudentExperience.tsx` and `TutorExperience.tsx` re-read the active session before mounting their legacy controllers, while `AdminExperience.tsx` initializes demo identity and checks the active Admin session through the repositories.
-- The domain adapter exposes the four existing domain stores through asynchronous methods while preserving synchronous subscriptions and pure helpers.
+- The domain adapter exposes the four existing domain stores through asynchronous methods while preserving synchronous subscriptions and pure helpers. Tutor attendance and Tutor cancellation now use the shared async `ClassSessionRepository`; the demo store remains the persistence layer. `ClassSessionRepository` now owns the Tutor attendance and cancellation operations; the Tutor workspace awaits both operations and reports failures without claiming success.
 - The domain adapter baseline completed successfully in [GitHub Actions run #86](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468). The Student session-gate change and subsequent Tutor/Admin session-gate changes are verified by [GitHub Actions run #87](https://github.com/soKrizpy/b2b-v3/actions/runs/44518750410) and the latest follow-up run will verify the Tutor/Admin migration.
-- All three workspace boundaries now use the repository layer to re-check the active demo session before mounting: Student and Tutor use `AuthRepository`; Admin uses `AuthRepository` plus `IdentityRepository` for the existing demo seed initialization. Workspace domain operations and controllers remain legacy and are not yet fully migrated.
+- All three workspace boundaries use the repository layer to re-check the active demo session before mounting. The first two Tutor domain operations—attendance and cancellation—now cross the async class-session repository boundary. Other Tutor operations and Admin/Student domain operations still use legacy stores.
 - No Supabase project, database, Auth user, credential, or production data has been accessed or changed.
 - No migration SQL has been generated or executed.
 - Actual Supabase adapter work waits for a confirmed local/development environment.
