@@ -10,6 +10,7 @@ import { StateStore } from './services/state-store.js';
 import { SessionStore } from './services/session-store.js';
 import { IdentityStore } from './services/identity-store.js';
 import { ClassSessionStore } from './services/class-session-store.js';
+import { ClassSessionRepository } from './services/class-session-repository.js';
 import { MonthlyEvaluationStore } from './services/monthly-evaluation-store.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
@@ -1068,17 +1069,28 @@ export class TeacherWorkspace {
 
   bindClassScheduleEvents() {
     this.container.querySelectorAll('[data-record-attendance]').forEach(button => {
-      button.addEventListener('click', () => {
-        const result = ClassSessionStore.recordAttendance(
-          button.getAttribute('data-session-id'),
-          button.getAttribute('data-record-attendance'),
-          this.user
-        );
-        if (!result.success) {
-          showToast({ title: 'Kehadiran gagal dicatat', message: result.message, type: 'error' });
-        } else {
-          showToast({ title: 'Kehadiran tersimpan', message: 'Status sesi diperbarui dan digunakan sebagai dasar tagihan.', type: 'success' });
-          this.render();
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const result = await ClassSessionRepository.recordAttendance(
+            button.getAttribute('data-session-id'),
+            button.getAttribute('data-record-attendance'),
+            this.user
+          );
+          if (!result.success) {
+            showToast({ title: 'Kehadiran gagal dicatat', message: result.message, type: 'error' });
+          } else {
+            showToast({ title: 'Kehadiran tersimpan', message: 'Status sesi diperbarui dan digunakan sebagai dasar tagihan.', type: 'success' });
+            this.render();
+          }
+        } catch (error) {
+          showToast({
+            title: 'Kehadiran gagal dicatat',
+            message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan kehadiran.',
+            type: 'error'
+          });
+        } finally {
+          button.disabled = false;
         }
       });
     });
