@@ -173,6 +173,20 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(releasedAssignment).toContainText("inactive");
   });
 
+  test("Parent Hub remains inside Student Workspace without a separate parent portal", async ({ page }) => {
+    const roleCards = page.locator(".b2b-vite-role-card");
+    await expect(roleCards).toHaveCount(3);
+    await expect(page.getByText("Orang Tua", { exact: true })).toHaveCount(0);
+
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
+    await page.locator("#demo-account").selectOption("usr_stu_001");
+    await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
+
+    await expect(page.getByRole("heading", { name: "Ruang Khusus Ayah/Bunda" })).toBeVisible();
+    await expect(page.getByText("Sedang disiapkan", { exact: true })).toBeVisible();
+    await expect(page.getByText(/laporan setiap pertemuan.*perkembangan bulanan.*riwayat tagihan/i)).toBeVisible();
+  });
+
   test("student can sign in and see the learning dashboard", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
