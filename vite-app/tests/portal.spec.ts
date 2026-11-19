@@ -956,7 +956,7 @@ test.describe("Local demo domain repository adapters", () => {
     const result = await page.evaluate(async () => {
       localStorage.removeItem("b2b_class_sessions_store");
       const { ClassSessionStore } = await import("/js/services/class-session-store.js");
-      const { ClassSessionRepository } = await import("/js/services/class-session-repository.js");
+      const { ClassSessionRepository } = await import("/src/data/local-demo-domain-repositories.ts");
       const created = ClassSessionStore.createSession({
         id: "repository-ui-attendance-session",
         seriesId: "repository-ui-attendance-series",
