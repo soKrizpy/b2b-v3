@@ -746,6 +746,18 @@ export class AdminWorkspace {
     });
   }
 
+  /**
+   * Release the IdentityStore subscription and transient dialogs when React unmounts.
+   */
+  destroy() {
+    if (typeof this._unsub === 'function') this._unsub();
+    this._unsub = null;
+    ['admin-user-editor-modal', 'admin-tutor-rel-modal', 'admin-parent-rel-modal'].forEach((id) => {
+      document.getElementById(id)?.remove();
+    });
+    if (this.container) this.container.replaceChildren();
+  }
+
   handleStoreChange() {
     this.render();
   }
