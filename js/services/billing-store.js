@@ -163,8 +163,6 @@ export const BillingStore = {
       totalAmount,
       createdAt: now,
       createdBy: actor.id,
-      paidAt: null,
-      paidBy: null
     };
     data.invoices[invoice.id] = invoice;
     return this._write(data, 'invoiceCreated', { invoiceId: invoice.id, studentId, period })
@@ -179,8 +177,6 @@ export const BillingStore = {
     if (!invoice) return { success: false, error: 'NOT_FOUND', message: 'Tagihan tidak ditemukan.' };
     if (invoice.status !== 'unpaid') return { success: false, error: 'INVALID_STATUS', message: 'Tagihan ini bukan tagihan yang belum dibayar.' };
     invoice.status = 'paid';
-    invoice.paidAt = new Date().toISOString();
-    invoice.paidBy = actor.id;
     return this._write(data, 'invoicePaid', { invoiceId })
       ? { success: true, invoice }
       : { success: false, error: 'WRITE_FAILED', message: 'Status pembayaran gagal disimpan.' };
