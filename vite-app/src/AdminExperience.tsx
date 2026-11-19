@@ -3,7 +3,7 @@ import { localDemoRepositories } from "./data/local-demo-repositories";
 // @ts-ignore - Existing Admin controller is reused during incremental migration.
 import { AdminWorkspace } from "../../js/admin/admin-workspace.js";
 
-type AdminController = { init: () => void; destroy: () => void };
+type AdminController = { init: () => Promise<void>; destroy: () => void };
 
 export default function AdminExperience() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -30,7 +30,7 @@ export default function AdminExperience() {
         }
 
         controller = new AdminWorkspace(host) as AdminController;
-        controller.init();
+        await controller.init();
         if (active) setStatus("ready");
       } catch (error) {
         console.error("Ruang Admin gagal dibuka:", error);

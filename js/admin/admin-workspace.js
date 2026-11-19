@@ -1021,6 +1021,8 @@ export class AdminWorkspace {
    * Release the IdentityStore subscription and transient dialogs when React unmounts.
    */
   destroy() {
+    this.destroyed = true;
+    this.refreshSequence += 1;
     if (typeof this._unsub === 'function') this._unsub();
     if (typeof this._unsubBilling === 'function') this._unsubBilling();
     if (typeof this._unsubSessions === 'function') this._unsubSessions();

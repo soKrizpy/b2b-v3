@@ -1,7 +1,7 @@
 /**
  * Parent Hub embedded in the Student Workspace.
- * Local demo implementation: submitted session reports and student-scoped invoices are shown.
- * Monthly evaluations remain empty until their workflow exists.
+ * Loads submitted reports, published monthly evaluations, and issued invoices
+ * through asynchronous repositories. Local demo stores remain the persistence layer.
  */
 
 import { SessionStore, MonthlyEvaluationStore, SessionReportRepository, MonthlyEvaluationRepository } from '../services/learning-record-repository.js';
