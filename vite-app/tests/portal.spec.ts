@@ -5,6 +5,90 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.goto("/");
   });
 
+  test("class session ledger only marks held sessions with present or late attendance as billable", async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
+      localStorage.removeItem("b2b_class_sessions_store");
+      const tutor = { id: "tutor-1", role: "tutor" };
+      const create = (id: string, sessionNumber: number) => ClassSessionStore.createSession({
+        id, seriesId: "series-1", sessionNumber, studentId: "student-1", tutorId: tutor.id,
+        scheduledStartAt: `2026-11-${String(20 + sessionNumber).padStart(2, "0")}T09:00:00+07:00`,
+        durationMinutes: 60
+      });
+
+      create("session-present", 1);
+      create("session-late", 2);
+      create("session-absent", 3);
+      create("session-pending", 4);
+
+      const unauthorized = ClassSessionStore.recordAttendance("session-present", "present", { id: "other-tutor", role: "tutor" });
+      const present = ClassSessionStore.recordAttendance("session-present", "present", tutor);
+      const late = ClassSessionStore.recordAttendance("session-late", "late", tutor);
+      const absent = ClassSessionStore.recordAttendance("session-absent", "absent", tutor);
+
+      return {
+        unauthorized: unauthorized.error,
+        present: present.success,
+        late: late.success,
+        absent: absent.success,
+        billableIds: ClassSessionStore.getBillableSessions("student-1").map((session: { id: string }) => session.id).sort(),
+        pendingStatus: ClassSessionStore.getSession("session-pending")?.status
+      };
+    });
+
+    expect(result.unauthorized).toBe("NOT_ASSIGNED_TUTOR");
+    expect(result.present).toBe(true);
+    expect(result.late).toBe(true);
+    expect(result.absent).toBe(true);
+    expect(result.billableIds).toEqual(["session-late", "session-present"]);
+    expect(result.pendingStatus).toBe("scheduled");
+  });
+
+  test("class session cancellation and soft deletion preserve history and require replacement links", async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
+      localStorage.removeItem("b2b_class_sessions_store");
+      const tutor = { id: "tutor-1", role: "tutor" };
+      const admin = { id: "admin-1", role: "admin" };
+      const create = (id: string, sessionNumber: number) => ClassSessionStore.createSession({
+        id, seriesId: "series-1", sessionNumber, studentId: "student-1", tutorId: tutor.id,
+        scheduledStartAt: "2026-11-25T09:00:00+07:00", durationMinutes: 60
+      });
+
+      create("teacher-cancelled", 1);
+      create("admin-cancelled", 2);
+      create("soft-deleted", 3);
+      const missingReason = ClassSessionStore.cancelSession("teacher-cancelled", tutor);
+      const teacherCancel = ClassSessionStore.cancelSession("teacher-cancelled", tutor, "Tutor berhalangan");
+      const adminCancel = ClassSessionStore.cancelSession("admin-cancelled", admin);
+      const softDelete = ClassSessionStore.softDeleteSession("soft-deleted", admin);
+      create("replacement", 4);
+      const linked = ClassSessionStore.linkReplacement("teacher-cancelled", "replacement", admin);
+
+      return {
+        missingReason: missingReason.error,
+        teacherCancel: teacherCancel.success,
+        adminCancel: adminCancel.success,
+        softDelete: softDelete.success,
+        replacementId: ClassSessionStore.getSession("teacher-cancelled")?.replacementSessionId,
+        replacementFor: ClassSessionStore.getSession("replacement")?.replacementForSessionId,
+        retainedStatuses: ["teacher-cancelled", "admin-cancelled", "soft-deleted"].map(id => ClassSessionStore.getSession(id)?.status),
+        billableCount: ClassSessionStore.getBillableSessions().length,
+        linked: linked.success
+      };
+    });
+
+    expect(result.missingReason).toBe("REASON_REQUIRED");
+    expect(result.teacherCancel).toBe(true);
+    expect(result.adminCancel).toBe(true);
+    expect(result.softDelete).toBe(true);
+    expect(result.linked).toBe(true);
+    expect(result.replacementId).toBe("replacement");
+    expect(result.replacementFor).toBe("teacher-cancelled");
+    expect(result.retainedStatuses).toEqual(["cancelled", "cancelled", "soft_deleted"]);
+    expect(result.billableCount).toBe(0);
+  });
+
   test("admin can sign in and see identity management", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
