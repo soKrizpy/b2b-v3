@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-// @ts-ignore - Reuse the existing local identity management during incremental migration.
+import { localDemoRepositories } from "./data/local-demo-repositories";
+// @ts-ignore - Existing Admin controller is reused during incremental migration.
 import { AdminWorkspace } from "../../js/admin/admin-workspace.js";
-// @ts-ignore - Existing demo identity store remains the source of truth for this stage.
-import { IdentityStore } from "../../js/services/identity-store.js";
-// @ts-ignore - Read the active local session; never grant a role during workspace initialization.
-import { AuthService } from "../../js/services/auth-service.js";
 
 type AdminController = { init: () => void; destroy: () => void };
 
@@ -15,29 +12,34 @@ export default function AdminExperience() {
 
   useEffect(() => {
     let active = true;
+    let controller: AdminController | null = null;
     const host = hostRef.current;
     if (!host) return;
 
-    let controller: AdminController | null = null;
-    try {
-      IdentityStore.seedIfEmpty();
-      const session = AuthService.getCurrentSession();
+    void (async () => {
+      try {
+        // Preserve demo seed initialization while routing it through the identity repository.
+        await localDemoRepositories.identity.initializeDemo();
+        if (!active) return;
 
-      // Selecting the Admin workspace must not silently authenticate or elevate a user.
-      if (session?.user?.role !== "admin") {
-        throw new Error("Sesi Admin belum aktif. Silakan masuk menggunakan akun Admin.");
-      }
+        // Selecting the Admin workspace must not silently authenticate or elevate a user.
+        const session = await localDemoRepositories.auth.getSession();
+        if (!active) return;
+        if (session?.user?.role !== "admin") {
+          throw new Error("Sesi Admin belum aktif. Silakan masuk menggunakan akun Admin.");
+        }
 
-      controller = new AdminWorkspace(host) as AdminController;
-      controller.init();
-      if (active) setStatus("ready");
-    } catch (error) {
-      console.error("Ruang Admin gagal dibuka:", error);
-      if (active) {
-        setErrorMessage(error instanceof Error ? error.message : "Terjadi kesalahan saat membuka Ruang Admin.");
-        setStatus("error");
+        controller = new AdminWorkspace(host) as AdminController;
+        controller.init();
+        if (active) setStatus("ready");
+      } catch (error) {
+        console.error("Ruang Admin gagal dibuka:", error);
+        if (active) {
+          setErrorMessage(error instanceof Error ? error.message : "Terjadi kesalahan saat membuka Ruang Admin.");
+          setStatus("error");
+        }
       }
-    }
+    })();
 
     return () => {
       active = false;
