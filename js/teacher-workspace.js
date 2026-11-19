@@ -10,6 +10,7 @@ import { StateStore } from './services/state-store.js';
 import { SessionStore } from './services/session-store.js';
 import { IdentityStore } from './services/identity-store.js';
 import { ClassSessionStore } from './services/class-session-store.js';
+import { MonthlyEvaluationStore } from './services/monthly-evaluation-store.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -37,6 +38,8 @@ export class TeacherWorkspace {
     this.isCreatingReport = false;
     this.editingReport = null;
     this.reportsFilter = 'all'; // 'all' | 'submitted' | 'draft'
+    this.isCreatingMonthlyEvaluation = false;
+    this.editingMonthlyEvaluation = null;
   }
 
   /**
@@ -86,6 +89,12 @@ export class TeacherWorkspace {
       if (!this._unsubscribeClassSessionStore) {
         this._unsubscribeClassSessionStore = ClassSessionStore.subscribe(() => {
           if (this.activeTab === 'schedule') this.render();
+        });
+      }
+
+      if (!this._unsubscribeMonthlyEvaluationStore) {
+        this._unsubscribeMonthlyEvaluationStore = MonthlyEvaluationStore.subscribe(() => {
+          if (this.activeTab === 'monthly-evaluations') this.render();
         });
       }
 
@@ -193,6 +202,10 @@ export class TeacherWorkspace {
             <span>Jadwal Mengajar</span>
             <span class="tab-badge-pill">${this.getAssignedScheduleCount()} Sesi</span>
           </button>
+          <button type="button" class="teacher-tab-btn ${this.activeTab === 'monthly-evaluations' ? 'is-active' : ''}" data-teacher-tab="monthly-evaluations">
+            <span>Evaluasi Bulanan</span>
+            <span class="tab-badge-pill">${this.getMonthlyEvaluationCount()} Laporan</span>
+          </button>
           <button type="button" class="teacher-tab-btn ${this.activeTab === 'session-reports' ? 'is-active' : ''}" data-teacher-tab="session-reports">
             <span>Laporan Sesi Tutor</span>
             <span class="tab-badge-pill" id="teacher-reports-count-pill">${this.getReportsCountLabel()}</span>
@@ -238,6 +251,7 @@ export class TeacherWorkspace {
     if (this.activeTab === 'schedule') {
       return this.renderScheduleTab();
     }
+    if (this.activeTab === 'monthly-evaluations') return this.renderMonthlyEvaluationsTab();
     if (this.activeTab === 'session-reports') {
       return this.renderSessionReportsTab();
     }
@@ -957,9 +971,99 @@ export class TeacherWorkspace {
 
     // Operational schedule attendance and tutor cancellation.
     this.bindClassScheduleEvents();
+    this.bindMonthlyEvaluationEvents();
 
     // Phase 3: Bind session report events
     this.bindSessionReportEvents();
+  }
+
+  getMonthlyEvaluationCount() {
+    return this.user?.id ? MonthlyEvaluationStore.getTutorEvaluations(this.user.id).length : 0;
+  }
+
+  renderMonthlyEvaluationsTab() {
+    if (this.isCreatingMonthlyEvaluation) return this.renderMonthlyEvaluationForm();
+    const evaluations = this.user?.id ? MonthlyEvaluationStore.getTutorEvaluations(this.user.id) : [];
+    return `<section style="display:flex;flex-direction:column;gap:var(--space-4);">
+      <div class="card" style="padding:var(--space-4);display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;flex-wrap:wrap;">
+        <div><h3 style="margin:0 0 var(--space-1);">Evaluasi perkembangan bulanan</h3>
+          <p style="margin:0;color:var(--color-text-muted);font-size:var(--font-size-sm);">Satu evaluasi per siswa setiap bulan. Hanya laporan yang dikirim terlihat di Parent Hub.</p></div>
+        <button type="button" class="btn btn-primary" id="btn-create-monthly-evaluation">Buat evaluasi</button>
+      </div>
+      ${evaluations.length ? evaluations.map(item => {
+        const student = this.students.find(entry => entry.id === item.studentId);
+        return `<article class="card" data-tutor-monthly-evaluation="${escapeHtml(item.id)}" style="padding:var(--space-4);">
+          <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;">
+            <div><strong>${escapeHtml(student?.name || student?.displayName || item.studentName)}</strong>
+              <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">${escapeHtml(item.period)} · ${item.status === 'published' ? 'Terkirim' : 'Draf'} · ${escapeHtml(item.rating || 'Belum dinilai')}</div></div>
+            <button type="button" class="btn btn-secondary btn-sm" data-edit-monthly-evaluation="${escapeHtml(item.id)}">Edit evaluasi</button>
+          </div><p>${escapeHtml(item.summary || 'Belum ada ringkasan.')}</p>
+        </article>`;
+      }).join('') : '<div class="card" style="padding:var(--space-5);">Belum ada evaluasi bulanan. Buat laporan untuk siswa yang Anda ajar.</div>'}
+    </section>`;
+  }
+
+  renderMonthlyEvaluationForm() {
+    const current = this.editingMonthlyEvaluation || {};
+    const now = new Date();
+    const period = current.period || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    return `<section class="card" style="padding:var(--space-4);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);">
+        <h3 style="margin:0;">${current.id ? 'Perbarui' : 'Buat'} evaluasi bulanan</h3>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-cancel-monthly-evaluation">Kembali</button>
+      </div>
+      <form id="monthly-evaluation-form" style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-3);">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--space-3);">
+          <label>Siswa<select name="studentId" required style="width:100%;"><option value="">Pilih siswa</option>
+            ${this.students.map(student => `<option value="${escapeHtml(student.id)}" ${student.id === current.studentId ? 'selected' : ''}>${escapeHtml(student.name || student.displayName)}</option>`).join('')}</select></label>
+          <label>Periode bulan<input name="period" type="month" required value="${escapeHtml(period)}" style="width:100%;"></label>
+          <label>Penilaian keseluruhan<select name="rating" required style="width:100%;"><option value="">Pilih penilaian</option>
+            ${MonthlyEvaluationStore.ratings.map(rating => `<option value="${escapeHtml(rating)}" ${current.rating === rating ? 'selected' : ''}>${escapeHtml(rating)}</option>`).join('')}</select></label>
+        </div>
+        <label>Ringkasan perkembangan<textarea name="summary" rows="3" required maxlength="1500" style="width:100%;">${escapeHtml(current.summary || '')}</textarea></label>
+        <label>Hal yang sudah dikuasai<textarea name="strengths" rows="3" required maxlength="1200" style="width:100%;"></textarea>${escapeHtml(current.strengths || '')}</label>
+        <label>Target bulan berikutnya<textarea name="nextGoals" rows="3" required maxlength="1200" style="width:100%;">${escapeHtml(current.nextGoals || '')}</textarea></label>
+        <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" id="btn-save-monthly-draft">Simpan draf</button>
+          <button type="submit" class="btn btn-primary">Kirim ke Parent Hub</button>
+        </div>
+      </form>
+    </section>`;
+  }
+
+  bindMonthlyEvaluationEvents() {
+    this.container.querySelector('#btn-create-monthly-evaluation')?.addEventListener('click', () => {
+      this.isCreatingMonthlyEvaluation = true; this.editingMonthlyEvaluation = null; this.render();
+    });
+    this.container.querySelector('#btn-cancel-monthly-evaluation')?.addEventListener('click', () => {
+      this.isCreatingMonthlyEvaluation = false; this.editingMonthlyEvaluation = null; this.render();
+    });
+    this.container.querySelectorAll('[data-edit-monthly-evaluation]').forEach(button => {
+      button.addEventListener('click', () => {
+        this.editingMonthlyEvaluation = MonthlyEvaluationStore.getTutorEvaluations(this.user.id)
+          .find(item => item.id === button.getAttribute('data-edit-monthly-evaluation')) || null;
+        if (this.editingMonthlyEvaluation) { this.isCreatingMonthlyEvaluation = true; this.render(); }
+      });
+    });
+    const form = this.container.querySelector('#monthly-evaluation-form');
+    if (!form) return;
+    const save = status => {
+      const data = Object.fromEntries(new FormData(form).entries());
+      const student = this.students.find(item => item.id === data.studentId);
+      const result = MonthlyEvaluationStore.save({
+        ...data, studentName: student?.name || student?.displayName || 'Siswa',
+        tutorId: this.user.id, tutorName: this.user.displayName
+      }, status);
+      if (!result.success) {
+        showToast({ title: 'Evaluasi belum tersimpan', message: result.message, type: 'error' });
+        return;
+      }
+      showToast({ title: status === 'published' ? 'Evaluasi terkirim' : 'Draf tersimpan',
+        message: status === 'published' ? 'Evaluasi sekarang terlihat di Parent Hub siswa.' : 'Draf hanya terlihat oleh tutor.', type: 'success' });
+      this.isCreatingMonthlyEvaluation = false; this.editingMonthlyEvaluation = null; this.render();
+    };
+    this.container.querySelector('#btn-save-monthly-draft')?.addEventListener('click', () => save('draft'));
+    form.addEventListener('submit', event => { event.preventDefault(); save('published'); });
   }
 
   bindClassScheduleEvents() {
@@ -1460,8 +1564,12 @@ export class TeacherWorkspace {
   destroy() {
     if (typeof this._unsubscribeStore === "function") this._unsubscribeStore();
     if (typeof this._unsubscribeSessionStore === "function") this._unsubscribeSessionStore();
+    if (typeof this._unsubscribeClassSessionStore === "function") this._unsubscribeClassSessionStore();
+    if (typeof this._unsubscribeMonthlyEvaluationStore === "function") this._unsubscribeMonthlyEvaluationStore();
     this._unsubscribeStore = null;
     this._unsubscribeSessionStore = null;
+    this._unsubscribeClassSessionStore = null;
+    this._unsubscribeMonthlyEvaluationStore = null;
     Drawer.close("sample-drawer");
     if (this.container) this.container.replaceChildren();
   }
