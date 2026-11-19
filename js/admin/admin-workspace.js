@@ -13,6 +13,7 @@ import { AuthService } from '../services/auth-service.js';
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
 import { BillingStore } from '../services/billing-store.js';
+import { BillingRepository } from '../services/billing-repository.js';
 import { ClassSessionStore } from '../services/class-session-store.js';
 import { ClassSessionRepository } from '../services/class-session-repository.js';
 
@@ -646,17 +647,25 @@ export class AdminWorkspace {
     });
 
     this.container.querySelectorAll('[data-rate-form]').forEach(form => {
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const studentId = form.getAttribute('data-rate-form');
         const amount = Number(new FormData(form).get('amountPerSession'));
         const actor = AuthService.getCurrentSession()?.user;
-        const result = BillingStore.setRate(studentId, amount, actor);
+        try {
+        const result = await BillingRepository.setRate(studentId, amount, actor);
         if (!result.success) {
           showToast({ title: 'Tarif gagal disimpan', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Tarif tersimpan', message: 'Tarif siswa berhasil diperbarui.', type: 'success' });
           this.render();
+        }
+        } catch (error) {
+          showToast({ title: 'Tarif gagal disimpan', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan tarif.', type: 'error' });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
         }
       });
     });
@@ -664,26 +673,37 @@ export class AdminWorkspace {
     // Generate invoice from billable operational sessions
     const invoiceForm = this.container.querySelector('#admin-create-invoice-form');
     if (invoiceForm) {
-      invoiceForm.addEventListener('submit', event => {
+      invoiceForm.addEventListener('submit', async event => {
         event.preventDefault();
+        const submitButton = invoiceForm.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const formData = new FormData(invoiceForm);
         const actor = AuthService.getCurrentSession()?.user;
-        const result = BillingStore.createInvoice(String(formData.get('studentId') || ''), String(formData.get('period') || ''), actor);
+        try {
+        const result = await BillingRepository.createInvoice(String(formData.get('studentId') || ''), String(formData.get('period') || ''), actor);
         if (!result.success) {
           showToast({ title: 'Tagihan tidak dibuat', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Draft tagihan dibuat', message: `${result.invoice.totalSessions} pertemuan siap diperiksa sebelum diterbitkan.`, type: 'success' });
           this.render();
         }
+        } catch (error) {
+          showToast({ title: 'Tagihan tidak dibuat', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membuat tagihan.', type: 'error' });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
+        }
       });
     }
 
     this.container.querySelectorAll('[data-draft-form]').forEach(form => {
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const invoiceId = form.getAttribute('data-draft-form');
         const formData = new FormData(form);
-        const result = BillingStore.updateDraftInvoice(invoiceId, {
+        try {
+        const result = await BillingRepository.updateDraftInvoice(invoiceId, {
           sessionIds: formData.getAll('sessionIds').map(String),
           discountAmount: Number(formData.get('discountAmount')),
           additionalCharges: Number(formData.get('additionalCharges')),
@@ -696,30 +716,49 @@ export class AdminWorkspace {
           showToast({ title: 'Draft diperbarui', message: 'Koreksi tagihan berhasil disimpan.', type: 'success' });
           this.render();
         }
+        } catch (error) {
+          showToast({ title: 'Koreksi draft gagal', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat memperbarui draft.', type: 'error' });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
+        }
       });
     });
 
     this.container.querySelectorAll('[data-issue-invoice]').forEach(button => {
-      button.addEventListener('click', () => {
-        const result = BillingStore.issueInvoice(button.getAttribute('data-issue-invoice'), AuthService.getCurrentSession()?.user);
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+        const result = await BillingRepository.issueInvoice(button.getAttribute('data-issue-invoice'), AuthService.getCurrentSession()?.user);
         if (!result.success) {
           showToast({ title: 'Tagihan belum diterbitkan', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Tagihan diterbitkan', message: 'Tagihan sekarang tampil di riwayat Parent Hub.', type: 'success' });
           this.render();
         }
+        } catch (error) {
+          showToast({ title: 'Tagihan belum diterbitkan', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menerbitkan tagihan.', type: 'error' });
+        } finally {
+          if (button.isConnected) button.disabled = false;
+        }
       });
     });
 
     this.container.querySelectorAll('[data-mark-invoice-paid]').forEach(button => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
+        button.disabled = true;
         const actor = AuthService.getCurrentSession()?.user;
-        const result = BillingStore.markPaid(button.getAttribute('data-mark-invoice-paid'), actor);
+        try {
+        const result = await BillingRepository.markPaid(button.getAttribute('data-mark-invoice-paid'), actor);
         if (!result.success) {
           showToast({ title: 'Pembayaran gagal diperbarui', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Tagihan lunas', message: 'Status tagihan berhasil diperbarui.', type: 'success' });
           this.render();
+        }
+        } catch (error) {
+          showToast({ title: 'Pembayaran gagal diperbarui', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat memperbarui pembayaran.', type: 'error' });
+        } finally {
+          if (button.isConnected) button.disabled = false;
         }
       });
     });
