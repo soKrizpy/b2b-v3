@@ -6,7 +6,6 @@ type TutorController = { init: () => Promise<void>; destroy: () => void };
 
 export default function TutorExperience() {
   const hostRef = useRef<HTMLDivElement>(null);
-  const controllerRef = useRef<TutorController | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
 
   useEffect(() => {
@@ -15,7 +14,6 @@ export default function TutorExperience() {
     if (!host) return;
 
     const controller = new TeacherWorkspace(host) as TutorController;
-    controllerRef.current = controller;
     void controller.init().then(() => {
       if (active) setStatus("ready");
       else controller.destroy();
@@ -27,7 +25,6 @@ export default function TutorExperience() {
     return () => {
       active = false;
       controller.destroy();
-      controllerRef.current = null;
     };
   }, []);
 
