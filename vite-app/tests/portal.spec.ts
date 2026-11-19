@@ -398,6 +398,49 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(migrated.parentLinks).toBeNull();
   });
 
+  test("admin can create a recurring class series from the schedule tab and skip tutor conflicts", async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_class_sessions_store", JSON.stringify({
+        "existing-tutor-conflict": {
+          id: "existing-tutor-conflict", seriesId: "existing-series", sessionNumber: 1,
+          studentId: "usr_stu_002", tutorId: "usr_tea_001",
+          scheduledStartAt: "2026-12-01T03:00:00.000Z", durationMinutes: 60,
+          status: "scheduled", attendanceStatus: "not_recorded", replacementRequired: false
+        }
+      }));
+    });
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
+    await page.locator("#demo-account").selectOption("usr_adm_001");
+    await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
+    await page.getByRole("button", { name: /Jadwal Sesi/ }).click();
+
+    const form = page.locator("#admin-create-series-form");
+    await form.locator('[name="studentId"]').selectOption("usr_stu_001");
+    await form.locator('[name="tutorId"]').selectOption("usr_tea_001");
+    await form.locator('[name="startDate"]').fill("2026-12-01");
+    await form.locator('[name="startTime"]').fill("10:00");
+    await form.locator('[name="targetCount"]').fill("3");
+    await form.locator('[name="durationMinutes"]').fill("60");
+    await form.locator('[name="weekdays"][value="2"]').check();
+    await form.locator('[name="weekdays"][value="4"]').check();
+    await form.locator('[name="meetingUrl"]').fill("https://meet.example.com/alex");
+    await form.getByRole("button", { name: "Buat seri jadwal" }).click();
+
+    const created = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem("b2b_class_sessions_store") || "{}"))
+      .filter((session: { studentId: string; seriesId: string }) => session.studentId === "usr_stu_001" && session.seriesId !== "existing-series")
+      .sort((left: any, right: any) => left.sessionNumber - right.sessionNumber)
+      .map((session: any) => ({
+        date: session.scheduledStartAt.slice(0, 10),
+        number: session.sessionNumber,
+        meetingUrl: session.meetingUrl
+      })));
+    expect(created).toEqual([
+      { date: "2026-12-03", number: 1, meetingUrl: "https://meet.example.com/alex" },
+      { date: "2026-12-08", number: 2, meetingUrl: "https://meet.example.com/alex" },
+      { date: "2026-12-10", number: 3, meetingUrl: "https://meet.example.com/alex" }
+    ]);
+  });
+
   test("admin account management exposes only Admin, Tutor and Student roles", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
