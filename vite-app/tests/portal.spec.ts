@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const classSessionStoreSource = readFileSync(resolve(process.cwd(), "../js/services/class-session-store.js"), "utf8");
+const billingStoreSource = readFileSync(resolve(process.cwd(), "../js/services/billing-store.js"), "utf8");
 
 test.describe("Bits2Bytes demo portal", () => {
   test.beforeEach(async ({ page }) => {
@@ -511,11 +512,16 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("billing uses admin-set per-student rates and only bills eligible held sessions", async ({ page }) => {
-    const result = await page.evaluate(async () => {
+    const result = await page.evaluate(async ({ classSource, billingSource }) => {
       localStorage.removeItem("b2b_class_sessions_store");
       localStorage.removeItem("b2b_billing_store");
-      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
-      const { BillingStore } = await import("/js/services/billing-store.js");
+      const classUrl = URL.createObjectURL(new Blob([classSource], { type: "text/javascript" }));
+      const billingModuleSource = billingSource.replace("./class-session-store.js", classUrl);
+      const billingUrl = URL.createObjectURL(new Blob([billingModuleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(classUrl);
+      const { BillingStore } = await import(billingUrl);
+      URL.revokeObjectURL(classUrl);
+      URL.revokeObjectURL(billingUrl);
       const admin = { id: "admin-1", role: "admin" };
       const tutor = { id: "tutor-1", role: "tutor" };
       const makeSession = (id: string, number: number) => ClassSessionStore.createSession({
@@ -561,7 +567,7 @@ test.describe("Bits2Bytes demo portal", () => {
         paidAt: history[0]?.paidAt,
         paidBy: history[0]?.paidBy
       };
-    });
+    }, { classSource: classSessionStoreSource, billingSource: billingStoreSource });
 
     expect(result.forbiddenRate).toBe("FORBIDDEN");
     expect(result.invalidRate).toBe("INVALID_RATE");
