@@ -200,3 +200,11 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [x] Batas repository untuk migrasi dari store localStorage ke backend didokumentasikan di [docs/frontend-backend-repository-contract.md](docs/frontend-backend-repository-contract.md).
 - [ ] Ekstraksi repository interface ke kode aplikasi belum dilakukan; demo lokal tetap menjadi implementasi aktif.
 - [ ] Implementasi Supabase tetap menunggu lingkungan development lokal dan pengujian RLS. Tidak ada perubahan ke Supabase production.
+
+
+### Repository adapter extraction (19 November 2026)
+
+- [x] Tambahkan typed repository contract dan local-demo adapter untuk autentikasi portal serta daftar akun aktif di `vite-app/src/data/`.
+- [x] Portal React memakai adapter tersebut; perilaku login demo dan penyimpanan localStorage tetap dipertahankan.
+- [ ] Pemindahan store jadwal, laporan, evaluasi, dan tagihan ke adapter dilakukan bertahap sebelum integrasi Supabase.
+- [ ] Browser QA untuk perubahan ini sedang diverifikasi melalui [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44514917685).
