@@ -138,7 +138,11 @@ export type SubmissionStatus = "submitted" | "approved" | "revision-required";
 export interface StudentSubmission {
   id: UUID;
   studentId: UUID;
+  studentName?: string;
+  studentGrade?: string;
+  studentAvatar?: string;
   lessonKey: LessonKey;
+  lessonTitle?: string;
   projectUrl: string;
   studentNotes: string;
   status: SubmissionStatus;
@@ -213,11 +217,17 @@ export interface CreateReplacementSessionInput {
 export interface SessionReport {
   id: UUID;
   studentId: UUID;
+  studentName?: string;
+  studentGrade?: string;
+  studentAvatar?: string;
   tutorId: UUID;
+  tutorName?: string;
+  tutorAvatar?: string;
   sessionId: UUID | null;
   sessionDate: string;
   sessionNumber: number | null;
   topic: string;
+  moduleName?: string;
   activities: string;
   achievements: string;
   difficulties: string;
@@ -240,7 +250,9 @@ export type MonthlyRating =
 export interface MonthlyEvaluation {
   id: UUID;
   studentId: UUID;
+  studentName?: string;
   tutorId: UUID;
+  tutorName?: string;
   period: YearMonth;
   rating: MonthlyRating | null;
   summary: string;
@@ -367,6 +379,7 @@ export interface BillingRepository {
 }
 
 export interface DomainRepositories {
+  auth: AuthRepository;
   identity: IdentityRepository;
   curriculum: CurriculumRepository;
   learning: LearningRepository;
