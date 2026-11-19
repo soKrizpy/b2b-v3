@@ -168,6 +168,8 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - Jika tanggal pilihan bentrok dengan jadwal tutor atau siswa, sistem melewati tanggal tersebut dan melanjutkan ke hari pilihan berikutnya sampai jumlah sesi terpenuhi.
 - Pembuatan seri tetap atomik: jika slot bebas tidak mencukupi dalam rentang pencarian, tidak ada sesi yang disimpan.
 - Daftar sesi menampilkan status, kehadiran, tutor, siswa, waktu, durasi, dan link kelas.
+- Tutor melihat jadwal hanya untuk siswa yang ditugaskan kepadanya, lalu mencatat hadir, terlambat, atau tidak hadir dari tab **Jadwal Mengajar**.
+- Pembatalan oleh tutor mewajibkan alasan dan menandai sesi membutuhkan pengganti; pengganti dibuat dan dihubungkan oleh Admin.
 - Admin dapat membatalkan sesi atau menghapusnya secara administratif. Penghapusan administratif mempertahankan riwayat dan mewajibkan sesi pengganti.
 - Untuk sesi yang memerlukan pengganti, Admin dapat memasukkan waktu baru; layanan memeriksa bentrok dan menghubungkan pengganti dengan sesi asal.
 - Fitur jadwal masih berjalan dalam mode demo localStorage; belum menjadi kalender produksi dan belum memiliki otorisasi server-side.
