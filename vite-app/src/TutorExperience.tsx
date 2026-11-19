@@ -3,7 +3,7 @@ import { localDemoRepositories } from "./data/local-demo-repositories";
 // @ts-ignore - Legacy tutor controller is reused while its UI is migrated incrementally.
 import { TeacherWorkspace } from "../../js/teacher-workspace.js";
 
-type TutorUser = { id: string; displayName: string; role: string };
+type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
 type TutorController = { init: () => Promise<void>; destroy: () => void };
 
 export default function TutorExperience({ user }: { user: TutorUser }) {
@@ -21,9 +21,9 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
         // Re-read the active session through the portal auth repository before mounting.
         const session = await localDemoRepositories.auth.getSession();
         if (!active) return;
-        if ((user.role !== "tutor" && user.role !== "teacher") ||
+        if (user.role !== "tutor" ||
             session?.user?.id !== user.id ||
-            (session?.user?.role !== "tutor" && session?.user?.role !== "teacher")) {
+            session?.user?.role !== "tutor") {
           throw new Error("Sesi tutor tidak valid. Silakan masuk kembali.");
         }
 
