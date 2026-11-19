@@ -5,7 +5,10 @@
  * creates the async boundary expected by future remote repositories without
  * changing localStorage keys, event names, validation, or lifecycle rules.
  *
- * IMPORTANT: this is demo persistence only, not production authorization.
+ * IMPORTANT: this is a compatibility adapter for the legacy local-demo test
+ * harness only. It is not the canonical runtime repository boundary and is
+ * not production authorization. New workspace code must depend on the
+ * contracts in domain-contracts.ts through an explicit adapter.
  */
 
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
@@ -25,8 +28,8 @@ import { MonthlyEvaluationStore } from "../../../js/services/monthly-evaluation-
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
 import { BillingStore } from "../../../js/services/billing-store.js";
 
-type StoreFunction = (...args: any[]) => any;
-type StoreShape = Record<string, any>;
+type StoreFunction = (...args: never[]) => unknown;
+type StoreShape = Record<string, unknown>;
 type AsyncStoreAdapter<T extends StoreShape> = {
   [K in keyof T]: T[K] extends StoreFunction
     ? K extends "subscribe" | "isBillable"
