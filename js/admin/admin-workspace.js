@@ -14,6 +14,7 @@ import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
 import { BillingStore } from '../services/billing-store.js';
 import { ClassSessionStore } from '../services/class-session-store.js';
+import { ClassSessionRepository } from '../services/class-session-repository.js';
 
 export class AdminWorkspace {
   /**
@@ -535,10 +536,13 @@ export class AdminWorkspace {
     // Save per-student rates
     const createSeriesForm = this.container.querySelector('#admin-create-series-form');
     if (createSeriesForm) {
-      createSeriesForm.addEventListener('submit', event => {
+      createSeriesForm.addEventListener('submit', async event => {
         event.preventDefault();
+        const submitButton = createSeriesForm.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const formData = new FormData(createSeriesForm);
-        const result = ClassSessionStore.createRecurringSessionSeries({
+        try {
+        const result = await ClassSessionRepository.createRecurringSessionSeries({
           studentId: String(formData.get('studentId') || ''),
           tutorId: String(formData.get('tutorId') || ''),
           startDate: String(formData.get('startDate') || ''),
@@ -559,40 +563,61 @@ export class AdminWorkspace {
           });
           this.render();
         }
+        } catch (error) {
+          showToast({ title: 'Jadwal gagal dibuat', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membuat jadwal.', type: 'error' });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
+        }
       });
     }
 
     this.container.querySelectorAll('[data-cancel-session]').forEach(button => {
-      button.addEventListener('click', () => {
-        const result = ClassSessionStore.cancelSession(
-          button.getAttribute('data-cancel-session'),
-          AuthService.getCurrentSession()?.user
-        );
-        if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
-        else {
-          showToast({ title: 'Sesi dibatalkan', message: 'Sesi tidak masuk tagihan.', type: 'success' });
-          this.render();
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const result = await ClassSessionRepository.cancelSession(
+            button.getAttribute('data-cancel-session'),
+            AuthService.getCurrentSession()?.user
+          );
+          if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
+          else {
+            showToast({ title: 'Sesi dibatalkan', message: 'Sesi tidak masuk tagihan.', type: 'success' });
+            this.render();
+          }
+        } catch (error) {
+          showToast({ title: 'Pembatalan gagal', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membatalkan sesi.', type: 'error' });
+        } finally {
+          if (button.isConnected) button.disabled = false;
         }
       });
     });
 
     this.container.querySelectorAll('[data-soft-delete-session]').forEach(button => {
-      button.addEventListener('click', () => {
-        const result = ClassSessionStore.softDeleteSession(
-          button.getAttribute('data-soft-delete-session'),
-          AuthService.getCurrentSession()?.user
-        );
-        if (!result.success) showToast({ title: 'Penghapusan gagal', message: result.message, type: 'error' });
-        else {
-          showToast({ title: 'Sesi dihapus administratif', message: 'Riwayat tetap tersimpan dan sesi pengganti diperlukan.', type: 'success' });
-          this.render();
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const result = await ClassSessionRepository.softDeleteSession(
+            button.getAttribute('data-soft-delete-session'),
+            AuthService.getCurrentSession()?.user
+          );
+          if (!result.success) showToast({ title: 'Penghapusan gagal', message: result.message, type: 'error' });
+          else {
+            showToast({ title: 'Sesi dihapus administratif', message: 'Riwayat tetap tersimpan dan sesi pengganti diperlukan.', type: 'success' });
+            this.render();
+          }
+        } catch (error) {
+          showToast({ title: 'Penghapusan gagal', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menghapus sesi.', type: 'error' });
+        } finally {
+          if (button.isConnected) button.disabled = false;
         }
       });
     });
 
     this.container.querySelectorAll('[data-replacement-form]').forEach(form => {
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const formData = new FormData(form);
         const localStart = String(formData.get('replacementStartAt') || '');
         const [localDate, localTime] = localStart.split('T');
@@ -601,15 +626,21 @@ export class AdminWorkspace {
           showToast({ title: 'Waktu tidak valid', message: 'Pilih waktu sesi pengganti terlebih dahulu.', type: 'error' });
           return;
         }
-        const result = ClassSessionStore.createReplacementSession(
-          form.getAttribute('data-replacement-form'),
-          { scheduledStartAt: start.toISOString() },
-          AuthService.getCurrentSession()?.user
-        );
-        if (!result.success) showToast({ title: 'Sesi pengganti gagal dibuat', message: result.message, type: 'error' });
-        else {
-          showToast({ title: 'Sesi pengganti terhubung', message: 'Riwayat sesi asal tetap tersimpan.', type: 'success' });
-          this.render();
+        try {
+          const result = await ClassSessionRepository.createReplacementSession(
+            form.getAttribute('data-replacement-form'),
+            { scheduledStartAt: start.toISOString() },
+            AuthService.getCurrentSession()?.user
+          );
+          if (!result.success) showToast({ title: 'Sesi pengganti gagal dibuat', message: result.message, type: 'error' });
+          else {
+            showToast({ title: 'Sesi pengganti terhubung', message: 'Riwayat sesi asal tetap tersimpan.', type: 'success' });
+            this.render();
+          }
+        } catch (error) {
+          showToast({ title: 'Sesi pengganti gagal dibuat', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membuat sesi pengganti.', type: 'error' });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
         }
       });
     });
