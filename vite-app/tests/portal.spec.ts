@@ -955,8 +955,7 @@ test.describe("Local demo domain repository adapters", () => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
       localStorage.removeItem("b2b_class_sessions_store");
-      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
-      const { ClassSessionRepository } = await import("/src/data/local-demo-domain-repositories.ts");
+      const { ClassSessionStore, ClassSessionRepository } = await import("/src/data/local-demo-domain-repositories.ts");
       const created = ClassSessionStore.createSession({
         id: "repository-ui-attendance-session",
         seriesId: "repository-ui-attendance-series",
@@ -986,5 +985,53 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.success).toBe(true);
     expect(result.status).toBe("held");
     expect(result.attendanceStatus).toBe("late");
+  });
+
+  test("cancels a tutor session through the async class-session repository", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      const { ClassSessionStore, ClassSessionRepository } = await import("/src/data/local-demo-domain-repositories.ts");
+      const created = ClassSessionStore.createSession({
+        id: "repository-tutor-cancel-session",
+        seriesId: "repository-tutor-cancel-series",
+        sessionNumber: 1,
+        studentId: "repository-tutor-cancel-student",
+        tutorId: "repository-assigned-tutor",
+        scheduledStartAt: "2026-12-19T09:00:00+07:00",
+        durationMinutes: 60
+      });
+      const missingReason = await ClassSessionRepository.cancelSession(
+        "repository-tutor-cancel-session",
+        { id: "repository-assigned-tutor", role: "tutor" }
+      );
+      const unauthorized = await ClassSessionRepository.cancelSession(
+        "repository-tutor-cancel-session",
+        { id: "repository-other-tutor", role: "tutor" },
+        "Ada keperluan"
+      );
+      const cancelled = await ClassSessionRepository.cancelSession(
+        "repository-tutor-cancel-session",
+        { id: "repository-assigned-tutor", role: "tutor" },
+        "Tutor berhalangan"
+      );
+      const session = ClassSessionStore.getSession("repository-tutor-cancel-session");
+      return {
+        created: created.success,
+        missingReason: missingReason.error,
+        unauthorized: unauthorized.error,
+        success: cancelled.success,
+        status: session?.status,
+        reason: session?.cancellation?.reason,
+        replacementRequired: session?.replacementRequired
+      };
+    });
+    expect(result.created).toBe(true);
+    expect(result.missingReason).toBe("REASON_REQUIRED");
+    expect(result.unauthorized).toBe("NOT_ASSIGNED_TUTOR");
+    expect(result.success).toBe(true);
+    expect(result.status).toBe("cancelled");
+    expect(result.reason).toBe("Tutor berhalangan");
+    expect(result.replacementRequired).toBe(true);
   });
 });
