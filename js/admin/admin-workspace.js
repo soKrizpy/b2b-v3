@@ -27,7 +27,6 @@ export class AdminWorkspace {
     this.editingUser = null;
     this.isCreatingUser = false;
     this.isCreatingTutorRel = false;
-    this.isCreatingParentLink = false;
 
     this.handleStoreChange = this.handleStoreChange.bind(this);
   }
@@ -80,7 +79,6 @@ export class AdminWorkspace {
     const totalCount = allUsers.length;
     const activeCount = allUsers.filter(u => u.status === 'active').length;
     const assignments = IdentityStore.getAllAssignments();
-    const parentLinks = IdentityStore.getAllParentLinks();
 
     this.container.innerHTML = `
       <div class="admin-workspace-wrap" style="display: flex; flex-direction: column; gap: var(--space-6);">
@@ -96,7 +94,7 @@ export class AdminWorkspace {
               Manajemen Identitas &amp; Hak Akses Pengguna
             </h2>
             <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0;">
-              Kelola akun seluruh role (Admin, Tutor, Siswa, Orang Tua), status aktif/nonaktif, serta relasi penugasan.
+              Kelola akun Admin, Tutor, dan Siswa, status aktif/nonaktif, serta penugasan tutor-siswa.
             </p>
           </div>
 
@@ -119,9 +117,6 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations">
             👩‍🏫 Relasi Tutor &amp; Siswa (${assignments.length})
           </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'parent-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="parent-relations">
-            👨‍👩‍👧 Relasi Orang Tua &amp; Anak (${parentLinks.length})
-          </button>
           <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
             💳 Tarif &amp; Tagihan
           </button>
@@ -142,8 +137,6 @@ export class AdminWorkspace {
     switch (this.activeTab) {
       case 'tutor-relations':
         return this.renderTutorRelationsView();
-      case 'parent-relations':
-        return this.renderParentRelationsView();
       case 'billing':
         return this.renderBillingView();
       case 'users':
@@ -177,7 +170,6 @@ export class AdminWorkspace {
             <button type="button" class="btn btn-sm ${this.roleFilter === 'admin' ? 'btn-primary' : 'btn-ghost'}" data-filter-role="admin">Admin</button>
             <button type="button" class="btn btn-sm ${this.roleFilter === 'tutor' ? 'btn-primary' : 'btn-ghost'}" data-filter-role="tutor">Tutor</button>
             <button type="button" class="btn btn-sm ${this.roleFilter === 'student' ? 'btn-primary' : 'btn-ghost'}" data-filter-role="student">Siswa</button>
-            <button type="button" class="btn btn-sm ${this.roleFilter === 'parent' ? 'btn-primary' : 'btn-ghost'}" data-filter-role="parent">Orang Tua</button>
           </div>
 
           <!-- Status Filter -->
@@ -209,7 +201,6 @@ export class AdminWorkspace {
                 tutor: '<span class="badge badge-scratch">Tutor</span>',
                 teacher: '<span class="badge badge-scratch">Tutor</span>',
                 student: '<span class="badge badge-approved">Siswa</span>',
-                parent: '<span class="badge badge-in-progress">Orang Tua</span>'
               };
               const roleBadge = roleBadges[u.role] || `<span class="badge">${u.role}</span>`;
               const statusBadge = isInactive
@@ -308,63 +299,6 @@ export class AdminWorkspace {
 
                 <button type="button" class="btn btn-ghost btn-sm" style="color: var(--color-danger);" data-action="delete-tutor-rel" data-tutor-id="${a.tutorId}" data-student-id="${a.studentId}">
                   🗑️ Lepas Relasi
-                </button>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  /* --------------------------------------------------------------------------
-     TAB 3: PARENT-STUDENT RELATIONS VIEW
-     -------------------------------------------------------------------------- */
-  renderParentRelationsView() {
-    const links = IdentityStore.getAllParentLinks();
-
-    return `
-      <div style="display: flex; flex-direction: column; gap: var(--space-4);">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3); background: var(--color-bg-surface-elevated); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
-          <div>
-            <h3 style="font-size: var(--font-size-md); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-1) 0; color: var(--color-text-primary);">
-              Tautan Orang Tua &amp; Anak (Parent-Student Link)
-            </h3>
-            <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0;">
-              Orang tua hanya dapat memantau Parent Hub dan laporan perkembangan dari anak yang tertaut secara sah.
-            </p>
-          </div>
-
-          <button type="button" class="btn btn-primary btn-sm" id="btn-add-parent-rel">
-            ➕ Tambah Tautan Orang Tua
-          </button>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-          ${links.length === 0 ? `
-            <div class="card" style="padding: var(--space-6); text-align: center;">
-              <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0;">Belum ada tautan orang tua-anak.</p>
-            </div>
-          ` : links.map(l => {
-            const parent = IdentityStore.getUserById(l.parentId);
-            const student = IdentityStore.getUserById(l.studentId);
-
-            return `
-              <div class="card" style="padding: var(--space-4) var(--space-5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3);">
-                <div style="display: flex; align-items: center; gap: var(--space-3);">
-                  <div style="font-size: var(--font-size-xl);">👨‍👩‍👧 ➔ 👦</div>
-                  <div>
-                    <div style="font-size: var(--font-size-sm); color: var(--color-text-primary);">
-                      Orang Tua: <strong>${escapeHtml(parent ? parent.displayName : l.parentId)}</strong> (${escapeHtml(l.relationship)}) &bull; Anak: <strong>${escapeHtml(student ? student.displayName : l.studentId)}</strong>
-                    </div>
-                    <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
-                      ID Tautan: <code>${escapeHtml(l.id)}</code> &bull; Status: <span class="badge badge-approved" style="font-size: 10px;">${escapeHtml(l.status)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <button type="button" class="btn btn-ghost btn-sm" style="color: var(--color-danger);" data-action="delete-parent-rel" data-parent-id="${l.parentId}" data-student-id="${l.studentId}">
-                  🗑️ Putus Tautan
                 </button>
               </div>
             `;
@@ -612,23 +546,7 @@ export class AdminWorkspace {
       });
     });
 
-    // Add parent link
-    const btnAddParentRel = this.container.querySelector('#btn-add-parent-rel');
-    if (btnAddParentRel) {
-      btnAddParentRel.addEventListener('click', () => this.openParentLinkModal());
-    }
 
-    // Delete parent link
-    const deleteParentRelBtns = this.container.querySelectorAll('[data-action="delete-parent-rel"]');
-    deleteParentRelBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const pid = btn.getAttribute('data-parent-id');
-        const sid = btn.getAttribute('data-student-id');
-        IdentityStore.removeParentStudentLink(pid, sid);
-        showToast({ title: 'Tautan Dihapus', message: 'Tautan orang tua dan anak telah dilepas.', type: 'info' });
-        this.render();
-      });
-    });
   }
 
   /* --------------------------------------------------------------------------
@@ -673,7 +591,6 @@ export class AdminWorkspace {
               <select id="admin-select-role" class="form-control">
                 <option value="student" ${user.role === 'student' ? 'selected' : ''}>Siswa (Student)</option>
                 <option value="tutor" ${(user.role === 'tutor' || user.role === 'teacher') ? 'selected' : ''}>Tutor / Guru</option>
-                <option value="parent" ${user.role === 'parent' ? 'selected' : ''}>Orang Tua (Parent)</option>
                 <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrator</option>
               </select>
             </div>
@@ -826,81 +743,6 @@ export class AdminWorkspace {
     });
   }
 
-  openParentLinkModal() {
-    const modalId = 'admin-parent-rel-modal';
-    let modal = document.getElementById(modalId);
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = modalId;
-      modal.className = 'modal-backdrop';
-      modal.setAttribute('role', 'dialog');
-      modal.setAttribute('aria-modal', 'true');
-      document.body.appendChild(modal);
-    }
-
-    const parents = IdentityStore.getAllUsers({ role: 'parent' });
-    const students = IdentityStore.getAllUsers({ role: 'student' });
-
-    modal.innerHTML = `
-      <div class="modal-dialog" style="max-width: 480px; width: 92%;">
-        <div class="modal-header">
-          <h3 class="modal-title">Tambah Tautan Orang Tua &amp; Anak</h3>
-          <button type="button" class="btn btn-ghost btn-sm" id="btn-close-parent-rel-modal">✕</button>
-        </div>
-
-        <form onsubmit="return false;" style="display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-4) var(--space-6);">
-          <div class="form-group">
-            <label for="select-rel-parent" class="form-label">Pilih Akun Orang Tua *</label>
-            <select id="select-rel-parent" class="form-control">
-              ${parents.map(p => `<option value="${p.id}">${escapeHtml(p.displayName)} (${escapeHtml(p.email)})</option>`).join('')}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="select-rel-child" class="form-label">Pilih Anak (Siswa) *</label>
-            <select id="select-rel-child" class="form-control">
-              ${students.map(s => `<option value="${s.id}">${escapeHtml(s.displayName)} &bull; ${escapeHtml(s.gradeLevel || 'Grade 5')}</option>`).join('')}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="select-rel-type" class="form-label">Hubungan Kekeluargaan *</label>
-            <select id="select-rel-type" class="form-control">
-              <option value="Ayah">Ayah</option>
-              <option value="Ibu">Ibu</option>
-              <option value="Wali">Wali</option>
-            </select>
-          </div>
-
-          <div class="modal-footer" style="padding: var(--space-4) 0 0 0;">
-            <button type="button" class="btn btn-secondary" id="btn-cancel-parent-rel-modal">Batal</button>
-            <button type="button" class="btn btn-primary" id="btn-save-parent-rel-modal">Tautkan</button>
-          </div>
-        </form>
-      </div>
-    `;
-
-    modal.classList.add('is-open');
-    const closeModal = () => modal.classList.remove('is-open');
-    modal.querySelector('#btn-close-parent-rel-modal')?.addEventListener('click', closeModal);
-    modal.querySelector('#btn-cancel-parent-rel-modal')?.addEventListener('click', closeModal);
-
-    modal.querySelector('#btn-save-parent-rel-modal')?.addEventListener('click', () => {
-      const pid = modal.querySelector('#select-rel-parent')?.value;
-      const sid = modal.querySelector('#select-rel-child')?.value;
-      const rel = modal.querySelector('#select-rel-type')?.value || 'Orang Tua';
-
-      const res = IdentityStore.linkParentToStudent(pid, sid, rel);
-      if (res.error) {
-        showToast({ title: 'Gagal Menautkan', message: res.message, type: 'error' });
-      } else {
-        showToast({ title: 'Tautan Berhasil! 🎉', message: 'Orang tua dan anak berhasil ditautkan.', type: 'success' });
-        closeModal();
-        this.render();
-      }
-    });
-  }
-
   /**
    * Release the IdentityStore subscription and transient dialogs when React unmounts.
    */
@@ -911,7 +753,7 @@ export class AdminWorkspace {
     this._unsub = null;
     this._unsubBilling = null;
     this._unsubSessions = null;
-    ['admin-user-editor-modal', 'admin-tutor-rel-modal', 'admin-parent-rel-modal'].forEach((id) => {
+    ['admin-user-editor-modal', 'admin-tutor-rel-modal'].forEach((id) => {
       document.getElementById(id)?.remove();
     });
     if (this.container) this.container.replaceChildren();
