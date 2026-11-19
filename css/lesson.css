@@ -2678,7 +2678,7 @@
 [data-theme="dark"] .gas-island-cell.is-active {
   border-color: var(--color-primary);
   background-color: var(--color-primary-subtle);
-  box-shadow: var(--shadow-sm), 0 0 16px rgba(56, 189, 248, 0.25);
+  box-shadow: var(--shadow-sm), 0 0 16px var(--color-rpg-path-glow);
 }
 
 /* Dark mode background of map canvas */
