@@ -1,10 +1,11 @@
 /**
  * Parent Hub embedded in the Student Workspace.
- * Local demo implementation: only actual submitted session reports are shown.
- * Monthly evaluations and invoices remain empty until their real workflows exist.
+ * Local demo implementation: submitted session reports and student-scoped invoices are shown.
+ * Monthly evaluations remain empty until their workflow exists.
  */
 
 import { SessionStore } from '../services/session-store.js';
+import { BillingStore } from '../services/billing-store.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },
@@ -19,11 +20,15 @@ export class ParentHubView {
     this.onBack = onBack;
     this.activeTab = 'sessions';
     this.unsubscribeSessionStore = null;
+    this.unsubscribeBillingStore = null;
   }
 
   init() {
     this.unsubscribeSessionStore = SessionStore.subscribe(() => {
       if (this.activeTab === 'sessions') this.renderContent();
+    });
+    this.unsubscribeBillingStore = BillingStore.subscribe(() => {
+      if (this.activeTab === 'invoices') this.renderContent();
     });
     this.render();
   }
@@ -32,6 +37,10 @@ export class ParentHubView {
     if (this.unsubscribeSessionStore) {
       this.unsubscribeSessionStore();
       this.unsubscribeSessionStore = null;
+    }
+    if (this.unsubscribeBillingStore) {
+      this.unsubscribeBillingStore();
+      this.unsubscribeBillingStore = null;
     }
   }
 
@@ -59,8 +68,7 @@ export class ParentHubView {
         </header>
 
         <div class="parent-demo-notice-banner" role="note">
-          Ruang ini masih menggunakan penyimpanan demo lokal. Hanya laporan sesi yang sudah dikirim tutor yang ditampilkan.
-          Data bulanan dan tagihan akan muncul setelah fitur pencatatannya tersedia.
+          Ruang ini masih menggunakan penyimpanan demo lokal. Laporan dan tagihan yang tampil hanya milik akun siswa ini.
         </div>
 
         <div class="parent-hub-toolbar">
@@ -94,10 +102,45 @@ export class ParentHubView {
       'Belum ada evaluasi bulanan',
       'Evaluasi perkembangan bulanan akan tampil setelah tutor mengisi dan mengirim laporan evaluasi.'
     );
-    else content.innerHTML = this.renderEmptyState(
-      'Belum ada riwayat tagihan',
-      'Riwayat tagihan akan tampil setelah admin membuat tagihan untuk sesi belajar yang memenuhi ketentuan.'
-    );
+    else content.innerHTML = this.renderInvoices();
+  }
+
+  renderInvoices() {
+    const invoices = BillingStore.getStudentInvoices(this.studentUser.id);
+    if (!invoices.length) {
+      return this.renderEmptyState(
+        'Belum ada riwayat tagihan',
+        'Riwayat tagihan akan muncul setelah admin membuat tagihan untuk pertemuan yang memenuhi ketentuan.'
+      );
+    }
+
+    return `
+      <div class="parent-session-report-list">
+        ${invoices.map(invoice => `
+          <article class="session-report-card" data-parent-invoice-id="${escapeHtml(invoice.id)}">
+            <div class="session-report-header">
+              <div class="session-title-group">
+                <span class="badge ${invoice.status === 'paid' ? 'badge-approved' : 'badge-in-progress'}">${invoice.status === 'paid' ? 'Lunas' : 'Belum dibayar'}</span>
+                <h3>Tagihan ${escapeHtml(formatInvoicePeriod(invoice.period))}</h3>
+                <div class="session-meta-row">
+                  <span>${Number(invoice.totalSessions) || 0} pertemuan</span>
+                  <span>Tarif per pertemuan: <strong>${formatRupiah(invoice.rateSnapshot)}</strong></span>
+                </div>
+              </div>
+              <strong>${formatRupiah(invoice.totalAmount)}</strong>
+            </div>
+            <div class="session-box">
+              <span class="session-box-title">Rincian pertemuan</span>
+              <ul>
+                ${(invoice.items || []).map(item => `
+                  <li>Sesi ke-${Number(item.sessionNumber) || '-'} · ${escapeHtml(formatDate(item.sessionDate))} · ${formatRupiah(item.amount)}</li>
+                `).join('')}
+              </ul>
+            </div>
+          </article>
+        `).join('')}
+      </div>
+    `;
   }
 
   renderSessionReports() {
@@ -163,6 +206,17 @@ export class ParentHubView {
       </div>
     `;
   }
+}
+
+function formatRupiah(amount) {
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(amount) || 0);
+}
+
+function formatInvoicePeriod(value) {
+  if (!/^\\d{4}-\\d{2}$/.test(value || '')) return value || 'Periode tidak diketahui';
+  const [year, month] = value.split('-').map(Number);
+  return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+    .format(new Date(Date.UTC(year, month - 1, 1)));
 }
 
 function formatList(value) {
