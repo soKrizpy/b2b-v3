@@ -197,24 +197,22 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 
 ### Kontrak frontend–backend
 
-- [x] Batas repository untuk migrasi dari store localStorage ke backend didokumentasikan di [docs/frontend-backend-repository-contract.md](docs/frontend-backend-repository-contract.md).
-- [x] Repository adapter portal auth/identity dan adapter async kompatibilitas untuk jadwal, laporan, evaluasi bulanan, serta tagihan tersedia di `vite-app/src/data/`; workspace akan dipindahkan bertahap.
-- [ ] Implementasi Supabase tetap menunggu lingkungan development lokal dan pengujian RLS. Tidak ada perubahan ke Supabase production.
+- [x] Kontrak repository async dan aturan keamanan backend terdokumentasi di [docs/frontend-backend-repository-contract.md](docs/frontend-backend-repository-contract.md).
+- [x] Repository auth, identity, learning-state, class-session, learning-record, dan billing tersedia; local demo tetap menjadi adapter/persistence sementara.
+- [x] Operasi baca/tulis Student, Tutor, dan Admin pada domain tersebut sudah melewati repository async.
+- [ ] Supabase development, schema, Auth, RLS, transaksi tepercaya, dan remote adapter belum dibuat. Tidak ada perubahan ke Supabase production.
 
 
-### Repository adapter extraction (19 November 2026)
+### Migrasi repository domain (19 November 2026)
 
-- [x] Typed repository contract dan local-demo adapter autentikasi portal serta daftar akun aktif tersedia di `vite-app/src/data/`.
-- [x] Portal React memakai adapter auth/identity; perilaku login demo dan penyimpanan localStorage tetap dipertahankan.
-- [x] Adapter async kompatibilitas untuk jadwal, laporan sesi, evaluasi bulanan, dan tagihan tersedia di `local-demo-domain-repositories.ts`.
-- [x] Student Workspace memvalidasi ulang sesi melalui `AuthRepository` sebelum memasang learning controller; operasi data controller lama belum dipindahkan.
-- [x] Tutor Workspace memvalidasi ulang sesi melalui `AuthRepository` sebelum memasang tutor controller; operasi domain masih memakai store lama.
-- [x] Admin Workspace memakai `IdentityRepository` untuk inisialisasi akun demo dan `AuthRepository` untuk memvalidasi sesi sebelum memasang admin controller; operasi domain masih memakai store lama.
-- [ ] Direct adapter contract tests dan migrasi operasi domain per use case masih menjadi tahap berikutnya.
-- [x] CI Run #86 berhasil untuk adapter domain: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468).
-- [x] CI Run #87 berhasil untuk validasi sesi Student melalui repository: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44518750410).
-- [ ] Migrasi operasi data Admin/Tutor/Student ke adapter dan direct adapter contract tests dilakukan bertahap sebelum integrasi Supabase.
-
+- [x] Student: validasi sesi melalui `AuthRepository`; seed, lookup, dan pengiriman submission melalui `LearningStateRepository`.
+- [x] Student Parent Hub: laporan terkirim, evaluasi bulanan terpublikasi, dan invoice siswa dibaca melalui repository async.
+- [x] Tutor: jadwal, laporan sesi, evaluasi bulanan, serta submission review dibaca melalui repository; attendance, cancellation, report save/delete, dan evaluation save/publish memakai operasi async.
+- [x] Admin: daftar pengguna, relasi tutor-siswa, jadwal, tarif, dan invoice dimuat melalui repository; CRUD identitas/assignment dan seluruh mutasi jadwal/billing menggunakan operasi async.
+- [x] Repository read methods mengembalikan Promise; subscription disposer tetap sinkron agar store demo dapat memicu refresh UI.
+- [x] GitHub Actions memverifikasi typecheck, production build, dan Playwright browser QA untuk perubahan bertahap. Run terbaru sedang diverifikasi pada commit branch `preview`.
+- [ ] Penyimpanan checkpoint/progress lesson masih menggunakan localStorage demo; belum ada sinkronisasi antarperangkat.
+- [ ] Repository lokal masih memakai localStorage dan pemeriksaan client-side. Belum aman untuk data siswa/tagihan produksi.
 
 ### Migrasi repository domain Tutor (19 November 2026)
 

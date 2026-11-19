@@ -1,6 +1,6 @@
 # Frontend–Backend Repository Contract
 
-Status: design and migration contract for B2B v3. The local-demo repository adapters exist for portal auth/identity and the four domain stores. No Supabase client, SQL, credentials, or production data have been used or changed.
+Status: frontend repository-boundary migration is implemented for portal auth, identity, submissions/review, class sessions, session reports, monthly evaluations, and billing. Local-demo repositories still use browser storage. No Supabase client, SQL, credentials, or production data have been used or changed.
 
 ## 1. Purpose
 
@@ -23,7 +23,7 @@ This is an architectural seam, not a claim that browser-side checks become secur
 
 Use asynchronous methods in the production-facing contract, even where the current local demo methods are synchronous. This avoids a second UI rewrite when the backend is introduced.
 
-The proposed feature interfaces are `AuthRepository`, `IdentityRepository`, `ClassSessionRepository`, `SessionReportRepository`, `MonthlyEvaluationRepository`, and `BillingRepository`. Their operations are described in the sections below and mapped to current stores. The implemented local adapters are intentionally compatibility adapters, not final production interfaces.
+The feature boundaries are `AuthRepository`, `IdentityRepository`, `LearningStateRepository`, `ClassSessionRepository`, `SessionReportRepository`, `MonthlyEvaluationRepository`, and `BillingRepository`. Their operations are mapped to the current stores. The implemented local adapters are intentionally compatibility adapters, not final production interfaces.
 
 Important: production methods intentionally omit `actor`, `tutorId`, and `studentId` parameters when those values can be derived from the verified session. A requested target student ID can be supplied as an input, but authorization must be derived from the authenticated server context and checked again in RLS/transaction logic.
 
@@ -33,6 +33,7 @@ Important: production methods intentionally omit `actor`, `tutorId`, and `studen
 |---|---|---|
 | `AuthService` | `getCurrentSession`, `signInDemo`, `signOut`, `subscribe` | `AuthRepository` |
 | `IdentityStore` | user CRUD, active tutor/student assignments | `IdentityRepository` |
+| `StateStore` | submission reads/writes, student lesson submission lookup, tutor review status changes | `LearningStateRepository` |
 | `ClassSessionStore` | list/read sessions, recurring series, attendance, cancellation, soft delete, replacement, billability | `ClassSessionRepository` |
 | `SessionStore` | list/read reports, save draft/submit, delete draft | `SessionReportRepository` |
 | `MonthlyEvaluationStore` | tutor list, student published list, save draft/publish | `MonthlyEvaluationRepository` |
@@ -42,9 +43,12 @@ Implemented files:
 
 - `vite-app/src/data/repositories.ts`: typed portal auth/identity contracts.
 - `vite-app/src/data/local-demo-repositories.ts`: local demo implementation for portal auth and active account listing; consumed by `App.tsx`.
-- `vite-app/src/data/local-demo-domain-repositories.ts`: async compatibility adapters for class sessions, session reports, monthly evaluations, and billing. All exposed store methods return Promises except the synchronous `subscribe` disposer and pure `isBillable` helper. Non-function data properties (for example, evaluation rating definitions) remain synchronous values. Explicit repository mutation methods take precedence over legacy store methods in the adapter Proxy.
+- `js/services/identity-repository.js`: async identity and assignment reads/mutations; synchronous subscription disposer.
+- `js/services/learning-state-repository.js`: async submission reads/writes, legacy-progress migration, and tutor review status updates; synchronous subscription disposer.
+- `js/services/class-session-repository.js`, `learning-record-repository.js`, and `billing-repository.js`: async reads and mutations for their respective domains.
+- `vite-app/src/data/local-demo-domain-repositories.ts`: typed async compatibility adapters for the four operational domain stores. All exposed store methods return Promises except synchronous `subscribe` disposers and the pure `isBillable` helper. Non-function data properties (for example, evaluation rating definitions) remain synchronous values. Explicit mutation methods take precedence over legacy store methods in the adapter Proxy.
 
-The domain adapters wrap the existing stores without changing localStorage keys, event names, validation, or business rules. `StudentExperience.tsx` now re-reads the active session through `localDemoRepositories.auth.getSession()` before mounting the legacy learning controller. The learning controller's domain data operations remain on their existing stores; this is a first narrow consumer migration, not a full Student Workspace migration. Existing Playwright coverage for student sign-in/dashboard verifies the user-visible path.
+The workspace controllers now consume these boundaries for domain reads and writes: Student lesson submissions and Parent Hub reports/evaluations/invoices; Tutor assigned schedules, reports, evaluations, attendance/cancellation, and submission review; Admin identity/assignment management, schedules, rates, and invoices. Store subscriptions remain synchronous so the local demo can refresh views after writes. The lesson checkpoint/progress draft still uses the existing localStorage progress key and is not yet a remote persistence implementation.
 
 The UI should not call `localStorage`, Supabase tables, or Supabase RPCs directly.
 
@@ -98,11 +102,11 @@ Never treat a zero-row update as success. For update operations, verify the retu
 ## 8. Migration sequence
 
 1. [x] Add typed portal auth/identity contracts and a local-demo adapter; the React portal consumes it without changing the login flow.
-2. [x] Add async compatibility adapters for class sessions, reports, monthly evaluations, and billing. The existing workspace controllers still use their legacy imports; migration into each workspace is the next task.
-3. [x] Migrate Student Workspace session validation to `AuthRepository`; retain the legacy learning controller and data stores.
-4. [x] Migrate Tutor Workspace session validation to `AuthRepository`; retain the legacy tutor controller and domain stores.
-5. [x] Migrate Admin Workspace session validation and demo identity initialization to `AuthRepository`/`IdentityRepository`; retain the legacy admin controller and domain stores.
-6. [x] Add browser coverage for async class-session operations, Tutor report and monthly-evaluation mutations, and Admin billing mutations (rate, draft, issue, paid); migrate domain operations one use case at a time, preserving existing behavior.
+2. [x] Add async compatibility adapters for identity, learning submissions/review, class sessions, reports, monthly evaluations, and billing.
+3. [x] Migrate Student Workspace session validation and lesson submission reads/writes; move Parent Hub reads to async repositories.
+4. [x] Migrate Tutor Workspace session validation, assigned schedule/report/evaluation reads, attendance/cancellation, and submission review to repositories.
+5. [x] Migrate Admin Workspace identity/assignment CRUD and schedule/billing reads/writes to repositories.
+6. [x] Add and retain browser coverage for async adapter reads/writes and the affected Student/Tutor/Admin workflows.
 7. Start a local/development Supabase instance only after the user confirms the local environment is ready.
 8. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
 9. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
@@ -115,7 +119,7 @@ Never treat a zero-row update as success. For update operations, verify the retu
 - The portal auth/identity adapter is consumed by `vite-app/src/App.tsx`; `StudentExperience.tsx` and `TutorExperience.tsx` re-read the active session before mounting their legacy controllers, while `AdminExperience.tsx` initializes demo identity and checks the active Admin session through the repositories.
 - The domain adapter exposes the four existing domain stores through asynchronous methods while preserving synchronous subscriptions and pure helpers. `ClassSessionRepository` owns Tutor attendance/cancellation and Admin recurring-series creation, cancellation, soft deletion, and replacement creation. `SessionReportRepository` owns report save/delete mutations, `MonthlyEvaluationRepository` owns evaluation saves, and `BillingRepository` owns Admin billing mutations. Tutor and Admin handlers await these operations and handle failures; local demo storage remains the persistence layer.
 - The domain adapter baseline completed successfully in [GitHub Actions run #86](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468). Student/Tutor/Admin session-gate migrations passed in [run #91](https://github.com/soKrizpy/b2b-v3/actions/runs/44525472227), Tutor attendance/cancellation passed in [run #103](https://github.com/soKrizpy/b2b-v3/actions/runs/44530128020), and the combined schedule, learning-record, and billing repository coverage passed all 32 browser tests plus production build in [run #119](https://github.com/soKrizpy/b2b-v3/actions/runs/44531956130).
-- All three workspace boundaries use the repository layer to re-check the active demo session before mounting. Tutor attendance/cancellation and Admin recurring-series creation, cancellation, soft deletion, and replacement creation now cross the async class-session repository boundary. Tutor report draft/submission/deletion and monthly-evaluation save/publish cross dedicated async learning-record repositories. Admin rate, invoice-draft creation/edit, invoice issuance, and paid-state mutations now cross an async billing repository. Read/list operations and remaining Student domain operations still use legacy stores. The async repository mutation migration milestone is complete; this does not mean the remote Supabase backend is ready or production-secure.
+- All three workspace boundaries re-check the active demo session before mounting. Student lesson submission reads/writes and Parent Hub reads use `LearningStateRepository`, `SessionReportRepository`, `MonthlyEvaluationRepository`, and `BillingRepository`. Tutor schedule, report, evaluation, and submission-review reads/writes use the async repositories; Admin identity/assignment, schedule, rate, and invoice reads/writes use the async repositories. Tutor attendance/cancellation and Admin recurring-series creation, cancellation, soft deletion, and replacement creation remain on `ClassSessionRepository`. This completes the frontend domain-operation repository-boundary migration for the current local-demo stores. Lesson checkpoint/progress draft storage still uses the legacy localStorage key. This does not mean the remote Supabase backend is ready or production-secure.
 - No Supabase project, database, Auth user, credential, or production data has been accessed or changed.
 - No migration SQL has been generated or executed.
 - Actual Supabase adapter work waits for a confirmed local/development environment.
