@@ -1048,10 +1048,10 @@ export class TeacherWorkspace {
             ${this.students.map(student => `<option value="${escapeHtml(student.id)}" ${student.id === current.studentId ? 'selected' : ''}>${escapeHtml(student.name || student.displayName)}</option>`).join('')}</select></label>
           <label>Periode bulan<input name="period" type="month" required value="${escapeHtml(period)}" style="width:100%;"></label>
           <label>Penilaian keseluruhan<select name="rating" required style="width:100%;"><option value="">Pilih penilaian</option>
-            ${MonthlyEvaluationStore.ratings.map(rating => `<option value="${escapeHtml(rating)}" ${current.rating === rating ? 'selected' : ''}>${escapeHtml(rating)}</option>`).join('')}</select></label>
+            ${MonthlyEvaluationRepository.getRatings().map(rating => `<option value="${escapeHtml(rating)}" ${current.rating === rating ? 'selected' : ''}>${escapeHtml(rating)}</option>`).join('')}</select></label>
         </div>
         <label>Ringkasan perkembangan<textarea name="summary" rows="3" required maxlength="1500" style="width:100%;">${escapeHtml(current.summary || '')}</textarea></label>
-        <label>Hal yang sudah dikuasai<textarea name="strengths" rows="3" required maxlength="1200" style="width:100%;">\${escapeHtml(current.strengths || '')}</textarea></label>
+        <label>Hal yang sudah dikuasai<textarea name="strengths" rows="3" required maxlength="1200" style="width:100%;">${escapeHtml(current.strengths || '')}</textarea></label>
         <label>Target bulan berikutnya<textarea name="nextGoals" rows="3" required maxlength="1200" style="width:100%;">${escapeHtml(current.nextGoals || '')}</textarea></label>
         <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
           <button type="button" class="btn btn-secondary" id="btn-save-monthly-draft">Simpan draf</button>
