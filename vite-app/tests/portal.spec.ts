@@ -822,3 +822,72 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByRole("heading", { name: "Selamat datang di Bits2Bytes!" })).toBeVisible();
   });
 });
+
+test.describe("Local demo domain repository adapters", () => {
+  test("wrap domain operations asynchronously while preserving sync subscriptions and store context", async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      localStorage.removeItem("b2b_monthly_evaluations_store");
+      localStorage.removeItem("b2b_billing_store");
+
+      const { localDemoDomainRepositories: repositories } = await import("/src/data/local-demo-domain-repositories.ts");
+      const sessionInput = {
+        id: "adapter-contract-session",
+        seriesId: "adapter-contract-series",
+        sessionNumber: 1,
+        studentId: "adapter-contract-student",
+        tutorId: "adapter-contract-tutor",
+        scheduledStartAt: "2026-12-15T09:00:00+07:00",
+        durationMinutes: 60
+      };
+
+      let notificationCount = 0;
+      const unsubscribe = repositories.classSessions.subscribe(() => { notificationCount += 1; });
+      const createResult = repositories.classSessions.createSession(sessionInput);
+      const createIsPromise = createResult instanceof Promise;
+      const created = await createResult;
+      const studentSessionsResult = repositories.classSessions.getStudentSessions("adapter-contract-student");
+      const queryIsPromise = studentSessionsResult instanceof Promise;
+      const studentSessions = await studentSessionsResult;
+
+      const publishedResult = repositories.monthlyEvaluations.getStudentPublished("adapter-contract-student");
+      const evaluationQueryIsPromise = publishedResult instanceof Promise;
+      const published = await publishedResult;
+
+      const invoiceResult = repositories.billing.getStudentInvoices("adapter-contract-student");
+      const invoiceQueryIsPromise = invoiceResult instanceof Promise;
+      const invoices = await invoiceResult;
+
+      const ratings = repositories.monthlyEvaluations.ratings;
+      const unsubscribeIsFunction = typeof unsubscribe === "function";
+      unsubscribe();
+
+      return {
+        createIsPromise,
+        created: created.success,
+        queryIsPromise,
+        sessionCount: studentSessions.length,
+        evaluationQueryIsPromise,
+        publishedCount: published.length,
+        invoiceQueryIsPromise,
+        invoiceCount: invoices.length,
+        ratingsRemainSynchronous: Array.isArray(ratings),
+        subscribeRemainsSynchronous: unsubscribeIsFunction,
+        notificationCount
+      };
+    });
+
+    expect(result.createIsPromise).toBe(true);
+    expect(result.created).toBe(true);
+    expect(result.queryIsPromise).toBe(true);
+    expect(result.sessionCount).toBe(1);
+    expect(result.evaluationQueryIsPromise).toBe(true);
+    expect(result.publishedCount).toBe(0);
+    expect(result.invoiceQueryIsPromise).toBe(true);
+    expect(result.invoiceCount).toBe(0);
+    expect(result.ratingsRemainSynchronous).toBe(true);
+    expect(result.subscribeRemainsSynchronous).toBe(true);
+    expect(result.notificationCount).toBe(1);
+  });
+});
+
