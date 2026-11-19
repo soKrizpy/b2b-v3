@@ -14,8 +14,10 @@ import { ClassSessionStore } from "../../../js/services/class-session-store.js";
 import { ClassSessionRepository } from "../../../js/services/class-session-repository.js";
 // @ts-ignore - Shared async learning-record boundary remains beside legacy stores.
 import { SessionReportRepository, MonthlyEvaluationRepository } from "../../../js/services/learning-record-repository.js";
+// @ts-ignore - Shared async billing boundary remains beside the legacy store.
+import { BillingRepository } from "../../../js/services/billing-repository.js";
 
-export { ClassSessionStore, ClassSessionRepository, SessionReportRepository, MonthlyEvaluationRepository };
+export { ClassSessionStore, ClassSessionRepository, SessionReportRepository, MonthlyEvaluationRepository, BillingRepository };
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
 import { SessionStore } from "../../../js/services/session-store.js";
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
@@ -74,5 +76,11 @@ export const localDemoDomainRepositories: LocalDemoDomainRepositories = {
   monthlyEvaluations: Object.assign(createAsyncStoreAdapter(MonthlyEvaluationStore), {
     save: MonthlyEvaluationRepository.save
   }),
-  billing: createAsyncStoreAdapter(BillingStore)
+  billing: Object.assign(createAsyncStoreAdapter(BillingStore), {
+    setRate: BillingRepository.setRate,
+    createInvoice: BillingRepository.createInvoice,
+    updateDraftInvoice: BillingRepository.updateDraftInvoice,
+    issueInvoice: BillingRepository.issueInvoice,
+    markPaid: BillingRepository.markPaid
+  })
 };
