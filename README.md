@@ -157,7 +157,7 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 
 - [x] Portal memiliki alur masuk demo eksplisit: pilih peran, pilih akun aktif sesuai peran, lalu tekan tombol masuk.
 - [x] Tidak ada auto-login atau peningkatan hak akses saat pengguna memilih ruang.
-- [x] Ruang Admin, Tutor, dan Siswa memeriksa ulang identitas serta peran sesi sebelum memuat workspace.
+- [x] Ruang Admin, Tutor, dan Siswa memeriksa ulang identitas serta peran sesi melalui repository auth sebelum memuat workspace; Admin juga memakai identity repository untuk inisialisasi akun demo.
 - [x] Tombol keluar mengakhiri sesi demo dan kembali ke pemilihan ruang.
 - [x] GitHub Actions menjalankan `npm run build` (TypeScript check + Vite production build) pada perubahan track Vite.
 - [ ] Autentikasi ini masih simulasi lokal berbasis `localStorage`, bukan autentikasi produksi dan belum memakai password.
@@ -208,5 +208,9 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [x] Portal React memakai adapter auth/identity; perilaku login demo dan penyimpanan localStorage tetap dipertahankan.
 - [x] Adapter async kompatibilitas untuk jadwal, laporan sesi, evaluasi bulanan, dan tagihan tersedia di `local-demo-domain-repositories.ts`.
 - [x] Student Workspace memvalidasi ulang sesi melalui `AuthRepository` sebelum memasang learning controller; operasi data controller lama belum dipindahkan.
+- [x] Tutor Workspace memvalidasi ulang sesi melalui `AuthRepository` sebelum memasang tutor controller; operasi domain masih memakai store lama.
+- [x] Admin Workspace memakai `IdentityRepository` untuk inisialisasi akun demo dan `AuthRepository` untuk memvalidasi sesi sebelum memasang admin controller; operasi domain masih memakai store lama.
+- [ ] Direct adapter contract tests dan migrasi operasi domain per use case masih menjadi tahap berikutnya.
 - [x] CI Run #86 berhasil untuk adapter domain: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468).
+- [x] CI Run #87 berhasil untuk validasi sesi Student melalui repository: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44518750410).
 - [ ] Migrasi operasi data Admin/Tutor/Student ke adapter dan direct adapter contract tests dilakukan bertahap sebelum integrasi Supabase.
