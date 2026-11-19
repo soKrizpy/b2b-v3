@@ -63,7 +63,8 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
     await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
-    await expect(page.getByText(/Lanjutkan petualangan coding/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Halo, Alex/ })).toBeVisible();
+    await expect(page.getByText("Poin menuju level berikutnya", { exact: false })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
     await expectNoHorizontalOverflow(page);
