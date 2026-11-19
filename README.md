@@ -135,7 +135,9 @@ Perintah lain:
 - [x] Admin Workspace awal terhubung ke React melalui controller lama; daftar akun, filter, edit/status akun, penugasan tutor-siswa, dan tautan orang tua-anak tetap memakai IdentityStore lokal.
 - [x] Teacher Workspace awal terhubung ke React melalui controller lama; antrean review dan laporan sesi tetap memakai alur data yang sudah ada.
 - [x] Student Workspace awal memakai kembali Lesson Engine dan data contoh yang sudah ada; penyempurnaan React bertahap.
-- [x] Parent Hub versi demo terintegrasi sebagai area di dalam Student Workspace; siswa membukanya dari dashboard tanpa role atau portal orang tua terpisah.
+- [x] Role yang didukung hanya Admin, Tutor, dan Siswa. Parent Hub berada di Student Workspace dan diakses melalui akun siswa; tidak ada akun atau role Parent terpisah.
+
+Parent Hub versi demo terintegrasi sebagai area di dalam Student Workspace; siswa membukanya dari dashboard tanpa role atau portal orang tua terpisah.
 - [x] Laporan sesi Parent Hub hanya mengambil laporan berstatus terkirim milik ID siswa yang sedang masuk.
 - [x] Tab laporan mingguan dihapus; area Parent Hub menampilkan laporan sesi, perkembangan bulanan, dan riwayat tagihan.
 - [x] Admin dapat menentukan tarif per pertemuan secara manual untuk setiap siswa aktif; perubahan tarif tidak mengubah tagihan yang sudah diterbitkan.
