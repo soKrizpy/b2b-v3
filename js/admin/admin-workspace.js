@@ -8,14 +8,12 @@
  * - Real-time sync with IdentityStore.
  */
 
-import { IdentityStore, VALID_ROLES } from '../services/identity-store.js';
+import { IdentityRepository } from '../services/identity-repository.js';
 import { AuthService } from '../services/auth-service.js';
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
-import { BillingStore } from '../services/billing-store.js';
-import { BillingRepository } from '../services/billing-repository.js';
-import { ClassSessionStore } from '../services/class-session-store.js';
-import { ClassSessionRepository } from '../services/class-session-repository.js';
+import { BillingStore, BillingRepository } from '../services/billing-repository.js';
+import { ClassSessionStore, ClassSessionRepository } from '../services/class-session-repository.js';
 
 export class AdminWorkspace {
   /**
@@ -33,15 +31,35 @@ export class AdminWorkspace {
     this.handleStoreChange = this.handleStoreChange.bind(this);
   }
 
-  init() {
-    IdentityStore.seedIfEmpty();
-    this.render();
-
+  async init() {
+    await IdentityRepository.initializeDemo();
+    await this.refreshData({ render: false });
     if (!this._unsub) {
-      this._unsub = IdentityStore.subscribe(() => this.render());
-      this._unsubBilling = BillingStore.subscribe(() => this.render());
-      this._unsubSessions = ClassSessionStore.subscribe(() => this.render());
+      this._unsub = IdentityRepository.subscribe(() => { void this.refreshData(); });
+      this._unsubBilling = BillingStore.subscribe(() => { void this.refreshData(); });
+      this._unsubSessions = ClassSessionStore.subscribe(() => { void this.refreshData(); });
     }
+    this.render();
+  }
+
+  async refreshData({ render = true } = {}) {
+    const request = ++this.refreshSequence;
+    const [users, assignments, sessions, invoices] = await Promise.all([
+      IdentityRepository.getAllUsers(),
+      IdentityRepository.getAllAssignments(),
+      ClassSessionRepository.getAllSessions(),
+      BillingRepository.getInvoices()
+    ]);
+    const students = users.filter(user => user.role === 'student' && user.status === 'active');
+    const rateEntries = await Promise.all(students.map(async student => [student.id, await BillingRepository.getRate(student.id)]));
+    if (this.destroyed || request !== this.refreshSequence) return;
+    this.users = users;
+    this.assignments = assignments;
+    this.sessions = sessions;
+    this.invoices = invoices;
+    this.usersById = new Map(users.map(user => [user.id, user]));
+    this.ratesByStudent = new Map(rateEntries);
+    if (render && this.container) this.render();
   }
 
   render() {
@@ -77,10 +95,10 @@ export class AdminWorkspace {
       return;
     }
 
-    const allUsers = IdentityStore.getAllUsers();
+    const allUsers = this.users;
     const totalCount = allUsers.length;
     const activeCount = allUsers.filter(u => u.status === 'active').length;
-    const assignments = IdentityStore.getAllAssignments();
+    const assignments = this.assignments;
 
     this.container.innerHTML = `
       <div class="admin-workspace-wrap" style="display: flex; flex-direction: column; gap: var(--space-6);">
@@ -156,7 +174,7 @@ export class AdminWorkspace {
      TAB 1: USERS LIST VIEW
      -------------------------------------------------------------------------- */
   renderUsersView() {
-    let users = IdentityStore.getAllUsers();
+    let users = this.users;
 
     if (this.roleFilter !== 'all') {
       const norm = this.roleFilter === 'teacher' ? 'tutor' : this.roleFilter;
@@ -260,9 +278,9 @@ export class AdminWorkspace {
      TAB 2: TUTOR-STUDENT RELATIONS VIEW
      -------------------------------------------------------------------------- */
   renderTutorRelationsView() {
-    const assignments = IdentityStore.getAllAssignments();
-    const tutors = IdentityStore.getAllUsers({ role: 'tutor' });
-    const students = IdentityStore.getAllUsers({ role: 'student' });
+    const assignments = this.assignments;
+    const tutors = this.users.filter(user => user.role === 'tutor');
+    const students = this.users.filter(user => user.role === 'student');
 
     return `
       <div style="display: flex; flex-direction: column; gap: var(--space-4);">
@@ -287,8 +305,8 @@ export class AdminWorkspace {
               <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0;">Belum ada penugasan tutor-siswa.</p>
             </div>
           ` : assignments.map(a => {
-            const tutor = IdentityStore.getUserById(a.tutorId);
-            const student = IdentityStore.getUserById(a.studentId);
+            const tutor = this.usersById.get(a.tutorId);
+            const student = this.usersById.get(a.studentId);
 
             return `
               <div class="card" style="padding: var(--space-4) var(--space-5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3);">
@@ -351,10 +369,10 @@ export class AdminWorkspace {
      TAB: CLASS SCHEDULING
      -------------------------------------------------------------------------- */
   renderScheduleView() {
-    const students = IdentityStore.getAllUsers({ role: 'student' }).filter(user => user.status === 'active');
-    const tutors = IdentityStore.getAllUsers({ role: 'tutor' }).filter(user => user.status === 'active');
-    const usersById = new Map(IdentityStore.getAllUsers().map(user => [user.id, user]));
-    const sessions = ClassSessionStore.getAllSessions().sort((a, b) =>
+    const students = this.users.filter(user => user.role === 'student').filter(user => user.status === 'active');
+    const tutors = this.users.filter(user => user.role === 'tutor').filter(user => user.status === 'active');
+    const usersById = new Map(this.users.map(user => [user.id, user]));
+    const sessions = this.sessions.sort((a, b) =>
       new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime()
     );
     const todayParts = new Intl.DateTimeFormat('en-CA', {
@@ -469,9 +487,9 @@ export class AdminWorkspace {
      TAB 4: STUDENT RATES & INVOICES
      -------------------------------------------------------------------------- */
   renderBillingView() {
-    const students = IdentityStore.getAllUsers().filter(user => user.role === 'student' && user.status === 'active');
-    const invoices = BillingStore.getInvoices();
-    const usersById = new Map(IdentityStore.getAllUsers().map(user => [user.id, user]));
+    const students = this.users.filter(user => user.role === 'student' && user.status === 'active');
+    const invoices = this.invoices;
+    const usersById = new Map(this.users.map(user => [user.id, user]));
     const now = new Date();
     const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const defaultPeriod = previousMonth.getFullYear() + '-' + String(previousMonth.getMonth() + 1).padStart(2, '0');
@@ -482,7 +500,7 @@ export class AdminWorkspace {
       '<h3>Tarif per siswa</h3>',
       '<p>Admin menentukan tarif per pertemuan untuk setiap siswa. Perubahan tarif hanya berlaku pada draft/tagihan baru; tagihan lama menyimpan nominalnya sendiri.</p>',
       students.length ? students.map(student => {
-        const rate = BillingStore.getRate(student.id);
+        const rate = this.ratesByStudent.get(student.id);
         return '<form data-rate-form="' + escapeHtml(student.id) + '" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-border-subtle);">' +
           '<div style="flex:1;min-width:180px;"><label for="rate-' + escapeHtml(student.id) + '">' + escapeHtml(student.displayName) + '</label>' +
           '<div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">' + (rate ? 'Tarif saat ini: ' + formatRupiah(rate.amountPerSession) : 'Tarif belum ditentukan') + '</div></div>' +
@@ -774,7 +792,7 @@ export class AdminWorkspace {
     editBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         const uid = btn.getAttribute('data-user-id');
-        const user = IdentityStore.getUserById(uid);
+        const user = this.usersById.get(uid);
         if (user) this.openUserModal(user);
       });
     });
@@ -782,12 +800,12 @@ export class AdminWorkspace {
     // Toggle status buttons (activate / deactivate)
     const toggleBtns = this.container.querySelectorAll('[data-action="toggle-status"]');
     toggleBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const uid = btn.getAttribute('data-user-id');
         const targetStatus = btn.getAttribute('data-target-status');
         const res = targetStatus === 'active'
-          ? IdentityStore.activateUser(uid)
-          : IdentityStore.deactivateUser(uid);
+          ? await IdentityRepository.activateUser(uid)
+          : await IdentityRepository.deactivateUser(uid);
 
         if (res.error) {
           showToast({ title: 'Gagal', message: res.message, type: 'error' });
@@ -811,10 +829,10 @@ export class AdminWorkspace {
     // Delete tutor relation
     const deleteTutorRelBtns = this.container.querySelectorAll('[data-action="delete-tutor-rel"]');
     deleteTutorRelBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const tid = btn.getAttribute('data-tutor-id');
         const sid = btn.getAttribute('data-student-id');
-        IdentityStore.removeTutorStudentAssignment(tid, sid);
+        await IdentityRepository.removeTutorStudentAssignment(tid, sid);
         showToast({ title: 'Penugasan Dihapus', message: 'Relasi tutor dan siswa telah dilepas.', type: 'info' });
         this.render();
       });
@@ -907,7 +925,7 @@ export class AdminWorkspace {
     modal.querySelector('#btn-close-user-modal')?.addEventListener('click', closeModal);
     modal.querySelector('#btn-cancel-user-modal')?.addEventListener('click', closeModal);
 
-    modal.querySelector('#btn-save-user-modal')?.addEventListener('click', () => {
+    modal.querySelector('#btn-save-user-modal')?.addEventListener('click', async () => {
       const name = modal.querySelector('#admin-input-name')?.value.trim();
       const email = modal.querySelector('#admin-input-email')?.value.trim();
       const role = modal.querySelector('#admin-select-role')?.value;
@@ -921,7 +939,7 @@ export class AdminWorkspace {
 
       let res;
       if (isEdit) {
-        res = IdentityStore.updateUser(user.id, {
+        res = await IdentityRepository.updateUser(user.id, {
           displayName: name,
           email,
           role,
@@ -929,7 +947,7 @@ export class AdminWorkspace {
           gradeLevel: role === 'student' ? grade : undefined
         });
       } else {
-        res = IdentityStore.createUser({
+        res = await IdentityRepository.createUser({
           displayName: name,
           email,
           role,
@@ -964,8 +982,8 @@ export class AdminWorkspace {
       document.body.appendChild(modal);
     }
 
-    const tutors = IdentityStore.getAllUsers({ role: 'tutor' });
-    const students = IdentityStore.getAllUsers({ role: 'student' });
+    const tutors = this.users.filter(user => user.role === 'tutor');
+    const students = this.users.filter(user => user.role === 'student');
 
     modal.innerHTML = `
       <div class="modal-dialog" style="max-width: 480px; width: 92%;">
@@ -1002,11 +1020,11 @@ export class AdminWorkspace {
     modal.querySelector('#btn-close-tutor-rel-modal')?.addEventListener('click', closeModal);
     modal.querySelector('#btn-cancel-tutor-rel-modal')?.addEventListener('click', closeModal);
 
-    modal.querySelector('#btn-save-tutor-rel-modal')?.addEventListener('click', () => {
+    modal.querySelector('#btn-save-tutor-rel-modal')?.addEventListener('click', async () => {
       const tid = modal.querySelector('#select-rel-tutor')?.value;
       const sid = modal.querySelector('#select-rel-student')?.value;
 
-      const res = IdentityStore.assignStudentToTutor(tid, sid);
+      const res = await IdentityRepository.assignStudentToTutor(tid, sid);
       if (res.error) {
         showToast({ title: 'Gagal Menugaskan', message: res.message, type: 'error' });
       } else {
@@ -1036,7 +1054,7 @@ export class AdminWorkspace {
   }
 
   handleStoreChange() {
-    this.render();
+    void this.refreshData();
   }
 }
 
