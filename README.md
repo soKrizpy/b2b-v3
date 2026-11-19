@@ -214,11 +214,10 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [ ] Penyimpanan checkpoint/progress lesson masih menggunakan localStorage demo; belum ada sinkronisasi antarperangkat.
 - [ ] Repository lokal masih memakai localStorage dan pemeriksaan client-side. Belum aman untuk data siswa/tagihan produksi.
 
-### Migrasi repository domain Tutor (19 November 2026)
+### Catatan batas migrasi repository
 
-- [x] Pencatatan kehadiran Tutor menggunakan `ClassSessionRepository.recordAttendance()` secara async.
-- [x] Pembatalan sesi oleh Tutor menggunakan `ClassSessionRepository.cancelSession()` secara async; tombol submit dinonaktifkan selama proses dan pesan kegagalan ditangani.
-- [x] Pengujian browser mencakup alasan wajib, penolakan Tutor yang bukan penanggung jawab, status sesi menjadi cancelled, dan penanda replacement required.
-- [x] Modul adapter mengekspor store demo melalui satu jalur Vite agar pengujian tidak mengimpor file di luar app root secara langsung.
-- [ ] Operasi jadwal Admin, laporan sesi, evaluasi bulanan, dan billing belum dimigrasikan dari controller/store lama.
-- [ ] Repository masih menggunakan localStorage demo; belum menjadi backend atau otorisasi produksi.
+- [x] Semua pembacaan dan mutasi domain Student, Tutor, dan Admin pada store yang sudah dipetakan melewati repository async.
+- [x] Subscription store tetap sinkron sebagai mekanisme notifikasi lokal; setiap pembacaan data tetap melalui metode repository async.
+- [x] Siklus hidup controller dilindungi agar proses pemuatan async yang selesai setelah workspace ditutup tidak memasang subscription atau merender ulang UI.
+- [ ] Checkpoint, slide progress, dan draf lokal lesson masih menggunakan localStorage langsung.
+- [ ] Repository saat ini adalah adapter local demo. Supabase Auth, schema, RLS, transaksi server, remote adapter, dan pengujian keamanan belum dikerjakan.
