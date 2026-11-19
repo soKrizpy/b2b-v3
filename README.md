@@ -214,3 +214,13 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [x] CI Run #86 berhasil untuk adapter domain: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468).
 - [x] CI Run #87 berhasil untuk validasi sesi Student melalui repository: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44518750410).
 - [ ] Migrasi operasi data Admin/Tutor/Student ke adapter dan direct adapter contract tests dilakukan bertahap sebelum integrasi Supabase.
+
+
+### Migrasi repository domain Tutor (19 November 2026)
+
+- [x] Pencatatan kehadiran Tutor menggunakan `ClassSessionRepository.recordAttendance()` secara async.
+- [x] Pembatalan sesi oleh Tutor menggunakan `ClassSessionRepository.cancelSession()` secara async; tombol submit dinonaktifkan selama proses dan pesan kegagalan ditangani.
+- [x] Pengujian browser mencakup alasan wajib, penolakan Tutor yang bukan penanggung jawab, status sesi menjadi cancelled, dan penanda replacement required.
+- [x] Modul adapter mengekspor store demo melalui satu jalur Vite agar pengujian tidak mengimpor file di luar app root secara langsung.
+- [ ] Operasi jadwal Admin, laporan sesi, evaluasi bulanan, dan billing belum dimigrasikan dari controller/store lama.
+- [ ] Repository masih menggunakan localStorage demo; belum menjadi backend atau otorisasi produksi.
