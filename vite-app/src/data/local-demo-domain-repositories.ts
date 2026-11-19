@@ -58,7 +58,9 @@ export interface LocalDemoDomainRepositories {
 }
 
 export const localDemoDomainRepositories: LocalDemoDomainRepositories = {
-  classSessions: createAsyncStoreAdapter(ClassSessionStore),
+  classSessions: Object.assign(createAsyncStoreAdapter(ClassSessionStore), {
+    recordAttendance: ClassSessionRepository.recordAttendance
+  }),
   sessionReports: createAsyncStoreAdapter(SessionStore),
   monthlyEvaluations: createAsyncStoreAdapter(MonthlyEvaluationStore),
   billing: createAsyncStoreAdapter(BillingStore)
