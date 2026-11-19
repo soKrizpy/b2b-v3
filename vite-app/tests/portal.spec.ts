@@ -511,7 +511,7 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByText("Draft yang belum dikirim")).toHaveCount(0);
   });
 
-  test("billing uses admin-set per-student rates and only bills eligible held sessions", async ({ page }) => {
+  test("billing creates reviewable month-closed drafts with manual rates, adjustments, deduplication and payment history", async ({ page }) => {
     const result = await page.evaluate(async ({ classSource, billingSource }) => {
       localStorage.removeItem("b2b_class_sessions_store");
       localStorage.removeItem("b2b_billing_store");
@@ -526,7 +526,7 @@ test.describe("Bits2Bytes demo portal", () => {
       const tutor = { id: "tutor-1", role: "tutor" };
       const makeSession = (id: string, number: number) => ClassSessionStore.createSession({
         id, seriesId: "series-bill", sessionNumber: number, studentId: "student-bill",
-        tutorId: "tutor-1", scheduledStartAt: `2026-11-${String(10 + number).padStart(2, "0")}T09:00:00+07:00`,
+        tutorId: "tutor-1", scheduledStartAt: "2026-10-" + String(10 + number).padStart(2, "0") + "T09:00:00+07:00",
         durationMinutes: 60
       });
       makeSession("bill-present", 1);
@@ -540,11 +540,21 @@ test.describe("Bits2Bytes demo portal", () => {
       const forbiddenRate = BillingStore.setRate("student-bill", 80000, tutor);
       const invalidRate = BillingStore.setRate("student-bill", 0, admin);
       const rate = BillingStore.setRate("student-bill", 75000, admin);
-      const invoice = BillingStore.createInvoice("student-bill", "2026-11", admin);
-      const duplicate = BillingStore.createInvoice("student-bill", "2026-11", admin);
-      const unpaidBefore = BillingStore.getUnpaidStudentInvoices("student-bill").length;
+      const premature = BillingStore.createInvoice("student-bill", "2026-11", admin);
+      const draft = BillingStore.createInvoice("student-bill", "2026-10", admin);
+      const duplicate = BillingStore.createInvoice("student-bill", "2026-10", admin);
+      const parentBeforeIssue = BillingStore.getStudentInvoices("student-bill").length;
+      const unpaidBeforeIssue = BillingStore.getUnpaidStudentInvoices("student-bill").length;
+      const correction = BillingStore.updateDraftInvoice(draft.invoice.id, {
+        sessionIds: ["bill-present", "bill-late"],
+        discountAmount: 5000,
+        additionalCharges: 10000,
+        totalAmount: 154000,
+        adjustmentNote: "Penyesuaian khusus admin"
+      }, admin);
+      const issued = BillingStore.issueInvoice(draft.invoice.id, admin);
       const changedRate = BillingStore.setRate("student-bill", 90000, admin);
-      const markPaid = BillingStore.markPaid(invoice.invoice.id, admin);
+      const markPaid = BillingStore.markPaid(draft.invoice.id, admin);
       const unpaidAfter = BillingStore.getUnpaidStudentInvoices("student-bill").length;
       const history = BillingStore.getStudentInvoices("student-bill");
 
@@ -552,18 +562,29 @@ test.describe("Bits2Bytes demo portal", () => {
         forbiddenRate: forbiddenRate.error,
         invalidRate: invalidRate.error,
         rate: rate.success,
-        invoice: invoice.success,
-        invoiceCount: invoice.invoice?.totalSessions,
-        invoiceTotal: invoice.invoice?.totalAmount,
-        snapshotRate: invoice.invoice?.rateSnapshot,
-        itemIds: invoice.invoice?.items.map((item: { sessionId: string }) => item.sessionId),
+        premature: premature.error,
+        draft: draft.success,
+        draftStatus: draft.invoice?.status,
+        invoiceCount: draft.invoice?.totalSessions,
+        invoiceTotal: draft.invoice?.totalAmount,
+        snapshotRate: draft.invoice?.rateSnapshot,
+        itemIds: draft.invoice?.items.map((item: { sessionId: string }) => item.sessionId),
         duplicate: duplicate.error,
-        unpaidBefore,
+        parentBeforeIssue,
+        unpaidBeforeIssue,
+        correction: correction.success,
+        correctedTotal: correction.invoice?.totalAmount,
+        discountAmount: correction.invoice?.discountAmount,
+        additionalCharges: correction.invoice?.additionalCharges,
+        adjustmentNote: correction.invoice?.adjustmentNote,
+        issued: issued.success,
+        issuedStatus: issued.invoice?.status,
         changedRate: changedRate.success,
         markPaid: markPaid.success,
         unpaidAfter,
         historyCount: history.length,
         historyStatus: history[0]?.status,
+        historySnapshotRate: history[0]?.rateSnapshot,
         hasPaidAt: Object.prototype.hasOwnProperty.call(history[0] || {}, "paidAt"),
         hasPaidBy: Object.prototype.hasOwnProperty.call(history[0] || {}, "paidBy")
       };
@@ -572,18 +593,29 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(result.forbiddenRate).toBe("FORBIDDEN");
     expect(result.invalidRate).toBe("INVALID_RATE");
     expect(result.rate).toBe(true);
-    expect(result.invoice).toBe(true);
+    expect(result.premature).toBe("PERIOD_NOT_CLOSED");
+    expect(result.draft).toBe(true);
+    expect(result.draftStatus).toBe("draft");
     expect(result.invoiceCount).toBe(2);
     expect(result.invoiceTotal).toBe(150000);
     expect(result.snapshotRate).toBe(75000);
     expect(result.itemIds).toEqual(["bill-present", "bill-late"]);
     expect(result.duplicate).toBe("NO_BILLABLE_SESSIONS");
-    expect(result.unpaidBefore).toBe(1);
+    expect(result.parentBeforeIssue).toBe(0);
+    expect(result.unpaidBeforeIssue).toBe(0);
+    expect(result.correction).toBe(true);
+    expect(result.correctedTotal).toBe(154000);
+    expect(result.discountAmount).toBe(5000);
+    expect(result.additionalCharges).toBe(10000);
+    expect(result.adjustmentNote).toBe("Penyesuaian khusus admin");
+    expect(result.issued).toBe(true);
+    expect(result.issuedStatus).toBe("unpaid");
     expect(result.changedRate).toBe(true);
     expect(result.markPaid).toBe(true);
     expect(result.unpaidAfter).toBe(0);
     expect(result.historyCount).toBe(1);
     expect(result.historyStatus).toBe("paid");
+    expect(result.historySnapshotRate).toBe(75000);
     expect(result.hasPaidAt).toBe(false);
     expect(result.hasPaidBy).toBe(false);
   });
