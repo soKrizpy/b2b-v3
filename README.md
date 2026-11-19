@@ -198,13 +198,14 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 ### Kontrak frontend–backend
 
 - [x] Batas repository untuk migrasi dari store localStorage ke backend didokumentasikan di [docs/frontend-backend-repository-contract.md](docs/frontend-backend-repository-contract.md).
-- [ ] Ekstraksi repository interface ke kode aplikasi belum dilakukan; demo lokal tetap menjadi implementasi aktif.
+- [x] Repository adapter portal auth/identity dan adapter async kompatibilitas untuk jadwal, laporan, evaluasi bulanan, serta tagihan tersedia di `vite-app/src/data/`; workspace akan dipindahkan bertahap.
 - [ ] Implementasi Supabase tetap menunggu lingkungan development lokal dan pengujian RLS. Tidak ada perubahan ke Supabase production.
 
 
 ### Repository adapter extraction (19 November 2026)
 
-- [x] Tambahkan typed repository contract dan local-demo adapter untuk autentikasi portal serta daftar akun aktif di `vite-app/src/data/`.
+- [x] Typed repository contract dan local-demo adapter autentikasi portal serta daftar akun aktif tersedia di `vite-app/src/data/`.
 - [x] Portal React memakai adapter tersebut; perilaku login demo dan penyimpanan localStorage tetap dipertahankan.
-- [ ] Pemindahan store jadwal, laporan, evaluasi, dan tagihan ke adapter dilakukan bertahap sebelum integrasi Supabase.
-- [ ] Browser QA untuk perubahan ini sedang diverifikasi melalui [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44514917685).
+- [x] Adapter async kompatibilitas untuk jadwal, laporan sesi, evaluasi bulanan, dan tagihan tersedia di `local-demo-domain-repositories.ts`; controller workspace belum dipindahkan.
+- [x] CI Run #84 berhasil, termasuk TypeScript production build dan Playwright browser QA: [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44514917685).
+- [ ] Pemindahan controller workspace ke adapter dilakukan bertahap dengan contract tests sebelum integrasi Supabase.
