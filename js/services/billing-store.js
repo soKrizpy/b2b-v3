@@ -119,7 +119,7 @@ export const BillingStore = {
 
   createInvoice(studentId, period, actor) {
     if (!isAdmin(actor)) return { success: false, error: 'FORBIDDEN', message: 'Hanya admin yang dapat membuat tagihan.' };
-    if (typeof studentId !== 'string' || !studentId.trim() || !/^\\d{4}-\\d{2}$/.test(period || '') ||
+    if (typeof studentId !== 'string' || !studentId.trim() || !/^\d{4}-\d{2}$/.test(period || '') ||
         Number(period.slice(5, 7)) < 1 || Number(period.slice(5, 7)) > 12) {
       return { success: false, error: 'INVALID_INPUT', message: 'Siswa dan periode tagihan harus valid.' };
     }
