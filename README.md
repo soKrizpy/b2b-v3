@@ -194,3 +194,9 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - Rincian Parent Hub mencakup periode, jumlah sesi, tarif snapshot, subtotal, diskon, biaya tambahan, catatan koreksi, total, dan rincian pertemuan.
 - Store tagihan menggunakan `localStorage` untuk demo. Ini belum aman untuk produksi, belum sinkron antarperangkat, dan belum memakai otorisasi server-side.
 - Pengujian alur tarif, pembuatan invoice, penandaan lunas, dan isolasi Parent Hub dijalankan melalui Playwright di GitHub Actions.
+
+### Kontrak frontend–backend
+
+- [x] Batas repository untuk migrasi dari store localStorage ke backend didokumentasikan di [docs/frontend-backend-repository-contract.md](docs/frontend-backend-repository-contract.md).
+- [ ] Ekstraksi repository interface ke kode aplikasi belum dilakukan; demo lokal tetap menjadi implementasi aktif.
+- [ ] Implementasi Supabase tetap menunggu lingkungan development lokal dan pengujian RLS. Tidak ada perubahan ke Supabase production.
