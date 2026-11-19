@@ -411,78 +411,67 @@ export class AdminWorkspace {
      -------------------------------------------------------------------------- */
   renderBillingView() {
     const students = IdentityStore.getAllUsers().filter(user => user.role === 'student' && user.status === 'active');
-    const rates = BillingStore.getAllRates();
     const invoices = BillingStore.getInvoices();
     const usersById = new Map(IdentityStore.getAllUsers().map(user => [user.id, user]));
+    const now = new Date();
+    const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const defaultPeriod = previousMonth.getFullYear() + '-' + String(previousMonth.getMonth() + 1).padStart(2, '0');
 
-    return `
-      <section style="display:flex;flex-direction:column;gap:var(--space-5);">
-        <div class="card" style="padding:var(--space-4);">
-          <h3 style="margin:0 0 var(--space-2) 0;">Tarif per siswa</h3>
-          <p style="color:var(--color-text-muted);margin:0 0 var(--space-4) 0;font-size:var(--font-size-sm);">
-            Admin menentukan tarif per pertemuan untuk setiap siswa. Perubahan tarif hanya berlaku pada tagihan yang dibuat setelah perubahan; tagihan lama menyimpan nominalnya sendiri.
-          </p>
-          ${students.length ? students.map(student => {
-            const rate = BillingStore.getRate(student.id);
-            return `
-              <form data-rate-form="${escapeHtml(student.id)}" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-border-subtle);">
-                <div style="flex:1;min-width:180px;">
-                  <label style="display:block;font-weight:var(--font-weight-semibold);margin-bottom:var(--space-1);" for="rate-${escapeHtml(student.id)}">${escapeHtml(student.displayName)}</label>
-                  <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${rate ? 'Tarif saat ini: ' + formatRupiah(rate.amountPerSession) : 'Tarif belum ditentukan'}</div>
-                </div>
-                <div style="min-width:190px;">
-                  <label for="rate-${escapeHtml(student.id)}" style="display:block;font-size:var(--font-size-xs);margin-bottom:var(--space-1);">Tarif per pertemuan (Rp)</label>
-                  <input id="rate-${escapeHtml(student.id)}" name="amountPerSession" type="number" min="1" step="1" required value="${rate ? rate.amountPerSession : ''}" placeholder="Contoh: 75000" style="width:100%;">
-                </div>
-                <button class="btn btn-primary btn-sm" type="submit">Simpan tarif</button>
-              </form>`;
-          }).join('') : '<p>Belum ada akun siswa aktif.</p>'}
-        </div>
-
-        <div class="card" style="padding:var(--space-4);">
-          <h3 style="margin:0 0 var(--space-2) 0;">Buat tagihan bulanan</h3>
-          <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);margin:0 0 var(--space-3) 0;">
-            Sistem hanya mengambil sesi yang benar-benar terlaksana dengan kehadiran Hadir atau Terlambat. Sesi absen, batal, belum terlaksana, atau terhapus tidak ditagihkan.
-          </p>
-          <form id="admin-create-invoice-form" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;">
-            <div style="flex:1;min-width:180px;">
-              <label for="invoice-student" style="display:block;font-size:var(--font-size-xs);margin-bottom:var(--space-1);">Siswa</label>
-              <select id="invoice-student" name="studentId" required style="width:100%;">
-                <option value="">Pilih siswa</option>
-                ${students.map(student => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.displayName)}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label for="invoice-period" style="display:block;font-size:var(--font-size-xs);margin-bottom:var(--space-1);">Periode</label>
-              <input id="invoice-period" name="period" type="month" required value="${new Date().toISOString().slice(0, 7)}">
-            </div>
-            <button class="btn btn-primary" type="submit">Buat tagihan</button>
-          </form>
-        </div>
-
-        <div class="card" style="padding:var(--space-4);">
-          <h3 style="margin:0 0 var(--space-3) 0;">Riwayat tagihan</h3>
-          ${invoices.length ? `
-            <div style="display:flex;flex-direction:column;gap:var(--space-3);">
-              ${invoices.map(invoice => {
-                const student = usersById.get(invoice.studentId);
-                return `
-                  <article style="border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);padding:var(--space-3);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
-                    <div>
-                      <strong>${escapeHtml(student?.displayName || invoice.studentId)}</strong>
-                      <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">Periode ${escapeHtml(invoice.period)} · ${invoice.totalSessions} pertemuan · ${formatRupiah(invoice.rateSnapshot)}/pertemuan</div>
-                      <div style="font-weight:var(--font-weight-semibold);margin-top:var(--space-1);">${formatRupiah(invoice.totalAmount)}</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:var(--space-2);">
-                      <span class="badge ${invoice.status === 'paid' ? 'badge-success' : 'badge-warning'}">${invoice.status === 'paid' ? 'Lunas' : 'Belum dibayar'}</span>
-                      ${invoice.status === 'unpaid' ? `<button type="button" class="btn btn-secondary btn-sm" data-mark-invoice-paid="${escapeHtml(invoice.id)}">Tandai lunas</button>` : ''}
-                    </div>
-                  </article>`;
-              }).join('')}
-            </div>` : '<p style="color:var(--color-text-muted);">Belum ada tagihan. Atur tarif siswa dan catat kehadiran sesi terlebih dahulu.</p>'}
-        </div>
-      </section>
-    `;
+    return [
+      '<section style="display:flex;flex-direction:column;gap:var(--space-5);">',
+      '<div class="card" style="padding:var(--space-4);">',
+      '<h3>Tarif per siswa</h3>',
+      '<p>Admin menentukan tarif per pertemuan untuk setiap siswa. Perubahan tarif hanya berlaku pada draft/tagihan baru; tagihan lama menyimpan nominalnya sendiri.</p>',
+      students.length ? students.map(student => {
+        const rate = BillingStore.getRate(student.id);
+        return '<form data-rate-form="' + escapeHtml(student.id) + '" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-border-subtle);">' +
+          '<div style="flex:1;min-width:180px;"><label for="rate-' + escapeHtml(student.id) + '">' + escapeHtml(student.displayName) + '</label>' +
+          '<div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">' + (rate ? 'Tarif saat ini: ' + formatRupiah(rate.amountPerSession) : 'Tarif belum ditentukan') + '</div></div>' +
+          '<div style="min-width:190px;"><label for="rate-' + escapeHtml(student.id) + '">Tarif per pertemuan (Rp)</label>' +
+          '<input id="rate-' + escapeHtml(student.id) + '" name="amountPerSession" type="number" min="1" step="1" required value="' + (rate ? rate.amountPerSession : '') + '" placeholder="Contoh: 75000" style="width:100%;"></div>' +
+          '<button class="btn btn-primary btn-sm" type="submit">Simpan tarif</button></form>';
+      }).join('') : '<p>Belum ada akun siswa aktif.</p>',
+      '</div>',
+      '<div class="card" style="padding:var(--space-4);">',
+      '<h3>Buat draft tagihan bulanan</h3>',
+      '<p>Tagihan dibuat setelah bulan berakhir. Periksa jumlah pertemuan, diskon, biaya tambahan, dan total sebelum menerbitkannya.</p>',
+      '<form id="admin-create-invoice-form" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;">',
+      '<div style="flex:1;min-width:180px;"><label for="invoice-student">Siswa</label><select id="invoice-student" name="studentId" required style="width:100%;"><option value="">Pilih siswa</option>' +
+        students.map(student => '<option value="' + escapeHtml(student.id) + '">' + escapeHtml(student.displayName) + '</option>').join('') +
+      '</select></div>',
+      '<div><label for="invoice-period">Periode bulan</label><input id="invoice-period" name="period" type="month" required value="' + defaultPeriod + '" max="' + defaultPeriod + '"></div>',
+      '<button class="btn btn-primary" type="submit">Buat draft</button></form></div>',
+      '<div class="card" style="padding:var(--space-4);"><h3>Riwayat tagihan</h3>',
+      invoices.length ? '<div style="display:flex;flex-direction:column;gap:var(--space-3);">' + invoices.map(invoice => {
+        const student = usersById.get(invoice.studentId);
+        const statusLabel = invoice.status === 'draft' ? 'Draft' : invoice.status === 'paid' ? 'Lunas' : 'Belum dibayar';
+        const statusClass = invoice.status === 'draft' ? 'badge-in-progress' : invoice.status === 'paid' ? 'badge-success' : 'badge-warning';
+        let html = '<article style="border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-3);">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><div><strong>' + escapeHtml(student ? student.displayName : invoice.studentId) + '</strong>' +
+          '<div>Periode ' + escapeHtml(invoice.period) + ' · ' + invoice.totalSessions + ' pertemuan · ' + formatRupiah(invoice.rateSnapshot) + '/pertemuan</div>' +
+          '<strong>' + formatRupiah(invoice.totalAmount) + '</strong></div><div><span class="badge ' + statusClass + '">' + statusLabel + '</span>' +
+          (invoice.status === 'unpaid' ? '<button type="button" class="btn btn-secondary btn-sm" data-mark-invoice-paid="' + escapeHtml(invoice.id) + '">Tandai lunas</button>' : '') +
+          '</div></div>';
+        if (invoice.status === 'draft') {
+          html += '<form data-draft-form="' + escapeHtml(invoice.id) + '" style="border-top:1px solid var(--color-border-subtle);padding-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-3);">' +
+            '<strong>Koreksi draft sebelum diterbitkan</strong><span>Pilih pertemuan yang akan ditagihkan:</span>' +
+            (invoice.items || []).map(item => '<label style="display:flex;align-items:center;gap:var(--space-2);"><input type="checkbox" name="sessionIds" value="' + escapeHtml(item.sessionId) + '" checked> Sesi ke-' + (Number(item.sessionNumber) || '-') + ' · ' + escapeHtml(formatInvoiceDate(item.sessionDate)) + ' · ' + formatRupiah(item.amount) + '</label>').join('') +
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-3);">' +
+            '<label>Diskon (Rp)<input name="discountAmount" type="number" min="0" step="1" value="' + (Number(invoice.discountAmount) || 0) + '" style="width:100%;"></label>' +
+            '<label>Biaya tambahan (Rp, opsional)<input name="additionalCharges" type="number" min="0" step="1" value="' + (Number(invoice.additionalCharges) || 0) + '" style="width:100%;"></label>' +
+            '<label>Total akhir (Rp)<input name="totalAmount" type="number" min="0" step="1" value="' + (Number(invoice.totalAmount) || 0) + '" required style="width:100%;"></label></div>' +
+            '<label>Catatan koreksi total (wajib jika total berbeda dari perhitungan otomatis)<input name="adjustmentNote" type="text" value="' + escapeHtml(invoice.adjustmentNote || '') + '" maxlength="300" style="width:100%;"></label>' +
+            '<div style="display:flex;gap:var(--space-2);flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" type="submit">Simpan koreksi</button>' +
+            '<button class="btn btn-primary btn-sm" type="button" data-issue-invoice="' + escapeHtml(invoice.id) + '">Terbitkan tagihan</button></div></form>';
+        } else {
+          html += '<div>Subtotal: ' + formatRupiah(invoice.subtotalAmount ?? invoice.totalAmount) + ' · Diskon: ' + formatRupiah(invoice.discountAmount || 0) +
+            ' · Biaya tambahan: ' + formatRupiah(invoice.additionalCharges || 0) +
+            (invoice.adjustmentNote ? '<div>Catatan koreksi: ' + escapeHtml(invoice.adjustmentNote) + '</div>' : '') + '</div>';
+        }
+        return html + '</article>';
+      }).join('') + '</div>' : '<p style="color:var(--color-text-muted);">Belum ada tagihan. Atur tarif siswa dan catat kehadiran sesi terlebih dahulu.</p>',
+      '</div></section>'
+    ].join('');
   }
 
   bindActionEvents() {
@@ -514,11 +503,44 @@ export class AdminWorkspace {
         if (!result.success) {
           showToast({ title: 'Tagihan tidak dibuat', message: result.message, type: 'error' });
         } else {
-          showToast({ title: 'Tagihan dibuat', message: `Total ${formatRupiah(result.invoice.totalAmount)} untuk ${result.invoice.totalSessions} pertemuan.`, type: 'success' });
+          showToast({ title: 'Draft tagihan dibuat', message: `${result.invoice.totalSessions} pertemuan siap diperiksa sebelum diterbitkan.`, type: 'success' });
           this.render();
         }
       });
     }
+
+    this.container.querySelectorAll('[data-draft-form]').forEach(form => {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const invoiceId = form.getAttribute('data-draft-form');
+        const formData = new FormData(form);
+        const result = BillingStore.updateDraftInvoice(invoiceId, {
+          sessionIds: formData.getAll('sessionIds').map(String),
+          discountAmount: Number(formData.get('discountAmount')),
+          additionalCharges: Number(formData.get('additionalCharges')),
+          totalAmount: Number(formData.get('totalAmount')),
+          adjustmentNote: String(formData.get('adjustmentNote') || '')
+        }, AuthService.getCurrentSession()?.user);
+        if (!result.success) {
+          showToast({ title: 'Koreksi draft gagal', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Draft diperbarui', message: 'Koreksi tagihan berhasil disimpan.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('[data-issue-invoice]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = BillingStore.issueInvoice(button.getAttribute('data-issue-invoice'), AuthService.getCurrentSession()?.user);
+        if (!result.success) {
+          showToast({ title: 'Tagihan belum diterbitkan', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Tagihan diterbitkan', message: 'Tagihan sekarang tampil di riwayat Parent Hub.', type: 'success' });
+          this.render();
+        }
+      });
+    });
 
     this.container.querySelectorAll('[data-mark-invoice-paid]').forEach(button => {
       button.addEventListener('click', () => {
