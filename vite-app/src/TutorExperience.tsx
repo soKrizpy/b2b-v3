@@ -23,7 +23,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
           (session?.user?.role !== "tutor" && session?.user?.role !== "teacher")) {
         throw new Error("Sesi tutor tidak valid. Silakan masuk kembali.");
       }
-      controller = new TeacherWorkspace(host) as TutorController;
+      controller = new TeacherWorkspace(host, user) as TutorController;
       void controller.init().then(() => {
         if (active) setStatus("ready");
         else controller?.destroy();
