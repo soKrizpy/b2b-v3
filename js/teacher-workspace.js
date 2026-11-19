@@ -125,7 +125,7 @@ export class TeacherWorkspace {
       if (this.container) {
         this.container.innerHTML = `
           <div class="card" style="padding: var(--space-6); text-align: center;">
-            <p style="color: var(--color-error);">Terjadi kesalahan saat memuat data Teacher Dashboard.</p>
+            <p style="color: var(--color-danger);">Terjadi kesalahan saat memuat data Teacher Dashboard.</p>
           </div>
         `;
       }
