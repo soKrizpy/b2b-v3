@@ -6,13 +6,10 @@
  */
 
 import { MockService } from './services/mock-service.js';
-import { StateStore } from './services/state-store.js';
-import { SessionStore } from './services/session-store.js';
-import { IdentityStore } from './services/identity-store.js';
-import { ClassSessionStore } from './services/class-session-store.js';
-import { ClassSessionRepository } from './services/class-session-repository.js';
-import { MonthlyEvaluationStore } from './services/monthly-evaluation-store.js';
-import { SessionReportRepository, MonthlyEvaluationRepository } from './services/learning-record-repository.js';
+import { LearningStateRepository } from './services/learning-state-repository.js';
+import { SessionStore, SessionReportRepository, MonthlyEvaluationStore, MonthlyEvaluationRepository } from './services/learning-record-repository.js';
+import { IdentityRepository } from './services/identity-repository.js';
+import { ClassSessionStore, ClassSessionRepository } from './services/class-session-repository.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -35,6 +32,10 @@ export class TeacherWorkspace {
     this.classSummary = null;
     this.submissions = [];
     this.students = [];
+    this.tutorReports = [];
+    this.monthlyEvaluations = [];
+    this.scheduleSessions = [];
+    this.usersById = new Map();
     this.activeTab = 'dashboard'; // 'dashboard' | 'students' | 'submissions' | 'session-reports'
     this.selectedSubmission = null;
     this.isCreatingReport = false;
@@ -56,13 +57,21 @@ export class TeacherWorkspace {
       ]);
 
       // Seed StateStore if empty/uninitialized
-      StateStore.seedSubmissionsIfEmpty(rawSubmissions);
-
-      // Read active submissions from unified StateStore
-      const storeSubmissions = StateStore.getAllSubmissions();
+      await LearningStateRepository.seedSubmissionsIfEmpty(rawSubmissions);
 
       this.user = this.user || { id: 'usr_tea_001', displayName: 'Kak Sarah', avatar: 'KS', role: 'tutor' };
-      const assignedUsers = IdentityStore.getTutorStudents(this.user.id);
+      const [storeSubmissions, assignedUsers, scheduleSessions, tutorReports, monthlyEvaluations, allUsers] = await Promise.all([
+        LearningStateRepository.getAllSubmissions(),
+        IdentityRepository.getTutorStudents(this.user.id),
+        ClassSessionRepository.getAllSessions(),
+        SessionReportRepository.getTutorReports(this.user.id),
+        MonthlyEvaluationRepository.getTutorEvaluations(this.user.id),
+        IdentityRepository.getAllUsers()
+      ]);
+      this.scheduleSessions = scheduleSessions;
+      this.tutorReports = tutorReports;
+      this.monthlyEvaluations = monthlyEvaluations;
+      this.usersById = new Map(allUsers.map((user) => [user.id, user]));
       this.assignedStudentIds = new Set(assignedUsers.map((student) => student.id));
       this.assignedStudentNames = new Set(assignedUsers.map((student) => student.displayName));
       this.students = (students || []).filter((student) => this.assignedStudentIds.has(student.id));
@@ -82,32 +91,28 @@ export class TeacherWorkspace {
 
       // Subscribe to reactive store changes (cross-tab & same-tab)
       if (!this._unsubscribeStore) {
-        this._unsubscribeStore = StateStore.subscribe(() => {
-          this.handleExternalStoreUpdate();
+        this._unsubscribeStore = LearningStateRepository.subscribe(() => {
+          void this.handleExternalStoreUpdate();
         });
       }
 
       // Subscribe to operational class-session changes.
       if (!this._unsubscribeClassSessionStore) {
         this._unsubscribeClassSessionStore = ClassSessionStore.subscribe(() => {
-          if (this.activeTab === 'schedule') this.render();
+          void this.refreshSchedule();
         });
       }
 
       if (!this._unsubscribeMonthlyEvaluationStore) {
         this._unsubscribeMonthlyEvaluationStore = MonthlyEvaluationStore.subscribe(() => {
-          if (this.activeTab === 'monthly-evaluations') this.render();
+          void this.refreshMonthlyEvaluations();
         });
       }
 
       // Subscribe to SessionStore mutations
       if (!this._unsubscribeSessionStore) {
         this._unsubscribeSessionStore = SessionStore.subscribe(() => {
-          if (this.activeTab === 'session-reports') {
-            this.render();
-          } else {
-            this.updateReportsBadgePill();
-          }
+          void this.refreshTutorReports();
         });
       }
     } catch (err) {
@@ -136,18 +141,29 @@ export class TeacherWorkspace {
   /**
    * Reactive update handler for external changes (cross-tab or local)
    */
-  handleExternalStoreUpdate() {
-    const updated = StateStore.getAllSubmissions().filter((submission) => this.assignedStudentIds?.has(submission.studentId));
-    if (updated.length > 0) {
-      this.submissions = updated;
-      this.syncMetricsFromSubmissions();
-      // Only re-render if drawer is NOT open to prevent disrupting an ongoing review
-      const drawer = document.getElementById('sample-drawer');
-      const isDrawerOpen = drawer && drawer.classList.contains('is-open');
-      if (!isDrawerOpen) {
-        this.render();
-      }
-    }
+  async handleExternalStoreUpdate() {
+    const updated = await LearningStateRepository.getAllSubmissions();
+    this.submissions = updated.filter((submission) => this.assignedStudentIds?.has(submission.studentId));
+    this.syncMetricsFromSubmissions();
+    const drawer = document.getElementById('sample-drawer');
+    const isDrawerOpen = drawer && drawer.classList.contains('is-open');
+    if (!isDrawerOpen) this.render();
+  }
+
+  async refreshSchedule() {
+    this.scheduleSessions = await ClassSessionRepository.getAllSessions();
+    if (this.activeTab === 'schedule') this.render();
+  }
+
+  async refreshTutorReports() {
+    this.tutorReports = await SessionReportRepository.getTutorReports(this.user.id);
+    if (this.activeTab === 'session-reports') this.render();
+    else this.updateReportsBadgePill();
+  }
+
+  async refreshMonthlyEvaluations() {
+    this.monthlyEvaluations = await MonthlyEvaluationRepository.getTutorEvaluations(this.user.id);
+    if (this.activeTab === 'monthly-evaluations') this.render();
   }
 
   /**
@@ -226,8 +242,7 @@ export class TeacherWorkspace {
 
   getReportsCountLabel() {
     try {
-      const reports = this.user?.id ? SessionStore.getTutorReports(this.user.id) : SessionStore.getAllReports();
-      return `${reports.length} Laporan`;
+      return `${this.tutorReports.length} Laporan`;
     } catch {
       return '0 Laporan';
     }
@@ -262,7 +277,7 @@ export class TeacherWorkspace {
 
   getAssignedScheduleSessions() {
     if (!this.user?.id || !this.assignedStudentIds) return [];
-    return ClassSessionStore.getAllSessions()
+    return this.scheduleSessions
       .filter(session => session.tutorId === this.user.id && this.assignedStudentIds.has(session.studentId))
       .sort((a, b) => new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime());
   }
@@ -290,7 +305,7 @@ export class TeacherWorkspace {
           </p>
         </div>
         ${sessions.length ? sessions.map(session => {
-          const student = IdentityStore.getUserById(session.studentId);
+          const student = this.usersById.get(session.studentId);
           const canAct = session.status === 'scheduled';
           return `<article class="card" data-class-session-id="${escapeHtml(session.id)}" style="padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3);">
             <div>
@@ -550,7 +565,7 @@ export class TeacherWorkspace {
    * Render list of session reports created by tutor
    */
   renderSessionReportsList() {
-    const allReports = this.user?.id ? SessionStore.getTutorReports(this.user.id) : SessionStore.getAllReports();
+    const allReports = this.tutorReports;
     const submittedCount = allReports.filter((r) => r.status === 'submitted').length;
     const draftCount = allReports.filter((r) => r.status === 'draft').length;
 
@@ -980,12 +995,12 @@ export class TeacherWorkspace {
   }
 
   getMonthlyEvaluationCount() {
-    return this.user?.id ? MonthlyEvaluationStore.getTutorEvaluations(this.user.id).length : 0;
+    return this.monthlyEvaluations.length;
   }
 
   renderMonthlyEvaluationsTab() {
     if (this.isCreatingMonthlyEvaluation) return this.renderMonthlyEvaluationForm();
-    const evaluations = this.user?.id ? MonthlyEvaluationStore.getTutorEvaluations(this.user.id) : [];
+    const evaluations = this.monthlyEvaluations;
     return `<section style="display:flex;flex-direction:column;gap:var(--space-4);">
       <div class="card" style="padding:var(--space-4);display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;flex-wrap:wrap;">
         <div><h3 style="margin:0 0 var(--space-1);">Evaluasi perkembangan bulanan</h3>
@@ -1042,7 +1057,7 @@ export class TeacherWorkspace {
     });
     this.container.querySelectorAll('[data-edit-monthly-evaluation]').forEach(button => {
       button.addEventListener('click', () => {
-        this.editingMonthlyEvaluation = MonthlyEvaluationStore.getTutorEvaluations(this.user.id)
+        this.editingMonthlyEvaluation = this.monthlyEvaluations
           .find(item => item.id === button.getAttribute('data-edit-monthly-evaluation')) || null;
         if (this.editingMonthlyEvaluation) { this.isCreatingMonthlyEvaluation = true; this.render(); }
       });
@@ -1182,7 +1197,7 @@ export class TeacherWorkspace {
     editButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const reportId = btn.getAttribute('data-report-id');
-        const report = SessionStore.getReportById(reportId);
+        const report = this.tutorReports.find((item) => item.id === reportId);
         if (report) {
           this.editingReport = report;
           this.isCreatingReport = true;
@@ -1468,7 +1483,7 @@ export class TeacherWorkspace {
 
     if (btnApprove && !btnApprove._hasTeacherWorkspaceListener) {
       btnApprove._hasTeacherWorkspaceListener = true;
-      btnApprove.addEventListener('click', () => {
+      btnApprove.addEventListener('click', async () => {
         if (!this.selectedSubmission) return;
 
         const sub = this.selectedSubmission;
@@ -1477,7 +1492,7 @@ export class TeacherWorkspace {
 
         // Update status in unified StateStore with mandatory version check
         const expectedVersion = typeof sub.version === 'number' ? sub.version : 1;
-        const result = StateStore.updateSubmissionStatus(sub.id, 'approved', {
+        const result = await LearningStateRepository.updateSubmissionStatus(sub.id, 'approved', {
           reviewerId: 'usr_tea_001',
           reviewerName: 'Kak Sarah',
           teacherFeedback: feedbackText
@@ -1491,7 +1506,7 @@ export class TeacherWorkspace {
             duration: 5000
           });
           // Refresh data and reopen with latest version
-          this.submissions = StateStore.getAllSubmissions();
+          await this.handleExternalStoreUpdate();
           const latest = this.submissions.find((s) => s.id === sub.id);
           if (latest) {
             this.openReviewDrawer(latest);
@@ -1509,8 +1524,7 @@ export class TeacherWorkspace {
         });
 
         // Refresh submissions from store and re-render dashboard
-        this.submissions = StateStore.getAllSubmissions();
-        this.syncMetricsFromSubmissions();
+        await this.handleExternalStoreUpdate();
         this.render();
         this.restoreFocusAfterReview();
       });
@@ -1518,7 +1532,7 @@ export class TeacherWorkspace {
 
     if (btnRevision && !btnRevision._hasTeacherWorkspaceListener) {
       btnRevision._hasTeacherWorkspaceListener = true;
-      btnRevision.addEventListener('click', () => {
+      btnRevision.addEventListener('click', async () => {
         if (!this.selectedSubmission) return;
 
         const sub = this.selectedSubmission;
@@ -1538,7 +1552,7 @@ export class TeacherWorkspace {
 
         // Update status in unified StateStore with mandatory version check
         const expectedVersion = typeof sub.version === 'number' ? sub.version : 1;
-        const result = StateStore.updateSubmissionStatus(sub.id, 'revision-required', {
+        const result = await LearningStateRepository.updateSubmissionStatus(sub.id, 'revision-required', {
           reviewerId: 'usr_tea_001',
           reviewerName: 'Kak Sarah',
           teacherFeedback: feedbackText
@@ -1552,7 +1566,7 @@ export class TeacherWorkspace {
             duration: 5000
           });
           // Refresh data and reopen with latest version
-          this.submissions = StateStore.getAllSubmissions();
+          await this.handleExternalStoreUpdate();
           const latest = this.submissions.find((s) => s.id === sub.id);
           if (latest) {
             this.openReviewDrawer(latest);
@@ -1570,8 +1584,7 @@ export class TeacherWorkspace {
         });
 
         // Refresh submissions from store and re-render dashboard
-        this.submissions = StateStore.getAllSubmissions();
-        this.syncMetricsFromSubmissions();
+        await this.handleExternalStoreUpdate();
         this.render();
         this.restoreFocusAfterReview();
       });

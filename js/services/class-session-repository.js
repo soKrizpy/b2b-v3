@@ -12,7 +12,7 @@ export const ClassSessionRepository = {
   async getAllSessions() { return ClassSessionStore.getAllSessions(); },
   async getSession(sessionId) { return ClassSessionStore.getSession(sessionId); },
   async getStudentSessions(studentId) { return ClassSessionStore.getStudentSessions(studentId); },
-  async getTutorSessions(tutorId) { return ClassSessionStore.getTutorSessions(tutorId); },
+  async getTutorSessions(tutorId) { return ClassSessionStore.getAllSessions().filter(session => session.tutorId === tutorId); },
   async getBillableSessions(studentId) { return ClassSessionStore.getBillableSessions(studentId); },
   async recordAttendance(sessionId, attendanceStatus, actor) {
     return ClassSessionStore.recordAttendance(sessionId, attendanceStatus, actor);
