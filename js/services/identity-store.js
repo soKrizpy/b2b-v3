@@ -14,7 +14,7 @@ export const TUTOR_ASSIGNMENTS_KEY = 'b2b_tutor_student_assignments';
 export const PARENT_LINKS_KEY = 'b2b_parent_student_links';
 export const IDENTITY_CHANGE_EVENT = 'b2b_identity_change';
 
-export const VALID_ROLES = ['admin', 'tutor', 'student', 'parent'];
+export const VALID_ROLES = ['admin', 'tutor', 'student'];
 export const VALID_STATUSES = ['active', 'inactive'];
 
 // Default Seed Accounts for Local Demo Simulation
@@ -105,26 +105,7 @@ export const INITIAL_DEMO_USERS = [
     createdAt: '2026-11-01T08:00:00.000Z',
     updatedAt: '2026-11-01T08:00:00.000Z'
   },
-  {
-    id: 'usr_par_001',
-    email: 'hendra.pratama@example.com',
-    displayName: 'Bpk. Hendra Pratama (Ayah Alex)',
-    role: 'parent',
-    status: 'active',
-    avatar: 'HP',
-    createdAt: '2026-11-01T08:00:00.000Z',
-    updatedAt: '2026-11-01T08:00:00.000Z'
-  },
-  {
-    id: 'usr_par_002',
-    email: 'dewi.santoso@example.com',
-    displayName: 'Ibu Dewi Santoso (Ibu Budi)',
-    role: 'parent',
-    status: 'active',
-    avatar: 'DS',
-    createdAt: '2026-11-01T08:00:00.000Z',
-    updatedAt: '2026-11-01T08:00:00.000Z'
-  }
+
 ];
 
 export const INITIAL_TUTOR_ASSIGNMENTS = [
@@ -135,10 +116,7 @@ export const INITIAL_TUTOR_ASSIGNMENTS = [
   // usr_stu_005 (Eva) & usr_stu_006 (Fajar) are intentionally unassigned to test tutor isolation!
 ];
 
-export const INITIAL_PARENT_LINKS = [
-  { id: 'psl_001', parentId: 'usr_par_001', studentId: 'usr_stu_001', relationship: 'Ayah', status: 'active', createdAt: '2026-11-01T08:00:00.000Z' },
-  { id: 'psl_002', parentId: 'usr_par_002', studentId: 'usr_stu_002', relationship: 'Ibu', status: 'active', createdAt: '2026-11-01T08:00:00.000Z' }
-];
+
 
 export const IdentityStore = {
   isAvailable() {
@@ -173,13 +151,26 @@ export const IdentityStore = {
 
     if (!storage.getItem(IDENTITY_USERS_KEY)) {
       storage.setItem(IDENTITY_USERS_KEY, JSON.stringify(INITIAL_DEMO_USERS));
+    } else {
+      // One-time local-demo migration: the product has only Admin, Tutor, and Student roles.
+      // Legacy Parent demo accounts are removed; Parent Hub remains inside the Student workspace.
+      try {
+        const users = JSON.parse(storage.getItem(IDENTITY_USERS_KEY) || '[]');
+        const supportedUsers = Array.isArray(users) ? users.filter((user) => VALID_ROLES.includes(user.role)) : [];
+        if (Array.isArray(users) && supportedUsers.length !== users.length) {
+          storage.setItem(IDENTITY_USERS_KEY, JSON.stringify(supportedUsers));
+        }
+      } catch (error) {
+        console.error('IdentityStore: Gagal migrasi akun demo lama:', error);
+      }
     }
+
     if (!storage.getItem(TUTOR_ASSIGNMENTS_KEY)) {
       storage.setItem(TUTOR_ASSIGNMENTS_KEY, JSON.stringify(INITIAL_TUTOR_ASSIGNMENTS));
     }
-    if (!storage.getItem(PARENT_LINKS_KEY)) {
-      storage.setItem(PARENT_LINKS_KEY, JSON.stringify(INITIAL_PARENT_LINKS));
-    }
+
+    // Parent-student links belonged to the retired separate-parent-account flow.
+    storage.removeItem(PARENT_LINKS_KEY);
   },
 
   _getUsersRaw() {
