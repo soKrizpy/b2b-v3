@@ -35,12 +35,13 @@ function createAsyncStoreAdapter<T extends StoreShape>(
       const value = Reflect.get(store, property, store);
       if (typeof value !== "function") return value;
 
+      const callable = value as (...args: unknown[]) => unknown;
       const method = String(property);
       if (method === "subscribe" || method === "isBillable") {
-        return value.bind(store);
+        return callable.bind(store);
       }
 
-      return async (...args: unknown[]) => value.apply(store, args);
+      return async (...args: unknown[]) => callable.apply(store, args);
     }
   });
 }
