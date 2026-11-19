@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import logoLight from "../../logo-b2b-light.svg";
 import logoDark from "../../logo-b2b-dark.svg";
 import StudentExperience from "./StudentExperience";
+import TutorExperience from "./TutorExperience";
 
 type Role = { id: "admin" | "tutor" | "student"; icon: string; label: string; title: string; description: string; badgeClass: string; accentClass: string };
 const roles: Role[] = [
   { id: "admin", icon: "👑", label: "Admin", title: "Ruang Admin", description: "Atur akun, tutor, siswa, jadwal belajar, dan materi.", badgeClass: "badge-warning", accentClass: "role-card--admin" },
-  { id: "tutor", icon: "👩‍🏫", label: "Tutor", title: "Ruang Tutor", description: "Lihat siswa, periksa tugas, dan beri semangat serta masukan.", badgeClass: "badge-scratch", accentClass: "role-card--tutor" },
+  { id: "tutor", icon: "👩‍🏫", label: "Tutor", title: "Ruang Tutor", description: "Lihat siswa, periksa hasil karya, dan kirim laporan belajar.", badgeClass: "badge-scratch", accentClass: "role-card--tutor" },
   { id: "student", icon: "🎒", label: "Siswa", title: "Ruang Belajarku", description: "Lanjutkan petualangan coding, kerjakan tantangan, dan lihat perkembangan belajarmu.", badgeClass: "badge-approved", accentClass: "role-card--student" }
 ];
 
@@ -15,6 +16,7 @@ export default function App() {
   const [selectedRole, setSelectedRole] = useState<Role["id"] | null>(null);
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   const selected = roles.find((role) => role.id === selectedRole);
+  const workspaceTitle = selectedRole === "student" ? "Ruang Belajarku" : selectedRole === "tutor" ? "Ruang Tutor" : "Bits2Bytes";
 
   return (
     <div className="app-shell b2b-vite-shell">
@@ -31,21 +33,21 @@ export default function App() {
       </aside>
       <div className="app-container">
         <header className="app-header">
-          <div className="header-left"><h1 id="page-heading">{selectedRole === "student" ? "Ruang Belajarku" : "Bits2Bytes"}</h1></div>
+          <div className="header-left"><h1 id="page-heading">{workspaceTitle}</h1></div>
           <div className="header-right"><button type="button" className="btn btn-secondary btn-sm" onClick={() => setTheme((current) => current === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Ganti ke tampilan gelap" : "Ganti ke tampilan terang"} aria-pressed={theme === "dark"}><span aria-hidden="true">{theme === "light" ? "🌙" : "☀️"}</span><span>{theme === "light" ? "Tampilan gelap" : "Tampilan terang"}</span></button></div>
         </header>
         <main className="app-main" id="portal">
-          {selectedRole === "student" ? <StudentExperience /> : (
-            <section aria-labelledby="portal-title">
-              <div className="b2b-vite-intro"><h2 id="portal-title">Selamat datang di Bits2Bytes!</h2><p>Pilih ruang sesuai kebutuhanmu untuk mulai beraktivitas.</p></div>
-              <div className="b2b-vite-role-grid">{roles.map((role) => <article className={`card b2b-vite-role-card ${role.accentClass}`} key={role.id}>
-                <div><div className="b2b-vite-role-meta"><span className="b2b-vite-role-icon" aria-hidden="true">{role.icon}</span><span className={`badge ${role.badgeClass}`}>{role.label}</span></div><h3>{role.title}</h3><p>{role.description}</p></div>
-                <button type="button" className="btn btn-primary btn-sm b2b-vite-role-action" onClick={() => setSelectedRole(role.id)}>Masuk <span aria-hidden="true">→</span></button>
-              </article>)}</div>
-              {selected && <div className="card b2b-vite-notice" role="status" aria-live="polite"><div><strong>{selected.title} dipilih.</strong><p>Ruang ini sedang disiapkan. Fitur-fiturnya akan dibuka setelah selesai dibuat dan diperiksa.</p></div><button type="button" className="btn btn-secondary btn-sm" onClick={() => setSelectedRole(null)}>Tutup</button></div>}
-            </section>
-          )}
-          {selectedRole === "student" && <button type="button" className="btn btn-secondary btn-sm student-portal-back" onClick={() => setSelectedRole(null)}>← Kembali ke pilihan ruang</button>}
+          {selectedRole === "student" && <StudentExperience />}
+          {selectedRole === "tutor" && <TutorExperience />}
+          {!selectedRole && <section aria-labelledby="portal-title">
+            <div className="b2b-vite-intro"><h2 id="portal-title">Selamat datang di Bits2Bytes!</h2><p>Pilih ruang sesuai kebutuhanmu untuk mulai beraktivitas.</p></div>
+            <div className="b2b-vite-role-grid">{roles.map((role) => <article className={`card b2b-vite-role-card ${role.accentClass}`} key={role.id}>
+              <div><div className="b2b-vite-role-meta"><span className="b2b-vite-role-icon" aria-hidden="true">{role.icon}</span><span className={`badge ${role.badgeClass}`}>{role.label}</span></div><h3>{role.title}</h3><p>{role.description}</p></div>
+              <button type="button" className="btn btn-primary btn-sm b2b-vite-role-action" onClick={() => setSelectedRole(role.id)}>Masuk <span aria-hidden="true">→</span></button>
+            </article>)}</div>
+          </section>}
+          {selectedRole && <button type="button" className="btn btn-secondary btn-sm workspace-portal-back" onClick={() => setSelectedRole(null)}>← Kembali ke pilihan ruang</button>}
+          {selectedRole === "admin" && <div className="card b2b-vite-notice" role="status"><div><strong>Ruang Admin sedang disiapkan.</strong><p>Menu admin akan dibuka setelah alur pengelolaan data selesai diperiksa.</p></div></div>}
         </main>
       </div>
     </div>
