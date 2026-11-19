@@ -1325,7 +1325,7 @@ export class TeacherWorkspace {
             duration: 4000
           });
           if (result.error === 'STALE_UPDATE_CONFLICT' && formData.id) {
-            this.editingReport = SessionStore.getReportById(formData.id);
+            this.editingReport = await SessionReportRepository.getReportById(formData.id);
             this.render();
           }
           return;
@@ -1401,7 +1401,7 @@ export class TeacherWorkspace {
             duration: 4000
           });
           if (result.error === 'STALE_UPDATE_CONFLICT' && formData.id) {
-            this.editingReport = SessionStore.getReportById(formData.id);
+            this.editingReport = await SessionReportRepository.getReportById(formData.id);
             this.render();
           }
           return;
