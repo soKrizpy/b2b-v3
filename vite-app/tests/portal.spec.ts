@@ -987,6 +987,62 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.attendanceStatus).toBe("late");
   });
 
+
+  test("admin schedule operations use async class-session repository methods", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      const { ClassSessionStore, ClassSessionRepository } = await import("/src/data/local-demo-domain-repositories.ts");
+      const admin = { id: "repository-admin", role: "admin" };
+      const createOperation = ClassSessionRepository.createRecurringSessionSeries({
+        studentId: "repository-admin-student",
+        tutorId: "repository-admin-tutor",
+        startDate: "2026-12-21",
+        startTime: "09:00",
+        weekdays: [1, 3],
+        targetCount: 2,
+        durationMinutes: 60,
+        meetingUrl: "https://meet.example.com/admin"
+      });
+      const createIsPromise = createOperation instanceof Promise;
+      const created = await createOperation;
+      const first = created.sessions?.[0];
+      const cancel = await ClassSessionRepository.cancelSession(first?.id, admin);
+      const second = created.sessions?.[1];
+      const softDelete = await ClassSessionRepository.softDeleteSession(second?.id, admin);
+      const replacement = await ClassSessionRepository.createReplacementSession(
+        first?.id,
+        { scheduledStartAt: "2026-12-28T09:00:00+07:00" },
+        admin
+      );
+      const sessions = ClassSessionStore.getAllSessions();
+      return {
+        createIsPromise,
+        created: created.success,
+        createdCount: created.sessions?.length || 0,
+        cancelSuccess: cancel.success,
+        cancelReplacementRequired: cancel.session?.replacementRequired,
+        softDeleteSuccess: softDelete.success,
+        softDeleteReplacementRequired: softDelete.session?.replacementRequired,
+        replacementSuccess: replacement.success,
+        linkedReplacementId: replacement.original?.replacementSessionId,
+        replacementBacklink: replacement.replacement?.replacementForSessionId,
+        totalSessions: sessions.length
+      };
+    });
+    expect(result.createIsPromise).toBe(true);
+    expect(result.created).toBe(true);
+    expect(result.createdCount).toBe(2);
+    expect(result.cancelSuccess).toBe(true);
+    expect(result.cancelReplacementRequired).toBe(false);
+    expect(result.softDeleteSuccess).toBe(true);
+    expect(result.softDeleteReplacementRequired).toBe(true);
+    expect(result.replacementSuccess).toBe(true);
+    expect(result.linkedReplacementId).toBeTruthy();
+    expect(result.replacementBacklink).toBeTruthy();
+    expect(result.totalSessions).toBe(3);
+  });
+
   test("cancels a tutor session through the async class-session repository", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
