@@ -21,7 +21,7 @@ on:
       - ".github/workflows/vite-app.yml"
 
 jobs:
-  build:
+  build-and-browser-qa:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,7 +33,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install dependencies
+      - name: Install application dependencies
         run: npm install
       - name: Typecheck and production build
         run: npm run build
+      - name: Install Playwright test runner
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser QA
+        run: npx playwright test
+      - name: Upload browser test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bits2bytes-playwright-report
+          path: |
+            vite-app/playwright-report/
+            vite-app/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
