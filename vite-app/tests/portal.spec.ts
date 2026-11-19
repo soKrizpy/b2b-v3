@@ -620,7 +620,17 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(result.hasPaidBy).toBe(false);
   });
 
-  test("admin can set a student's manual rate from the Tarif & Tagihan tab", async ({ page }) => {
+  test("admin can set a manual student rate, review a monthly draft and issue it", async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_class_sessions_store", JSON.stringify({
+        "ui-billable-session": {
+          id: "ui-billable-session", seriesId: "ui-billing-series", sessionNumber: 3,
+          studentId: "usr_stu_001", tutorId: "usr_tea_001",
+          scheduledStartAt: "2026-10-10T09:00:00+07:00", durationMinutes: 60,
+          status: "held", attendanceStatus: "present", replacementRequired: false
+        }
+      }));
+    });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
@@ -630,6 +640,21 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.locator("#rate-usr_stu_001").fill("85000");
     await page.locator('[data-rate-form="usr_stu_001"] button[type="submit"]').click();
     await expect(page.getByText(/Tarif saat ini: Rp\s?85\.000/)).toBeVisible();
+
+    await page.locator("#invoice-student").selectOption("usr_stu_001");
+    await page.locator("#invoice-period").fill("2026-10");
+    await page.getByRole("button", { name: "Buat draft" }).click();
+    const draft = page.locator('[data-draft-form]');
+    await expect(draft).toBeVisible();
+    await expect(draft).toContainText("Sesi ke-3");
+    await draft.locator('[name="discountAmount"]').fill("5000");
+    await draft.locator('[name="additionalCharges"]').fill("10000");
+    await draft.locator('[name="totalAmount"]').fill("90000");
+    await draft.getByRole("button", { name: "Simpan koreksi" }).click();
+    await expect(page.locator('[data-draft-form] [name="totalAmount"]')).toHaveValue("90000");
+    await draft.getByRole("button", { name: "Terbitkan tagihan" }).click();
+    await expect(page.getByText("Belum dibayar")).toBeVisible();
+    await expect(page.locator('[data-draft-form]')).toHaveCount(0);
   });
 
   test("Parent Hub invoice history is scoped to the signed-in student and includes paid invoices", async ({ page }) => {
@@ -643,6 +668,12 @@ test.describe("Bits2Bytes demo portal", () => {
             id: "alex_invoice", studentId: "usr_stu_001", period: "2026-11",
             status: "paid", rateSnapshot: 75000, totalSessions: 2, totalAmount: 150000,
             items: [{ sessionId: "alex-s1", sessionNumber: 1, sessionDate: "2026-11-10T09:00:00+07:00", amount: 75000 }],
+            createdAt: "2026-11-19T08:00:00.000Z"
+          },
+          alex_draft: {
+            id: "alex_draft", studentId: "usr_stu_001", period: "2026-11",
+            status: "draft", rateSnapshot: 75000, totalSessions: 1, totalAmount: 75000,
+            items: [{ sessionId: "alex-draft-s1", sessionNumber: 3, sessionDate: "2026-11-12T09:00:00+07:00", amount: 75000 }],
             createdAt: "2026-11-19T08:00:00.000Z"
           },
           budi_invoice: {
@@ -664,6 +695,7 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByText("Tagihan milik Budi")).toHaveCount(0);
     await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toBeVisible();
     await expect(page.locator('[data-parent-invoice-id="budi_invoice"]')).toHaveCount(0);
+    await expect(page.locator('[data-parent-invoice-id="alex_draft"]')).toHaveCount(0);
   });
 
   test("student can sign in and see the learning dashboard", async ({ page }) => {
