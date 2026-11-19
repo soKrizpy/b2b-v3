@@ -889,7 +889,9 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.ratingsRemainSynchronous).toBe(true);
     expect(result.subscribeRemainsSynchronous).toBe(true);
     expect(result.notificationCount).toBe(1);
-  })  test("keeps recurring series creation atomic when two proposed sessions overlap", async ({ page }) => {
+  });
+
+  test("keeps recurring series creation atomic when two proposed sessions overlap", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
       localStorage.removeItem("b2b_class_sessions_store");
