@@ -437,13 +437,30 @@ export const IdentityStore = {
     if (!tutor || (tutor.role !== 'tutor' && tutor.role !== 'teacher')) {
       return { error: 'INVALID_TUTOR_ROLE', message: `Akun ${tutorId} bukan tutor/guru yang valid.` };
     }
+    if (tutor.status !== 'active') {
+      return { error: 'INACTIVE_TUTOR', message: 'Tutor harus berstatus aktif sebelum menerima siswa.' };
+    }
 
     const student = this.getUserById(studentId);
     if (!student || student.role !== 'student') {
       return { error: 'INVALID_STUDENT_ROLE', message: `Akun ${studentId} bukan siswa yang valid.` };
     }
+    if (student.status !== 'active') {
+      return { error: 'INACTIVE_STUDENT', message: 'Siswa harus berstatus aktif sebelum ditugaskan.' };
+    }
 
     const assignments = this._getAssignmentsRaw();
+    const activeOtherTutor = assignments.find((a) =>
+      a.studentId === studentId && a.status === 'active' && a.tutorId !== tutorId
+    );
+    if (activeOtherTutor) {
+      const currentTutor = this.getUserById(activeOtherTutor.tutorId);
+      return {
+        error: 'STUDENT_ALREADY_ASSIGNED',
+        message: `Siswa ini masih memiliki tutor aktif: ${currentTutor?.displayName || activeOtherTutor.tutorId}. Lepas penugasan lama terlebih dahulu.`
+      };
+    }
+
     const existing = assignments.find((a) => a.tutorId === tutorId && a.studentId === studentId);
     if (existing) {
       if (existing.status !== 'active') {
@@ -468,12 +485,16 @@ export const IdentityStore = {
 
   removeTutorStudentAssignment(tutorId, studentId) {
     const assignments = this._getAssignmentsRaw();
-    const next = assignments.filter((a) => !(a.tutorId === tutorId && a.studentId === studentId));
-    if (next.length !== assignments.length) {
-      this._setAssignmentsRaw(next);
-      return true;
-    }
-    return false;
+    const assignment = assignments.find((a) =>
+      a.tutorId === tutorId && a.studentId === studentId && a.status === 'active'
+    );
+    if (!assignment) return false;
+
+    // Keep the assignment record for history; only end the active relationship.
+    assignment.status = 'inactive';
+    assignment.endedAt = new Date().toISOString();
+    this._setAssignmentsRaw(assignments);
+    return true;
   },
 
   /* --------------------------------------------------------------------------
