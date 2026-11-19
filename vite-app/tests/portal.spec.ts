@@ -1044,6 +1044,55 @@ test.describe("Local demo domain repository adapters", () => {
   });
 
 
+
+  test("Admin billing mutations use the async billing repository", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_billing_store");
+      localStorage.removeItem("b2b_class_sessions_store");
+      const { ClassSessionStore, BillingRepository } = await import("/src/data/local-demo-domain-repositories.ts");
+      const admin = { id: "repository-billing-admin", role: "admin" };
+      const tutor = { id: "repository-billing-tutor", role: "tutor" };
+      const created = ClassSessionStore.createSession({
+        id: "repository-billing-session",
+        seriesId: "repository-billing-series",
+        sessionNumber: 1,
+        studentId: "repository-billing-student",
+        tutorId: tutor.id,
+        scheduledStartAt: "2026-12-22T09:00:00+07:00",
+        durationMinutes: 60
+      });
+      const attendance = ClassSessionStore.recordAttendance("repository-billing-session", "present", tutor);
+      const ratePromise = BillingRepository.setRate("repository-billing-student", 75000, admin);
+      const rateIsPromise = ratePromise instanceof Promise;
+      const rate = await ratePromise;
+      const draft = await BillingRepository.createInvoice("repository-billing-student", "2026-12", admin);
+      const invoiceId = draft.invoice?.id;
+      const issued = await BillingRepository.issueInvoice(invoiceId, admin);
+      const paid = await BillingRepository.markPaid(invoiceId, admin);
+      return {
+        created: created.success,
+        attendance: attendance.success,
+        rateIsPromise,
+        rateSuccess: rate.success,
+        draftSuccess: draft.success,
+        invoiceTotal: draft.invoice?.totalAmount,
+        issued: issued.success,
+        paid: paid.success,
+        finalStatus: paid.invoice?.status
+      };
+    });
+    expect(result.created).toBe(true);
+    expect(result.attendance).toBe(true);
+    expect(result.rateIsPromise).toBe(true);
+    expect(result.rateSuccess).toBe(true);
+    expect(result.draftSuccess).toBe(true);
+    expect(result.invoiceTotal).toBe(75000);
+    expect(result.issued).toBe(true);
+    expect(result.paid).toBe(true);
+    expect(result.finalStatus).toBe("paid");
+  });
+
   test("Tutor learning-record mutations use async report and monthly-evaluation repositories", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
