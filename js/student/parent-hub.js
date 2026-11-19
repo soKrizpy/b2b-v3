@@ -213,7 +213,7 @@ function formatRupiah(amount) {
 }
 
 function formatInvoicePeriod(value) {
-  if (!/^\\d{4}-\\d{2}$/.test(value || '')) return value || 'Periode tidak diketahui';
+  if (!/^\d{4}-\d{2}$/.test(value || '')) return value || 'Periode tidak diketahui';
   const [year, month] = value.split('-').map(Number);
   return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' })
     .format(new Date(Date.UTC(year, month - 1, 1)));
