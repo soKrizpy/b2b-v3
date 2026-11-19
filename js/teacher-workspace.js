@@ -12,6 +12,7 @@ import { IdentityStore } from './services/identity-store.js';
 import { ClassSessionStore } from './services/class-session-store.js';
 import { ClassSessionRepository } from './services/class-session-repository.js';
 import { MonthlyEvaluationStore } from './services/monthly-evaluation-store.js';
+import { SessionReportRepository, MonthlyEvaluationRepository } from './services/learning-record-repository.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -1048,23 +1049,31 @@ export class TeacherWorkspace {
     });
     const form = this.container.querySelector('#monthly-evaluation-form');
     if (!form) return;
-    const save = status => {
+    const save = async (status, button = null) => {
+      if (button) button.disabled = true;
       const data = Object.fromEntries(new FormData(form).entries());
       const student = this.students.find(item => item.id === data.studentId);
-      const result = MonthlyEvaluationStore.save({
-        ...data, studentName: student?.name || student?.displayName || 'Siswa',
-        tutorId: this.user.id, tutorName: this.user.displayName
-      }, status);
-      if (!result.success) {
-        showToast({ title: 'Evaluasi belum tersimpan', message: result.message, type: 'error' });
-        return;
+      try {
+        const result = await MonthlyEvaluationRepository.save({
+          ...data, studentName: student?.name || student?.displayName || 'Siswa',
+          tutorId: this.user.id, tutorName: this.user.displayName
+        }, status);
+        if (!result.success) {
+          showToast({ title: 'Evaluasi belum tersimpan', message: result.message, type: 'error' });
+          return;
+        }
+        showToast({ title: status === 'published' ? 'Evaluasi terkirim' : 'Draf tersimpan',
+          message: status === 'published' ? 'Evaluasi sekarang terlihat di Parent Hub siswa.' : 'Draf hanya terlihat oleh tutor.', type: 'success' });
+        this.isCreatingMonthlyEvaluation = false; this.editingMonthlyEvaluation = null; this.render();
+      } catch (error) {
+        showToast({ title: 'Evaluasi belum tersimpan', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan evaluasi.', type: 'error' });
+      } finally {
+        if (button && button.isConnected) button.disabled = false;
       }
-      showToast({ title: status === 'published' ? 'Evaluasi terkirim' : 'Draf tersimpan',
-        message: status === 'published' ? 'Evaluasi sekarang terlihat di Parent Hub siswa.' : 'Draf hanya terlihat oleh tutor.', type: 'success' });
-      this.isCreatingMonthlyEvaluation = false; this.editingMonthlyEvaluation = null; this.render();
     };
-    this.container.querySelector('#btn-save-monthly-draft')?.addEventListener('click', () => save('draft'));
-    form.addEventListener('submit', event => { event.preventDefault(); save('published'); });
+    const draftButton = this.container.querySelector('#btn-save-monthly-draft');
+    draftButton?.addEventListener('click', () => save('draft', draftButton));
+    form.addEventListener('submit', event => { event.preventDefault(); save('published', form.querySelector('button[type="submit"]')); });
   }
 
   bindClassScheduleEvents() {
@@ -1189,24 +1198,20 @@ export class TeacherWorkspace {
     // 5. Delete draft
     const deleteButtons = this.container.querySelectorAll('[data-action="delete-draft"]');
     deleteButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const reportId = btn.getAttribute('data-report-id');
-        const success = SessionStore.deleteDraft(reportId);
-        if (success) {
-          showToast({
-            title: 'Draf Dihapus',
-            message: 'Draf laporan sesi berhasil dihapus.',
-            type: 'info',
-            duration: 3000
-          });
-          this.render();
-        } else {
-          showToast({
-            title: 'Gagal Menghapus',
-            message: 'Laporan yang sudah terkirim tidak dapat dihapus.',
-            type: 'warning',
-            duration: 3500
-          });
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try {
+          const success = await SessionReportRepository.deleteDraft(btn.getAttribute('data-report-id'));
+          if (success) {
+            showToast({ title: 'Draf Dihapus', message: 'Draf laporan sesi berhasil dihapus.', type: 'info', duration: 3000 });
+            this.render();
+          } else {
+            showToast({ title: 'Gagal Menghapus', message: 'Laporan yang sudah terkirim tidak dapat dihapus.', type: 'warning', duration: 3500 });
+          }
+        } catch (error) {
+          showToast({ title: 'Gagal Menghapus', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menghapus draf.', type: 'error' });
+        } finally {
+          if (btn.isConnected) btn.disabled = false;
         }
       });
     });
@@ -1284,7 +1289,7 @@ export class TeacherWorkspace {
     // 7. Save Draft
     const btnSaveDraft = this.container.querySelector('#btn-save-report-draft');
     if (btnSaveDraft) {
-      btnSaveDraft.addEventListener('click', () => {
+      btnSaveDraft.addEventListener('click', async () => {
         btnSaveDraft.disabled = true;
         const formData = getFormData();
         if (this.editingReport) {
@@ -1294,8 +1299,8 @@ export class TeacherWorkspace {
           ? this.editingReport.version
           : null;
 
-        const result = SessionStore.saveReport(formData, 'draft', expectedVersion);
-        btnSaveDraft.disabled = false;
+        try {
+        const result = await SessionReportRepository.saveReport(formData, 'draft', expectedVersion);
 
         if (result.error) {
           showToast({
@@ -1321,13 +1326,18 @@ export class TeacherWorkspace {
         this.isCreatingReport = false;
         this.editingReport = null;
         this.render();
+        } catch (error) {
+          showToast({ title: 'Gagal Menyimpan Draf ⚠️', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan draf.', type: 'error' });
+        } finally {
+          if (btnSaveDraft.isConnected) btnSaveDraft.disabled = false;
+        }
       });
     }
 
     // 8. Submit Report to Parent Hub
     const btnSubmit = this.container.querySelector('#btn-submit-report');
     if (btnSubmit) {
-      btnSubmit.addEventListener('click', () => {
+      btnSubmit.addEventListener('click', async () => {
         const formData = getFormData();
 
         // Client-side validation for required fields
@@ -1365,8 +1375,8 @@ export class TeacherWorkspace {
           ? this.editingReport.version
           : null;
 
-        const result = SessionStore.saveReport(formData, 'submitted', expectedVersion);
-        btnSubmit.disabled = false;
+        try {
+        const result = await SessionReportRepository.saveReport(formData, 'submitted', expectedVersion);
 
         if (result.error) {
           showToast({
@@ -1392,6 +1402,11 @@ export class TeacherWorkspace {
         this.isCreatingReport = false;
         this.editingReport = null;
         this.render();
+        } catch (error) {
+          showToast({ title: 'Gagal Mengirim Laporan ⚠️', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat mengirim laporan.', type: 'error' });
+        } finally {
+          if (btnSubmit.isConnected) btnSubmit.disabled = false;
+        }
       });
     }
   }
