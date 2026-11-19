@@ -1,7 +1,7 @@
 /**
  * B2B LEARNING ENGINE — LOCAL DEMO BILLING STORE
  *
- * Admin-managed per-student session rates and invoice snapshots.
+ * Admin-managed per-student rates and reviewable monthly invoice drafts.
  * Only held sessions with present/late attendance are invoice-eligible.
  * LocalStorage is demo persistence only; this is not production authorization.
  */
@@ -39,6 +39,14 @@ function monthInJakarta(value) {
   const year = parts.find(part => part.type === 'year')?.value;
   const month = parts.find(part => part.type === 'month')?.value;
   return year && month ? `${year}-${month}` : null;
+}
+
+function currentJakartaMonth() {
+  return monthInJakarta(new Date());
+}
+
+function validMoney(value) {
+  return Number.isSafeInteger(Number(value)) && Number(value) >= 0;
 }
 
 export const BillingStore = {
@@ -108,9 +116,12 @@ export const BillingStore = {
     );
   },
 
+  // Parent Hub only sees invoices that admin has issued; drafts remain admin-only.
   getStudentInvoices(studentId) {
     if (!studentId) return [];
-    return this.getInvoices().filter(invoice => invoice.studentId === studentId);
+    return this.getInvoices().filter(invoice =>
+      invoice.studentId === studentId && invoice.status !== 'draft'
+    );
   },
 
   getUnpaidStudentInvoices(studentId) {
@@ -119,9 +130,12 @@ export const BillingStore = {
 
   createInvoice(studentId, period, actor) {
     if (!isAdmin(actor)) return { success: false, error: 'FORBIDDEN', message: 'Hanya admin yang dapat membuat tagihan.' };
-    if (typeof studentId !== 'string' || !studentId.trim() || !/^\d{4}-\d{2}$/.test(period || '') ||
+    if (typeof studentId !== 'string' || !studentId.trim() || !/^\\d{4}-\\d{2}$/.test(period || '') ||
         Number(period.slice(5, 7)) < 1 || Number(period.slice(5, 7)) > 12) {
       return { success: false, error: 'INVALID_INPUT', message: 'Siswa dan periode tagihan harus valid.' };
+    }
+    if (period >= currentJakartaMonth()) {
+      return { success: false, error: 'PERIOD_NOT_CLOSED', message: 'Tagihan hanya dapat dibuat setelah bulan periode berakhir.' };
     }
 
     const data = this._read();
@@ -145,8 +159,8 @@ export const BillingStore = {
       sessionDate: session.scheduledStartAt,
       amount: rate.amountPerSession
     }));
-    const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
-    if (!Number.isSafeInteger(totalAmount)) {
+    const subtotalAmount = items.reduce((sum, item) => sum + item.amount, 0);
+    if (!Number.isSafeInteger(subtotalAmount)) {
       return { success: false, error: 'AMOUNT_OVERFLOW', message: 'Total tagihan melebihi batas angka yang didukung.' };
     }
 
@@ -155,19 +169,119 @@ export const BillingStore = {
       id: makeId(),
       studentId,
       period,
-      status: 'unpaid',
+      status: 'draft',
       currency: 'IDR',
       rateSnapshot: rate.amountPerSession,
       items,
       totalSessions: items.length,
-      totalAmount,
+      subtotalAmount,
+      discountAmount: 0,
+      additionalCharges: 0,
+      totalAmount: subtotalAmount,
+      adjustmentNote: '',
       createdAt: now,
       createdBy: actor.id,
+      updatedAt: now,
+      updatedBy: actor.id,
+      issuedAt: null,
+      issuedBy: null
     };
     data.invoices[invoice.id] = invoice;
-    return this._write(data, 'invoiceCreated', { invoiceId: invoice.id, studentId, period })
+    return this._write(data, 'invoiceDraftCreated', { invoiceId: invoice.id, studentId, period })
       ? { success: true, invoice }
-      : { success: false, error: 'WRITE_FAILED', message: 'Tagihan gagal disimpan.' };
+      : { success: false, error: 'WRITE_FAILED', message: 'Draft tagihan gagal disimpan.' };
+  },
+
+  updateDraftInvoice(invoiceId, changes, actor) {
+    if (!isAdmin(actor)) return { success: false, error: 'FORBIDDEN', message: 'Hanya admin yang dapat mengoreksi draft tagihan.' };
+    if (!changes || typeof changes !== 'object') {
+      return { success: false, error: 'INVALID_INPUT', message: 'Perubahan draft tidak valid.' };
+    }
+    const data = this._read();
+    const invoice = data.invoices[invoiceId];
+    if (!invoice) return { success: false, error: 'NOT_FOUND', message: 'Tagihan tidak ditemukan.' };
+    if (invoice.status !== 'draft') {
+      return { success: false, error: 'DRAFT_LOCKED', message: 'Tagihan yang sudah diterbitkan tidak dapat dikoreksi.' };
+    }
+
+    const eligible = new Map(ClassSessionStore.getBillableSessions(invoice.studentId)
+      .filter(session => monthInJakarta(session.scheduledStartAt) === invoice.period)
+      .map(session => [session.id, session]));
+    const otherInvoiceSessionIds = new Set(Object.values(data.invoices)
+      .filter(item => item.id !== invoiceId)
+      .flatMap(item => (item.items || []).map(line => line.sessionId)));
+    const requestedIds = Array.isArray(changes.sessionIds)
+      ? [...new Set(changes.sessionIds.map(String))]
+      : (invoice.items || []).map(item => item.sessionId);
+
+    if (!requestedIds.length) {
+      return { success: false, error: 'EMPTY_INVOICE', message: 'Draft harus memuat minimal satu pertemuan.' };
+    }
+    if (requestedIds.some(id => !eligible.has(id) || otherInvoiceSessionIds.has(id))) {
+      return { success: false, error: 'INVALID_SESSION_SELECTION', message: 'Pertemuan yang dipilih tidak lagi memenuhi syarat atau sudah masuk tagihan lain.' };
+    }
+
+    const items = requestedIds.map(id => {
+      const session = eligible.get(id);
+      return {
+        sessionId: session.id,
+        sessionNumber: session.sessionNumber,
+        sessionDate: session.scheduledStartAt,
+        amount: invoice.rateSnapshot
+      };
+    });
+    const subtotalAmount = items.reduce((sum, item) => sum + item.amount, 0);
+    const discountAmount = changes.discountAmount === undefined ? Number(invoice.discountAmount || 0) : Number(changes.discountAmount);
+    const additionalCharges = changes.additionalCharges === undefined ? Number(invoice.additionalCharges || 0) : Number(changes.additionalCharges);
+    if (!validMoney(discountAmount) || !validMoney(additionalCharges) || discountAmount > subtotalAmount) {
+      return { success: false, error: 'INVALID_ADJUSTMENT', message: 'Diskon dan biaya tambahan harus berupa nominal rupiah valid; diskon tidak boleh melebihi subtotal.' };
+    }
+
+    const calculatedTotal = subtotalAmount - discountAmount + additionalCharges;
+    const totalAmount = changes.totalAmount === undefined ? calculatedTotal : Number(changes.totalAmount);
+    const adjustmentNote = typeof changes.adjustmentNote === 'string'
+      ? changes.adjustmentNote.trim()
+      : String(invoice.adjustmentNote || '');
+    if (!validMoney(totalAmount)) {
+      return { success: false, error: 'INVALID_TOTAL', message: 'Total tagihan harus berupa nominal rupiah positif atau nol.' };
+    }
+    if (totalAmount !== calculatedTotal && !adjustmentNote) {
+      return { success: false, error: 'ADJUSTMENT_NOTE_REQUIRED', message: 'Catatan wajib diisi jika total tagihan dikoreksi manual.' };
+    }
+
+    const now = new Date().toISOString();
+    invoice.items = items;
+    invoice.totalSessions = items.length;
+    invoice.subtotalAmount = subtotalAmount;
+    invoice.discountAmount = discountAmount;
+    invoice.additionalCharges = additionalCharges;
+    invoice.totalAmount = totalAmount;
+    invoice.adjustmentNote = adjustmentNote;
+    invoice.updatedAt = now;
+    invoice.updatedBy = actor.id;
+
+    return this._write(data, 'invoiceDraftUpdated', { invoiceId })
+      ? { success: true, invoice }
+      : { success: false, error: 'WRITE_FAILED', message: 'Koreksi draft gagal disimpan.' };
+  },
+
+  issueInvoice(invoiceId, actor) {
+    if (!isAdmin(actor)) return { success: false, error: 'FORBIDDEN', message: 'Hanya admin yang dapat menerbitkan tagihan.' };
+    const data = this._read();
+    const invoice = data.invoices[invoiceId];
+    if (!invoice) return { success: false, error: 'NOT_FOUND', message: 'Tagihan tidak ditemukan.' };
+    if (invoice.status !== 'draft') return { success: false, error: 'INVALID_STATUS', message: 'Hanya draft yang dapat diterbitkan.' };
+    if (!Array.isArray(invoice.items) || invoice.items.length === 0 || !validMoney(invoice.totalAmount)) {
+      return { success: false, error: 'INVALID_DRAFT', message: 'Draft tagihan belum memiliki rincian yang valid.' };
+    }
+    invoice.status = 'unpaid';
+    invoice.issuedAt = new Date().toISOString();
+    invoice.issuedBy = actor.id;
+    invoice.updatedAt = invoice.issuedAt;
+    invoice.updatedBy = actor.id;
+    return this._write(data, 'invoiceIssued', { invoiceId })
+      ? { success: true, invoice }
+      : { success: false, error: 'WRITE_FAILED', message: 'Tagihan gagal diterbitkan.' };
   },
 
   markPaid(invoiceId, actor) {
@@ -175,7 +289,7 @@ export const BillingStore = {
     const data = this._read();
     const invoice = data.invoices[invoiceId];
     if (!invoice) return { success: false, error: 'NOT_FOUND', message: 'Tagihan tidak ditemukan.' };
-    if (invoice.status !== 'unpaid') return { success: false, error: 'INVALID_STATUS', message: 'Tagihan ini bukan tagihan yang belum dibayar.' };
+    if (invoice.status !== 'unpaid') return { success: false, error: 'INVALID_STATUS', message: 'Hanya tagihan yang sudah diterbitkan dan belum dibayar yang dapat ditandai lunas.' };
     invoice.status = 'paid';
     return this._write(data, 'invoicePaid', { invoiceId })
       ? { success: true, invoice }
