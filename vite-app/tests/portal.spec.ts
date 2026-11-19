@@ -5,7 +5,23 @@ import { resolve } from "node:path";
 const classSessionStoreSource = readFileSync(resolve(process.cwd(), "../js/services/class-session-store.js"), "utf8");
 const billingStoreSource = readFileSync(resolve(process.cwd(), "../js/services/billing-store.js"), "utf8");
 
+const workspaceRepositoryImports = [
+  "../js/admin/admin-workspace.js",
+  "../js/teacher-workspace.js",
+  "../js/lesson-workspace.js",
+  "../js/student/parent-hub.js",
+  "src/StudentExperience.tsx"
+].map((path) => readFileSync(resolve(process.cwd(), path), "utf8"));
+
+
 test.describe("Bits2Bytes demo portal", () => {
+  test("active workspace controllers import domain repositories through one gateway", () => {
+    for (const source of workspaceRepositoryImports) {
+      expect(source).toContain("workspace-repositories.js");
+      expect(source).not.toMatch(/services\/(?:identity|learning-state|class-session|learning-record|billing)-repository\.js/);
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });

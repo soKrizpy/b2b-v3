@@ -4,8 +4,8 @@ import submissions from "../../data/mock/submissions.json";
 import { localDemoRepositories } from "./data/local-demo-repositories";
 // @ts-ignore - Existing JavaScript controller is reused during incremental migration.
 import { LessonWorkspace } from "../../js/lesson-workspace.js";
-// @ts-ignore - Async repository boundary wraps the local demo submission store.
-import { LearningStateRepository } from "../../js/services/learning-state-repository.js";
+// @ts-ignore - Shared workspace repository gateway wraps local demo persistence.
+import { LearningStateRepository } from "../../js/services/workspace-repositories.js";
 
 type StudentUser = { id: string; displayName: string; avatar?: string; gradeLevel?: string; role: string };
 type WorkspaceController = { init: () => Promise<void>; destroy: () => void };

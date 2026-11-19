@@ -6,7 +6,7 @@
 
 import { renderContentBlocks, renderQuiz, attachInteractions } from './content-renderer.js';
 import { showToast } from './components/toast.js';
-import { LearningStateRepository } from './services/learning-state-repository.js';
+import { LearningStateRepository } from './services/workspace-repositories.js';
 import { ParentHubView } from './student/parent-hub.js';
 import {
   SVG_MASCOT,

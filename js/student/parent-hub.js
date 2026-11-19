@@ -4,8 +4,7 @@
  * through asynchronous repositories. Local demo stores remain the persistence layer.
  */
 
-import { SessionReportRepository, MonthlyEvaluationRepository } from '../services/learning-record-repository.js';
-import { BillingRepository } from '../services/billing-repository.js';
+import { SessionReportRepository, MonthlyEvaluationRepository, BillingRepository } from '../services/workspace-repositories.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },

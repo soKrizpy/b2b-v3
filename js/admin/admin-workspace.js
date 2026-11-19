@@ -8,11 +8,9 @@
  * - Real-time sync with IdentityStore.
  */
 
-import { IdentityRepository } from '../services/identity-repository.js';
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
-import { BillingRepository } from '../services/billing-repository.js';
-import { ClassSessionRepository } from '../services/class-session-repository.js';
+import { IdentityRepository, BillingRepository, ClassSessionRepository } from '../services/workspace-repositories.js';
 
 export class AdminWorkspace {
   /**

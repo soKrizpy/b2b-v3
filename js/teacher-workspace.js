@@ -6,10 +6,7 @@
  */
 
 import { MockService } from './services/mock-service.js';
-import { LearningStateRepository } from './services/learning-state-repository.js';
-import { SessionReportRepository, MonthlyEvaluationRepository } from './services/learning-record-repository.js';
-import { IdentityRepository } from './services/identity-repository.js';
-import { ClassSessionRepository } from './services/class-session-repository.js';
+import { LearningStateRepository, SessionReportRepository, MonthlyEvaluationRepository, IdentityRepository, ClassSessionRepository } from './services/workspace-repositories.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
