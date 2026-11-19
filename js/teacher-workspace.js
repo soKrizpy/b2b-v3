@@ -9,6 +9,7 @@ import { MockService } from './services/mock-service.js';
 import { StateStore } from './services/state-store.js';
 import { SessionStore } from './services/session-store.js';
 import { IdentityStore } from './services/identity-store.js';
+import { ClassSessionStore } from './services/class-session-store.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -78,6 +79,13 @@ export class TeacherWorkspace {
       if (!this._unsubscribeStore) {
         this._unsubscribeStore = StateStore.subscribe(() => {
           this.handleExternalStoreUpdate();
+        });
+      }
+
+      // Subscribe to operational class-session changes.
+      if (!this._unsubscribeClassSessionStore) {
+        this._unsubscribeClassSessionStore = ClassSessionStore.subscribe(() => {
+          if (this.activeTab === 'schedule') this.render();
         });
       }
 
@@ -181,6 +189,10 @@ export class TeacherWorkspace {
             <span>Antrean Submission</span>
             <span class="tab-badge-pill">${pendingSubs.length} Menunggu</span>
           </button>
+          <button type="button" class="teacher-tab-btn ${this.activeTab === 'schedule' ? 'is-active' : ''}" data-teacher-tab="schedule">
+            <span>Jadwal Mengajar</span>
+            <span class="tab-badge-pill">${this.getAssignedScheduleCount()} Sesi</span>
+          </button>
           <button type="button" class="teacher-tab-btn ${this.activeTab === 'session-reports' ? 'is-active' : ''}" data-teacher-tab="session-reports">
             <span>Laporan Sesi Tutor</span>
             <span class="tab-badge-pill" id="teacher-reports-count-pill">${this.getReportsCountLabel()}</span>
@@ -223,10 +235,77 @@ export class TeacherWorkspace {
     if (this.activeTab === 'submissions') {
       return this.renderSubmissionsPlaceholder(pendingSubs);
     }
+    if (this.activeTab === 'schedule') {
+      return this.renderScheduleTab();
+    }
     if (this.activeTab === 'session-reports') {
       return this.renderSessionReportsTab();
     }
     return this.renderDashboardTab(summary, pendingSubs, approvedSubs);
+  }
+
+  getAssignedScheduleSessions() {
+    if (!this.user?.id || !this.assignedStudentIds) return [];
+    return ClassSessionStore.getAllSessions()
+      .filter(session => session.tutorId === this.user.id && this.assignedStudentIds.has(session.studentId))
+      .sort((a, b) => new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime());
+  }
+
+  getAssignedScheduleCount() {
+    return this.getAssignedScheduleSessions().filter(session => session.status === 'scheduled').length;
+  }
+
+  renderScheduleTab() {
+    const sessions = this.getAssignedScheduleSessions();
+    const statusLabels = {
+      scheduled: 'Terjadwal', held: 'Terlaksana', not_held: 'Tidak terlaksana',
+      cancelled: 'Dibatalkan', soft_deleted: 'Dihapus administratif'
+    };
+    const attendanceLabels = {
+      not_recorded: 'Belum dicatat', present: 'Hadir', late: 'Terlambat', absent: 'Tidak hadir'
+    };
+
+    return `
+      <section style="display:flex;flex-direction:column;gap:var(--space-4);">
+        <div class="card" style="padding:var(--space-4);">
+          <h3 style="margin-top:0;">Jadwal mengajar saya</h3>
+          <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);">
+            Hanya jadwal siswa yang ditugaskan kepada akun tutor ini yang ditampilkan. Catat kehadiran setelah sesi selesai. Siswa yang tidak hadir tidak masuk tagihan.
+          </p>
+        </div>
+        ${sessions.length ? sessions.map(session => {
+          const student = IdentityStore.getUserById(session.studentId);
+          const canAct = session.status === 'scheduled';
+          return `<article class="card" data-class-session-id="${escapeHtml(session.id)}" style="padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3);">
+            <div>
+              <strong>Sesi ke-${Number(session.sessionNumber) || '-'} · ${escapeHtml(student?.displayName || session.studentId)}</strong>
+              <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">
+                ${escapeHtml(formatTutorSessionDate(session.scheduledStartAt))} · ${Number(session.durationMinutes)} menit
+              </div>
+              <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">
+                Status kelas: ${escapeHtml(statusLabels[session.status] || session.status)} · Kehadiran: ${escapeHtml(attendanceLabels[session.attendanceStatus] || session.attendanceStatus)}
+              </div>
+              ${session.meetingUrl ? `<a href="${escapeHtml(session.meetingUrl)}" target="_blank" rel="noopener noreferrer">Buka link kelas</a>` : ''}
+              ${session.cancellation?.reason ? `<div>Alasan pembatalan: ${escapeHtml(session.cancellation.reason)}</div>` : ''}
+              ${session.replacementRequired ? '<span class="badge badge-warning">Menunggu sesi pengganti dari Admin</span>' : ''}
+            </div>
+            ${canAct ? `
+              <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary btn-sm" data-record-attendance="present" data-session-id="${escapeHtml(session.id)}">Hadir</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-record-attendance="late" data-session-id="${escapeHtml(session.id)}">Terlambat</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-record-attendance="absent" data-session-id="${escapeHtml(session.id)}">Siswa tidak hadir</button>
+              </div>
+              <form data-tutor-cancel-form="${escapeHtml(session.id)}" style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:end;border-top:1px solid var(--color-border-subtle);padding-top:var(--space-3);">
+                <label style="flex:1;min-width:200px;">Alasan pembatalan
+                  <input name="reason" type="text" required maxlength="300" placeholder="Wajib diisi jika kelas dibatalkan" style="width:100%;">
+                </label>
+                <button type="submit" class="btn btn-ghost btn-sm">Batalkan kelas</button>
+              </form>
+            ` : ''}
+          </article>`;
+        }).join('') : '<div class="card" style="padding:var(--space-6);text-align:center;color:var(--color-text-muted);">Belum ada jadwal untuk siswa yang ditugaskan kepada Anda.</div>'}
+      </section>
+    `;
   }
 
   /**
@@ -876,8 +955,47 @@ export class TeacherWorkspace {
       });
     });
 
+    // Operational schedule attendance and tutor cancellation.
+    this.bindClassScheduleEvents();
+
     // Phase 3: Bind session report events
     this.bindSessionReportEvents();
+  }
+
+  bindClassScheduleEvents() {
+    this.container.querySelectorAll('[data-record-attendance]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = ClassSessionStore.recordAttendance(
+          button.getAttribute('data-session-id'),
+          button.getAttribute('data-record-attendance'),
+          this.user
+        );
+        if (!result.success) {
+          showToast({ title: 'Kehadiran gagal dicatat', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Kehadiran tersimpan', message: 'Status sesi diperbarui dan digunakan sebagai dasar tagihan.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('[data-tutor-cancel-form]').forEach(form => {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const reason = String(new FormData(form).get('reason') || '').trim();
+        const result = ClassSessionStore.cancelSession(
+          form.getAttribute('data-tutor-cancel-form'),
+          this.user,
+          reason
+        );
+        if (!result.success) {
+          showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Kelas dibatalkan', message: 'Alasan tersimpan. Admin perlu menjadwalkan sesi pengganti.', type: 'success' });
+          this.render();
+        }
+      });
+    });
   }
 
   /**
@@ -1348,6 +1466,16 @@ export class TeacherWorkspace {
     if (this.container) this.container.replaceChildren();
   }
 
+}
+
+function formatTutorSessionDate(value) {
+  if (!value) return 'Waktu tidak diketahui';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  }).format(date);
 }
 
 function escapeHtml(str) {
