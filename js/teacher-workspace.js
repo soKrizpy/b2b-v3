@@ -8,6 +8,7 @@
 import { MockService } from './services/mock-service.js';
 import { StateStore } from './services/state-store.js';
 import { SessionStore } from './services/session-store.js';
+import { IdentityStore } from './services/identity-store.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -22,8 +23,11 @@ export class TeacherWorkspace {
   /**
    * @param {HTMLElement} container - Root element (#teacher-container)
    */
-  constructor(container) {
+  constructor(container, user = null) {
     this.container = container;
+    this.user = user;
+    this.assignedStudentIds = null;
+    this.assignedStudentNames = null;
     this.classSummary = null;
     this.submissions = [];
     this.students = [];
@@ -51,9 +55,18 @@ export class TeacherWorkspace {
       // Read active submissions from unified StateStore
       const storeSubmissions = StateStore.getAllSubmissions();
 
-      this.classSummary = summary;
-      this.submissions = storeSubmissions.length > 0 ? storeSubmissions : (rawSubmissions || []);
-      this.students = students || [];
+      this.user = this.user || { id: 'usr_tea_001', displayName: 'Kak Sarah', avatar: 'KS', role: 'tutor' };
+      const assignedUsers = IdentityStore.getTutorStudents(this.user.id);
+      this.assignedStudentIds = new Set(assignedUsers.map((student) => student.id));
+      this.assignedStudentNames = new Set(assignedUsers.map((student) => student.displayName));
+      this.students = (students || []).filter((student) => this.assignedStudentIds.has(student.id));
+      this.submissions = (storeSubmissions.length > 0 ? storeSubmissions : (rawSubmissions || [])).filter((submission) => this.assignedStudentIds.has(submission.studentId));
+      this.classSummary = {
+        ...summary,
+        totalStudents: this.students.length,
+        activeStudents: this.students.filter((student) => student.isActive).length,
+        recentActivities: (summary.recentActivities || []).filter((activity) => this.assignedStudentNames.has(activity.studentName))
+      };
 
       // Calculate dynamic metrics from active store
       this.syncMetricsFromSubmissions();
@@ -105,7 +118,7 @@ export class TeacherWorkspace {
    * Reactive update handler for external changes (cross-tab or local)
    */
   handleExternalStoreUpdate() {
-    const updated = StateStore.getAllSubmissions();
+    const updated = StateStore.getAllSubmissions().filter((submission) => this.assignedStudentIds?.has(submission.studentId));
     if (updated.length > 0) {
       this.submissions = updated;
       this.syncMetricsFromSubmissions();
@@ -140,9 +153,9 @@ export class TeacherWorkspace {
         <!-- 1. TEACHER HEADER BANNER -->
         <header class="teacher-header-banner">
           <div class="teacher-header-info">
-            <div class="teacher-avatar-circle" aria-hidden="true">KS</div>
+            <div class="teacher-avatar-circle" aria-hidden="true">${this.user?.avatar || (this.user?.displayName || "Tutor").slice(0, 2).toUpperCase()}</div>
             <div>
-              <h2 class="teacher-greeting-title">Halo, Kak Sarah! 👋</h2>
+              <h2 class="teacher-greeting-title">Halo, ${this.user?.displayName || "Tutor"}! 👋</h2>
               <p class="teacher-greeting-sub">SDIT Al-Hikmah &bull; Kelas Scratch Starter (Semester Genap 2026)</p>
             </div>
           </div>
@@ -186,7 +199,7 @@ export class TeacherWorkspace {
 
   getReportsCountLabel() {
     try {
-      const reports = SessionStore.getAllReports();
+      const reports = this.user?.id ? SessionStore.getTutorReports(this.user.id) : SessionStore.getAllReports();
       return `${reports.length} Laporan`;
     } catch {
       return '0 Laporan';
@@ -398,7 +411,7 @@ export class TeacherWorkspace {
         <h3 class="placeholder-title">Manajemen Siswa (Tahap 3.2)</h3>
         <p class="placeholder-desc">
           Modul ini dijadwalkan pada Tahap 3.2. Anda akan dapat mencari, menyaring, dan memeriksa status detail
-          dari <strong>${this.students.length} siswa terdaftar</strong> (Alex Pratama, Budi Santoso, Citra Lestari, Doni Wijaya, Eva Rahma, Fajar Nugraha).
+          dari <strong>${this.students.length} siswa yang ditugaskan kepada Anda</strong>: ${this.students.map((student) => student.name).join(", ") || "Belum ada siswa yang ditugaskan"}.
         </p>
         <button type="button" class="btn btn-secondary btn-sm" data-teacher-tab="dashboard" style="margin-top: var(--space-2);">
           &larr; Kembali ke Dashboard Guru
@@ -442,7 +455,7 @@ export class TeacherWorkspace {
    * Render list of session reports created by tutor
    */
   renderSessionReportsList() {
-    const allReports = SessionStore.getAllReports();
+    const allReports = this.user?.id ? SessionStore.getTutorReports(this.user.id) : SessionStore.getAllReports();
     const submittedCount = allReports.filter((r) => r.status === 'submitted').length;
     const draftCount = allReports.filter((r) => r.status === 'draft').length;
 
