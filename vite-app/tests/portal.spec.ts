@@ -1064,7 +1064,7 @@ test.describe("Local demo domain repository adapters", () => {
       const reportDraftPromise = SessionReportRepository.saveReport(reportData, "draft");
       const reportDraftIsPromise = reportDraftPromise instanceof Promise;
       const reportDraft = await reportDraftPromise;
-      const draftDeleted = await SessionReportRepository.deleteDraft(reportDraft.id);
+      const draftDeleted = await SessionReportRepository.deleteDraft(reportDraft.report.id);
       const reportSubmitted = await SessionReportRepository.saveReport(reportData, "submitted");
       const evaluationPromise = MonthlyEvaluationRepository.save({
         studentId: "repository-learning-student",
@@ -1082,7 +1082,7 @@ test.describe("Local demo domain repository adapters", () => {
         reportDraftSuccess: !reportDraft.error,
         draftDeleted,
         reportSubmittedSuccess: !reportSubmitted.error,
-        reportStatus: reportSubmitted.status,
+        reportStatus: reportSubmitted.report?.status,
         evaluationIsPromise,
         evaluationSuccess: evaluation.success,
         evaluationStatus: evaluation.evaluation?.status
