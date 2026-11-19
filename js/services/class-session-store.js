@@ -285,6 +285,121 @@ export const ClassSessionStore = {
       : { success: false, error: 'WRITE_FAILED', message: 'Seri sesi gagal disimpan.' };
   },
 
+  createRecurringSessionSeries(data) {
+    if (!data || typeof data !== 'object') {
+      return { success: false, error: 'INVALID_SERIES', message: 'Pengaturan seri pertemuan tidak valid.' };
+    }
+
+    const studentId = typeof data.studentId === 'string' ? data.studentId.trim() : '';
+    const tutorId = typeof data.tutorId === 'string' ? data.tutorId.trim() : '';
+    const startDate = typeof data.startDate === 'string' ? data.startDate : '';
+    const startTime = typeof data.startTime === 'string' ? data.startTime : '';
+    const weekdays = Array.isArray(data.weekdays)
+      ? [...new Set(data.weekdays.map(Number))]
+      : [];
+    const targetCount = Number(data.targetCount);
+    const durationMinutes = Number(data.durationMinutes);
+    const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(startDate);
+    const timeMatch = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(startTime);
+
+    if (!studentId || !tutorId || !dateMatch || !timeMatch ||
+        !weekdays.length || weekdays.some(day => !Number.isInteger(day) || day < 0 || day > 6)) {
+      return { success: false, error: 'INVALID_INPUT', message: 'Siswa, tutor, tanggal mulai, jam, dan minimal satu hari harus dipilih.' };
+    }
+    if (!Number.isInteger(targetCount) || targetCount < 1 || targetCount > 100) {
+      return { success: false, error: 'INVALID_TARGET_COUNT', message: 'Jumlah pertemuan harus 1–100.' };
+    }
+    if (!Number.isInteger(durationMinutes) || durationMinutes < 1 || durationMinutes > 480) {
+      return { success: false, error: 'INVALID_DURATION', message: 'Durasi sesi harus 1–480 menit.' };
+    }
+
+    const [year, month, day] = dateMatch.slice(1).map(Number);
+    const firstUtcDate = new Date(Date.UTC(year, month - 1, day));
+    if (firstUtcDate.getUTCFullYear() !== year ||
+        firstUtcDate.getUTCMonth() !== month - 1 ||
+        firstUtcDate.getUTCDate() !== day) {
+      return { success: false, error: 'INVALID_START_DATE', message: 'Tanggal mulai tidak valid.' };
+    }
+
+    const seriesId = typeof data.seriesId === 'string' && data.seriesId.trim()
+      ? data.seriesId.trim()
+      : makeId();
+    const draftRecords = this._read();
+    const sessions = [];
+    const skippedSlots = [];
+    const now = Date.now();
+
+    // The LMS scheduling calendar uses WIB (Asia/Jakarta). If a selected slot conflicts,
+    // the occurrence is skipped and the next selected weekday is considered.
+    for (let offset = 0; offset < 365 * 3 && sessions.length < targetCount; offset += 1) {
+      const occurrenceDate = new Date(firstUtcDate);
+      occurrenceDate.setUTCDate(firstUtcDate.getUTCDate() + offset);
+      if (!weekdays.includes(occurrenceDate.getUTCDay())) continue;
+
+      const dateLabel = [
+        occurrenceDate.getUTCFullYear(),
+        String(occurrenceDate.getUTCMonth() + 1).padStart(2, '0'),
+        String(occurrenceDate.getUTCDate()).padStart(2, '0')
+      ].join('-');
+      const scheduledStart = new Date(dateLabel + 'T' + startTime + ':00+07:00');
+      if (scheduledStart.getTime() <= now) {
+        skippedSlots.push({ scheduledStartAt: scheduledStart.toISOString(), reason: 'PAST' });
+        continue;
+      }
+
+      const sessionNumber = sessions.length + 1;
+      const candidate = {
+        id: makeId(),
+        seriesId,
+        sessionNumber,
+        studentId,
+        tutorId,
+        scheduledStartAt: scheduledStart.toISOString(),
+        durationMinutes,
+        status: 'scheduled'
+      };
+      const conflicts = this._hasScheduleConflict(candidate, draftRecords);
+      if (conflicts.length) {
+        skippedSlots.push({
+          scheduledStartAt: candidate.scheduledStartAt,
+          reason: 'CONFLICT',
+          conflicts
+        });
+        continue;
+      }
+
+      sessions.push({
+        id: candidate.id,
+        sessionNumber,
+        scheduledStartAt: candidate.scheduledStartAt
+      });
+      draftRecords[candidate.id] = candidate;
+    }
+
+    if (sessions.length !== targetCount) {
+      return {
+        success: false,
+        error: 'INSUFFICIENT_SLOTS',
+        message: 'Jumlah slot bebas tidak mencukupi dalam rentang pencarian tiga tahun.',
+        requestedCount: targetCount,
+        availableCount: sessions.length,
+        skippedSlots
+      };
+    }
+
+    const created = this.createSessionSeries({
+      studentId,
+      tutorId,
+      seriesId,
+      durationMinutes,
+      meetingUrl: typeof data.meetingUrl === 'string' ? data.meetingUrl : '',
+      sessions
+    });
+    return created.success
+      ? { ...created, requestedCount: targetCount, skippedSlots }
+      : created;
+  },
+
   recordAttendance(sessionId, attendanceStatus, actor) {
     if (!validActor(actor, ['tutor'])) {
       return { success: false, error: 'FORBIDDEN', message: 'Hanya tutor yang dapat mencatat kehadiran.' };
