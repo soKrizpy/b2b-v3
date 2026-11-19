@@ -564,8 +564,8 @@ test.describe("Bits2Bytes demo portal", () => {
         unpaidAfter,
         historyCount: history.length,
         historyStatus: history[0]?.status,
-        paidAt: history[0]?.paidAt,
-        paidBy: history[0]?.paidBy
+        hasPaidAt: Object.prototype.hasOwnProperty.call(history[0] || {}, "paidAt"),
+        hasPaidBy: Object.prototype.hasOwnProperty.call(history[0] || {}, "paidBy")
       };
     }, { classSource: classSessionStoreSource, billingSource: billingStoreSource });
 
@@ -584,8 +584,8 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(result.unpaidAfter).toBe(0);
     expect(result.historyCount).toBe(1);
     expect(result.historyStatus).toBe("paid");
-    expect(result.paidAt).toBeTruthy();
-    expect(result.paidBy).toBe("admin-1");
+    expect(result.hasPaidAt).toBe(false);
+    expect(result.hasPaidBy).toBe(false);
   });
 
   test("admin can set a student's manual rate from the Tarif & Tagihan tab", async ({ page }) => {
