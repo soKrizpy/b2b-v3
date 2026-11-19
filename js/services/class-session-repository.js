@@ -9,6 +9,11 @@ import { ClassSessionStore } from './class-session-store.js';
 export { ClassSessionStore };
 
 export const ClassSessionRepository = {
+  async getAllSessions() { return ClassSessionStore.getAllSessions(); },
+  async getSession(sessionId) { return ClassSessionStore.getSession(sessionId); },
+  async getStudentSessions(studentId) { return ClassSessionStore.getStudentSessions(studentId); },
+  async getTutorSessions(tutorId) { return ClassSessionStore.getTutorSessions(tutorId); },
+  async getBillableSessions(studentId) { return ClassSessionStore.getBillableSessions(studentId); },
   async recordAttendance(sessionId, attendanceStatus, actor) {
     return ClassSessionStore.recordAttendance(sessionId, attendanceStatus, actor);
   },

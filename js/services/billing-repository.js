@@ -7,6 +7,9 @@ import { BillingStore } from './billing-store.js';
 export { BillingStore };
 
 export const BillingRepository = {
+  async getInvoices() { return BillingStore.getInvoices(); },
+  async getStudentInvoices(studentId) { return BillingStore.getStudentInvoices(studentId); },
+  async getRate(studentId) { return BillingStore.getRate(studentId); },
   async setRate(studentId, amountPerSession, actor) {
     return BillingStore.setRate(studentId, amountPerSession, actor);
   },

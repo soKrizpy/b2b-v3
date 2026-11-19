@@ -4,9 +4,8 @@
  * Monthly evaluations remain empty until their workflow exists.
  */
 
-import { SessionStore } from '../services/session-store.js';
-import { BillingStore } from '../services/billing-store.js';
-import { MonthlyEvaluationStore } from '../services/monthly-evaluation-store.js';
+import { SessionStore, MonthlyEvaluationStore, SessionReportRepository, MonthlyEvaluationRepository } from '../services/learning-record-repository.js';
+import { BillingStore, BillingRepository } from '../services/billing-repository.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },
@@ -23,22 +22,30 @@ export class ParentHubView {
     this.unsubscribeSessionStore = null;
     this.unsubscribeBillingStore = null;
     this.unsubscribeMonthlyEvaluationStore = null;
+    this.sessionReports = [];
+    this.monthlyEvaluations = [];
+    this.invoices = [];
+    this.isLoading = true;
+    this.loadRequest = 0;
+    this.destroyed = false;
   }
 
   init() {
     this.unsubscribeSessionStore = SessionStore.subscribe(() => {
-      if (this.activeTab === 'sessions') this.renderContent();
+      if (this.activeTab === 'sessions') void this.refreshActiveTab();
     });
     this.unsubscribeBillingStore = BillingStore.subscribe(() => {
-      if (this.activeTab === 'invoices') this.renderContent();
+      if (this.activeTab === 'invoices') void this.refreshActiveTab();
     });
     this.unsubscribeMonthlyEvaluationStore = MonthlyEvaluationStore.subscribe(() => {
-      if (this.activeTab === 'monthly') this.renderContent();
+      if (this.activeTab === 'monthly') void this.refreshActiveTab();
     });
     this.render();
   }
 
   destroy() {
+    this.destroyed = true;
+    this.loadRequest += 1;
     if (this.unsubscribeSessionStore) {
       this.unsubscribeSessionStore();
       this.unsubscribeSessionStore = null;
@@ -97,22 +104,56 @@ export class ParentHubView {
         const tab = button.getAttribute('data-parent-tab');
         if (!TABS.some(item => item.id === tab) || tab === this.activeTab) return;
         this.activeTab = tab;
+        this.isLoading = true;
         this.render();
       });
     });
     this.renderContent();
+    void this.refreshActiveTab();
+  }
+
+  async refreshActiveTab() {
+    const request = ++this.loadRequest;
+    this.isLoading = true;
+    this.renderContent();
+    try {
+      if (this.activeTab === 'sessions') {
+        this.sessionReports = await SessionReportRepository.getStudentSubmittedReports(this.studentUser.id);
+      } else if (this.activeTab === 'monthly') {
+        this.monthlyEvaluations = await MonthlyEvaluationRepository.getStudentPublished(this.studentUser.id);
+      } else {
+        this.invoices = await BillingRepository.getStudentInvoices(this.studentUser.id);
+      }
+      if (this.destroyed || request !== this.loadRequest) return;
+      this.isLoading = false;
+      this.renderContent();
+    } catch (error) {
+      console.error('Parent Hub gagal memuat data:', error);
+      if (this.destroyed || request !== this.loadRequest) return;
+      this.isLoading = false;
+      const content = this.container?.querySelector('#parent-hub-tab-content');
+      if (content) content.innerHTML = this.renderEmptyState('Data belum dapat dimuat', 'Silakan coba buka kembali tab ini.');
+    }
+  }
+
+  handleStoreChange() {
+    void this.refreshActiveTab();
   }
 
   renderContent() {
     const content = this.container?.querySelector('#parent-hub-tab-content');
     if (!content) return;
+    if (this.isLoading) {
+      content.innerHTML = '<div class="card parent-empty-state" role="status">Memuat data…</div>';
+      return;
+    }
     if (this.activeTab === 'sessions') content.innerHTML = this.renderSessionReports();
     else if (this.activeTab === 'monthly') content.innerHTML = this.renderMonthlyEvaluations();
     else content.innerHTML = this.renderInvoices();
   }
 
   renderMonthlyEvaluations() {
-    const evaluations = MonthlyEvaluationStore.getStudentPublished(this.studentUser.id);
+    const evaluations = this.monthlyEvaluations;
     if (!evaluations.length) return this.renderEmptyState(
       'Belum ada evaluasi bulanan',
       'Evaluasi akan muncul setelah tutor mengirim laporan perkembangan untuk bulan tersebut.'
@@ -142,7 +183,7 @@ export class ParentHubView {
   }
 
   renderInvoices() {
-    const invoices = BillingStore.getStudentInvoices(this.studentUser.id);
+    const invoices = this.invoices;
     if (!invoices.length) {
       return this.renderEmptyState(
         'Belum ada riwayat tagihan',
@@ -186,7 +227,7 @@ export class ParentHubView {
   }
 
   renderSessionReports() {
-    const reports = SessionStore.getStudentSubmittedReports(this.studentUser.id);
+    const reports = this.sessionReports;
     if (!reports.length) {
       return this.renderEmptyState(
         'Belum ada laporan sesi',

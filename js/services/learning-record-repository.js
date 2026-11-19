@@ -8,6 +8,10 @@ import { MonthlyEvaluationStore } from './monthly-evaluation-store.js';
 export { SessionStore, MonthlyEvaluationStore };
 
 export const SessionReportRepository = {
+  async getTutorReports(tutorId) { return SessionStore.getTutorReports(tutorId); },
+  async getAllReports() { return SessionStore.getAllReports(); },
+  async getReportById(reportId) { return SessionStore.getReportById(reportId); },
+  async getStudentSubmittedReports(studentId) { return SessionStore.getStudentSubmittedReports(studentId); },
   async saveReport(data, status, expectedVersion = null) {
     return SessionStore.saveReport(data, status, expectedVersion);
   },
@@ -17,6 +21,8 @@ export const SessionReportRepository = {
 };
 
 export const MonthlyEvaluationRepository = {
+  async getTutorEvaluations(tutorId) { return MonthlyEvaluationStore.getTutorEvaluations(tutorId); },
+  async getStudentPublished(studentId) { return MonthlyEvaluationStore.getStudentPublished(studentId); },
   async save(data, status = 'draft') {
     return MonthlyEvaluationStore.save(data, status);
   }
