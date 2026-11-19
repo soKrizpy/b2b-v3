@@ -1323,6 +1323,18 @@ export class TeacherWorkspace {
       }
     });
   }
+  /**
+   * Release subscriptions and close transient UI when the React workspace unmounts.
+   */
+  destroy() {
+    if (typeof this._unsubscribeStore === "function") this._unsubscribeStore();
+    if (typeof this._unsubscribeSessionStore === "function") this._unsubscribeSessionStore();
+    this._unsubscribeStore = null;
+    this._unsubscribeSessionStore = null;
+    Drawer.close("sample-drawer");
+    if (this.container) this.container.replaceChildren();
+  }
+
 }
 
 function escapeHtml(str) {
