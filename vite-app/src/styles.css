@@ -32,7 +32,9 @@
 .student-dashboard-note { margin:0; color:var(--color-text-muted); line-height:var(--line-height-relaxed); }
 @media(max-width:768px) { .b2b-vite-role-grid,.student-dashboard-grid { grid-template-columns:1fr; } .b2b-vite-notice { align-items:flex-start; flex-direction:column; } .b2b-vite-notice .btn { width:100%; } .student-welcome { align-items:flex-start; } }
 
-.student-experience { display: grid; gap: var(--space-4); }
+.student-experience { display: grid; gap: var(--space-4); min-width: 0; width: 100%; }
+.student-lesson-host { min-width: 0; width: 100%; max-width: 100%; }
+.student-dashboard { min-width: 0; width: 100%; max-width: 100%; }
 .student-loading { padding: var(--space-6); color: var(--color-text-secondary); }
 .student-portal-back { margin-top: var(--space-5); }
 
