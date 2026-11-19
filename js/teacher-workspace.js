@@ -1021,7 +1021,7 @@ export class TeacherWorkspace {
             ${MonthlyEvaluationStore.ratings.map(rating => `<option value="${escapeHtml(rating)}" ${current.rating === rating ? 'selected' : ''}>${escapeHtml(rating)}</option>`).join('')}</select></label>
         </div>
         <label>Ringkasan perkembangan<textarea name="summary" rows="3" required maxlength="1500" style="width:100%;">${escapeHtml(current.summary || '')}</textarea></label>
-        <label>Hal yang sudah dikuasai<textarea name="strengths" rows="3" required maxlength="1200" style="width:100%;"></textarea>${escapeHtml(current.strengths || '')}</label>
+        <label>Hal yang sudah dikuasai<textarea name="strengths" rows="3" required maxlength="1200" style="width:100%;">\${escapeHtml(current.strengths || '')}</textarea></label>
         <label>Target bulan berikutnya<textarea name="nextGoals" rows="3" required maxlength="1200" style="width:100%;">${escapeHtml(current.nextGoals || '')}</textarea></label>
         <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
           <button type="button" class="btn btn-secondary" id="btn-save-monthly-draft">Simpan draf</button>
