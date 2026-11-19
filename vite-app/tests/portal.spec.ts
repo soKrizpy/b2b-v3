@@ -155,6 +155,66 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(result.reusedSlot).toBe(true);
   });
 
+  test("class session series is created atomically with shared defaults and per-session meeting link overrides", async ({ page }) => {
+    const result = await page.evaluate(async (moduleSource) => {
+      const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(moduleUrl);
+      URL.revokeObjectURL(moduleUrl);
+      localStorage.removeItem("b2b_class_sessions_store");
+
+      const existing = ClassSessionStore.createSession({
+        id: "existing-session", seriesId: "existing-series", sessionNumber: 1,
+        studentId: "student-other", tutorId: "tutor-1",
+        scheduledStartAt: "2026-12-02T10:00:00+07:00", durationMinutes: 60
+      });
+      const failed = ClassSessionStore.createSessionSeries({
+        seriesId: "failed-series", studentId: "student-1", tutorId: "tutor-1",
+        durationMinutes: 60, meetingUrl: "https://meet.example/main",
+        sessions: [
+          { id: "would-have-been-created", sessionNumber: 1, scheduledStartAt: "2026-12-01T10:00:00+07:00" },
+          { id: "conflicting-session", sessionNumber: 2, scheduledStartAt: "2026-12-02T10:30:00+07:00" }
+        ]
+      });
+      const failedSeriesSessions = ClassSessionStore.getAllSessions().filter((session: { seriesId: string }) => session.seriesId === "failed-series");
+
+      const created = ClassSessionStore.createSessionSeries({
+        seriesId: "valid-series", studentId: "student-1", tutorId: "tutor-1",
+        durationMinutes: 60, meetingUrl: "https://meet.example/main",
+        sessions: [
+          { id: "series-session-1", sessionNumber: 1, scheduledStartAt: "2026-12-03T09:00:00+07:00" },
+          { id: "series-session-2", sessionNumber: 2, scheduledStartAt: "2026-12-04T09:00:00+07:00", meetingUrl: "https://meet.example/override" },
+          { id: "series-session-3", sessionNumber: 3, scheduledStartAt: "2026-12-05T09:00:00+07:00" }
+        ]
+      });
+
+      return {
+        existing: existing.success,
+        failedError: failed.error,
+        failedSeriesCount: failedSeriesSessions.length,
+        failedFirstSessionExists: Boolean(ClassSessionStore.getSession("would-have-been-created")),
+        created: created.success,
+        createdCount: created.sessions?.length || 0,
+        seriesIds: created.sessions?.map((session: { seriesId: string }) => session.seriesId),
+        durations: created.sessions?.map((session: { durationMinutes: number }) => session.durationMinutes),
+        meetingUrls: created.sessions?.map((session: { meetingUrl: string }) => session.meetingUrl)
+      };
+    }, classSessionStoreSource);
+
+    expect(result.existing).toBe(true);
+    expect(result.failedError).toBe("SCHEDULE_CONFLICT");
+    expect(result.failedSeriesCount).toBe(0);
+    expect(result.failedFirstSessionExists).toBe(false);
+    expect(result.created).toBe(true);
+    expect(result.createdCount).toBe(3);
+    expect(result.seriesIds).toEqual(["valid-series", "valid-series", "valid-series"]);
+    expect(result.durations).toEqual([60, 60, 60]);
+    expect(result.meetingUrls).toEqual([
+      "https://meet.example/main",
+      "https://meet.example/override",
+      "https://meet.example/main"
+    ]);
+  });
+
   test("admin can sign in and see identity management", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
