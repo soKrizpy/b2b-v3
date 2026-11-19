@@ -82,44 +82,62 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(lightCanvas).toBe("#ebf5fb");
   });
 
-  test("Student workspace stays within a 360px viewport in both themes", async ({ page }) => {
+  test("Student workspace stays within narrow and tablet viewports in both themes", async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
     await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
     await expect(page.getByRole("heading", { name: /Halo, Alex/ })).toBeVisible();
     await expect(page.getByText("Poin menuju level berikutnya", { exact: false })).toBeVisible();
-    await expectNoHorizontalOverflow(page);
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("student-light-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
     await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
-    await expectNoHorizontalOverflow(page);
-    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
-    await expectNoHorizontalOverflow(page);
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("student-dark-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
   });
 
-  test("Tutor workspace stays within a 360px viewport in both themes", async ({ page }) => {
+  test("Tutor workspace stays within narrow and tablet viewports in both themes", async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
     await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
     await expect(page.getByRole("heading", { name: /Halo, Kak Sarah/ })).toBeVisible();
-    await expectNoHorizontalOverflow(page);
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("tutor-light-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
     await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
-    await expectNoHorizontalOverflow(page);
-    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
-    await expectNoHorizontalOverflow(page);
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("tutor-dark-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
   });
 
-  test("Admin workspace stays within a 360px viewport in both themes", async ({ page }) => {
+  test("Admin workspace stays within narrow and tablet viewports in both themes", async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
     await expect(page.getByRole("heading", { name: "Manajemen Identitas & Hak Akses Pengguna" })).toBeVisible();
-    await expectNoHorizontalOverflow(page);
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("admin-light-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
     await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
-    await expectNoHorizontalOverflow(page);
-    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
-    await expectNoHorizontalOverflow(page);
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("admin-dark-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
   });
 
   test("portal login and role cards remain usable at a 320px viewport", async ({ page }) => {
