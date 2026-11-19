@@ -9,7 +9,6 @@
  */
 
 import { IdentityRepository } from '../services/identity-repository.js';
-import { AuthService } from '../services/auth-service.js';
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
 import { BillingStore, BillingRepository } from '../services/billing-repository.js';
@@ -19,8 +18,9 @@ export class AdminWorkspace {
   /**
    * @param {HTMLElement} container
    */
-  constructor(container) {
+  constructor(container, currentUser = null) {
     this.container = container;
+    this.currentUser = currentUser;
     this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'billing'
     this.roleFilter = 'all';
     this.statusFilter = 'all';
@@ -75,8 +75,7 @@ export class AdminWorkspace {
   render() {
     if (!this.container) return;
 
-    const session = AuthService.getCurrentSession();
-    const currentUser = session ? session.user : null;
+    const currentUser = this.currentUser;
 
     // Access guard: only admin can view this workspace
     if (!AccessControl.canManageUsers(currentUser)) {
@@ -606,7 +605,7 @@ export class AdminWorkspace {
         try {
           const result = await ClassSessionRepository.cancelSession(
             button.getAttribute('data-cancel-session'),
-            AuthService.getCurrentSession()?.user
+            this.currentUser
           );
           if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
           else {
@@ -627,7 +626,7 @@ export class AdminWorkspace {
         try {
           const result = await ClassSessionRepository.softDeleteSession(
             button.getAttribute('data-soft-delete-session'),
-            AuthService.getCurrentSession()?.user
+            this.currentUser
           );
           if (!result.success) showToast({ title: 'Penghapusan gagal', message: result.message, type: 'error' });
           else {
@@ -659,7 +658,7 @@ export class AdminWorkspace {
           const result = await ClassSessionRepository.createReplacementSession(
             form.getAttribute('data-replacement-form'),
             { scheduledStartAt: start.toISOString() },
-            AuthService.getCurrentSession()?.user
+            this.currentUser
           );
           if (!result.success) showToast({ title: 'Sesi pengganti gagal dibuat', message: result.message, type: 'error' });
           else {
@@ -681,7 +680,7 @@ export class AdminWorkspace {
         if (submitButton) submitButton.disabled = true;
         const studentId = form.getAttribute('data-rate-form');
         const amount = Number(new FormData(form).get('amountPerSession'));
-        const actor = AuthService.getCurrentSession()?.user;
+        const actor = this.currentUser;
         try {
         const result = await BillingRepository.setRate(studentId, amount, actor);
         if (!result.success) {
@@ -706,7 +705,7 @@ export class AdminWorkspace {
         const submitButton = invoiceForm.querySelector('button[type="submit"]');
         if (submitButton) submitButton.disabled = true;
         const formData = new FormData(invoiceForm);
-        const actor = AuthService.getCurrentSession()?.user;
+        const actor = this.currentUser;
         try {
         const result = await BillingRepository.createInvoice(String(formData.get('studentId') || ''), String(formData.get('period') || ''), actor);
         if (!result.success) {
@@ -737,7 +736,7 @@ export class AdminWorkspace {
           additionalCharges: Number(formData.get('additionalCharges')),
           totalAmount: Number(formData.get('totalAmount')),
           adjustmentNote: String(formData.get('adjustmentNote') || '')
-        }, AuthService.getCurrentSession()?.user);
+        }, this.currentUser);
         if (!result.success) {
           showToast({ title: 'Koreksi draft gagal', message: result.message, type: 'error' });
         } else {
@@ -756,7 +755,7 @@ export class AdminWorkspace {
       button.addEventListener('click', async () => {
         button.disabled = true;
         try {
-        const result = await BillingRepository.issueInvoice(button.getAttribute('data-issue-invoice'), AuthService.getCurrentSession()?.user);
+        const result = await BillingRepository.issueInvoice(button.getAttribute('data-issue-invoice'), this.currentUser);
         if (!result.success) {
           showToast({ title: 'Tagihan belum diterbitkan', message: result.message, type: 'error' });
         } else {
@@ -774,7 +773,7 @@ export class AdminWorkspace {
     this.container.querySelectorAll('[data-mark-invoice-paid]').forEach(button => {
       button.addEventListener('click', async () => {
         button.disabled = true;
-        const actor = AuthService.getCurrentSession()?.user;
+        const actor = this.currentUser;
         try {
         const result = await BillingRepository.markPaid(button.getAttribute('data-mark-invoice-paid'), actor);
         if (!result.success) {

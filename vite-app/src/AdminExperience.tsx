@@ -29,7 +29,7 @@ export default function AdminExperience() {
           throw new Error("Sesi Admin belum aktif. Silakan masuk menggunakan akun Admin.");
         }
 
-        controller = new AdminWorkspace(host) as AdminController;
+        controller = new AdminWorkspace(host, session.user) as AdminController;
         await controller.init();
         if (active) setStatus("ready");
       } catch (error) {
