@@ -922,6 +922,13 @@ export class AdminWorkspace {
   }
 }
 
+function formatInvoiceDate(value) {
+  if (!value) return 'Tanggal tidak diketahui';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' }).format(date);
+}
+
 function formatRupiah(amount) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(amount) || 0);
 }
