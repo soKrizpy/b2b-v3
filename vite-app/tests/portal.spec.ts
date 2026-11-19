@@ -510,6 +510,90 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByText("Draft yang belum dikirim")).toHaveCount(0);
   });
 
+  test("billing uses admin-set per-student rates and only bills eligible held sessions", async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      localStorage.removeItem("b2b_billing_store");
+      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
+      const { BillingStore } = await import("/js/services/billing-store.js");
+      const admin = { id: "admin-1", role: "admin" };
+      const tutor = { id: "tutor-1", role: "tutor" };
+      const makeSession = (id: string, number: number) => ClassSessionStore.createSession({
+        id, seriesId: "series-bill", sessionNumber: number, studentId: "student-bill",
+        tutorId: "tutor-1", scheduledStartAt: `2026-11-${String(10 + number).padStart(2, "0")}T09:00:00+07:00`,
+        durationMinutes: 60
+      });
+      makeSession("bill-present", 1);
+      makeSession("bill-late", 2);
+      makeSession("bill-absent", 3);
+      makeSession("bill-pending", 4);
+      ClassSessionStore.recordAttendance("bill-present", "present", tutor);
+      ClassSessionStore.recordAttendance("bill-late", "late", tutor);
+      ClassSessionStore.recordAttendance("bill-absent", "absent", tutor);
+
+      const forbiddenRate = BillingStore.setRate("student-bill", 80000, tutor);
+      const invalidRate = BillingStore.setRate("student-bill", 0, admin);
+      const rate = BillingStore.setRate("student-bill", 75000, admin);
+      const invoice = BillingStore.createInvoice("student-bill", "2026-11", admin);
+      const duplicate = BillingStore.createInvoice("student-bill", "2026-11", admin);
+      const unpaidBefore = BillingStore.getUnpaidStudentInvoices("student-bill").length;
+      const changedRate = BillingStore.setRate("student-bill", 90000, admin);
+      const markPaid = BillingStore.markPaid(invoice.invoice.id, admin);
+      const unpaidAfter = BillingStore.getUnpaidStudentInvoices("student-bill").length;
+      const history = BillingStore.getStudentInvoices("student-bill");
+
+      return {
+        forbiddenRate: forbiddenRate.error,
+        invalidRate: invalidRate.error,
+        rate: rate.success,
+        invoice: invoice.success,
+        invoiceCount: invoice.invoice?.totalSessions,
+        invoiceTotal: invoice.invoice?.totalAmount,
+        snapshotRate: invoice.invoice?.rateSnapshot,
+        itemIds: invoice.invoice?.items.map((item: { sessionId: string }) => item.sessionId),
+        duplicate: duplicate.error,
+        unpaidBefore,
+        changedRate: changedRate.success,
+        markPaid: markPaid.success,
+        unpaidAfter,
+        historyCount: history.length,
+        historyStatus: history[0]?.status,
+        paidAt: history[0]?.paidAt,
+        paidBy: history[0]?.paidBy
+      };
+    });
+
+    expect(result.forbiddenRate).toBe("FORBIDDEN");
+    expect(result.invalidRate).toBe("INVALID_RATE");
+    expect(result.rate).toBe(true);
+    expect(result.invoice).toBe(true);
+    expect(result.invoiceCount).toBe(2);
+    expect(result.invoiceTotal).toBe(150000);
+    expect(result.snapshotRate).toBe(75000);
+    expect(result.itemIds).toEqual(["bill-present", "bill-late"]);
+    expect(result.duplicate).toBe("NO_BILLABLE_SESSIONS");
+    expect(result.unpaidBefore).toBe(1);
+    expect(result.changedRate).toBe(true);
+    expect(result.markPaid).toBe(true);
+    expect(result.unpaidAfter).toBe(0);
+    expect(result.historyCount).toBe(1);
+    expect(result.historyStatus).toBe("paid");
+    expect(result.paidAt).toBeTruthy();
+    expect(result.paidBy).toBe("admin-1");
+  });
+
+  test("admin can set a student's manual rate from the Tarif & Tagihan tab", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
+    await page.locator("#demo-account").selectOption("usr_adm_001");
+    await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
+    await page.getByRole("button", { name: /Tarif & Tagihan/ }).click();
+
+    await expect(page.getByRole("heading", { name: "Tarif per siswa" })).toBeVisible();
+    await page.locator("#rate-usr_stu_001").fill("85000");
+    await page.locator('[data-rate-form="usr_stu_001"] button[type="submit"]').click();
+    await expect(page.getByText(/Tarif saat ini: Rp\s?85\.000/)).toBeVisible();
+  });
+
   test("student can sign in and see the learning dashboard", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
