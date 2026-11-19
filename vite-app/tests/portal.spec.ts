@@ -82,6 +82,8 @@ test.describe("Bits2Bytes demo portal", () => {
 
     await expect(page.getByRole("alert")).toContainText("masih memiliki tutor aktif: Kak Sarah");
     await expect(page.locator("#admin-tutor-rel-modal")).toHaveClass(/is-open/);
+    await page.locator("#btn-cancel-tutor-rel-modal").click();
+    await expect(page.locator("#admin-tutor-rel-modal")).not.toHaveClass(/is-open/);
 
     await page.locator('[data-action="delete-tutor-rel"][data-tutor-id="usr_tea_001"][data-student-id="usr_stu_001"]').click();
     const releasedAssignment = page.locator("#admin-tab-body .card").filter({ hasText: "Tutor: Kak Sarah" }).filter({ hasText: "Siswa: Alex Pratama" });
