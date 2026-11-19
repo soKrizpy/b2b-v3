@@ -17,7 +17,8 @@ export const SessionReportRepository = {
   },
   async deleteDraft(reportId) {
     return SessionStore.deleteDraft(reportId);
-  }
+  },
+  subscribe(callback) { return SessionStore.subscribe(callback); }
 };
 
 export const MonthlyEvaluationRepository = {
@@ -25,5 +26,6 @@ export const MonthlyEvaluationRepository = {
   async getStudentPublished(studentId) { return MonthlyEvaluationStore.getStudentPublished(studentId); },
   async save(data, status = 'draft') {
     return MonthlyEvaluationStore.save(data, status);
-  }
+  },
+  subscribe(callback) { return MonthlyEvaluationStore.subscribe(callback); }
 };
