@@ -1007,9 +1007,9 @@ test.describe("Local demo domain repository adapters", () => {
       const createIsPromise = createOperation instanceof Promise;
       const created = await createOperation;
       const first = created.sessions?.[0];
-      const cancel = await ClassSessionRepository.cancelSession(first?.id, admin);
       const second = created.sessions?.[1];
-      const softDelete = await ClassSessionRepository.softDeleteSession(second?.id, admin);
+      const softDelete = await ClassSessionRepository.softDeleteSession(first?.id, admin);
+      const cancel = await ClassSessionRepository.cancelSession(second?.id, admin);
       const replacement = await ClassSessionRepository.createReplacementSession(
         first?.id,
         { scheduledStartAt: "2026-12-28T09:00:00+07:00" },
