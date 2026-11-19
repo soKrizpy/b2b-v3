@@ -25,8 +25,6 @@ import {
   SVG_GAS_ISLAND_ROBLOX_OBBY
 } from './illustrations.js';
 
-const PROGRESS_STORAGE_KEY = 'b2b_student_lesson_progress';
-
 export class LessonWorkspace {
   /**
    * @param {HTMLElement} container - The container element (#view-student)
@@ -56,14 +54,22 @@ export class LessonWorkspace {
   }
 
   async init() {
-    await LearningStateRepository.migrateFromLegacyProgress(this.currentUser);
+    // Read only progress already scoped to this student and lesson. The legacy
+    // global key is intentionally not imported because its owner is unknown.
+    this._lessonProgress = await LearningStateRepository.getLessonProgress(this.currentUser.id, this.lesson.id);
     if (this.destroyed) return;
+    const savedProgress = this.loadProgress();
+    this.progressState = savedProgress.state;
+    this.checkpointStates = savedProgress.checkpoints || {};
+    this.submissionData = savedProgress.submission || null;
+    this.currentSlideIndex = typeof savedProgress.slideIndex === 'number' ? savedProgress.slideIndex : 0;
+    this.visitedSlides = new Set([0, this.currentSlideIndex]);
     const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
     if (this.destroyed) return;
     this.activeStoreSubmission = activeSub || null;
     if (activeSub && ['approved', 'revision-required', 'submitted'].includes(activeSub.status)) {
       this.progressState = activeSub.status;
-      if (!localStorage.getItem(PROGRESS_STORAGE_KEY)) this.saveProgress({ state: this.progressState });
+      this.saveProgress({ state: this.progressState });
     }
     this.render();
     this.bindKeyboardNav();
@@ -147,34 +153,48 @@ export class LessonWorkspace {
   }
 
   loadProgress() {
-    try {
-      const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
-      if (!raw) return { state: 'in-progress', checkpoints: {}, submission: null, slideIndex: 0 };
-      const parsed = JSON.parse(raw);
-      if (typeof parsed === 'string') {
-        return { state: parsed, checkpoints: {}, submission: null, slideIndex: 0 };
-      }
-      return {
-        state: parsed.state || 'in-progress',
-        checkpoints: parsed.checkpoints || {},
-        submission: parsed.submission || null,
-        slideIndex: typeof parsed.slideIndex === 'number' ? parsed.slideIndex : 0
-      };
-    } catch {
-      return { state: 'in-progress', checkpoints: {}, submission: null, slideIndex: 0 };
-    }
+    const saved = this._lessonProgress || {};
+    return {
+      state: saved.state || 'in-progress',
+      checkpoints: saved.checkpoints || {},
+      submission: saved.submissionDraft || null,
+      slideIndex: Number.isInteger(saved.slideIndex) ? saved.slideIndex : 0
+    };
   }
 
   saveProgress(updates = {}) {
-    if (typeof updates === 'string') {
-      updates = { state: updates };
-    }
+    if (typeof updates === 'string') updates = { state: updates };
     const current = this.loadProgress();
     const merged = { ...current, ...updates };
     this.progressState = merged.state;
-    this.checkpointStates = merged.checkpoints;
-    this.submissionData = merged.submission;
-    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(merged));
+    this.checkpointStates = merged.checkpoints || {};
+    this.submissionData = merged.submission || null;
+
+    const progressUpdates = {
+      state: merged.state,
+      checkpoints: merged.checkpoints || {},
+      submissionDraft: merged.submission || null,
+      slideIndex: Number.isInteger(merged.slideIndex) ? merged.slideIndex : 0,
+      topicId: this.lesson.topicId ?? null
+    };
+    this._lessonProgress = {
+      ...(this._lessonProgress || {}),
+      ...progressUpdates,
+      studentId: this.currentUser.id,
+      lessonKey: this.lesson.id
+    };
+    void LearningStateRepository.saveLessonProgress(
+      this.currentUser.id,
+      this.lesson.id,
+      progressUpdates
+    ).catch(error => {
+      console.error('LessonWorkspace: progres gagal disimpan.', error);
+      showToast({
+        title: 'Progres belum tersimpan',
+        message: 'Periksa koneksi penyimpanan lalu coba lagi.',
+        type: 'error'
+      });
+    });
   }
 
   isValidUrl(string) {
