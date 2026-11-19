@@ -15,6 +15,29 @@ test.describe("Bits2Bytes demo portal", () => {
       const root = document.querySelector<HTMLElement>("#root");
       const shell = document.querySelector<HTMLElement>(".app-shell");
       const main = document.querySelector<HTMLElement>(".app-main");
+      const mainRect = main?.getBoundingClientRect();
+      const overflowingChildren = main && mainRect
+        ? Array.from(main.querySelectorAll<HTMLElement>("*"))
+            .map((element) => {
+              const rect = element.getBoundingClientRect();
+              const style = getComputedStyle(element);
+              return {
+                tag: element.tagName.toLowerCase(),
+                id: element.id,
+                className: typeof element.className === "string" ? element.className : "",
+                width: Math.round(rect.width),
+                left: Math.round(rect.left),
+                right: Math.round(rect.right),
+                scrollWidth: element.scrollWidth,
+                clientWidth: element.clientWidth,
+                minWidth: style.minWidth,
+                display: style.display
+              };
+            })
+            .filter((element) => element.right > mainRect.right + 1 || element.left < mainRect.left - 1 || element.scrollWidth > element.clientWidth + 2)
+            .sort((left, right) => right.right - left.right)
+            .slice(0, 12)
+        : [];
       return {
         viewport: window.innerWidth,
         document: document.documentElement.scrollWidth,
@@ -24,7 +47,8 @@ test.describe("Bits2Bytes demo portal", () => {
         shell: shell?.scrollWidth ?? 0,
         shellClient: shell?.clientWidth ?? 0,
         main: main?.scrollWidth ?? 0,
-        mainClient: main?.clientWidth ?? 0
+        mainClient: main?.clientWidth ?? 0,
+        overflowingChildren
       };
     });
     expect(metrics.document, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
