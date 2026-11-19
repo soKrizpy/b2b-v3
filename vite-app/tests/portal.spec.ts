@@ -215,6 +215,74 @@ test.describe("Bits2Bytes demo portal", () => {
     ]);
   });
 
+  test("admin can create a conflict-free replacement and link it to the original session", async ({ page }) => {
+    const result = await page.evaluate(async (moduleSource) => {
+      const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(moduleUrl);
+      URL.revokeObjectURL(moduleUrl);
+      localStorage.removeItem("b2b_class_sessions_store");
+
+      const admin = { id: "admin-1", role: "admin" };
+      const tutor = { id: "tutor-1", role: "tutor" };
+      const original = ClassSessionStore.createSession({
+        id: "original-session", seriesId: "series-1", sessionNumber: 2,
+        studentId: "student-1", tutorId: "tutor-1",
+        scheduledStartAt: "2026-12-10T09:00:00+07:00", durationMinutes: 60,
+        meetingUrl: "https://meet.example/original"
+      });
+      const cancelled = ClassSessionStore.cancelSession("original-session", tutor, "Tutor berhalangan");
+      const blocker = ClassSessionStore.createSession({
+        id: "blocker-session", seriesId: "series-2", sessionNumber: 1,
+        studentId: "student-1", tutorId: "tutor-2",
+        scheduledStartAt: "2026-12-11T09:00:00+07:00", durationMinutes: 60
+      });
+      const conflict = ClassSessionStore.createReplacementSession("original-session", {
+        id: "conflicting-replacement", scheduledStartAt: "2026-12-11T09:30:00+07:00"
+      }, admin);
+      const remainsUnlinked = ClassSessionStore.getSession("original-session")?.replacementSessionId === null;
+
+      const forbidden = ClassSessionStore.createReplacementSession("original-session", {
+        id: "forbidden-replacement", scheduledStartAt: "2026-12-12T09:00:00+07:00"
+      }, tutor);
+      const success = ClassSessionStore.createReplacementSession("original-session", {
+        id: "replacement-session", scheduledStartAt: "2026-12-12T09:00:00+07:00",
+        meetingUrl: "https://meet.example/replacement"
+      }, admin);
+
+      return {
+        original: original.success,
+        cancelled: cancelled.success,
+        blocker: blocker.success,
+        conflictError: conflict.error,
+        remainsUnlinked,
+        forbiddenError: forbidden.error,
+        success: success.success,
+        originalLinkedId: success.original?.replacementSessionId,
+        replacementOriginalId: success.replacement?.replacementForSessionId,
+        replacementStudent: success.replacement?.studentId,
+        replacementSeries: success.replacement?.seriesId,
+        replacementNumber: success.replacement?.sessionNumber,
+        replacementMeetingUrl: success.replacement?.meetingUrl,
+        originalStatus: ClassSessionStore.getSession("original-session")?.status
+      };
+    }, classSessionStoreSource);
+
+    expect(result.original).toBe(true);
+    expect(result.cancelled).toBe(true);
+    expect(result.blocker).toBe(true);
+    expect(result.conflictError).toBe("SCHEDULE_CONFLICT");
+    expect(result.remainsUnlinked).toBe(true);
+    expect(result.forbiddenError).toBe("FORBIDDEN");
+    expect(result.success).toBe(true);
+    expect(result.originalLinkedId).toBe("replacement-session");
+    expect(result.replacementOriginalId).toBe("original-session");
+    expect(result.replacementStudent).toBe("student-1");
+    expect(result.replacementSeries).toBe("series-1");
+    expect(result.replacementNumber).toBe(3);
+    expect(result.replacementMeetingUrl).toBe("https://meet.example/replacement");
+    expect(result.originalStatus).toBe("cancelled");
+  });
+
   test("admin can sign in and see identity management", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
