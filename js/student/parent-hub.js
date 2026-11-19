@@ -4,8 +4,8 @@
  * through asynchronous repositories. Local demo stores remain the persistence layer.
  */
 
-import { SessionStore, MonthlyEvaluationStore, SessionReportRepository, MonthlyEvaluationRepository } from '../services/learning-record-repository.js';
-import { BillingStore, BillingRepository } from '../services/billing-repository.js';
+import { SessionReportRepository, MonthlyEvaluationRepository } from '../services/learning-record-repository.js';
+import { BillingRepository } from '../services/billing-repository.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },
@@ -31,13 +31,13 @@ export class ParentHubView {
   }
 
   init() {
-    this.unsubscribeSessionStore = SessionStore.subscribe(() => {
+    this.unsubscribeSessionStore = SessionReportRepository.subscribe(() => {
       if (this.activeTab === 'sessions') void this.refreshActiveTab();
     });
-    this.unsubscribeBillingStore = BillingStore.subscribe(() => {
+    this.unsubscribeBillingStore = BillingRepository.subscribe(() => {
       if (this.activeTab === 'invoices') void this.refreshActiveTab();
     });
-    this.unsubscribeMonthlyEvaluationStore = MonthlyEvaluationStore.subscribe(() => {
+    this.unsubscribeMonthlyEvaluationStore = MonthlyEvaluationRepository.subscribe(() => {
       if (this.activeTab === 'monthly') void this.refreshActiveTab();
     });
     this.render();
