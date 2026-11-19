@@ -21,7 +21,7 @@ export class AdminWorkspace {
    */
   constructor(container) {
     this.container = container;
-    this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'parent-relations'
+    this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'billing'
     this.roleFilter = 'all';
     this.statusFilter = 'all';
     this.editingUser = null;
