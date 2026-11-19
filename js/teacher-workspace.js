@@ -43,6 +43,7 @@ export class TeacherWorkspace {
     this.reportsFilter = 'all'; // 'all' | 'submitted' | 'draft'
     this.isCreatingMonthlyEvaluation = false;
     this.editingMonthlyEvaluation = null;
+    this.destroyed = false;
   }
 
   /**
@@ -55,9 +56,11 @@ export class TeacherWorkspace {
         MockService.fetchSubmissions(),
         MockService.fetchStudents()
       ]);
+      if (this.destroyed) return;
 
       // Seed StateStore if empty/uninitialized
       await LearningStateRepository.seedSubmissionsIfEmpty(rawSubmissions);
+      if (this.destroyed) return;
 
       this.user = this.user || { id: 'usr_tea_001', displayName: 'Kak Sarah', avatar: 'KS', role: 'tutor' };
       const [storeSubmissions, assignedUsers, scheduleSessions, tutorReports, monthlyEvaluations, allUsers] = await Promise.all([
@@ -68,6 +71,7 @@ export class TeacherWorkspace {
         MonthlyEvaluationRepository.getTutorEvaluations(this.user.id),
         IdentityRepository.getAllUsers()
       ]);
+      if (this.destroyed) return;
       this.scheduleSessions = scheduleSessions;
       this.tutorReports = tutorReports;
       this.monthlyEvaluations = monthlyEvaluations;
@@ -116,6 +120,7 @@ export class TeacherWorkspace {
         });
       }
     } catch (err) {
+      if (this.destroyed) return;
       console.error('Gagal memuat Teacher Workspace data:', err);
       if (this.container) {
         this.container.innerHTML = `
@@ -142,7 +147,9 @@ export class TeacherWorkspace {
    * Reactive update handler for external changes (cross-tab or local)
    */
   async handleExternalStoreUpdate() {
+    if (this.destroyed) return;
     const updated = await LearningStateRepository.getAllSubmissions();
+    if (this.destroyed) return;
     this.submissions = updated.filter((submission) => this.assignedStudentIds?.has(submission.studentId));
     this.syncMetricsFromSubmissions();
     const drawer = document.getElementById('sample-drawer');
@@ -151,18 +158,24 @@ export class TeacherWorkspace {
   }
 
   async refreshSchedule() {
-    this.scheduleSessions = await ClassSessionRepository.getAllSessions();
+    const sessions = await ClassSessionRepository.getAllSessions();
+    if (this.destroyed) return;
+    this.scheduleSessions = sessions;
     if (this.activeTab === 'schedule') this.render();
   }
 
   async refreshTutorReports() {
-    this.tutorReports = await SessionReportRepository.getTutorReports(this.user.id);
+    const reports = await SessionReportRepository.getTutorReports(this.user.id);
+    if (this.destroyed) return;
+    this.tutorReports = reports;
     if (this.activeTab === 'session-reports') this.render();
     else this.updateReportsBadgePill();
   }
 
   async refreshMonthlyEvaluations() {
-    this.monthlyEvaluations = await MonthlyEvaluationRepository.getTutorEvaluations(this.user.id);
+    const evaluations = await MonthlyEvaluationRepository.getTutorEvaluations(this.user.id);
+    if (this.destroyed) return;
+    this.monthlyEvaluations = evaluations;
     if (this.activeTab === 'monthly-evaluations') this.render();
   }
 
@@ -1614,6 +1627,7 @@ export class TeacherWorkspace {
    * Release subscriptions and close transient UI when the React workspace unmounts.
    */
   destroy() {
+    this.destroyed = true;
     if (typeof this._unsubscribeStore === "function") this._unsubscribeStore();
     if (typeof this._unsubscribeSessionStore === "function") this._unsubscribeSessionStore();
     if (typeof this._unsubscribeClassSessionStore === "function") this._unsubscribeClassSessionStore();

@@ -41,7 +41,9 @@ export class AdminWorkspace {
 
   async init() {
     await IdentityRepository.initializeDemo();
+    if (this.destroyed) return;
     await this.refreshData({ render: false });
+    if (this.destroyed) return;
     if (!this._unsub) {
       this._unsub = IdentityRepository.subscribe(() => { void this.refreshData(); });
       this._unsubBilling = BillingStore.subscribe(() => { void this.refreshData(); });

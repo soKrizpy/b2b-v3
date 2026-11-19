@@ -42,6 +42,7 @@ export class LessonWorkspace {
     // Current State
     this.currentScreen = 'dashboard'; // 'dashboard' | 'workspace'
     this.currentStageIndex = 0;
+    this.destroyed = false;
 
     // Load persisted state from localStorage
     const saved = this.loadProgress();
@@ -56,7 +57,9 @@ export class LessonWorkspace {
 
   async init() {
     await LearningStateRepository.migrateFromLegacyProgress(this.currentUser);
+    if (this.destroyed) return;
     const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
+    if (this.destroyed) return;
     this.activeStoreSubmission = activeSub || null;
     if (activeSub && ['approved', 'revision-required', 'submitted'].includes(activeSub.status)) {
       this.progressState = activeSub.status;
@@ -76,7 +79,9 @@ export class LessonWorkspace {
    * Reactive update handler for external store changes (e.g. Teacher approves/requests revision in another tab)
    */
   async handleExternalStoreUpdate() {
+    if (this.destroyed) return;
     const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
+    if (this.destroyed || !activeSub) return;
     if (activeSub) {
       this.activeStoreSubmission = activeSub;
       if (activeSub.status === 'approved') {
@@ -126,6 +131,7 @@ export class LessonWorkspace {
   }
 
   destroy() {
+    this.destroyed = true;
     if (this._keyboardNavHandler) {
       document.removeEventListener('keydown', this._keyboardNavHandler);
       this._keyboardNavHandler = null;
