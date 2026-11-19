@@ -139,3 +139,14 @@ Perintah lain:
 - [ ] Integrasi backend setelah desain data dan keamanan disetujui.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.
+
+
+### Portal masuk & pemeriksaan build (19 November 2026)
+
+- [x] Portal memiliki alur masuk demo eksplisit: pilih peran, pilih akun aktif sesuai peran, lalu tekan tombol masuk.
+- [x] Tidak ada auto-login atau peningkatan hak akses saat pengguna memilih ruang.
+- [x] Ruang Admin, Tutor, dan Siswa memeriksa ulang identitas serta peran sesi sebelum memuat workspace.
+- [x] Tombol keluar mengakhiri sesi demo dan kembali ke pemilihan ruang.
+- [x] GitHub Actions menjalankan `npm run build` (TypeScript check + Vite production build) pada perubahan track Vite.
+- [ ] Autentikasi ini masih simulasi lokal berbasis `localStorage`, bukan autentikasi produksi dan belum memakai password.
+- [ ] Pengujian interaksi browser lintas peran masih perlu dilakukan.
