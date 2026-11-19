@@ -13,7 +13,7 @@ import { ClassSessionStore } from "../../../js/services/class-session-store.js";
 // @ts-ignore - Shared async boundary is implemented beside the legacy store.
 import { ClassSessionRepository } from "../../../js/services/class-session-repository.js";
 
-export { ClassSessionRepository };
+export { ClassSessionStore, ClassSessionRepository };
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
 import { SessionStore } from "../../../js/services/session-store.js";
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
@@ -59,7 +59,8 @@ export interface LocalDemoDomainRepositories {
 
 export const localDemoDomainRepositories: LocalDemoDomainRepositories = {
   classSessions: Object.assign(createAsyncStoreAdapter(ClassSessionStore), {
-    recordAttendance: ClassSessionRepository.recordAttendance
+    recordAttendance: ClassSessionRepository.recordAttendance,
+    cancelSession: ClassSessionRepository.cancelSession
   }),
   sessionReports: createAsyncStoreAdapter(SessionStore),
   monthlyEvaluations: createAsyncStoreAdapter(MonthlyEvaluationStore),
