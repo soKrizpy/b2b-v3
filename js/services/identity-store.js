@@ -1,7 +1,7 @@
 /**
  * B2B LEARNING ENGINE - IDENTITY & USER STORE (PHASE 4)
  * Local Identity Store with Role-Based Access Control (RBAC).
- * Manages users, tutor-student assignments, and parent-student links.
+ * Manages users and tutor-student assignments.
  *
  * Adheres strictly to Section 5, 10, 14, 15 of PROJECT_RULES.md:
  * - 100% Client-side simulation for local demo mode.
@@ -221,32 +221,6 @@ export const IdentityStore = {
       return true;
     } catch (e) {
       console.error('IdentityStore: Gagal simpan tutor assignments:', e);
-      return false;
-    }
-  },
-
-  _getParentLinksRaw() {
-    this.seedIfEmpty();
-    const storage = this._getStorage();
-    if (!storage) return [];
-    try {
-      const raw = storage.getItem(PARENT_LINKS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      console.error('IdentityStore: Gagal parse parent links:', e);
-      return [];
-    }
-  },
-
-  _setParentLinksRaw(links) {
-    const storage = this._getStorage();
-    if (!storage) return false;
-    try {
-      storage.setItem(PARENT_LINKS_KEY, JSON.stringify(links));
-      this._notifyChange('parent_links_updated');
-      return true;
-    } catch (e) {
-      console.error('IdentityStore: Gagal simpan parent links:', e);
       return false;
     }
   },
@@ -489,81 +463,24 @@ export const IdentityStore = {
   },
 
   /* --------------------------------------------------------------------------
-     RELATIONS: PARENT-STUDENT LINKS
+     RETIRED PARENT ACCOUNT API
+     Parent Hub is embedded in Student Workspace; there is no separate parent role.
+     These no-op methods keep old, unused demo scripts from throwing at runtime.
      -------------------------------------------------------------------------- */
   getAllParentLinks() {
-    return this._getParentLinksRaw();
+    return [];
   },
 
-  getParentStudents(parentId) {
-    if (!parentId) return [];
-    const parent = this.getUserById(parentId);
-    if (!parent || parent.role !== 'parent') {
-      console.warn(`IdentityStore: getParentStudents dipanggil untuk akun bukan orang tua: ${parentId}`);
-      return [];
-    }
-
-    const links = this._getParentLinksRaw().filter((l) => l.parentId === parentId && l.status === 'active');
-    const studentIds = links.map((l) => l.studentId);
-    const users = this._getUsersRaw();
-    return users.filter((u) => studentIds.includes(u.id) && u.status === 'active');
+  getParentStudents() {
+    return [];
   },
 
-  linkParentToStudent(parentId, studentId, relationship = 'Orang Tua') {
-    if (!parentId || !studentId) {
-      return { error: 'VALIDATION_ERROR', message: 'parentId dan studentId wajib diisi.' };
-    }
-
-    const parent = this.getUserById(parentId);
-    if (!parent || parent.role !== 'parent') {
-      return { error: 'INVALID_PARENT_ROLE', message: `Akun ${parentId} bukan akun orang tua yang valid.` };
-    }
-    if (parent.status !== 'active') {
-      return { error: 'INACTIVE_PARENT', message: 'Akun orang tua harus aktif sebelum ditautkan.' };
-    }
-
-    const student = this.getUserById(studentId);
-    if (!student || student.role !== 'student') {
-      return { error: 'INVALID_STUDENT_ROLE', message: `Akun ${studentId} bukan siswa yang valid.` };
-    }
-    if (student.status !== 'active') {
-      return { error: 'INACTIVE_STUDENT', message: 'Akun siswa harus aktif sebelum ditautkan ke orang tua.' };
-    }
-
-    const links = this._getParentLinksRaw();
-    const existing = links.find((l) => l.parentId === parentId && l.studentId === studentId);
-    if (existing) {
-      if (existing.status !== 'active' || existing.relationship !== relationship) {
-        existing.status = 'active';
-        existing.relationship = relationship;
-        this._setParentLinksRaw(links);
-      }
-      return { link: existing };
-    }
-
-    const newLink = {
-      id: `psl_${Date.now().toString().slice(-6)}_${Math.floor(Math.random() * 1000)}`,
-      parentId,
-      studentId,
-      relationship,
-      status: 'active',
-      createdAt: new Date().toISOString()
-    };
-
-    links.push(newLink);
-    this._setParentLinksRaw(links);
-    return { link: newLink };
+  linkParentToStudent() {
+    return { error: 'UNSUPPORTED_ROLE', message: 'Parent Hub diakses melalui akun siswa, bukan akun orang tua terpisah.' };
   },
 
-  removeParentStudentLink(parentId, studentId) {
-    const links = this._getParentLinksRaw();
-    const existing = links.find((l) => l.parentId === parentId && l.studentId === studentId && l.status === 'active');
-    if (!existing) return false;
-
-    existing.status = 'inactive';
-    existing.endedAt = new Date().toISOString();
-    this._setParentLinksRaw(links);
-    return true;
+  removeParentStudentLink() {
+    return false;
   },
 
   /* --------------------------------------------------------------------------
