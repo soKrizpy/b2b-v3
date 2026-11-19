@@ -825,6 +825,7 @@ test.describe("Bits2Bytes demo portal", () => {
 
 test.describe("Local demo domain repository adapters", () => {
   test("wrap domain operations asynchronously while preserving sync subscriptions and store context", async ({ page }) => {
+    await page.goto("/");
     const result = await page.evaluate(async () => {
       localStorage.removeItem("b2b_class_sessions_store");
       localStorage.removeItem("b2b_monthly_evaluations_store");
