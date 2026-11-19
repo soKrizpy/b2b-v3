@@ -334,6 +334,53 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByRole("button", { name: /Manajemen Siswa/ })).toBeVisible();
   });
 
+  test("tutor schedule is scoped to assigned students and supports attendance and reasoned cancellation", async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_class_sessions_store", JSON.stringify({
+        "tutor-alex-session": {
+          id: "tutor-alex-session", seriesId: "tutor-series", sessionNumber: 1,
+          studentId: "usr_stu_001", tutorId: "usr_tea_001",
+          scheduledStartAt: "2026-12-05T02:00:00.000Z", durationMinutes: 60,
+          status: "scheduled", attendanceStatus: "not_recorded", replacementRequired: false
+        },
+        "tutor-budi-session": {
+          id: "tutor-budi-session", seriesId: "tutor-series", sessionNumber: 2,
+          studentId: "usr_stu_002", tutorId: "usr_tea_001",
+          scheduledStartAt: "2026-12-06T02:00:00.000Z", durationMinutes: 60,
+          status: "scheduled", attendanceStatus: "not_recorded", replacementRequired: false
+        },
+        "tutor-eva-session": {
+          id: "tutor-eva-session", seriesId: "other-series", sessionNumber: 1,
+          studentId: "usr_stu_005", tutorId: "usr_tea_001",
+          scheduledStartAt: "2026-12-07T02:00:00.000Z", durationMinutes: 60,
+          status: "scheduled", attendanceStatus: "not_recorded", replacementRequired: false
+        }
+      }));
+    });
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
+    await page.locator("#demo-account").selectOption("usr_tea_001");
+    await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
+    await page.getByRole("button", { name: /Jadwal Mengajar/ }).click();
+
+    const alex = page.locator('[data-class-session-id="tutor-alex-session"]');
+    const budi = page.locator('[data-class-session-id="tutor-budi-session"]');
+    await expect(alex).toBeVisible();
+    await expect(budi).toBeVisible();
+    await expect(page.getByText("Eva Rahma")).toHaveCount(0);
+
+    await alex.getByRole("button", { name: "Hadir" }).click();
+    const attendance = await page.evaluate(() => JSON.parse(localStorage.getItem("b2b_class_sessions_store") || "{}")["tutor-alex-session"]);
+    expect(attendance.status).toBe("held");
+    expect(attendance.attendanceStatus).toBe("present");
+
+    await budi.locator('[name="reason"]').fill("Tutor berhalangan hadir");
+    await budi.getByRole("button", { name: "Batalkan kelas" }).click();
+    const cancellation = await page.evaluate(() => JSON.parse(localStorage.getItem("b2b_class_sessions_store") || "{}")["tutor-budi-session"]);
+    expect(cancellation.status).toBe("cancelled");
+    expect(cancellation.replacementRequired).toBe(true);
+    expect(cancellation.cancellation.reason).toBe("Tutor berhalangan hadir");
+  });
+
   test("tutor only sees students assigned to the signed-in tutor", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
