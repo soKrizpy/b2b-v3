@@ -63,6 +63,30 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(assignment).toContainText("active");
   });
 
+  test("admin can create a parent account and link it to a student", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
+    await page.locator("#demo-account").selectOption("usr_adm_001");
+    await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
+
+    await page.getByRole("button", { name: /Tambah Akun Demo/ }).click();
+    await page.locator("#admin-input-name").fill("Wali Nadia");
+    await page.locator("#admin-input-email").fill("wali.nadia@example.com");
+    await page.locator("#admin-select-role").selectOption("parent");
+    await page.getByRole("button", { name: "Buat Akun" }).click();
+    await expect(page.locator("#admin-tab-body")).toContainText("Wali Nadia");
+
+    await page.getByRole("button", { name: /Relasi Orang Tua & Anak/ }).click();
+    await page.getByRole("button", { name: /Tambah Tautan Orang Tua/ }).click();
+    await page.locator("#select-rel-parent").selectOption({ label: "Wali Nadia (wali.nadia@example.com)" });
+    await page.locator("#select-rel-child").selectOption("usr_stu_005");
+    await page.locator("#select-rel-type").selectOption("Wali");
+    await page.getByRole("button", { name: "Tautkan" }).click();
+
+    const parentLink = page.locator("#admin-tab-body .card").filter({ hasText: "Wali Nadia" }).filter({ hasText: "Eva Rahma" });
+    await expect(parentLink).toContainText("Wali");
+    await expect(parentLink).toContainText("active");
+  });
+
   test("admin prevents multiple active tutors and preserves released assignment history", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
