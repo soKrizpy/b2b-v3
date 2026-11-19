@@ -132,7 +132,7 @@ Perintah lain:
 - [x] Fondasi Vite, React, dan TypeScript.
 - [x] React entry point dan portal pemilihan workspace.
 - [x] Reuse design tokens, stylesheet, dan logo dari aplikasi Vanilla.
-- [ ] Migrasi Admin Workspace.
+- [x] Admin Workspace awal terhubung ke React melalui controller lama; daftar akun, filter, edit/status akun, penugasan tutor-siswa, dan tautan orang tua-anak tetap memakai IdentityStore lokal.
 - [x] Teacher Workspace awal terhubung ke React melalui controller lama; antrean review dan laporan sesi tetap memakai alur data yang sudah ada.
 - [x] Student Workspace awal memakai kembali Lesson Engine dan data contoh yang sudah ada; penyempurnaan React bertahap.
 - [ ] Integrasi akses Parent Hub yang aman sebagai area khusus di dalam Student Workspace (bukan workspace/role terpisah).
