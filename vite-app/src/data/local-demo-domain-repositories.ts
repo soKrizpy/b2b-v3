@@ -12,8 +12,10 @@
 import { ClassSessionStore } from "../../../js/services/class-session-store.js";
 // @ts-ignore - Shared async boundary is implemented beside the legacy store.
 import { ClassSessionRepository } from "../../../js/services/class-session-repository.js";
+// @ts-ignore - Shared async learning-record boundary remains beside legacy stores.
+import { SessionReportRepository, MonthlyEvaluationRepository } from "../../../js/services/learning-record-repository.js";
 
-export { ClassSessionStore, ClassSessionRepository };
+export { ClassSessionStore, ClassSessionRepository, SessionReportRepository, MonthlyEvaluationRepository };
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
 import { SessionStore } from "../../../js/services/session-store.js";
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
@@ -65,7 +67,12 @@ export const localDemoDomainRepositories: LocalDemoDomainRepositories = {
     softDeleteSession: ClassSessionRepository.softDeleteSession,
     createReplacementSession: ClassSessionRepository.createReplacementSession
   }),
-  sessionReports: createAsyncStoreAdapter(SessionStore),
-  monthlyEvaluations: createAsyncStoreAdapter(MonthlyEvaluationStore),
+  sessionReports: Object.assign(createAsyncStoreAdapter(SessionStore), {
+    saveReport: SessionReportRepository.saveReport,
+    deleteDraft: SessionReportRepository.deleteDraft
+  }),
+  monthlyEvaluations: Object.assign(createAsyncStoreAdapter(MonthlyEvaluationStore), {
+    save: MonthlyEvaluationRepository.save
+  }),
   billing: createAsyncStoreAdapter(BillingStore)
 };
