@@ -368,7 +368,7 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(budi).toBeVisible();
     await expect(page.getByText("Eva Rahma")).toHaveCount(0);
 
-    await alex.getByRole("button", { name: "Hadir" }).click();
+    await alex.locator('[data-record-attendance="present"]').click();
     const attendance = await page.evaluate(() => JSON.parse(localStorage.getItem("b2b_class_sessions_store") || "{}")["tutor-alex-session"]);
     expect(attendance.status).toBe("held");
     expect(attendance.attendanceStatus).toBe("present");
