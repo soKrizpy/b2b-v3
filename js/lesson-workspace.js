@@ -106,6 +106,7 @@ export class LessonWorkspace {
     }
 
     if (activeSub) {
+      if (activeSub.version !== this.activeStoreSubmission?.version) changed = true;
       this.activeStoreSubmission = activeSub;
       const nextState = ['approved', 'revision-required', 'submitted'].includes(activeSub.status)
         ? activeSub.status
