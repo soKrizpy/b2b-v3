@@ -3,6 +3,7 @@ import logoLight from "../../logo-b2b-light.svg";
 import logoDark from "../../logo-b2b-dark.svg";
 import StudentExperience from "./StudentExperience";
 import TutorExperience from "./TutorExperience";
+import AdminExperience from "./AdminExperience";
 
 type Role = { id: "admin" | "tutor" | "student"; icon: string; label: string; title: string; description: string; badgeClass: string; accentClass: string };
 const roles: Role[] = [
@@ -15,7 +16,7 @@ export default function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [selectedRole, setSelectedRole] = useState<Role["id"] | null>(null);
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
-  const workspaceTitle = selectedRole === "student" ? "Ruang Belajarku" : selectedRole === "tutor" ? "Ruang Tutor" : "Bits2Bytes";
+  const workspaceTitle = selectedRole === "student" ? "Ruang Belajarku" : selectedRole === "tutor" ? "Ruang Tutor" : selectedRole === "admin" ? "Ruang Admin" : "Bits2Bytes";
 
   return (
     <div className="app-shell b2b-vite-shell">
@@ -46,7 +47,7 @@ export default function App() {
             </article>)}</div>
           </section>}
           {selectedRole && <button type="button" className="btn btn-secondary btn-sm workspace-portal-back" onClick={() => setSelectedRole(null)}>← Kembali ke pilihan ruang</button>}
-          {selectedRole === "admin" && <div className="card b2b-vite-notice" role="status"><div><strong>Ruang Admin sedang disiapkan.</strong><p>Menu admin akan dibuka setelah alur pengelolaan data selesai diperiksa.</p></div></div>}
+          {selectedRole === "admin" && <AdminExperience />}
         </main>
       </div>
     </div>
