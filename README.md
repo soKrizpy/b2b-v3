@@ -138,7 +138,11 @@ Perintah lain:
 - [x] Parent Hub versi demo terintegrasi sebagai area di dalam Student Workspace; siswa membukanya dari dashboard tanpa role atau portal orang tua terpisah.
 - [x] Laporan sesi Parent Hub hanya mengambil laporan berstatus terkirim milik ID siswa yang sedang masuk.
 - [x] Tab laporan mingguan dihapus; area Parent Hub menampilkan laporan sesi, perkembangan bulanan, dan riwayat tagihan.
-- [ ] Evaluasi bulanan dan tagihan belum memiliki alur data; saat ini ditampilkan sebagai keadaan kosong, bukan data contoh yang seolah-olah aktual.
+- [x] Admin dapat menentukan tarif per pertemuan secara manual untuk setiap siswa aktif; perubahan tarif tidak mengubah tagihan yang sudah diterbitkan.
+- [x] Admin dapat membuat tagihan bulanan dari sesi operasional yang benar-benar terlaksana dengan status kehadiran hadir/terlambat; nominal per item disimpan sebagai snapshot.
+- [x] Admin dapat menandai tagihan lunas tanpa memasukkan tanggal atau metode pembayaran; tagihan tidak dihapus.
+- [x] Parent Hub menampilkan riwayat tagihan milik siswa yang sedang masuk, termasuk tagihan lunas; data siswa lain tidak ditampilkan.
+- [ ] Evaluasi perkembangan bulanan masih menunggu alur input dan penyimpanan yang sebenarnya.
 - [ ] Otorisasi Parent Hub yang aman di sisi server dan integrasi backend masih menunggu desain data serta keamanan disetujui. Implementasi saat ini tetap demo lokal berbasis localStorage.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.
@@ -154,3 +158,18 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [ ] Autentikasi ini masih simulasi lokal berbasis `localStorage`, bukan autentikasi produksi dan belum memakai password.
 - [x] Pengujian browser lintas peran menggunakan Playwright dijalankan melalui GitHub Actions; hasil tiap perubahan diverifikasi pada workflow terkait.
 - [ ] Autentikasi produksi, otorisasi server-side, dan integrasi backend masih belum tersedia.
+
+
+### Tarif, tagihan, dan riwayat pembayaran (19 November 2026)
+
+- Pengaturan tarif berada di tab **Tarif & Tagihan** pada Admin Workspace.
+- Tarif ditentukan manual oleh admin per siswa, dalam rupiah per pertemuan.
+- Pembuatan tagihan memerlukan tarif siswa dan periode bulan.
+- Sumber tagihan hanya `ClassSessionStore`: sesi berstatus terlaksana dengan kehadiran `present` atau `late`.
+- Sesi absen, dibatalkan, belum terlaksana, atau dihapus lunak tidak masuk tagihan.
+- Setiap sesi hanya dapat masuk ke satu tagihan; sesi yang sudah ditagihkan tidak dihitung ulang.
+- Tarif pada invoice disimpan sebagai snapshot, sehingga perubahan tarif berikutnya tidak mengubah tagihan lama.
+- Admin hanya menandai status lunas; tidak ada input tanggal/metode pembayaran dan invoice tidak dapat dihapus.
+- Parent Hub menampilkan riwayat invoice sesuai ID siswa yang sedang masuk, termasuk invoice lunas.
+- Store tagihan menggunakan `localStorage` untuk demo. Ini belum aman untuk produksi, belum sinkron antarperangkat, dan belum memakai otorisasi server-side.
+- Pengujian alur tarif, pembuatan invoice, penandaan lunas, dan isolasi Parent Hub dijalankan melalui Playwright di GitHub Actions.
