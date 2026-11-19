@@ -183,9 +183,19 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
 
     await expect(page.getByRole("heading", { name: "Ruang Khusus Ayah/Bunda" })).toBeVisible();
-    await expect(page.getByText("Sedang disiapkan", { exact: true })).toBeVisible();
-    const parentHubDescription = page.getByText(/laporan setiap pertemuan.*perkembangan bulanan.*riwayat tagihan/i);
-    await expect(parentHubDescription).toBeAttached();
+    await expect(page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ })).toBeVisible();
+    await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
+    await expect(page.getByRole("heading", { name: "Laporan Belajar Alex Pratama" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Kembali ke Ruang Belajar" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Perkembangan Bulanan" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Riwayat Tagihan" })).toBeVisible();
+    await expect(page.getByText("Belum ada laporan sesi")).toBeVisible();
+    await page.getByRole("button", { name: "Perkembangan Bulanan" }).click();
+    await expect(page.getByText("Belum ada evaluasi bulanan")).toBeVisible();
+    await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
+    await expect(page.getByText("Belum ada riwayat tagihan")).toBeVisible();
+    await page.getByRole("button", { name: "Kembali ke Ruang Belajar" }).click();
+    await expect(page.getByRole("heading", { name: "Ruang Khusus Ayah/Bunda" })).toBeVisible();
   });
 
   test("student can sign in and see the learning dashboard", async ({ page }) => {
