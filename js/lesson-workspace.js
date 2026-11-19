@@ -150,6 +150,10 @@ export class LessonWorkspace {
       this._unsubscribeStore();
       this._unsubscribeStore = null;
     }
+    if (this.parentHubView) {
+      this.parentHubView.destroy();
+      this.parentHubView = null;
+    }
   }
 
   loadProgress() {
@@ -208,7 +212,10 @@ export class LessonWorkspace {
    */
   renderParentHub() {
     if (!this.parentHubView) {
-      this.parentHubView = new ParentHubView(this.container, this.currentUser);
+      this.parentHubView = new ParentHubView(this.container, this.currentUser, () => {
+        this.currentScreen = 'dashboard';
+        this.render();
+      });
       this.parentHubView.init();
     } else {
       this.parentHubView.container = this.container;
@@ -484,10 +491,11 @@ export class LessonWorkspace {
                 <div class="achieve-icon-wrap" aria-hidden="true">💛</div>
                 <div>
                   <h4 class="achieve-title" id="parent-hub-entry-title">Ruang Khusus Ayah/Bunda</h4>
-                  <span class="badge badge-in-progress">Sedang disiapkan</span>
+                  <span class="badge badge-in-progress">Lihat laporan belajar</span>
                 </div>
               </div>
-              <p class="daily-sub">Ayah dan Bunda nantinya bisa melihat laporan setiap pertemuan, perkembangan bulanan, dan riwayat tagihan di area khusus ini.</p>
+              <p class="daily-sub">Lihat laporan pertemuan, perkembangan bulanan, dan riwayat tagihan belajar ananda.</p>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-open-parent-hub">Buka Ruang Ayah/Bunda →</button>
             </section>
           </div>
         </div>
@@ -692,6 +700,14 @@ export class LessonWorkspace {
 
       </div>
     `;
+
+    const parentHubButton = this.container.querySelector('#btn-open-parent-hub');
+    if (parentHubButton) {
+      parentHubButton.addEventListener('click', () => {
+        this.currentScreen = 'parent-hub';
+        this.render();
+      });
+    }
 
     // Bind all lesson-enter buttons
     this.container.querySelectorAll('.btn-enter-lesson').forEach(btn => {
