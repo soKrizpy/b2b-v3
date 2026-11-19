@@ -355,9 +355,10 @@ export class AdminWorkspace {
     const sessions = ClassSessionStore.getAllSessions().sort((a, b) =>
       new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime()
     );
-    const today = new Intl.DateTimeFormat('en-CA', {
+    const todayParts = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit'
-    }).format(new Date());
+    }).formatToParts(new Date());
+    const today = `${todayParts.find(part => part.type === 'year')?.value}-${todayParts.find(part => part.type === 'month')?.value}-${todayParts.find(part => part.type === 'day')?.value}`;
     const weekdays = [
       { value: 1, label: 'Senin' }, { value: 2, label: 'Selasa' },
       { value: 3, label: 'Rabu' }, { value: 4, label: 'Kamis' },
@@ -594,7 +595,8 @@ export class AdminWorkspace {
         event.preventDefault();
         const formData = new FormData(form);
         const localStart = String(formData.get('replacementStartAt') || '');
-        const start = new Date(localStart);
+        const [localDate, localTime] = localStart.split('T');
+        const start = localDate && localTime ? new Date(`${localDate}T${localTime}:00+07:00`) : new Date(NaN);
         if (!localStart || Number.isNaN(start.getTime())) {
           showToast({ title: 'Waktu tidak valid', message: 'Pilih waktu sesi pengganti terlebih dahulu.', type: 'error' });
           return;
