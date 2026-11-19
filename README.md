@@ -164,7 +164,10 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 
 - Pengaturan tarif berada di tab **Tarif & Tagihan** pada Admin Workspace.
 - Tarif ditentukan manual oleh admin per siswa, dalam rupiah per pertemuan.
-- Pembuatan tagihan memerlukan tarif siswa dan periode bulan.
+- Invoice dibuat setelah bulan berakhir; admin memilih periode bulan/tahun secara manual.
+- Pembuatan invoice memerlukan tarif siswa dan periode yang sudah ditutup.
+- Invoice awal berstatus draft dan hanya terlihat oleh admin sampai diterbitkan.
+- Sebelum menerbitkan, admin dapat mengoreksi jumlah sesi, memberi diskon nominal khusus per invoice, menambahkan biaya opsional, dan mengoreksi total dengan catatan alasan.
 - Sumber tagihan hanya `ClassSessionStore`: sesi berstatus terlaksana dengan kehadiran `present` atau `late`.
 - Sesi absen, dibatalkan, belum terlaksana, atau dihapus lunak tidak masuk tagihan.
 - Setiap sesi hanya dapat masuk ke satu tagihan; sesi yang sudah ditagihkan tidak dihitung ulang.
