@@ -145,8 +145,8 @@ Never treat a zero-row update as success. For update operations, verify the retu
 
 ## 8. Migration sequence
 
-1. Add repository interfaces and adapt the local demo behind them without changing visible behavior.
-2. Add contract tests against the local adapter; keep the existing Playwright suite green.
+1. [x] Add the initial typed repository interfaces and a local-demo adapter for portal authentication and active account listing; the React portal now consumes this adapter without changing the login flow.
+2. [ ] Extend the adapter boundary to the remaining domain stores (sessions, reports, evaluations, billing) and move each workspace incrementally. Existing Playwright coverage is running against this first extraction.
 3. Start a local/development Supabase instance only after the user confirms the local environment is ready.
 4. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
 5. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
@@ -156,8 +156,9 @@ Never treat a zero-row update as success. For update operations, verify the retu
 
 ## 9. Current status and next gate
 
-- This contract is design guidance only.
-- No application source code has been changed by this document.
+- The repository contract is design guidance; the first code slice now exists in `vite-app/src/data/repositories.ts` and `vite-app/src/data/local-demo-repositories.ts`.
+- `vite-app/src/App.tsx` consumes the local-demo auth/identity adapter; other workspace controllers still use their legacy store imports.
 - No Supabase project, database, Auth user, credential, or production data has been accessed or changed.
 - No migration SQL has been generated or executed.
+- The TypeScript production build passed for the first adapter extraction; Playwright browser QA is tracked in GitHub Actions run 44514917685.
 - Next implementation step is repository-interface extraction in the existing `preview` branch, after reviewing the affected UI imports and tests. Actual Supabase adapter work waits for a confirmed local/development environment.
