@@ -1,10 +1,11 @@
 /**
- * Async repository boundary for student submissions and tutor review state.
- * The local StateStore remains demo persistence, not production authorization.
+ * Async repository boundary for student submissions, lesson progress,
+ * and tutor review state. Local stores remain demo persistence only.
  */
 import { StateStore } from './state-store.js';
+import { LessonProgressRepository } from './lesson-progress-repository.js';
 
-export { StateStore };
+export { StateStore, LessonProgressRepository };
 
 export const LearningStateRepository = {
   async seedSubmissionsIfEmpty(seedData) { return StateStore.seedSubmissionsIfEmpty(seedData); },
@@ -16,6 +17,20 @@ export const LearningStateRepository = {
   async updateSubmissionStatus(submissionId, status, teacherData, expectedVersion) {
     return StateStore.updateSubmissionStatus(submissionId, status, teacherData, expectedVersion);
   },
-  async migrateFromLegacyProgress(currentUser) { return StateStore.migrateFromLegacyProgress(currentUser); },
-  subscribe(callback) { return StateStore.subscribe(callback); }
+  async getLessonProgress(studentId, lessonKey) {
+    return LessonProgressRepository.getProgress(studentId, lessonKey);
+  },
+  async saveLessonProgress(studentId, lessonKey, updates) {
+    return LessonProgressRepository.saveProgress(studentId, lessonKey, updates);
+  },
+  // Legacy progress migration is intentionally not called automatically:
+  // the old global record has no trustworthy student owner.
+  subscribe(callback) {
+    const unsubscribeSubmissions = StateStore.subscribe(callback);
+    const unsubscribeProgress = LessonProgressRepository.subscribe(callback);
+    return () => {
+      unsubscribeSubmissions();
+      unsubscribeProgress();
+    };
+  }
 };
