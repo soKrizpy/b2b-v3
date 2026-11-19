@@ -181,7 +181,7 @@ test.describe("Bits2Bytes demo portal", () => {
         storedCount: ClassSessionStore.getAllSessions().filter((session: { seriesId: string }) => session.seriesId === created.seriesId).length,
         weekdays: created.sessions?.map((session: { scheduledStartAt: string }) => new Date(session.scheduledStartAt).getUTCDay())
       };
-    }, s);
+    }, classSessionStoreSource);
     expect(result.success).toBe(true);
     expect(result.skippedCount).toBe(1);
     expect(result.dates).toEqual(["2026-12-03", "2026-12-08", "2026-12-10"]);
