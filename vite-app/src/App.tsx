@@ -15,7 +15,6 @@ export default function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [selectedRole, setSelectedRole] = useState<Role["id"] | null>(null);
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
-  const selected = roles.find((role) => role.id === selectedRole);
   const workspaceTitle = selectedRole === "student" ? "Ruang Belajarku" : selectedRole === "tutor" ? "Ruang Tutor" : "Bits2Bytes";
 
   return (
