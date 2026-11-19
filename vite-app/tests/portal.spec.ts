@@ -10,6 +10,101 @@ test.describe("Bits2Bytes demo portal", () => {
     await page.goto("/");
   });
 
+  async function expectNoHorizontalOverflow(page: import("@playwright/test").Page) {
+    const metrics = await page.evaluate(() => {
+      const root = document.querySelector<HTMLElement>("#root");
+      const shell = document.querySelector<HTMLElement>(".app-shell");
+      const main = document.querySelector<HTMLElement>(".app-main");
+      return {
+        viewport: window.innerWidth,
+        document: document.documentElement.scrollWidth,
+        body: document.body.scrollWidth,
+        root: root?.scrollWidth ?? 0,
+        rootClient: root?.clientWidth ?? 0,
+        shell: shell?.scrollWidth ?? 0,
+        shellClient: shell?.clientWidth ?? 0,
+        main: main?.scrollWidth ?? 0,
+        mainClient: main?.clientWidth ?? 0
+      };
+    });
+    expect(metrics.document, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
+    expect(metrics.body, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
+    expect(metrics.root, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.rootClient + 1);
+    expect(metrics.shell, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.shellClient + 1);
+    expect(metrics.main, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.mainClient + 1);
+  }
+
+  test("portal theme controls its own logo and color tokens regardless of OS color preference", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.emulateMedia({ colorScheme: "dark" });
+    const logo = page.locator(".sidebar-header .brand-logo");
+    const lightLogo = await logo.getAttribute("src");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await expectNoHorizontalOverflow(page);
+
+    await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
+    const darkLogo = await logo.getAttribute("src");
+    expect(darkLogo).not.toBe(lightLogo);
+    const darkTokens = await page.evaluate(() => ({
+      theme: document.documentElement.dataset.theme,
+      canvas: getComputedStyle(document.documentElement).getPropertyValue("--color-bg-canvas").trim()
+    }));
+    expect(darkTokens).toEqual({ theme: "dark", canvas: "#0a1326" });
+    await expectNoHorizontalOverflow(page);
+
+    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
+    expect(await logo.getAttribute("src")).toBe(lightLogo);
+    const lightCanvas = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--color-bg-canvas").trim());
+    expect(lightCanvas).toBe("#ebf5fb");
+  });
+
+  test("Student workspace stays within a 360px viewport in both themes", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
+    await page.locator("#demo-account").selectOption("usr_stu_001");
+    await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
+    await expect(page.getByText(/Lanjutkan petualangan coding/)).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test("Tutor workspace stays within a 360px viewport in both themes", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
+    await page.locator("#demo-account").selectOption("usr_tea_001");
+    await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
+    await expect(page.getByRole("heading", { name: /Halo, Kak Sarah/ })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test("Admin workspace stays within a 360px viewport in both themes", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
+    await page.locator("#demo-account").selectOption("usr_adm_001");
+    await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
+    await expect(page.getByRole("heading", { name: "Manajemen Identitas & Hak Akses Pengguna" })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test("portal login and role cards remain usable at a 320px viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 740 });
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
+    await expect(page.locator("#demo-account")).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+
   test("class session ledger only marks held sessions with present or late attendance as billable", async ({ page }) => {
     const result = await page.evaluate(async (moduleSource) => {
       const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));

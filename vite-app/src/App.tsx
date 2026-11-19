@@ -120,7 +120,7 @@ export default function App() {
     <div className="app-shell b2b-vite-shell">
       <aside className="app-sidebar" aria-label="Navigasi utama">
         <div className="sidebar-header">
-          <picture><source srcSet={logoDark} media="(prefers-color-scheme: dark)" /><img src={theme === "dark" ? logoDark : logoLight} alt="Bits2Bytes" className="brand-logo" width="36" height="36" /></picture>
+          <img src={theme === "dark" ? logoDark : logoLight} alt="Bits2Bytes" className="brand-logo" width="36" height="36" />
           <div><div className="brand-title">Bits2Bytes</div><div className="brand-subtitle">Tempat belajar coding</div></div>
         </div>
         <nav className="sidebar-content" aria-label="Menu">
