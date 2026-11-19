@@ -198,6 +198,40 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByRole("heading", { name: "Ruang Khusus Ayah/Bunda" })).toBeVisible();
   });
 
+  test("Parent Hub only displays submitted reports belonging to the signed-in student", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
+    await page.locator("#demo-account").selectOption("usr_stu_001");
+    await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
+
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_session_reports_store", JSON.stringify({
+        own_report: {
+          id: "own_report", studentId: "usr_stu_001", studentName: "Alex Pratama",
+          sessionDate: "2026-11-18", sessionNumber: 5, topic: "Laporan khusus Alex",
+          activities: "Membuat animasi Scratch", achievements: "Berhasil membuat gerakan",
+          tutorId: "usr_tea_001", tutorName: "Kak Sarah", status: "submitted"
+        },
+        other_report: {
+          id: "other_report", studentId: "usr_stu_002", studentName: "Budi Santoso",
+          sessionDate: "2026-11-18", sessionNumber: 5, topic: "Laporan milik Budi",
+          activities: "Data siswa lain", achievements: "Data siswa lain",
+          tutorId: "usr_tea_001", tutorName: "Kak Sarah", status: "submitted"
+        },
+        own_draft: {
+          id: "own_draft", studentId: "usr_stu_001", studentName: "Alex Pratama",
+          sessionDate: "2026-11-19", topic: "Draft yang belum dikirim",
+          activities: "Draft", achievements: "Draft",
+          tutorId: "usr_tea_001", tutorName: "Kak Sarah", status: "draft"
+        }
+      }));
+    });
+
+    await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
+    await expect(page.getByRole("heading", { name: "Laporan khusus Alex" })).toBeVisible();
+    await expect(page.getByText("Laporan milik Budi")).toHaveCount(0);
+    await expect(page.getByText("Draft yang belum dikirim")).toHaveCount(0);
+  });
+
   test("student can sign in and see the learning dashboard", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
