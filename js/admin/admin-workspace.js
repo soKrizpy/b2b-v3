@@ -12,6 +12,8 @@ import { IdentityStore, VALID_ROLES } from '../services/identity-store.js';
 import { AuthService } from '../services/auth-service.js';
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
+import { BillingStore } from '../services/billing-store.js';
+import { ClassSessionStore } from '../services/class-session-store.js';
 
 export class AdminWorkspace {
   /**
@@ -35,9 +37,9 @@ export class AdminWorkspace {
     this.render();
 
     if (!this._unsub) {
-      this._unsub = IdentityStore.subscribe(() => {
-        this.render();
-      });
+      this._unsub = IdentityStore.subscribe(() => this.render());
+      this._unsubBilling = BillingStore.subscribe(() => this.render());
+      this._unsubSessions = ClassSessionStore.subscribe(() => this.render());
     }
   }
 
@@ -120,6 +122,9 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'parent-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="parent-relations">
             👨‍👩‍👧 Relasi Orang Tua &amp; Anak (${parentLinks.length})
           </button>
+          <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
+            💳 Tarif &amp; Tagihan
+          </button>
         </nav>
 
         <!-- ACTIVE TAB BODY -->
@@ -139,6 +144,8 @@ export class AdminWorkspace {
         return this.renderTutorRelationsView();
       case 'parent-relations':
         return this.renderParentRelationsView();
+      case 'billing':
+        return this.renderBillingView();
       case 'users':
       default:
         return this.renderUsersView();
@@ -399,7 +406,133 @@ export class AdminWorkspace {
     });
   }
 
+  /* --------------------------------------------------------------------------
+     TAB 4: STUDENT RATES & INVOICES
+     -------------------------------------------------------------------------- */
+  renderBillingView() {
+    const students = IdentityStore.getAllUsers().filter(user => user.role === 'student' && user.status === 'active');
+    const rates = BillingStore.getAllRates();
+    const invoices = BillingStore.getInvoices();
+    const usersById = new Map(IdentityStore.getAllUsers().map(user => [user.id, user]));
+
+    return `
+      <section style="display:flex;flex-direction:column;gap:var(--space-5);">
+        <div class="card" style="padding:var(--space-4);">
+          <h3 style="margin:0 0 var(--space-2) 0;">Tarif per siswa</h3>
+          <p style="color:var(--color-text-muted);margin:0 0 var(--space-4) 0;font-size:var(--font-size-sm);">
+            Admin menentukan tarif per pertemuan untuk setiap siswa. Perubahan tarif hanya berlaku pada tagihan yang dibuat setelah perubahan; tagihan lama menyimpan nominalnya sendiri.
+          </p>
+          ${students.length ? students.map(student => {
+            const rate = BillingStore.getRate(student.id);
+            return `
+              <form data-rate-form="${escapeHtml(student.id)}" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-border-subtle);">
+                <div style="flex:1;min-width:180px;">
+                  <label style="display:block;font-weight:var(--font-weight-semibold);margin-bottom:var(--space-1);" for="rate-${escapeHtml(student.id)}">${escapeHtml(student.displayName)}</label>
+                  <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${rate ? 'Tarif saat ini: ' + formatRupiah(rate.amountPerSession) : 'Tarif belum ditentukan'}</div>
+                </div>
+                <div style="min-width:190px;">
+                  <label for="rate-${escapeHtml(student.id)}" style="display:block;font-size:var(--font-size-xs);margin-bottom:var(--space-1);">Tarif per pertemuan (Rp)</label>
+                  <input id="rate-${escapeHtml(student.id)}" name="amountPerSession" type="number" min="1" step="1" required value="${rate ? rate.amountPerSession : ''}" placeholder="Contoh: 75000" style="width:100%;">
+                </div>
+                <button class="btn btn-primary btn-sm" type="submit">Simpan tarif</button>
+              </form>`;
+          }).join('') : '<p>Belum ada akun siswa aktif.</p>'}
+        </div>
+
+        <div class="card" style="padding:var(--space-4);">
+          <h3 style="margin:0 0 var(--space-2) 0;">Buat tagihan bulanan</h3>
+          <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);margin:0 0 var(--space-3) 0;">
+            Sistem hanya mengambil sesi yang benar-benar terlaksana dengan kehadiran Hadir atau Terlambat. Sesi absen, batal, belum terlaksana, atau terhapus tidak ditagihkan.
+          </p>
+          <form id="admin-create-invoice-form" style="display:flex;align-items:end;gap:var(--space-3);flex-wrap:wrap;">
+            <div style="flex:1;min-width:180px;">
+              <label for="invoice-student" style="display:block;font-size:var(--font-size-xs);margin-bottom:var(--space-1);">Siswa</label>
+              <select id="invoice-student" name="studentId" required style="width:100%;">
+                <option value="">Pilih siswa</option>
+                ${students.map(student => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.displayName)}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label for="invoice-period" style="display:block;font-size:var(--font-size-xs);margin-bottom:var(--space-1);">Periode</label>
+              <input id="invoice-period" name="period" type="month" required value="${new Date().toISOString().slice(0, 7)}">
+            </div>
+            <button class="btn btn-primary" type="submit">Buat tagihan</button>
+          </form>
+        </div>
+
+        <div class="card" style="padding:var(--space-4);">
+          <h3 style="margin:0 0 var(--space-3) 0;">Riwayat tagihan</h3>
+          ${invoices.length ? `
+            <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+              ${invoices.map(invoice => {
+                const student = usersById.get(invoice.studentId);
+                return `
+                  <article style="border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);padding:var(--space-3);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+                    <div>
+                      <strong>${escapeHtml(student?.displayName || invoice.studentId)}</strong>
+                      <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">Periode ${escapeHtml(invoice.period)} · ${invoice.totalSessions} pertemuan · ${formatRupiah(invoice.rateSnapshot)}/pertemuan</div>
+                      <div style="font-weight:var(--font-weight-semibold);margin-top:var(--space-1);">${formatRupiah(invoice.totalAmount)}</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:var(--space-2);">
+                      <span class="badge ${invoice.status === 'paid' ? 'badge-success' : 'badge-warning'}">${invoice.status === 'paid' ? 'Lunas' : 'Belum dibayar'}</span>
+                      ${invoice.status === 'unpaid' ? `<button type="button" class="btn btn-secondary btn-sm" data-mark-invoice-paid="${escapeHtml(invoice.id)}">Tandai lunas</button>` : ''}
+                    </div>
+                  </article>`;
+              }).join('')}
+            </div>` : '<p style="color:var(--color-text-muted);">Belum ada tagihan. Atur tarif siswa dan catat kehadiran sesi terlebih dahulu.</p>'}
+        </div>
+      </section>
+    `;
+  }
+
   bindActionEvents() {
+    // Save per-student rates
+    this.container.querySelectorAll('[data-rate-form]').forEach(form => {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const studentId = form.getAttribute('data-rate-form');
+        const amount = Number(new FormData(form).get('amountPerSession'));
+        const actor = AuthService.getCurrentSession()?.user;
+        const result = BillingStore.setRate(studentId, amount, actor);
+        if (!result.success) {
+          showToast({ title: 'Tarif gagal disimpan', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Tarif tersimpan', message: 'Tarif siswa berhasil diperbarui.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
+    // Generate invoice from billable operational sessions
+    const invoiceForm = this.container.querySelector('#admin-create-invoice-form');
+    if (invoiceForm) {
+      invoiceForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(invoiceForm);
+        const actor = AuthService.getCurrentSession()?.user;
+        const result = BillingStore.createInvoice(String(formData.get('studentId') || ''), String(formData.get('period') || ''), actor);
+        if (!result.success) {
+          showToast({ title: 'Tagihan tidak dibuat', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Tagihan dibuat', message: `Total ${formatRupiah(result.invoice.totalAmount)} untuk ${result.invoice.totalSessions} pertemuan.`, type: 'success' });
+          this.render();
+        }
+      });
+    }
+
+    this.container.querySelectorAll('[data-mark-invoice-paid]').forEach(button => {
+      button.addEventListener('click', () => {
+        const actor = AuthService.getCurrentSession()?.user;
+        const result = BillingStore.markPaid(button.getAttribute('data-mark-invoice-paid'), actor);
+        if (!result.success) {
+          showToast({ title: 'Pembayaran gagal diperbarui', message: result.message, type: 'error' });
+        } else {
+          showToast({ title: 'Tagihan lunas', message: 'Status tagihan berhasil diperbarui.', type: 'success' });
+          this.render();
+        }
+      });
+    });
+
     // Add user button
     const btnAddUser = this.container.querySelector('#btn-admin-add-user');
     if (btnAddUser) {
@@ -751,7 +884,11 @@ export class AdminWorkspace {
    */
   destroy() {
     if (typeof this._unsub === 'function') this._unsub();
+    if (typeof this._unsubBilling === 'function') this._unsubBilling();
+    if (typeof this._unsubSessions === 'function') this._unsubSessions();
     this._unsub = null;
+    this._unsubBilling = null;
+    this._unsubSessions = null;
     ['admin-user-editor-modal', 'admin-tutor-rel-modal', 'admin-parent-rel-modal'].forEach((id) => {
       document.getElementById(id)?.remove();
     });
@@ -761,6 +898,10 @@ export class AdminWorkspace {
   handleStoreChange() {
     this.render();
   }
+}
+
+function formatRupiah(amount) {
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(amount) || 0);
 }
 
 function escapeHtml(str) {
