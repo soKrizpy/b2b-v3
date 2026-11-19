@@ -6,7 +6,7 @@
 
 import { renderContentBlocks, renderQuiz, attachInteractions } from './content-renderer.js';
 import { showToast } from './components/toast.js';
-import { StateStore } from './services/state-store.js';
+import { LearningStateRepository } from './services/learning-state-repository.js';
 import { ParentHubView } from './student/parent-hub.js';
 import {
   SVG_MASCOT,
@@ -43,9 +43,6 @@ export class LessonWorkspace {
     this.currentScreen = 'dashboard'; // 'dashboard' | 'workspace'
     this.currentStageIndex = 0;
 
-    // Run safe migration from legacy progress if available
-    StateStore.migrateFromLegacyProgress(this.currentUser);
-
     // Load persisted state from localStorage
     const saved = this.loadProgress();
     this.progressState = saved.state;
@@ -54,45 +51,32 @@ export class LessonWorkspace {
     this.currentSlideIndex = typeof saved.slideIndex === 'number' ? saved.slideIndex : 0;
     this.visitedSlides = new Set([0, this.currentSlideIndex]);
 
-    // Check active submission from unified StateStore (single source of truth for review status)
-    const activeSub = StateStore.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
-    if (activeSub) {
-      this.activeStoreSubmission = activeSub;
-      if (activeSub.status === 'approved') {
-        this.progressState = 'approved';
-      } else if (activeSub.status === 'revision-required') {
-        this.progressState = 'revision-required';
-      } else if (activeSub.status === 'submitted') {
-        this.progressState = 'submitted';
-      }
-      // Sync legacy progress key if empty
-      if (!localStorage.getItem(PROGRESS_STORAGE_KEY)) {
-        this.saveProgress({ state: this.progressState });
-      }
-    } else {
-      this.activeStoreSubmission = null;
-    }
+    this.activeStoreSubmission = null;
   }
 
-  init() {
+  async init() {
+    await LearningStateRepository.migrateFromLegacyProgress(this.currentUser);
+    const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
+    this.activeStoreSubmission = activeSub || null;
+    if (activeSub && ['approved', 'revision-required', 'submitted'].includes(activeSub.status)) {
+      this.progressState = activeSub.status;
+      if (!localStorage.getItem(PROGRESS_STORAGE_KEY)) this.saveProgress({ state: this.progressState });
+    }
     this.render();
     this.bindKeyboardNav();
-
-    // Subscribe to reactive store changes (cross-tab & same-tab)
     if (!this._unsubscribeStore) {
-      this._unsubscribeStore = StateStore.subscribe(() => {
-        this.handleExternalStoreUpdate();
+      this._unsubscribeStore = LearningStateRepository.subscribe(() => {
+        void this.handleExternalStoreUpdate();
       });
     }
-
     console.log(`📘 Student Experience initialized: "${this.lesson.title}" (Status: ${this.progressState})`);
   }
 
   /**
    * Reactive update handler for external store changes (e.g. Teacher approves/requests revision in another tab)
    */
-  handleExternalStoreUpdate() {
-    const activeSub = StateStore.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
+  async handleExternalStoreUpdate() {
+    const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
     if (activeSub) {
       this.activeStoreSubmission = activeSub;
       if (activeSub.status === 'approved') {
@@ -1078,7 +1062,7 @@ export class LessonWorkspace {
     ).join('');
 
     // Read latest submission from unified StateStore
-    const storeSub = StateStore.getStudentLessonSubmission(this.currentUser.id, this.lesson.id) || this.activeStoreSubmission;
+    const storeSub = this.activeStoreSubmission;
     const status = (storeSub && storeSub.status) || this.progressState;
 
     const isSubmitted = status === 'submitted';
@@ -1239,7 +1223,7 @@ export class LessonWorkspace {
     // Submission form actions
     const submitBtn = area.querySelector('#btn-submit-project');
     if (submitBtn) {
-      submitBtn.addEventListener('click', () => {
+      submitBtn.addEventListener('click', async () => {
         const linkInput = area.querySelector('#submission-link');
         const notesInput = area.querySelector('#submission-notes');
         const link = linkInput ? linkInput.value.trim() : '';
@@ -1265,37 +1249,42 @@ export class LessonWorkspace {
           return;
         }
 
-        // Save structured progress state and submission to legacy store
-        this.saveProgress({
-          state: 'submitted',
-          submission: { link, notes, submittedAt: new Date().toISOString() }
-        });
-
-        // Save/update to unified StateStore
-        const subRecord = StateStore.saveSubmission({
-          studentId: this.currentUser.id,
-          studentName: this.currentUser.name,
-          studentAvatar: this.currentUser.avatar || 'AP',
-          lessonId: this.lesson.id,
-          lessonTitle: this.lesson.title,
-          projectUrl: link,
-          studentNotes: notes,
-          status: 'submitted',
-          checkpointsPassed: 4,
-          checkpointsTotal: 4,
-          quizScore: '3/3 (100%)'
-        });
-
-        this.activeStoreSubmission = subRecord;
-
-        showToast({
-          title: 'Proyek Berhasil Dikumpulkan! 🎉',
-          message: 'Status berubah menjadi Sudah dikirim. Guru akan segera memeriksa karyamu.',
-          type: 'success',
-          duration: 4000
-        });
-
-        this.renderStageContent();
+        submitBtn.disabled = true;
+        try {
+          const submittedAt = new Date().toISOString();
+          const subRecord = await LearningStateRepository.saveSubmission({
+            studentId: this.currentUser.id,
+            studentName: this.currentUser.name,
+            studentAvatar: this.currentUser.avatar || 'AP',
+            lessonId: this.lesson.id,
+            lessonTitle: this.lesson.title,
+            projectUrl: link,
+            studentNotes: notes,
+            status: 'submitted',
+            checkpointsPassed: 4,
+            checkpointsTotal: 4,
+            quizScore: '3/3 (100%)',
+            submittedAt
+          });
+          if (!subRecord) throw new Error('Data proyek belum berhasil disimpan.');
+          this.activeStoreSubmission = subRecord;
+          this.saveProgress({ state: 'submitted', submission: { link, notes, submittedAt } });
+          showToast({
+            title: 'Proyek Berhasil Dikumpulkan! 🎉',
+            message: 'Status berubah menjadi Sudah dikirim. Guru akan segera memeriksa karyamu.',
+            type: 'success',
+            duration: 4000
+          });
+          this.renderStageContent();
+        } catch (error) {
+          showToast({
+            title: 'Proyek Belum Terkirim',
+            message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan proyek.',
+            type: 'error'
+          });
+        } finally {
+          if (submitBtn.isConnected) submitBtn.disabled = false;
+        }
       });
     }
 

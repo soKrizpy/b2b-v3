@@ -4,11 +4,11 @@ import submissions from "../../data/mock/submissions.json";
 import { localDemoRepositories } from "./data/local-demo-repositories";
 // @ts-ignore - Existing JavaScript controller is reused during incremental migration.
 import { LessonWorkspace } from "../../js/lesson-workspace.js";
-// @ts-ignore - Existing JavaScript data store is reused during incremental migration.
-import { StateStore } from "../../js/services/state-store.js";
+// @ts-ignore - Async repository boundary wraps the local demo submission store.
+import { LearningStateRepository } from "../../js/services/learning-state-repository.js";
 
 type StudentUser = { id: string; displayName: string; avatar?: string; gradeLevel?: string; role: string };
-type WorkspaceController = { init: () => void; destroy: () => void };
+type WorkspaceController = { init: () => Promise<void>; destroy: () => void };
 
 export default function StudentExperience({ user }: { user: StudentUser }) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -31,13 +31,13 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           throw new Error("Sesi siswa tidak valid. Silakan masuk kembali.");
         }
 
-        StateStore.seedSubmissionsIfEmpty(submissions);
+        await LearningStateRepository.seedSubmissionsIfEmpty(submissions);
         controller = new LessonWorkspace(host, lessonData, {
           id: user.id, name: user.displayName, avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
           role: "student", gradeLevel: user.gradeLevel || "Siswa"
         }) as WorkspaceController;
         controllerRef.current = controller;
-        controller.init();
+        await controller.init();
         if (active) setReady(true);
       } catch (error) {
         console.error("Student experience failed to initialize:", error);
