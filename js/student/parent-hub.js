@@ -6,6 +6,7 @@
 
 import { SessionStore } from '../services/session-store.js';
 import { BillingStore } from '../services/billing-store.js';
+import { MonthlyEvaluationStore } from '../services/monthly-evaluation-store.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },
@@ -21,6 +22,7 @@ export class ParentHubView {
     this.activeTab = 'sessions';
     this.unsubscribeSessionStore = null;
     this.unsubscribeBillingStore = null;
+    this.unsubscribeMonthlyEvaluationStore = null;
   }
 
   init() {
@@ -29,6 +31,9 @@ export class ParentHubView {
     });
     this.unsubscribeBillingStore = BillingStore.subscribe(() => {
       if (this.activeTab === 'invoices') this.renderContent();
+    });
+    this.unsubscribeMonthlyEvaluationStore = MonthlyEvaluationStore.subscribe(() => {
+      if (this.activeTab === 'monthly') this.renderContent();
     });
     this.render();
   }
@@ -41,6 +46,10 @@ export class ParentHubView {
     if (this.unsubscribeBillingStore) {
       this.unsubscribeBillingStore();
       this.unsubscribeBillingStore = null;
+    }
+    if (this.unsubscribeMonthlyEvaluationStore) {
+      this.unsubscribeMonthlyEvaluationStore();
+      this.unsubscribeMonthlyEvaluationStore = null;
     }
   }
 
@@ -98,11 +107,38 @@ export class ParentHubView {
     const content = this.container?.querySelector('#parent-hub-tab-content');
     if (!content) return;
     if (this.activeTab === 'sessions') content.innerHTML = this.renderSessionReports();
-    else if (this.activeTab === 'monthly') content.innerHTML = this.renderEmptyState(
-      'Belum ada evaluasi bulanan',
-      'Evaluasi perkembangan bulanan akan tampil setelah tutor mengisi dan mengirim laporan evaluasi.'
-    );
+    else if (this.activeTab === 'monthly') content.innerHTML = this.renderMonthlyEvaluations();
     else content.innerHTML = this.renderInvoices();
+  }
+
+  renderMonthlyEvaluations() {
+    const evaluations = MonthlyEvaluationStore.getStudentPublished(this.studentUser.id);
+    if (!evaluations.length) return this.renderEmptyState(
+      'Belum ada evaluasi bulanan',
+      'Evaluasi akan muncul setelah tutor mengirim laporan perkembangan untuk bulan tersebut.'
+    );
+    return `<div class="parent-session-report-list">
+      ${evaluations.map(item => {
+        const [year, month] = item.period.split('-').map(Number);
+        const periodLabel = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+          .format(new Date(Date.UTC(year, month - 1, 1)));
+        return `<article class="session-report-card" data-parent-monthly-evaluation="${escapeHtml(item.id)}">
+          <div class="session-report-header">
+            <div class="session-title-group">
+              <span class="badge badge-approved">Evaluasi tutor terkirim</span>
+              <h3>Perkembangan ${escapeHtml(periodLabel)}</h3>
+              <div class="session-meta-row">Tutor: <strong>${escapeHtml(item.tutorName)}</strong></div>
+            </div>
+            <strong>${escapeHtml(item.rating)}</strong>
+          </div>
+          <div class="session-box"><span class="session-box-title">Ringkasan perkembangan</span><p class="session-narrative-text">${escapeHtml(item.summary)}</p></div>
+          <div class="session-sections-grid">
+            <div class="session-box"><span class="session-box-title">Hal yang sudah dikuasai</span><p class="session-narrative-text">${escapeHtml(item.strengths)}</p></div>
+            <div class="session-box"><span class="session-box-title">Target bulan berikutnya</span><p class="session-narrative-text">${escapeHtml(item.nextGoals)}</p></div>
+          </div>
+        </article>`;
+      }).join('')}
+    </div>`;
   }
 
   renderInvoices() {
