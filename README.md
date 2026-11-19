@@ -147,7 +147,8 @@ Parent Hub versi demo terintegrasi sebagai area di dalam Student Workspace; sisw
 - [x] Tutor dapat menyimpan draf evaluasi bulanan dan mengirim evaluasi berisi penilaian, ringkasan, hal yang sudah dikuasai, serta target bulan berikutnya.
 - [x] Parent Hub menampilkan hanya evaluasi berstatus terkirim milik siswa yang sedang masuk; draf dan evaluasi siswa lain tidak ditampilkan.
 - [ ] Penyimpanan evaluasi masih demo localStorage; validasi penugasan tutor dan akses Parent Hub harus ditegakkan di backend sebelum produksi.
-- [ ] Otorisasi Parent Hub yang aman di sisi server dan integrasi backend masih menunggu desain data serta keamanan disetujui. Implementasi saat ini tetap demo lokal berbasis localStorage.
+- [x] Audit kesiapan backend produksi dan rancangan keamanan awal didokumentasikan di [`docs/production-backend-readiness.md`](docs/production-backend-readiness.md). Dokumen ini belum menerapkan perubahan pada database atau Supabase.
+- [ ] Implementasi backend, autentikasi produksi, RLS, dan migrasi data masih menunggu persetujuan lingkungan development serta pengujian keamanan.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.
 
