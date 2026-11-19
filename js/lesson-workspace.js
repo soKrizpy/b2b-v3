@@ -42,7 +42,7 @@ export class LessonWorkspace {
     this.currentStageIndex = 0;
     this.destroyed = false;
 
-    // Load persisted state from localStorage
+    // Initialize with defaults; init() loads student-scoped progress from its repository.
     const saved = this.loadProgress();
     this.progressState = saved.state;
     this.checkpointStates = saved.checkpoints || {};
@@ -86,37 +86,52 @@ export class LessonWorkspace {
    */
   async handleExternalStoreUpdate() {
     if (this.destroyed) return;
-    const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
-    if (this.destroyed || !activeSub) return;
+    const [activeSub, savedProgress] = await Promise.all([
+      LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id),
+      LearningStateRepository.getLessonProgress(this.currentUser.id, this.lesson.id)
+    ]);
+    if (this.destroyed) return;
+
+    let changed = false;
+    const currentVersion = Number(this._lessonProgress?.version) || 0;
+    if (savedProgress && (Number(savedProgress.version) || 0) > currentVersion) {
+      this._lessonProgress = savedProgress;
+      const progress = this.loadProgress();
+      this.progressState = progress.state;
+      this.checkpointStates = progress.checkpoints || {};
+      this.submissionData = progress.submission || null;
+      this.currentSlideIndex = progress.slideIndex;
+      this.visitedSlides = new Set([0, this.currentSlideIndex]);
+      changed = true;
+    }
+
     if (activeSub) {
       this.activeStoreSubmission = activeSub;
-      if (activeSub.status === 'approved') {
-        this.progressState = 'approved';
-        this.saveProgress({ state: 'approved' });
-      } else if (activeSub.status === 'revision-required') {
-        this.progressState = 'revision-required';
-        this.saveProgress({ state: 'revision-required' });
-      } else if (activeSub.status === 'submitted') {
-        this.progressState = 'submitted';
-        this.saveProgress({ state: 'submitted' });
+      const nextState = ['approved', 'revision-required', 'submitted'].includes(activeSub.status)
+        ? activeSub.status
+        : null;
+      if (nextState && this.progressState !== nextState) {
+        this.progressState = nextState;
+        this.saveProgress({ state: nextState });
+        changed = true;
       }
+    }
+    if (!changed) return;
 
-      // Re-render appropriate view
-      if (this.currentScreen === 'dashboard') {
-        this.renderDashboard();
-      } else if (this.currentScreen === 'parent-hub') {
-        if (this.parentHubView) this.parentHubView.handleStoreChange();
-      } else {
-        this.renderStageContent();
-        // Update stage-nav / top bar badge
-        const badgeEl = this.container.querySelector('.workspace-top-bar .badge');
-        if (badgeEl) {
-          const badgeClass = this.progressState === 'approved'
-            ? 'badge-approved'
-            : (this.progressState === 'revision-required' ? 'badge-revision-required' : 'badge-submitted');
-          badgeEl.className = `badge ${badgeClass}`;
-          badgeEl.textContent = `Status: ${this.formatProgressState(this.progressState)}`;
-        }
+    // Re-render appropriate view
+    if (this.currentScreen === 'dashboard') {
+      this.renderDashboard();
+    } else if (this.currentScreen === 'parent-hub') {
+      if (this.parentHubView) this.parentHubView.handleStoreChange();
+    } else {
+      this.renderStageContent();
+      const badgeEl = this.container.querySelector('.workspace-top-bar .badge');
+      if (badgeEl) {
+        const badgeClass = this.progressState === 'approved'
+          ? 'badge-approved'
+          : (this.progressState === 'revision-required' ? 'badge-revision-required' : 'badge-submitted');
+        badgeEl.className = `badge ${badgeClass}`;
+        badgeEl.textContent = `Status: ${this.formatProgressState(this.progressState)}`;
       }
     }
   }
@@ -181,7 +196,8 @@ export class LessonWorkspace {
       ...(this._lessonProgress || {}),
       ...progressUpdates,
       studentId: this.currentUser.id,
-      lessonKey: this.lesson.id
+      lessonKey: this.lesson.id,
+      version: (Number(this._lessonProgress?.version) || 0) + 1
     };
     void LearningStateRepository.saveLessonProgress(
       this.currentUser.id,
