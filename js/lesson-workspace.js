@@ -213,6 +213,8 @@ export class LessonWorkspace {
   renderParentHub() {
     if (!this.parentHubView) {
       this.parentHubView = new ParentHubView(this.container, this.currentUser, () => {
+        this.parentHubView?.destroy();
+        this.parentHubView = null;
         this.currentScreen = 'dashboard';
         this.render();
       });
