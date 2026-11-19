@@ -11,8 +11,8 @@
 import { IdentityRepository } from '../services/identity-repository.js';
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
-import { BillingStore, BillingRepository } from '../services/billing-repository.js';
-import { ClassSessionStore, ClassSessionRepository } from '../services/class-session-repository.js';
+import { BillingRepository } from '../services/billing-repository.js';
+import { ClassSessionRepository } from '../services/class-session-repository.js';
 
 export class AdminWorkspace {
   /**
@@ -46,8 +46,8 @@ export class AdminWorkspace {
     if (this.destroyed) return;
     if (!this._unsub) {
       this._unsub = IdentityRepository.subscribe(() => { void this.refreshData(); });
-      this._unsubBilling = BillingStore.subscribe(() => { void this.refreshData(); });
-      this._unsubSessions = ClassSessionStore.subscribe(() => { void this.refreshData(); });
+      this._unsubBilling = BillingRepository.subscribe(() => { void this.refreshData(); });
+      this._unsubSessions = ClassSessionRepository.subscribe(() => { void this.refreshData(); });
     }
     this.render();
   }
