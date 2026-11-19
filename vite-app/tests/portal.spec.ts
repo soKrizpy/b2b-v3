@@ -600,6 +600,40 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByText(/Tarif saat ini: Rp\s?85\.000/)).toBeVisible();
   });
 
+  test("Parent Hub invoice history is scoped to the signed-in student and includes paid invoices", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
+    await page.locator("#demo-account").selectOption("usr_stu_001");
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_billing_store", JSON.stringify({
+        rates: {},
+        invoices: {
+          alex_invoice: {
+            id: "alex_invoice", studentId: "usr_stu_001", period: "2026-11",
+            status: "paid", rateSnapshot: 75000, totalSessions: 2, totalAmount: 150000,
+            items: [{ sessionId: "alex-s1", sessionNumber: 1, sessionDate: "2026-11-10T09:00:00+07:00", amount: 75000 }],
+            createdAt: "2026-11-19T08:00:00.000Z", paidAt: "2026-11-19T09:00:00.000Z", paidBy: "usr_adm_001"
+          },
+          budi_invoice: {
+            id: "budi_invoice", studentId: "usr_stu_002", period: "2026-11",
+            status: "unpaid", rateSnapshot: 90000, totalSessions: 1, totalAmount: 90000,
+            items: [{ sessionId: "budi-s1", sessionNumber: 1, sessionDate: "2026-11-11T09:00:00+07:00", amount: 90000 }],
+            createdAt: "2026-11-19T08:00:00.000Z", paidAt: null, paidBy: null
+          }
+        }
+      }));
+    });
+    await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
+    await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
+    await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
+
+    await expect(page.getByText("Tagihan November 2026")).toBeVisible();
+    await expect(page.getByText("Rp150.000")).toBeVisible();
+    await expect(page.getByText("Lunas")).toBeVisible();
+    await expect(page.getByText("Tagihan milik Budi")).toHaveCount(0);
+    await expect(page.locator('[data-parent-invoice-id="alex_invoice"]')).toBeVisible();
+    await expect(page.locator('[data-parent-invoice-id="budi_invoice"]')).toHaveCount(0);
+  });
+
   test("student can sign in and see the learning dashboard", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
