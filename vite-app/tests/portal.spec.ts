@@ -156,6 +156,40 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(result.reusedSlot).toBe(true);
   });
 
+  test("recurring session series keeps selected weekdays and skips conflicting occurrences until target count is met", async ({ page }) => {
+    const result = await page.evaluate(async (moduleSource) => {
+      const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(moduleUrl);
+      URL.revokeObjectURL(moduleUrl);
+      localStorage.removeItem("b2b_class_sessions_store");
+      ClassSessionStore.createSession({
+        id: "recurring-conflict", seriesId: "existing-series", sessionNumber: 1,
+        studentId: "another-student", tutorId: "tutor-recurring",
+        scheduledStartAt: "2026-12-01T10:00:00+07:00", durationMinutes: 60
+      });
+      const created = ClassSessionStore.createRecurringSessionSeries({
+        studentId: "student-recurring", tutorId: "tutor-recurring",
+        startDate: "2026-12-01", startTime: "10:00",
+        weekdays: [2, 4], targetCount: 3, durationMinutes: 60,
+        meetingUrl: "https://meet.example.com/recurring"
+      });
+      return {
+        success: created.success,
+        skippedCount: created.skippedSlots?.filter((slot: { reason: string }) => slot.reason === "CONFLICT").length,
+        dates: created.sessions?.map((session: { scheduledStartAt: string }) => session.scheduledStartAt.slice(0, 10)),
+        numbers: created.sessions?.map((session: { sessionNumber: number }) => session.sessionNumber),
+        storedCount: ClassSessionStore.getAllSessions().filter((session: { seriesId: string }) => session.seriesId === created.seriesId).length,
+        weekdays: created.sessions?.map((session: { scheduledStartAt: string }) => new Date(session.scheduledStartAt).getUTCDay())
+      };
+    }, s);
+    expect(result.success).toBe(true);
+    expect(result.skippedCount).toBe(1);
+    expect(result.dates).toEqual(["2026-12-03", "2026-12-08", "2026-12-10"]);
+    expect(result.numbers).toEqual([1, 2, 3]);
+    expect(result.storedCount).toBe(3);
+    expect(result.weekdays).toEqual([4, 2, 4]);
+  });
+
   test("class session series is created atomically with shared defaults and per-session meeting link overrides", async ({ page }) => {
     const result = await page.evaluate(async (moduleSource) => {
       const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
