@@ -1,6 +1,6 @@
 /**
  * B2B LEARNING ENGINE - ADMIN ACCOUNT MANAGEMENT WORKSPACE (PHASE 4)
- * Governance console for Users, Roles, Tutor Assignments, and Parent Links.
+ * Governance console for Users, Roles, and Tutor Assignments.
  *
  * Adheres strictly to Section 5, 10, 14, 15 of PROJECT_RULES.md:
  * - 100% Semantic Design Tokens - Zero Hardcoded Colors.
