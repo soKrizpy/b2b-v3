@@ -205,7 +205,8 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 ### Repository adapter extraction (19 November 2026)
 
 - [x] Typed repository contract dan local-demo adapter autentikasi portal serta daftar akun aktif tersedia di `vite-app/src/data/`.
-- [x] Portal React memakai adapter tersebut; perilaku login demo dan penyimpanan localStorage tetap dipertahankan.
-- [x] Adapter async kompatibilitas untuk jadwal, laporan sesi, evaluasi bulanan, dan tagihan tersedia di `local-demo-domain-repositories.ts`; controller workspace belum dipindahkan.
-- [x] CI Run #84 berhasil, termasuk TypeScript production build dan Playwright browser QA: [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44514917685).
-- [ ] Pemindahan controller workspace ke adapter dilakukan bertahap dengan contract tests sebelum integrasi Supabase.
+- [x] Portal React memakai adapter auth/identity; perilaku login demo dan penyimpanan localStorage tetap dipertahankan.
+- [x] Adapter async kompatibilitas untuk jadwal, laporan sesi, evaluasi bulanan, dan tagihan tersedia di `local-demo-domain-repositories.ts`.
+- [x] Student Workspace memvalidasi ulang sesi melalui `AuthRepository` sebelum memasang learning controller; operasi data controller lama belum dipindahkan.
+- [x] CI Run #86 berhasil untuk adapter domain: TypeScript production build dan Playwright browser QA [GitHub Actions](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468).
+- [ ] Migrasi operasi data Admin/Tutor/Student ke adapter dan direct adapter contract tests dilakukan bertahap sebelum integrasi Supabase.
