@@ -27,6 +27,14 @@ export class AdminWorkspace {
     this.editingUser = null;
     this.isCreatingUser = false;
     this.isCreatingTutorRel = false;
+    this.users = [];
+    this.assignments = [];
+    this.sessions = [];
+    this.invoices = [];
+    this.usersById = new Map();
+    this.ratesByStudent = new Map();
+    this.refreshSequence = 0;
+    this.destroyed = false;
 
     this.handleStoreChange = this.handleStoreChange.bind(this);
   }
