@@ -173,6 +173,7 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - Setiap sesi hanya dapat masuk ke satu tagihan; sesi yang sudah ditagihkan tidak dihitung ulang.
 - Tarif pada invoice disimpan sebagai snapshot, sehingga perubahan tarif berikutnya tidak mengubah tagihan lama.
 - Admin hanya menandai status lunas; tidak ada input tanggal/metode pembayaran dan invoice tidak dapat dihapus.
-- Parent Hub menampilkan riwayat invoice sesuai ID siswa yang sedang masuk, termasuk invoice lunas.
+- Parent Hub menampilkan invoice yang sudah diterbitkan sesuai ID siswa yang sedang masuk, termasuk invoice lunas; draft admin tidak ditampilkan.
+- Rincian Parent Hub mencakup periode, jumlah sesi, tarif snapshot, subtotal, diskon, biaya tambahan, catatan koreksi, total, dan rincian pertemuan.
 - Store tagihan menggunakan `localStorage` untuk demo. Ini belum aman untuk produksi, belum sinkron antarperangkat, dan belum memakai otorisasi server-side.
 - Pengujian alur tarif, pembuatan invoice, penandaan lunas, dan isolasi Parent Hub dijalankan melalui Playwright di GitHub Actions.
