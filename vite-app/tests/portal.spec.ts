@@ -381,6 +381,52 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(cancellation.cancellation.reason).toBe("Tutor berhalangan hadir");
   });
 
+  test("tutor can save a draft and publish a monthly evaluation for an assigned student", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
+    await page.locator("#demo-account").selectOption("usr_tea_001");
+    await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
+    await page.getByRole("button", { name: "Evaluasi Bulanan" }).click();
+    await page.getByRole("button", { name: "Buat evaluasi" }).click();
+    const form = page.locator("#monthly-evaluation-form");
+    const options = await form.locator('[name="studentId"] option').allTextContents();
+    expect(options.some(option => option.includes("Eva Rahma"))).toBe(false);
+    await form.locator('[name="studentId"]').selectOption("usr_stu_001");
+    await form.locator('[name="period"]').fill("2026-11");
+    await form.locator('[name="rating"]').selectOption("Baik");
+    await form.locator('[name="summary"]').fill("Alex memahami konsep event dan gerakan dengan semakin mandiri.");
+    await form.locator('[name="strengths"]').fill("Mampu menggunakan event dan koordinat untuk menggerakkan sprite.");
+    await form.locator('[name="nextGoals"]').fill("Berlatih membuat animasi dengan beberapa kostum.");
+    await form.getByRole("button", { name: "Simpan draf" }).click();
+    let saved = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem("b2b_monthly_evaluations_store") || "{}")));
+    expect(saved).toHaveLength(1);
+    expect(saved[0].status).toBe("draft");
+    await page.locator('[data-edit-monthly-evaluation]').click();
+    await form.locator('[name="rating"]').selectOption("Sangat baik");
+    await form.getByRole("button", { name: "Kirim ke Parent Hub" }).click();
+    saved = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem("b2b_monthly_evaluations_store") || "{}")));
+    expect(saved).toHaveLength(1);
+    expect(saved[0].status).toBe("published");
+    expect(saved[0].rating).toBe("Sangat baik");
+  });
+
+  test("Parent Hub shows only published monthly evaluations for the signed-in student", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
+    await page.locator("#demo-account").selectOption("usr_stu_001");
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_monthly_evaluations_store", JSON.stringify({
+        alex_month: { id: "alex_month", studentId: "usr_stu_001", tutorId: "usr_tea_001", tutorName: "Kak Sarah", period: "2026-11", rating: "Baik", summary: "Alex semakin mandiri.", strengths: "Memahami event Scratch.", nextGoals: "Belajar animasi kostum.", status: "published" },
+        alex_draft: { id: "alex_draft", studentId: "usr_stu_001", tutorId: "usr_tea_001", period: "2026-12", rating: "Baik", summary: "Draft rahasia", strengths: "Draft", nextGoals: "Draft", status: "draft" },
+        budi_month: { id: "budi_month", studentId: "usr_stu_002", tutorId: "usr_tea_001", period: "2026-11", rating: "Baik", summary: "Laporan Budi", strengths: "Budi", nextGoals: "Budi", status: "published" }
+      }));
+    });
+    await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
+    await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
+    await page.getByRole("button", { name: "Perkembangan Bulanan" }).click();
+    await expect(page.locator('[data-parent-monthly-evaluation="alex_month"]')).toContainText("Alex semakin mandiri.");
+    await expect(page.locator('[data-parent-monthly-evaluation="alex_draft"]')).toHaveCount(0);
+    await expect(page.locator('[data-parent-monthly-evaluation="budi_month"]')).toHaveCount(0);
+  });
+
   test("tutor only sees students assigned to the signed-in tutor", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
