@@ -60,7 +60,7 @@ test.describe("Bits2Bytes demo portal", () => {
       const admin = { id: "admin-1", role: "admin" };
       const create = (id: string, sessionNumber: number) => ClassSessionStore.createSession({
         id, seriesId: "series-1", sessionNumber, studentId: "student-1", tutorId: tutor.id,
-        scheduledStartAt: "2026-11-25T09:00:00+07:00", durationMinutes: 60
+        scheduledStartAt: `2026-11-25T${String(8 + sessionNumber).padStart(2, "0")}:00:00+07:00`, durationMinutes: 60
       });
 
       create("teacher-cancelled", 1);
