@@ -134,7 +134,7 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(inactiveStudentId).toBeTruthy();
     await page.locator("#select-rel-child").selectOption(inactiveStudentId!);
     await page.getByRole("button", { name: "Tautkan" }).click();
-    await expect(page.getByRole("alert")).toContainText("Akun siswa harus aktif");
+    await expect(page.getByRole("alert").filter({ hasText: "Akun siswa harus aktif" })).toBeVisible();
   });
 
   test("admin prevents multiple active tutors and preserves released assignment history", async ({ page }) => {
