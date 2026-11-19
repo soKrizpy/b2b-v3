@@ -76,7 +76,7 @@ test.describe("Bits2Bytes demo portal", () => {
 
     await page.getByRole("button", { name: /Relasi Tutor & Siswa/ }).click();
     await page.getByRole("button", { name: /Tambah Penugasan Tutor/ }).click();
-    await page.locator("#select-rel-tutor").selectOption({ label: /Kak Rina/ });
+    await page.locator("#select-rel-tutor").selectOption({ label: "Kak Rina (rina.tutor@example.edu)" });
     await page.locator("#select-rel-student").selectOption("usr_stu_001");
     await page.getByRole("button", { name: "Tugaskan" }).click();
 
@@ -88,7 +88,7 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(releasedAssignment).toContainText("inactive");
 
     await page.getByRole("button", { name: /Tambah Penugasan Tutor/ }).click();
-    await page.locator("#select-rel-tutor").selectOption({ label: /Kak Rina/ });
+    await page.locator("#select-rel-tutor").selectOption({ label: "Kak Rina (rina.tutor@example.edu)" });
     await page.locator("#select-rel-student").selectOption("usr_stu_001");
     await page.getByRole("button", { name: "Tugaskan" }).click();
 
