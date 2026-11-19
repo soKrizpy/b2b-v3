@@ -24,5 +24,6 @@ export const BillingRepository = {
   },
   async markPaid(invoiceId, actor) {
     return BillingStore.markPaid(invoiceId, actor);
-  }
+  },
+  subscribe(callback) { return BillingStore.subscribe(callback); }
 };
