@@ -1043,6 +1043,61 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.totalSessions).toBe(3);
   });
 
+
+  test("Tutor learning-record mutations use async report and monthly-evaluation repositories", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_session_reports_store");
+      localStorage.removeItem("b2b_monthly_evaluations_store");
+      const { SessionReportRepository, MonthlyEvaluationRepository } = await import("/src/data/local-demo-domain-repositories.ts");
+      const reportData = {
+        studentId: "repository-learning-student",
+        studentName: "Siswa Repository",
+        tutorId: "repository-learning-tutor",
+        tutorName: "Tutor Repository",
+        sessionDate: "2026-12-20",
+        topic: "Scratch",
+        activities: "Membuat animasi",
+        achievements: "Sprite bergerak",
+        competencies: []
+      };
+      const reportDraftPromise = SessionReportRepository.saveReport(reportData, "draft");
+      const reportDraftIsPromise = reportDraftPromise instanceof Promise;
+      const reportDraft = await reportDraftPromise;
+      const draftDeleted = await SessionReportRepository.deleteDraft(reportDraft.id);
+      const reportSubmitted = await SessionReportRepository.saveReport(reportData, "submitted");
+      const evaluationPromise = MonthlyEvaluationRepository.save({
+        studentId: "repository-learning-student",
+        tutorId: "repository-learning-tutor",
+        period: "2026-12",
+        rating: "Baik",
+        summary: "Kemajuan baik",
+        strengths: "Kreatif",
+        nextGoals: "Membuat game sederhana"
+      }, "published");
+      const evaluationIsPromise = evaluationPromise instanceof Promise;
+      const evaluation = await evaluationPromise;
+      return {
+        reportDraftIsPromise,
+        reportDraftSuccess: !reportDraft.error,
+        draftDeleted,
+        reportSubmittedSuccess: !reportSubmitted.error,
+        reportStatus: reportSubmitted.status,
+        evaluationIsPromise,
+        evaluationSuccess: evaluation.success,
+        evaluationStatus: evaluation.evaluation?.status
+      };
+    });
+    expect(result.reportDraftIsPromise).toBe(true);
+    expect(result.reportDraftSuccess).toBe(true);
+    expect(result.draftDeleted).toBe(true);
+    expect(result.reportSubmittedSuccess).toBe(true);
+    expect(result.reportStatus).toBe("submitted");
+    expect(result.evaluationIsPromise).toBe(true);
+    expect(result.evaluationSuccess).toBe(true);
+    expect(result.evaluationStatus).toBe("published");
+  });
+
   test("cancels a tutor session through the async class-session repository", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
