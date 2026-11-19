@@ -74,6 +74,54 @@ export const ClassSessionStore = {
     return this.getAllSessions().filter(session => session.studentId === studentId);
   },
 
+  _hasScheduleConflict(candidate, records = this._read(), excludeSessionId = null) {
+    const candidateStart = new Date(candidate.scheduledStartAt).getTime();
+    const candidateEnd = candidateStart + Number(candidate.durationMinutes) * 60000;
+    if (!Number.isFinite(candidateStart) || !Number.isFinite(candidateEnd)) return [];
+
+    return Object.values(records).filter(existing => {
+      if (!existing || existing.id === excludeSessionId) return false;
+      if (!['scheduled', 'held', 'not_held'].includes(existing.status)) return false;
+      if (existing.tutorId !== candidate.tutorId && existing.studentId !== candidate.studentId) return false;
+      const existingStart = new Date(existing.scheduledStartAt).getTime();
+      const existingEnd = existingStart + Number(existing.durationMinutes) * 60000;
+      return Number.isFinite(existingStart) && Number.isFinite(existingEnd) &&
+        candidateStart < existingEnd && candidateEnd > existingStart;
+    }).map(session => ({
+      sessionId: session.id,
+      studentId: session.studentId,
+      tutorId: session.tutorId,
+      scheduledStartAt: session.scheduledStartAt,
+      durationMinutes: session.durationMinutes,
+      conflictType: session.tutorId === candidate.tutorId ? 'tutor' : 'student'
+    }));
+  },
+
+  findNextAvailableSlot(data, options = {}) {
+    if (!data || !data.scheduledStartAt) {
+      return { success: false, error: 'INVALID_START', message: 'Waktu mulai untuk pencarian slot wajib diisi.' };
+    }
+    const start = new Date(data.scheduledStartAt);
+    const duration = Number(data.durationMinutes);
+    const stepMinutes = Number(options.stepMinutes || 30);
+    const maxDays = Number(options.maxDays || 30);
+    if (Number.isNaN(start.getTime()) || !Number.isInteger(duration) || duration < 1 ||
+        !Number.isInteger(stepMinutes) || stepMinutes < 1 || !Number.isInteger(maxDays) || maxDays < 1) {
+      return { success: false, error: 'INVALID_SEARCH', message: 'Parameter pencarian jadwal tidak valid.' };
+    }
+
+    const records = this._read();
+    const maxAttempts = Math.ceil((maxDays * 24 * 60) / stepMinutes);
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      const candidateStart = new Date(start.getTime() + attempt * stepMinutes * 60000);
+      const candidate = { ...data, scheduledStartAt: candidateStart.toISOString(), durationMinutes: duration };
+      if (this._hasScheduleConflict(candidate, records, options.excludeSessionId).length === 0) {
+        return { success: true, scheduledStartAt: candidate.scheduledStartAt, checkedSlots: attempt };
+      }
+    }
+    return { success: false, error: 'NO_AVAILABLE_SLOT', message: 'Tidak ditemukan slot kosong dalam rentang pencarian.' };
+  },
+
   createSession(data) {
     if (!data || typeof data !== 'object') {
       return { success: false, error: 'INVALID_DATA', message: 'Data sesi tidak valid.' };
@@ -102,6 +150,23 @@ export const ClassSessionStore = {
     const id = typeof data.id === 'string' && data.id.trim() ? data.id.trim() : makeId();
     if (records[id]) {
       return { success: false, error: 'DUPLICATE_ID', message: 'ID sesi sudah digunakan.' };
+    }
+
+    const candidate = {
+      id, studentId, tutorId, seriesId,
+      scheduledStartAt: start.toISOString(),
+      durationMinutes: duration
+    };
+    const conflicts = this._hasScheduleConflict(candidate, records);
+    if (conflicts.length) {
+      const suggestion = this.findNextAvailableSlot(candidate);
+      return {
+        success: false,
+        error: 'SCHEDULE_CONFLICT',
+        message: 'Jadwal bentrok dengan sesi lain untuk tutor atau siswa yang sama.',
+        conflicts,
+        suggestedStartAt: suggestion.success ? suggestion.scheduledStartAt : null
+      };
     }
 
     const now = new Date().toISOString();
