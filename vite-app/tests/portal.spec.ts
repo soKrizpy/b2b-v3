@@ -889,6 +889,65 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.ratingsRemainSynchronous).toBe(true);
     expect(result.subscribeRemainsSynchronous).toBe(true);
     expect(result.notificationCount).toBe(1);
+  })  test("keeps recurring series creation atomic when two proposed sessions overlap", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      const { localDemoDomainRepositories: repositories } = await import("/src/data/local-demo-domain-repositories.ts");
+      const result = await repositories.classSessions.createSessionSeries({
+        seriesId: "adapter-atomic-series",
+        studentId: "adapter-atomic-student",
+        tutorId: "adapter-atomic-tutor",
+        durationMinutes: 60,
+        sessions: [
+          { id: "adapter-atomic-one", sessionNumber: 1, scheduledStartAt: "2026-12-16T09:00:00+07:00" },
+          { id: "adapter-atomic-two", sessionNumber: 2, scheduledStartAt: "2026-12-16T09:30:00+07:00" }
+        ]
+      });
+      const stored = await repositories.classSessions.getAllSessions();
+      return { success: result.success, error: result.error, storedCount: stored.length };
+    });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("SCHEDULE_CONFLICT");
+    expect(result.storedCount).toBe(0);
   });
+
+  test("preserves tutor ownership checks when recording attendance through the adapter", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      const { localDemoDomainRepositories: repositories } = await import("/src/data/local-demo-domain-repositories.ts");
+      const created = await repositories.classSessions.createSession({
+        id: "adapter-attendance-session",
+        seriesId: "adapter-attendance-series",
+        sessionNumber: 1,
+        studentId: "adapter-attendance-student",
+        tutorId: "adapter-assigned-tutor",
+        scheduledStartAt: "2026-12-17T09:00:00+07:00",
+        durationMinutes: 60
+      });
+      const denied = await repositories.classSessions.recordAttendance(
+        "adapter-attendance-session", "present", { id: "adapter-other-tutor", role: "tutor" }
+      );
+      const accepted = await repositories.classSessions.recordAttendance(
+        "adapter-attendance-session", "present", { id: "adapter-assigned-tutor", role: "tutor" }
+      );
+      return {
+        created: created.success,
+        denied: denied.success,
+        deniedError: denied.error,
+        accepted: accepted.success,
+        status: accepted.session?.status,
+        attendanceStatus: accepted.session?.attendanceStatus
+      };
+    });
+    expect(result.created).toBe(true);
+    expect(result.denied).toBe(false);
+    expect(result.deniedError).toBe("NOT_ASSIGNED_TUTOR");
+    expect(result.accepted).toBe(true);
+    expect(result.status).toBe("held");
+    expect(result.attendanceStatus).toBe("present");
+  });
+;
 });
 
