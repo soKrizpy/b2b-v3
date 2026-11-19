@@ -48,3 +48,22 @@
 .tutor-drawer-stats small { color:var(--color-text-muted); }
 .workspace-portal-back { margin-top:var(--space-5); }
 @media(max-width:768px) { .tutor-drawer-stats { grid-template-columns:1fr 1fr; } }
+
+/* React migration — admin workspace layout and accessible narrow-screen navigation. */
+.admin-experience { display:grid; gap:var(--space-4); min-width:0; }
+.admin-loading { padding:var(--space-6); color:var(--color-text-secondary); }
+.admin-workspace-host { min-width:0; }
+.admin-workspace-host .admin-workspace-wrap { min-width:0; }
+.admin-workspace-host nav[aria-label="Navigasi Manajemen Admin"] { overflow-x:auto; overscroll-behavior-inline:contain; }
+.admin-workspace-host nav[aria-label="Navigasi Manajemen Admin"] button { flex:0 0 auto; white-space:nowrap; }
+.admin-workspace-host #admin-tab-body { min-width:0; }
+.admin-workspace-host #admin-tab-body .card { min-width:0; }
+.admin-workspace-host input,.admin-workspace-host select,.admin-workspace-host textarea { max-width:100%; }
+@media(max-width:768px) {
+  .admin-workspace-host .admin-workspace-wrap > header { align-items:flex-start !important; padding:var(--space-4) !important; }
+  .admin-workspace-host .admin-workspace-wrap > header > div:last-child { width:100%; justify-content:space-between; }
+  .admin-workspace-host nav[aria-label="Navigasi Manajemen Admin"] { flex-wrap:nowrap !important; padding-bottom:var(--space-3) !important; }
+  .admin-workspace-host nav[aria-label="Navigasi Manajemen Admin"] button { font-size:var(--font-size-xs); }
+  .admin-workspace-host #admin-tab-body [style*="grid-template-columns"] { grid-template-columns:minmax(0,1fr) !important; }
+  .admin-workspace-host .modal-dialog { max-height:calc(100dvh - 2rem); overflow:auto; }
+}
