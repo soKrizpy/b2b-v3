@@ -42,7 +42,7 @@ Implemented files:
 
 - `vite-app/src/data/repositories.ts`: typed portal auth/identity contracts.
 - `vite-app/src/data/local-demo-repositories.ts`: local demo implementation for portal auth and active account listing; consumed by `App.tsx`.
-- `vite-app/src/data/local-demo-domain-repositories.ts`: async compatibility adapters for class sessions, session reports, monthly evaluations, and billing. Synchronous subscription disposers and the pure `isBillable` helper remain synchronous; getters remain values.
+- `vite-app/src/data/local-demo-domain-repositories.ts`: async compatibility adapters for class sessions, session reports, monthly evaluations, and billing. All exposed store methods return Promises except the synchronous `subscribe` disposer and pure `isBillable` helper. Non-function data properties (for example, evaluation rating definitions) remain synchronous values. Explicit repository mutation methods take precedence over legacy store methods in the adapter Proxy.
 
 The domain adapters wrap the existing stores without changing localStorage keys, event names, validation, or business rules. `StudentExperience.tsx` now re-reads the active session through `localDemoRepositories.auth.getSession()` before mounting the legacy learning controller. The learning controller's domain data operations remain on their existing stores; this is a first narrow consumer migration, not a full Student Workspace migration. Existing Playwright coverage for student sign-in/dashboard verifies the user-visible path.
 
