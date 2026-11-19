@@ -342,6 +342,28 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(assignment).toContainText("active");
   });
 
+  test("legacy local demo parent accounts are migrated out of the supported role list", async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.setItem("b2b_identity_users", JSON.stringify([
+        { id: "usr_adm_001", email: "admin@b2b.edu", displayName: "Admin B2B", role: "admin", status: "active" },
+        { id: "usr_tea_001", email: "sarah@b2b.edu", displayName: "Kak Sarah", role: "tutor", status: "active" },
+        { id: "usr_stu_001", email: "alex@example.edu", displayName: "Alex", role: "student", status: "active" },
+        { id: "legacy-parent", email: "parent@example.com", displayName: "Legacy Parent", role: "parent", status: "active" }
+      ]));
+      localStorage.setItem("b2b_parent_student_links", JSON.stringify([
+        { id: "legacy-link", parentId: "legacy-parent", studentId: "usr_stu_001", status: "active" }
+      ]));
+    });
+    await page.reload();
+
+    const migrated = await page.evaluate(() => ({
+      roles: JSON.parse(localStorage.getItem("b2b_identity_users") || "[]").map((user: { role: string }) => user.role),
+      parentLinks: localStorage.getItem("b2b_parent_student_links")
+    }));
+    expect(migrated.roles).toEqual(["admin", "tutor", "student"]);
+    expect(migrated.parentLinks).toBeNull();
+  });
+
   test("admin account management exposes only Admin, Tutor and Student roles", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
