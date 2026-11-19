@@ -100,20 +100,22 @@ Never treat a zero-row update as success. For update operations, verify the retu
 1. [x] Add typed portal auth/identity contracts and a local-demo adapter; the React portal consumes it without changing the login flow.
 2. [x] Add async compatibility adapters for class sessions, reports, monthly evaluations, and billing. The existing workspace controllers still use their legacy imports; migration into each workspace is the next task.
 3. [x] Migrate Student Workspace session validation to `AuthRepository`; retain the legacy learning controller and data stores.
-4. [ ] Add direct adapter contract tests and migrate domain operations one use case at a time, preserving existing behavior.
-5. Start a local/development Supabase instance only after the user confirms the local environment is ready.
-6. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
-7. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
-8. Implement the Supabase repository adapter and run the same contract tests against it.
-9. Run end-to-end tests, security tests, Supabase advisors, and a no-secret-in-client-build check.
-10. Only after explicit approval, plan a separate production rollout with backup/restore and data migration rehearsal.
+4. [x] Migrate Tutor Workspace session validation to `AuthRepository`; retain the legacy tutor controller and domain stores.
+5. [x] Migrate Admin Workspace session validation and demo identity initialization to `AuthRepository`/`IdentityRepository`; retain the legacy admin controller and domain stores.
+6. [ ] Add direct adapter contract tests and migrate domain operations one use case at a time, preserving existing behavior.
+7. Start a local/development Supabase instance only after the user confirms the local environment is ready.
+8. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
+9. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
+10. Implement the Supabase repository adapter and run the same contract tests against it.
+11. Run end-to-end tests, security tests, Supabase advisors, and a no-secret-in-client-build check.
+12. Only after explicit approval, plan a separate production rollout with backup/restore and data migration rehearsal.
 
 ## 9. Current status and next gate
 
-- The portal auth/identity adapter is consumed by `vite-app/src/App.tsx` and is now used by `StudentExperience.tsx` for a fresh session check before mounting the learning controller.
+- The portal auth/identity adapter is consumed by `vite-app/src/App.tsx`; `StudentExperience.tsx` and `TutorExperience.tsx` re-read the active session before mounting their legacy controllers, while `AdminExperience.tsx` initializes demo identity and checks the active Admin session through the repositories.
 - The domain adapter exposes the four existing domain stores through asynchronous methods while preserving synchronous subscriptions and pure helpers.
-- The domain adapter baseline completed successfully, including TypeScript production build and Playwright browser QA: [GitHub Actions run #86](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468). Student Workspace session-gate migration is being verified in its own CI run.
-- The Student Workspace session gate now uses the auth repository; learning data operations and Admin/Tutor controllers still use legacy stores and remain to be migrated incrementally.
+- The domain adapter baseline completed successfully in [GitHub Actions run #86](https://github.com/soKrizpy/b2b-v3/actions/runs/44516887468). The Student session-gate change and subsequent Tutor/Admin session-gate changes are verified by [GitHub Actions run #87](https://github.com/soKrizpy/b2b-v3/actions/runs/44518750410) and the latest follow-up run will verify the Tutor/Admin migration.
+- All three workspace boundaries now use the repository layer to re-check the active demo session before mounting: Student and Tutor use `AuthRepository`; Admin uses `AuthRepository` plus `IdentityRepository` for the existing demo seed initialization. Workspace domain operations and controllers remain legacy and are not yet fully migrated.
 - No Supabase project, database, Auth user, credential, or production data has been accessed or changed.
 - No migration SQL has been generated or executed.
 - Actual Supabase adapter work waits for a confirmed local/development environment.
