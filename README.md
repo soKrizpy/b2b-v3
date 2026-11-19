@@ -162,6 +162,16 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [ ] Autentikasi produksi, otorisasi server-side, dan integrasi backend masih belum tersedia.
 
 
+### Jadwal sesi dan seri pertemuan (19 November 2026)
+
+- Admin dapat membuat seri kelas dengan memilih siswa, tutor, tanggal mulai, jam WIB, satu atau beberapa hari dalam seminggu, jumlah pertemuan, durasi, dan link Meet/Zoom utama.
+- Jika tanggal pilihan bentrok dengan jadwal tutor atau siswa, sistem melewati tanggal tersebut dan melanjutkan ke hari pilihan berikutnya sampai jumlah sesi terpenuhi.
+- Pembuatan seri tetap atomik: jika slot bebas tidak mencukupi dalam rentang pencarian, tidak ada sesi yang disimpan.
+- Daftar sesi menampilkan status, kehadiran, tutor, siswa, waktu, durasi, dan link kelas.
+- Admin dapat membatalkan sesi atau menghapusnya secara administratif. Penghapusan administratif mempertahankan riwayat dan mewajibkan sesi pengganti.
+- Untuk sesi yang memerlukan pengganti, Admin dapat memasukkan waktu baru; layanan memeriksa bentrok dan menghubungkan pengganti dengan sesi asal.
+- Fitur jadwal masih berjalan dalam mode demo localStorage; belum menjadi kalender produksi dan belum memiliki otorisasi server-side.
+
 ### Tarif, tagihan, dan riwayat pembayaran (19 November 2026)
 
 - Pengaturan tarif berada di tab **Tarif & Tagihan** pada Admin Workspace.
