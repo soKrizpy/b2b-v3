@@ -611,7 +611,7 @@ test.describe("Bits2Bytes demo portal", () => {
             id: "alex_invoice", studentId: "usr_stu_001", period: "2026-11",
             status: "paid", rateSnapshot: 75000, totalSessions: 2, totalAmount: 150000,
             items: [{ sessionId: "alex-s1", sessionNumber: 1, sessionDate: "2026-11-10T09:00:00+07:00", amount: 75000 }],
-            createdAt: "2026-11-19T08:00:00.000Z", paidAt: "2026-11-19T09:00:00.000Z", paidBy: "usr_adm_001"
+            createdAt: "2026-11-19T08:00:00.000Z"
           },
           budi_invoice: {
             id: "budi_invoice", studentId: "usr_stu_002", period: "2026-11",
