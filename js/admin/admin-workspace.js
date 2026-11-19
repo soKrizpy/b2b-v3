@@ -617,7 +617,6 @@ export class AdminWorkspace {
       form.addEventListener('submit', async event => {
         event.preventDefault();
         const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) submitButton.disabled = true;
         const formData = new FormData(form);
         const localStart = String(formData.get('replacementStartAt') || '');
         const [localDate, localTime] = localStart.split('T');
@@ -626,6 +625,7 @@ export class AdminWorkspace {
           showToast({ title: 'Waktu tidak valid', message: 'Pilih waktu sesi pengganti terlebih dahulu.', type: 'error' });
           return;
         }
+        if (submitButton) submitButton.disabled = true;
         try {
           const result = await ClassSessionRepository.createReplacementSession(
             form.getAttribute('data-replacement-form'),
