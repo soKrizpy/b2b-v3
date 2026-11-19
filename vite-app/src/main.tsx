@@ -11,6 +11,7 @@ import "../../css/components.css";
 import "../../css/views.css";
 import "../../css/lesson.css";
 import "../../css/teacher.css";
+import "../../css/parent-hub.css";
 import "../../css/prototype-integration.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

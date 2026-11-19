@@ -684,7 +684,8 @@ test.describe("Bits2Bytes demo portal", () => {
       .resolves.toEqual(["student", "tutor", "admin"]);
   });
 
-  test("Parent Hub remains inside Student Workspace without a separate parent portal", async ({ page }) => {
+  test("Parent Hub remains inside Student Workspace and is responsive in both themes", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     const roleCards = page.locator(".b2b-vite-role-card");
     await expect(roleCards).toHaveCount(3);
     await expect(page.getByText("Orang Tua", { exact: true })).toHaveCount(0);
@@ -701,6 +702,20 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByRole("button", { name: "Perkembangan Bulanan" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Riwayat Tagihan" })).toBeVisible();
     await expect(page.getByText("Belum ada laporan sesi")).toBeVisible();
+
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 844 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("parent-hub-light-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
+    await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
+    for (const width of [320, 360, 390, 768]) {
+      await page.setViewportSize({ width, height: 844 });
+      await expectNoHorizontalOverflow(page);
+      if (width === 390) await test.info().attach("parent-hub-dark-390px.png", { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+    }
+    await page.getByRole("button", { name: "Ganti ke tampilan terang" }).click();
+
     await page.getByRole("button", { name: "Perkembangan Bulanan" }).click();
     await expect(page.getByText("Belum ada evaluasi bulanan")).toBeVisible();
     await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
