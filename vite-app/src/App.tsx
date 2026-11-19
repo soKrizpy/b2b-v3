@@ -4,14 +4,9 @@ import logoDark from "../../logo-b2b-dark.svg";
 import StudentExperience from "./StudentExperience";
 import TutorExperience from "./TutorExperience";
 import AdminExperience from "./AdminExperience";
-// @ts-ignore - Local demo identity store remains the data source for this prototype stage.
-import { IdentityStore } from "../../js/services/identity-store.js";
-// @ts-ignore - Demo auth service; explicitly labeled as local simulation in the interface.
-import { AuthService } from "../../js/services/auth-service.js";
+import { localDemoRepositories } from "./data/local-demo-repositories";
+import type { DemoSession, DemoUser, RoleId } from "./data/repositories";
 
-type RoleId = "admin" | "tutor" | "student";
-type DemoUser = { id: string; displayName: string; email: string; role: string; status: string; avatar?: string; gradeLevel?: string };
-type DemoSession = { user: DemoUser; role: string } | null;
 type Role = { id: RoleId; icon: string; label: string; title: string; description: string; badgeClass: string; accentClass: string };
 const roles: Role[] = [
   { id: "admin", icon: "👑", label: "Admin", title: "Ruang Admin", description: "Atur akun, tutor, siswa, jadwal belajar, dan materi.", badgeClass: "badge-warning", accentClass: "role-card--admin" },
@@ -32,19 +27,52 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
-    IdentityStore.seedIfEmpty();
-    const activeSession = AuthService.getCurrentSession() as DemoSession;
-    setSession(activeSession);
-    if (activeSession && ["admin", "tutor", "student"].includes(activeSession.user.role)) {
-      setSelectedRole(activeSession.user.role as RoleId);
-    }
-    const unsubscribe = AuthService.subscribe((next: DemoSession) => {
+    let active = true;
+    const unsubscribe = localDemoRepositories.auth.subscribe((next) => {
+      if (!active) return;
       setSession(next);
-      if (next && ["admin", "tutor", "student"].includes(next.user.role)) setSelectedRole(next.user.role as RoleId);
+      if (next && ["admin", "tutor", "student"].includes(next.user.role)) {
+        setSelectedRole(next.user.role as RoleId);
+      }
       if (!next) setSelectedRole(null);
     });
-    return unsubscribe;
+
+    void (async () => {
+      await localDemoRepositories.identity.initializeDemo();
+      const activeSession = await localDemoRepositories.auth.getSession();
+      if (!active) return;
+      setSession(activeSession);
+      if (activeSession && ["admin", "tutor", "student"].includes(activeSession.user.role)) {
+        setSelectedRole(activeSession.user.role as RoleId);
+      }
+    })().catch((error: unknown) => {
+      console.error("Portal demo gagal diinisialisasi:", error);
+    });
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    if (!selectedRole) {
+      setAccounts([]);
+      return;
+    }
+    void localDemoRepositories.identity.listActiveAccounts(selectedRole)
+      .then((activeAccounts) => {
+        if (active) setAccounts(activeAccounts);
+      })
+      .catch((error: unknown) => {
+        console.error("Daftar akun demo gagal dimuat:", error);
+        if (active) setAccounts([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [selectedRole]);
 
   const selectedRoleInfo = roles.find((role) => role.id === selectedRole);
   const roleAccounts = useMemo(
@@ -56,13 +84,9 @@ export default function App() {
     setLoginError("");
     setSelectedRole(role);
     setSelectedAccountId("");
-    const activeAccounts = IdentityStore.getAllUsers({ role, status: "active" }) as DemoUser[];
-    setAccounts(activeAccounts);
-    const current = AuthService.getCurrentSession() as DemoSession;
-    if (current?.user?.role === role) setSession(current);
   }
 
-  function signIn() {
+  async function signIn() {
     setLoginError("");
     if (!selectedRole || !selectedAccountId) {
       setLoginError("Pilih akun terlebih dahulu.");
@@ -73,16 +97,16 @@ export default function App() {
       setLoginError("Akun tidak sesuai atau sedang tidak aktif.");
       return;
     }
-    const result = AuthService.signInDemo(selectedAccountId);
-    if (!result?.success) {
-      setLoginError(result?.message || "Akun demo tidak dapat digunakan.");
+    const result = await localDemoRepositories.auth.signIn(selectedAccountId);
+    if (!result.success) {
+      setLoginError(result.message || "Akun demo tidak dapat digunakan.");
       return;
     }
-    setSession(result.session as DemoSession);
+    setSession(result.session);
   }
 
-  function signOut() {
-    AuthService.signOut();
+  async function signOut() {
+    await localDemoRepositories.auth.signOut();
     setSession(null);
     setSelectedRole(null);
     setSelectedAccountId("");
