@@ -342,114 +342,16 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(assignment).toContainText("active");
   });
 
-  test("admin can create a parent account and link it to a student", async ({ page }) => {
+  test("admin account management exposes only Admin, Tutor and Student roles", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
 
+    await expect(page.locator('[data-admin-tab="parent-relations"]')).toHaveCount(0);
     await page.getByRole("button", { name: /Tambah Akun Demo/ }).click();
-    await page.locator("#admin-input-name").fill("Wali Nadia");
-    await page.locator("#admin-input-email").fill("wali.nadia@example.com");
-    await page.locator("#admin-select-role").selectOption("parent");
-    await page.getByRole("button", { name: "Buat Akun" }).click();
-    await expect(page.locator("#admin-tab-body")).toContainText("Wali Nadia");
-
-    await page.getByRole("button", { name: /Relasi Orang Tua & Anak/ }).click();
-    await page.getByRole("button", { name: /Tambah Tautan Orang Tua/ }).click();
-    await page.locator("#select-rel-parent").selectOption({ label: "Wali Nadia (wali.nadia@example.com)" });
-    await page.locator("#select-rel-child").selectOption("usr_stu_005");
-    await page.locator("#select-rel-type").selectOption("Wali");
-    await page.getByRole("button", { name: "Tautkan" }).click();
-
-    const parentLink = page.locator("#admin-tab-body .card").filter({ hasText: "Wali Nadia" }).filter({ hasText: "Eva Rahma" });
-    await expect(parentLink).toContainText("Wali");
-    await expect(parentLink).toContainText("active");
-
-    await parentLink.getByRole("button", { name: /Putus Tautan/ }).click();
-    await expect(parentLink).toContainText("inactive");
-
-    await page.getByRole("button", { name: /Tambah Tautan Orang Tua/ }).click();
-    await page.locator("#select-rel-parent").selectOption({ label: "Wali Nadia (wali.nadia@example.com)" });
-    await page.locator("#select-rel-child").selectOption("usr_stu_005");
-    await page.locator("#select-rel-type").selectOption("Wali");
-    await page.getByRole("button", { name: "Tautkan" }).click();
-    await expect(parentLink).toContainText("active");
-    await expect(page.locator("#admin-tab-body .card").filter({ hasText: "Wali Nadia" }).filter({ hasText: "Eva Rahma" })).toHaveCount(1);
-  });
-
-  test("admin cannot link inactive parent or student accounts", async ({ page }) => {
-    await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
-    await page.locator("#demo-account").selectOption("usr_adm_001");
-    await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
-
-    await page.getByRole("button", { name: /Tambah Akun Demo/ }).click();
-    await page.locator("#admin-input-name").fill("Orang Tua Nonaktif");
-    await page.locator("#admin-input-email").fill("inactive.parent@example.com");
-    await page.locator("#admin-select-role").selectOption("parent");
-    await page.locator("#admin-select-status").selectOption("inactive");
-    await page.getByRole("button", { name: "Buat Akun" }).click();
-
-    await page.getByRole("button", { name: /Relasi Orang Tua & Anak/ }).click();
-    await page.getByRole("button", { name: /Tambah Tautan Orang Tua/ }).click();
-    await page.locator("#select-rel-parent").selectOption({ label: "Orang Tua Nonaktif (inactive.parent@example.com)" });
-    await page.locator("#select-rel-child").selectOption("usr_stu_005");
-    await page.getByRole("button", { name: "Tautkan" }).click();
-    await expect(page.getByRole("alert")).toContainText("Akun orang tua harus aktif");
-    await page.locator("#btn-cancel-parent-rel-modal").click();
-
-    await page.getByRole("button", { name: /Daftar Pengguna/ }).click();
-    await page.getByRole("button", { name: /Tambah Akun Demo/ }).click();
-    await page.locator("#admin-input-name").fill("Siswa Nonaktif");
-    await page.locator("#admin-input-email").fill("inactive.student@example.edu");
-    await page.locator("#admin-select-role").selectOption("student");
-    await page.locator("#admin-select-status").selectOption("inactive");
-    await page.getByRole("button", { name: "Buat Akun" }).click();
-
-    await page.getByRole("button", { name: /Relasi Orang Tua & Anak/ }).click();
-    await page.getByRole("button", { name: /Tambah Tautan Orang Tua/ }).click();
-    await page.locator("#select-rel-parent").selectOption("usr_par_001");
-    const inactiveStudent = page.locator("#select-rel-child option").filter({ hasText: "Siswa Nonaktif" });
-    const inactiveStudentId = await inactiveStudent.getAttribute("value");
-    expect(inactiveStudentId).toBeTruthy();
-    await page.locator("#select-rel-child").selectOption(inactiveStudentId!);
-    await page.getByRole("button", { name: "Tautkan" }).click();
-    await expect(page.getByRole("alert").filter({ hasText: "Akun siswa harus aktif" })).toBeVisible();
-  });
-
-  test("admin prevents multiple active tutors and preserves released assignment history", async ({ page }) => {
-    await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
-    await page.locator("#demo-account").selectOption("usr_adm_001");
-    await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
-
-    await page.getByRole("button", { name: /Tambah Akun Demo/ }).click();
-    await page.locator("#admin-input-name").fill("Kak Rina");
-    await page.locator("#admin-input-email").fill("rina.tutor@example.edu");
-    await page.locator("#admin-select-role").selectOption("tutor");
-    await page.getByRole("button", { name: "Buat Akun" }).click();
-
-    await page.getByRole("button", { name: /Relasi Tutor & Siswa/ }).click();
-    await page.getByRole("button", { name: /Tambah Penugasan Tutor/ }).click();
-    await page.locator("#select-rel-tutor").selectOption({ label: "Kak Rina (rina.tutor@example.edu)" });
-    await page.locator("#select-rel-student").selectOption("usr_stu_001");
-    await page.getByRole("button", { name: "Tugaskan" }).click();
-
-    await expect(page.getByRole("alert")).toContainText("masih memiliki tutor aktif: Kak Sarah");
-    await expect(page.locator("#admin-tutor-rel-modal")).toHaveClass(/is-open/);
-    await page.locator("#btn-cancel-tutor-rel-modal").click();
-    await expect(page.locator("#admin-tutor-rel-modal")).not.toHaveClass(/is-open/);
-
-    await page.locator('[data-action="delete-tutor-rel"][data-tutor-id="usr_tea_001"][data-student-id="usr_stu_001"]').click();
-    const releasedAssignment = page.locator("#admin-tab-body .card").filter({ hasText: "Tutor: Kak Sarah" }).filter({ hasText: "Siswa: Alex Pratama" });
-    await expect(releasedAssignment).toContainText("inactive");
-
-    await page.getByRole("button", { name: /Tambah Penugasan Tutor/ }).click();
-    await page.locator("#select-rel-tutor").selectOption({ label: "Kak Rina (rina.tutor@example.edu)" });
-    await page.locator("#select-rel-student").selectOption("usr_stu_001");
-    await page.getByRole("button", { name: "Tugaskan" }).click();
-
-    const newAssignment = page.locator("#admin-tab-body .card").filter({ hasText: "Tutor: Kak Rina" }).filter({ hasText: "Siswa: Alex Pratama" });
-    await expect(newAssignment).toContainText("active");
-    await expect(releasedAssignment).toContainText("inactive");
+    await expect(page.locator("#admin-select-role option")).toHaveCount(3);
+    await expect(page.locator("#admin-select-role option").evaluateAll(options => options.map(option => option.value)))
+      .resolves.toEqual(["student", "tutor", "admin"]);
   });
 
   test("Parent Hub remains inside Student Workspace without a separate parent portal", async ({ page }) => {
