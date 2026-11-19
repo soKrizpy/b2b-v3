@@ -97,6 +97,64 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(result.billableCount).toBe(0);
   });
 
+  test("class session scheduling rejects tutor and student overlaps and suggests the next free slot", async ({ page }) => {
+    const result = await page.evaluate(async (moduleSource) => {
+      const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(moduleUrl);
+      URL.revokeObjectURL(moduleUrl);
+      localStorage.removeItem("b2b_class_sessions_store");
+
+      const base = ClassSessionStore.createSession({
+        id: "base-session", seriesId: "series-1", sessionNumber: 1,
+        studentId: "student-1", tutorId: "tutor-1",
+        scheduledStartAt: "2026-11-25T10:00:00+07:00", durationMinutes: 60
+      });
+      const tutorConflict = ClassSessionStore.createSession({
+        id: "tutor-conflict", seriesId: "series-2", sessionNumber: 1,
+        studentId: "student-2", tutorId: "tutor-1",
+        scheduledStartAt: "2026-11-25T10:30:00+07:00", durationMinutes: 60
+      });
+      const studentConflict = ClassSessionStore.createSession({
+        id: "student-conflict", seriesId: "series-3", sessionNumber: 1,
+        studentId: "student-1", tutorId: "tutor-2",
+        scheduledStartAt: "2026-11-25T10:45:00+07:00", durationMinutes: 60
+      });
+      const adjacent = ClassSessionStore.createSession({
+        id: "adjacent-session", seriesId: "series-4", sessionNumber: 1,
+        studentId: "student-2", tutorId: "tutor-1",
+        scheduledStartAt: "2026-11-25T11:00:00+07:00", durationMinutes: 60
+      });
+      const cancelled = ClassSessionStore.cancelSession("adjacent-session", { id: "admin-1", role: "admin" });
+      const reusedSlot = ClassSessionStore.createSession({
+        id: "reused-slot", seriesId: "series-5", sessionNumber: 1,
+        studentId: "student-3", tutorId: "tutor-1",
+        scheduledStartAt: "2026-11-25T11:00:00+07:00", durationMinutes: 60
+      });
+
+      return {
+        base: base.success,
+        tutorError: tutorConflict.error,
+        tutorConflictType: tutorConflict.conflicts?.[0]?.conflictType,
+        tutorSuggestion: tutorConflict.suggestedStartAt,
+        studentError: studentConflict.error,
+        studentConflictType: studentConflict.conflicts?.[0]?.conflictType,
+        adjacent: adjacent.success,
+        cancelled: cancelled.success,
+        reusedSlot: reusedSlot.success
+      };
+    }, classSessionStoreSource);
+
+    expect(result.base).toBe(true);
+    expect(result.tutorError).toBe("SCHEDULE_CONFLICT");
+    expect(result.tutorConflictType).toBe("tutor");
+    expect(result.tutorSuggestion).toBe("2026-11-25T04:00:00.000Z");
+    expect(result.studentError).toBe("SCHEDULE_CONFLICT");
+    expect(result.studentConflictType).toBe("student");
+    expect(result.adjacent).toBe(true);
+    expect(result.cancelled).toBe(true);
+    expect(result.reusedSlot).toBe(true);
+  });
+
   test("admin can sign in and see identity management", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
