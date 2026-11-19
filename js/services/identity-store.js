@@ -527,10 +527,16 @@ export const IdentityStore = {
     if (!parent || parent.role !== 'parent') {
       return { error: 'INVALID_PARENT_ROLE', message: `Akun ${parentId} bukan akun orang tua yang valid.` };
     }
+    if (parent.status !== 'active') {
+      return { error: 'INACTIVE_PARENT', message: 'Akun orang tua harus aktif sebelum ditautkan.' };
+    }
 
     const student = this.getUserById(studentId);
     if (!student || student.role !== 'student') {
       return { error: 'INVALID_STUDENT_ROLE', message: `Akun ${studentId} bukan siswa yang valid.` };
+    }
+    if (student.status !== 'active') {
+      return { error: 'INACTIVE_STUDENT', message: 'Akun siswa harus aktif sebelum ditautkan ke orang tua.' };
     }
 
     const links = this._getParentLinksRaw();
@@ -560,12 +566,13 @@ export const IdentityStore = {
 
   removeParentStudentLink(parentId, studentId) {
     const links = this._getParentLinksRaw();
-    const next = links.filter((l) => !(l.parentId === parentId && l.studentId === studentId));
-    if (next.length !== links.length) {
-      this._setParentLinksRaw(links);
-      return true;
-    }
-    return false;
+    const existing = links.find((l) => l.parentId === parentId && l.studentId === studentId && l.status === 'active');
+    if (!existing) return false;
+
+    existing.status = 'inactive';
+    existing.endedAt = new Date().toISOString();
+    this._setParentLinksRaw(links);
+    return true;
   },
 
   /* --------------------------------------------------------------------------
