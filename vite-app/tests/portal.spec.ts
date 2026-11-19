@@ -950,6 +950,41 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.status).toBe("held");
     expect(result.attendanceStatus).toBe("present");
   });
-;
-});
 
+  test("records tutor attendance through the async class-session repository", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      localStorage.removeItem("b2b_class_sessions_store");
+      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
+      const { ClassSessionRepository } = await import("/js/services/class-session-repository.js");
+      const created = ClassSessionStore.createSession({
+        id: "repository-ui-attendance-session",
+        seriesId: "repository-ui-attendance-series",
+        sessionNumber: 1,
+        studentId: "repository-ui-attendance-student",
+        tutorId: "repository-ui-assigned-tutor",
+        scheduledStartAt: "2026-12-18T09:00:00+07:00",
+        durationMinutes: 60
+      });
+      const operation = ClassSessionRepository.recordAttendance(
+        "repository-ui-attendance-session",
+        "late",
+        { id: "repository-ui-assigned-tutor", role: "tutor" }
+      );
+      const isPromise = operation instanceof Promise;
+      const recorded = await operation;
+      return {
+        created: created.success,
+        isPromise,
+        success: recorded.success,
+        status: recorded.session?.status,
+        attendanceStatus: recorded.session?.attendanceStatus
+      };
+    });
+    expect(result.created).toBe(true);
+    expect(result.isPromise).toBe(true);
+    expect(result.success).toBe(true);
+    expect(result.status).toBe("held");
+    expect(result.attendanceStatus).toBe("late");
+  });
+});
