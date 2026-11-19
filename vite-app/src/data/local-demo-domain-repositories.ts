@@ -60,7 +60,10 @@ export interface LocalDemoDomainRepositories {
 export const localDemoDomainRepositories: LocalDemoDomainRepositories = {
   classSessions: Object.assign(createAsyncStoreAdapter(ClassSessionStore), {
     recordAttendance: ClassSessionRepository.recordAttendance,
-    cancelSession: ClassSessionRepository.cancelSession
+    cancelSession: ClassSessionRepository.cancelSession,
+    createRecurringSessionSeries: ClassSessionRepository.createRecurringSessionSeries,
+    softDeleteSession: ClassSessionRepository.softDeleteSession,
+    createReplacementSession: ClassSessionRepository.createReplacementSession
   }),
   sessionReports: createAsyncStoreAdapter(SessionStore),
   monthlyEvaluations: createAsyncStoreAdapter(MonthlyEvaluationStore),
