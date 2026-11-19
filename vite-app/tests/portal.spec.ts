@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const classSessionStoreSource = readFileSync(resolve(process.cwd(), "../js/services/class-session-store.js"), "utf8");
 
 test.describe("Bits2Bytes demo portal", () => {
   test.beforeEach(async ({ page }) => {
@@ -6,8 +10,10 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("class session ledger only marks held sessions with present or late attendance as billable", async ({ page }) => {
-    const result = await page.evaluate(async () => {
-      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
+    const result = await page.evaluate(async (moduleSource) => {
+      const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(moduleUrl);
+      URL.revokeObjectURL(moduleUrl);
       localStorage.removeItem("b2b_class_sessions_store");
       const tutor = { id: "tutor-1", role: "tutor" };
       const create = (id: string, sessionNumber: number) => ClassSessionStore.createSession({
@@ -34,7 +40,7 @@ test.describe("Bits2Bytes demo portal", () => {
         billableIds: ClassSessionStore.getBillableSessions("student-1").map((session: { id: string }) => session.id).sort(),
         pendingStatus: ClassSessionStore.getSession("session-pending")?.status
       };
-    });
+    }, classSessionStoreSource);
 
     expect(result.unauthorized).toBe("NOT_ASSIGNED_TUTOR");
     expect(result.present).toBe(true);
@@ -45,8 +51,10 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("class session cancellation and soft deletion preserve history and require replacement links", async ({ page }) => {
-    const result = await page.evaluate(async () => {
-      const { ClassSessionStore } = await import("/js/services/class-session-store.js");
+    const result = await page.evaluate(async (moduleSource) => {
+      const moduleUrl = URL.createObjectURL(new Blob([moduleSource], { type: "text/javascript" }));
+      const { ClassSessionStore } = await import(moduleUrl);
+      URL.revokeObjectURL(moduleUrl);
       localStorage.removeItem("b2b_class_sessions_store");
       const tutor = { id: "tutor-1", role: "tutor" };
       const admin = { id: "admin-1", role: "admin" };
@@ -76,7 +84,7 @@ test.describe("Bits2Bytes demo portal", () => {
         billableCount: ClassSessionStore.getBillableSessions().length,
         linked: linked.success
       };
-    });
+    }, classSessionStoreSource);
 
     expect(result.missingReason).toBe("REASON_REQUIRED");
     expect(result.teacherCancel).toBe(true);
