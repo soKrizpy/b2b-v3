@@ -14,6 +14,7 @@ export const ClassSessionRepository = {
   async getStudentSessions(studentId) { return ClassSessionStore.getStudentSessions(studentId); },
   async getTutorSessions(tutorId) { return ClassSessionStore.getAllSessions().filter(session => session.tutorId === tutorId); },
   async getBillableSessions(studentId) { return ClassSessionStore.getBillableSessions(studentId); },
+  subscribe(callback) { return ClassSessionStore.subscribe(callback); },
   async recordAttendance(sessionId, attendanceStatus, actor) {
     return ClassSessionStore.recordAttendance(sessionId, attendanceStatus, actor);
   },
