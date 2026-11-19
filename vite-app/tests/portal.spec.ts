@@ -21,6 +21,22 @@ test.describe("Bits2Bytes demo portal", () => {
     await expect(page.getByRole("button", { name: /Manajemen Siswa/ })).toBeVisible();
   });
 
+  test("tutor only sees students assigned to the signed-in tutor", async ({ page }) => {
+    await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
+    await page.locator("#demo-account").selectOption("usr_tea_001");
+    await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
+    await page.getByRole("button", { name: /Manajemen Siswa/ }).click();
+
+    const studentPanel = page.locator(".placeholder-desc");
+    await expect(studentPanel).toContainText("4 siswa yang ditugaskan");
+    await expect(studentPanel).toContainText("Alex Pratama");
+    await expect(studentPanel).toContainText("Budi Santoso");
+    await expect(studentPanel).toContainText("Citra Lestari");
+    await expect(studentPanel).toContainText("Doni Wijaya");
+    await expect(studentPanel).not.toContainText("Eva Rahma");
+    await expect(studentPanel).not.toContainText("Fajar Ramadhan");
+  });
+
   test("student can sign in and see the learning dashboard", async ({ page }) => {
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
