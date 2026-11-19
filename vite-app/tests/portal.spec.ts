@@ -831,7 +831,20 @@ test.describe("Local demo domain repository adapters", () => {
       localStorage.removeItem("b2b_monthly_evaluations_store");
       localStorage.removeItem("b2b_billing_store");
 
+      const {
+        ClassSessionRepository,
+        SessionReportRepository,
+        MonthlyEvaluationRepository,
+        BillingRepository
+      } = await import("/src/data/local-demo-domain-repositories.ts");
       const { localDemoDomainRepositories: repositories } = await import("/src/data/local-demo-domain-repositories.ts");
+      const repositoryOverridesAreSelected =
+        repositories.classSessions.recordAttendance === ClassSessionRepository.recordAttendance &&
+        repositories.classSessions.cancelSession === ClassSessionRepository.cancelSession &&
+        repositories.sessionReports.saveReport === SessionReportRepository.saveReport &&
+        repositories.monthlyEvaluations.save === MonthlyEvaluationRepository.save &&
+        repositories.billing.setRate === BillingRepository.setRate &&
+        repositories.billing.markPaid === BillingRepository.markPaid;
       const sessionInput = {
         id: "adapter-contract-session",
         seriesId: "adapter-contract-series",
@@ -864,6 +877,7 @@ test.describe("Local demo domain repository adapters", () => {
       unsubscribe();
 
       return {
+        repositoryOverridesAreSelected,
         createIsPromise,
         created: created.success,
         queryIsPromise,
@@ -878,6 +892,7 @@ test.describe("Local demo domain repository adapters", () => {
       };
     });
 
+    expect(result.repositoryOverridesAreSelected).toBe(true);
     expect(result.createIsPromise).toBe(true);
     expect(result.created).toBe(true);
     expect(result.queryIsPromise).toBe(true);
