@@ -130,7 +130,13 @@ export class ParentHubView {
               <strong>${formatRupiah(invoice.totalAmount)}</strong>
             </div>
             <div class="session-box">
-              <span class="session-box-title">Rincian pertemuan</span>
+              <span class="session-box-title">Rincian tagihan</span>
+              <div class="session-meta-row"><span>Subtotal</span><strong>${formatRupiah(invoice.subtotalAmount ?? invoice.totalAmount)}</strong></div>
+              ${Number(invoice.discountAmount) > 0 ? `<div class="session-meta-row"><span>Diskon khusus</span><strong>−${formatRupiah(invoice.discountAmount)}</strong></div>` : ''}
+              ${Number(invoice.additionalCharges) > 0 ? `<div class="session-meta-row"><span>Biaya tambahan</span><strong>+${formatRupiah(invoice.additionalCharges)}</strong></div>` : ''}
+              ${invoice.adjustmentNote ? `<p class="session-narrative-text">Catatan penyesuaian: ${escapeHtml(invoice.adjustmentNote)}</p>` : ''}
+              <div class="session-meta-row"><strong>Total tagihan</strong><strong>${formatRupiah(invoice.totalAmount)}</strong></div>
+              <span class="session-box-title" style="display:block;margin-top:var(--space-3);">Rincian pertemuan</span>
               <ul>
                 ${(invoice.items || []).map(item => `
                   <li>Sesi ke-${Number(item.sessionNumber) || '-'} · ${escapeHtml(formatDate(item.sessionDate))} · ${formatRupiah(item.amount)}</li>
