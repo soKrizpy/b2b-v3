@@ -39,7 +39,14 @@ function createAsyncStoreAdapter<T extends StoreShape>(
   store: T
 ): AsyncStoreAdapter<T> {
   return new Proxy({} as AsyncStoreAdapter<T>, {
-    get(_target, property) {
+    get(target, property) {
+      // Explicit repository methods assigned to the adapter must take
+      // precedence over the legacy store methods. Without this check, the
+      // Proxy would silently bypass those overrides and always call the store.
+      if (Object.prototype.hasOwnProperty.call(target, property)) {
+        return Reflect.get(target, property, target);
+      }
+
       const value = Reflect.get(store, property, store);
       if (typeof value !== "function") return value;
 
