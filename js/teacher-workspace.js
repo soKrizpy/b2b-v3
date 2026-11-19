@@ -1096,19 +1096,31 @@ export class TeacherWorkspace {
     });
 
     this.container.querySelectorAll('[data-tutor-cancel-form]').forEach(form => {
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const reason = String(new FormData(form).get('reason') || '').trim();
-        const result = ClassSessionStore.cancelSession(
-          form.getAttribute('data-tutor-cancel-form'),
-          this.user,
-          reason
-        );
-        if (!result.success) {
-          showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
-        } else {
-          showToast({ title: 'Kelas dibatalkan', message: 'Alasan tersimpan. Admin perlu menjadwalkan sesi pengganti.', type: 'success' });
-          this.render();
+        try {
+          const result = await ClassSessionRepository.cancelSession(
+            form.getAttribute('data-tutor-cancel-form'),
+            this.user,
+            reason
+          );
+          if (!result.success) {
+            showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
+          } else {
+            showToast({ title: 'Kelas dibatalkan', message: 'Alasan tersimpan. Admin perlu menjadwalkan sesi pengganti.', type: 'success' });
+            this.render();
+          }
+        } catch (error) {
+          showToast({
+            title: 'Pembatalan gagal',
+            message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membatalkan kelas.',
+            type: 'error'
+          });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
         }
       });
     });
