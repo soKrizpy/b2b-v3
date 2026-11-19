@@ -1,6 +1,6 @@
 # Frontend–Backend Repository Contract
 
-Status: design-only contract for the B2B v3 migration. This document does not add a Supabase client, execute SQL, create credentials, or change the local-demo behavior.
+Status: design and migration contract for B2B v3. The local-demo repository adapters exist for portal auth/identity and the four domain stores. No Supabase client, SQL, credentials, or production data have been used or changed.
 
 ## 1. Purpose
 
@@ -19,73 +19,17 @@ This is an architectural seam, not a claim that browser-side checks become secur
 - Keep the local-demo implementation available until the Supabase implementation passes the same behavioral suite plus the security matrix.
 - Do not silently import demo seed accounts or localStorage records into a real environment.
 
-## 3. Repository interface shape
+## 3. Repository contract
 
 Use asynchronous methods in the production-facing contract, even where the current local demo methods are synchronous. This avoids a second UI rewrite when the backend is introduced.
 
-Illustrative TypeScript only; these are proposed contracts, not implemented exports:
-
-```ts
-type Result<T> =
-  | { success: true; data: T }
-  | { success: false; error: string; message: string };
-
-interface AuthRepository {
-  getSession(): Promise<Session | null>;
-  signIn(email: string, password: string): Promise<Result<Session>>;
-  signOut(): Promise<void>;
-}
-
-interface IdentityRepository {
-  getCurrentProfile(): Promise<Profile | null>;
-  listUsers(filter?: UserFilter): Promise<Profile[]>;
-  createAccount(input: CreateAccountInput): Promise<Result<Profile>>;
-  updateAccount(userId: string, changes: AdminProfileChanges): Promise<Result<Profile>>;
-  setTutorAssignment(input: AssignmentInput): Promise<Result<Assignment>>;
-  listAssignments(filter?: AssignmentFilter): Promise<Assignment[]>;
-}
-
-interface ClassSessionRepository {
-  listSessions(filter: SessionFilter): Promise<ClassSession[]>;
-  createRecurringSeries(input: RecurringSeriesInput): Promise<Result<ClassSeries>>;
-  recordAttendance(sessionId: string, status: AttendanceStatus): Promise<Result<ClassSession>>;
-  requestTutorCancellation(sessionId: string, reason: string): Promise<Result<ClassSession>>;
-  cancelByAdmin(sessionId: string, reason?: string): Promise<Result<ClassSession>>;
-  softDeleteByAdmin(sessionId: string): Promise<Result<ClassSession>>;
-  createReplacement(originalSessionId: string, input: ReplacementInput): Promise<Result<ClassSession>>;
-}
-
-interface SessionReportRepository {
-  listForStudent(studentId: string): Promise<SessionReport[]>;
-  listForTutor(): Promise<SessionReport[]>;
-  saveDraft(input: ReportDraftInput): Promise<Result<SessionReport>>;
-  submit(reportId: string): Promise<Result<SessionReport>>;
-}
-
-interface MonthlyEvaluationRepository {
-  listForTutor(month?: string): Promise<MonthlyEvaluation[]>;
-  listPublishedForCurrentStudent(): Promise<MonthlyEvaluation[]>;
-  saveDraft(input: EvaluationInput): Promise<Result<MonthlyEvaluation>>;
-  publish(evaluationId: string): Promise<Result<MonthlyEvaluation>>;
-}
-
-interface BillingRepository {
-  getRate(studentId: string): Promise<StudentRate | null>;
-  setRate(studentId: string, amountPerSession: number): Promise<Result<StudentRate>>;
-  listAdminInvoices(filter?: InvoiceFilter): Promise<Invoice[]>;
-  listCurrentStudentInvoices(): Promise<Invoice[]>;
-  createDraft(studentId: string, period: string): Promise<Result<Invoice>>;
-  updateDraft(invoiceId: string, changes: DraftInvoiceChanges): Promise<Result<Invoice>>;
-  issue(invoiceId: string): Promise<Result<Invoice>>;
-  markPaid(invoiceId: string): Promise<Result<Invoice>>;
-}
-```
+The proposed feature interfaces are `AuthRepository`, `IdentityRepository`, `ClassSessionRepository`, `SessionReportRepository`, `MonthlyEvaluationRepository`, and `BillingRepository`. Their operations are described in the sections below and mapped to current stores. The implemented local adapters are intentionally compatibility adapters, not final production interfaces.
 
 Important: production methods intentionally omit `actor`, `tutorId`, and `studentId` parameters when those values can be derived from the verified session. A requested target student ID can be supplied as an input, but authorization must be derived from the authenticated server context and checked again in RLS/transaction logic.
 
 ## 4. Mapping from current demo stores
 
-| Current demo module | Existing operations | Future repository boundary |
+| Current demo module | Existing operations | Repository boundary |
 |---|---|---|
 | `AuthService` | `getCurrentSession`, `signInDemo`, `signOut`, `subscribe` | `AuthRepository` |
 | `IdentityStore` | user CRUD, active tutor/student assignments | `IdentityRepository` |
@@ -94,7 +38,15 @@ Important: production methods intentionally omit `actor`, `tutorId`, and `studen
 | `MonthlyEvaluationStore` | tutor list, student published list, save draft/publish | `MonthlyEvaluationRepository` |
 | `BillingStore` | rates, invoice draft, edit draft, issue, mark paid | `BillingRepository` |
 
-The adapter must preserve current UI behavior and product rules, not every internal helper or localStorage key. The UI should not call `localStorage`, Supabase tables, or Supabase RPCs directly.
+Implemented files:
+
+- `vite-app/src/data/repositories.ts`: typed portal auth/identity contracts.
+- `vite-app/src/data/local-demo-repositories.ts`: local demo implementation for portal auth and active account listing; consumed by `App.tsx`.
+- `vite-app/src/data/local-demo-domain-repositories.ts`: async compatibility adapters for class sessions, session reports, monthly evaluations, and billing. Synchronous subscription disposers and the pure `isBillable` helper remain synchronous; getters remain values.
+
+The domain adapters wrap the existing stores without changing localStorage keys, event names, validation, or business rules. They are currently an adapter boundary only; existing workspace controllers have not yet been switched to consume them. The next step is to migrate one workspace/use case at a time and add adapter contract tests.
+
+The UI should not call `localStorage`, Supabase tables, or Supabase RPCs directly.
 
 ## 5. Operation ownership and transaction requirements
 
@@ -145,20 +97,22 @@ Never treat a zero-row update as success. For update operations, verify the retu
 
 ## 8. Migration sequence
 
-1. [x] Add the initial typed repository interfaces and a local-demo adapter for portal authentication and active account listing; the React portal now consumes this adapter without changing the login flow.
-2. [ ] Extend the adapter boundary to the remaining domain stores (sessions, reports, evaluations, billing) and move each workspace incrementally. Existing Playwright coverage is running against this first extraction.
-3. Start a local/development Supabase instance only after the user confirms the local environment is ready.
-4. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
-5. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
-6. Implement the Supabase repository adapter and run the same contract tests against it.
-7. Run end-to-end tests, security tests, Supabase advisors, and a no-secret-in-client-build check.
-8. Only after explicit approval, plan a separate production rollout with backup/restore and data migration rehearsal.
+1. [x] Add typed portal auth/identity contracts and a local-demo adapter; the React portal consumes it without changing the login flow.
+2. [x] Add async compatibility adapters for class sessions, reports, monthly evaluations, and billing. The existing workspace controllers still use their legacy imports; migration into each workspace is the next task.
+3. [ ] Add adapter contract tests and migrate one workspace/use case at a time, preserving existing behavior.
+4. Start a local/development Supabase instance only after the user confirms the local environment is ready.
+5. Implement schema and constraints through the Supabase CLI workflow; use the CLI to create migration files, not hand-invented filenames.
+6. Implement RLS and privileged transactions; run tests as anonymous, Student A, Student B, assigned Tutor, unassigned Tutor, and Admin.
+7. Implement the Supabase repository adapter and run the same contract tests against it.
+8. Run end-to-end tests, security tests, Supabase advisors, and a no-secret-in-client-build check.
+9. Only after explicit approval, plan a separate production rollout with backup/restore and data migration rehearsal.
 
 ## 9. Current status and next gate
 
-- The repository contract is design guidance; the first code slice now exists in `vite-app/src/data/repositories.ts` and `vite-app/src/data/local-demo-repositories.ts`.
-- `vite-app/src/App.tsx` consumes the local-demo auth/identity adapter; other workspace controllers still use their legacy store imports.
+- The portal auth/identity adapter is consumed by `vite-app/src/App.tsx`.
+- The domain adapter exposes the four existing domain stores through asynchronous methods while preserving synchronous subscriptions and pure helpers.
+- The latest workflow run for the portal adapter completed successfully, including TypeScript production build and Playwright browser QA: [GitHub Actions run #84](https://github.com/soKrizpy/b2b-v3/actions/runs/44514917685).
+- Workspace controllers have not yet been migrated to the domain adapter; this must happen incrementally with tests.
 - No Supabase project, database, Auth user, credential, or production data has been accessed or changed.
 - No migration SQL has been generated or executed.
-- The TypeScript production build passed for the first adapter extraction; Playwright browser QA is tracked in GitHub Actions run 44514917685.
-- Next implementation step is repository-interface extraction in the existing `preview` branch, after reviewing the affected UI imports and tests. Actual Supabase adapter work waits for a confirmed local/development environment.
+- Actual Supabase adapter work waits for a confirmed local/development environment.
