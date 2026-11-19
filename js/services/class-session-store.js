@@ -376,6 +376,68 @@ export const ClassSessionStore = {
       : { success: false, error: 'WRITE_FAILED', message: 'Sesi gagal ditandai sebagai dihapus.' };
   },
 
+  createReplacementSession(originalSessionId, data, actor) {
+    if (!validActor(actor, ['admin'])) {
+      return { success: false, error: 'FORBIDDEN', message: 'Hanya admin yang dapat membuat sesi pengganti.' };
+    }
+    if (!originalSessionId || !data || typeof data !== 'object') {
+      return { success: false, error: 'INVALID_REPLACEMENT', message: 'Data sesi pengganti tidak valid.' };
+    }
+
+    const records = this._read();
+    const original = records[originalSessionId];
+    if (!original) return { success: false, error: 'NOT_FOUND', message: 'Sesi asal tidak ditemukan.' };
+    if (!original.replacementRequired || original.replacementSessionId ||
+        !['cancelled', 'soft_deleted'].includes(original.status)) {
+      return { success: false, error: 'REPLACEMENT_NOT_ALLOWED', message: 'Sesi asal tidak membutuhkan pengganti atau sudah memiliki pengganti.' };
+    }
+
+    const studentId = typeof data.studentId === 'string' ? data.studentId.trim() : original.studentId;
+    const tutorId = typeof data.tutorId === 'string' ? data.tutorId.trim() : original.tutorId;
+    const scheduledStartAt = typeof data.scheduledStartAt === 'string' ? data.scheduledStartAt : '';
+    const durationMinutes = data.durationMinutes == null ? original.durationMinutes : Number(data.durationMinutes);
+    if (studentId !== original.studentId || !tutorId) {
+      return { success: false, error: 'REPLACEMENT_MISMATCH', message: 'Sesi pengganti harus untuk siswa yang sama dan memiliki tutor.' };
+    }
+    if (!scheduledStartAt || Number.isNaN(new Date(scheduledStartAt).getTime())) {
+      return { success: false, error: 'INVALID_START', message: 'Waktu sesi pengganti tidak valid.' };
+    }
+    if (!Number.isInteger(durationMinutes) || durationMinutes < 1 || durationMinutes > 480) {
+      return { success: false, error: 'INVALID_DURATION', message: 'Durasi sesi pengganti harus 1–480 menit.' };
+    }
+
+    const sessionId = typeof data.id === 'string' && data.id.trim() ? data.id.trim() : makeId();
+    if (records[sessionId]) return { success: false, error: 'DUPLICATE_ID', message: 'ID sesi pengganti sudah digunakan.' };
+    const sessionNumber = Number.isInteger(Number(data.sessionNumber)) && Number(data.sessionNumber) > 0
+      ? Number(data.sessionNumber)
+      : Math.max(0, ...Object.values(records)
+          .filter(session => session && session.seriesId === original.seriesId)
+          .map(session => Number(session.sessionNumber) || 0)) + 1;
+
+    const created = this.createSession({
+      id: sessionId,
+      seriesId: original.seriesId,
+      sessionNumber,
+      studentId: original.studentId,
+      tutorId,
+      scheduledStartAt,
+      durationMinutes,
+      meetingUrl: typeof data.meetingUrl === 'string' ? data.meetingUrl : original.meetingUrl,
+      replacementForSessionId: originalSessionId
+    });
+    if (!created.success) return created;
+
+    const linked = this.linkReplacement(originalSessionId, sessionId, actor);
+    if (!linked.success) {
+      const rollback = this._read();
+      delete rollback[sessionId];
+      this._write(rollback, 'replacementRollback', { originalSessionId, replacementSessionId: sessionId });
+      return { success: false, error: linked.error, message: linked.message };
+    }
+
+    return { success: true, original: linked.original, replacement: linked.replacement };
+  },
+
   linkReplacement(originalSessionId, replacementSessionId, actor) {
     if (!validActor(actor, ['admin'])) {
       return { success: false, error: 'FORBIDDEN', message: 'Hanya admin yang dapat menghubungkan sesi pengganti.' };
