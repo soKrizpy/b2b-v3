@@ -10,6 +10,10 @@
 
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
 import { ClassSessionStore } from "../../../js/services/class-session-store.js";
+// @ts-ignore - Shared async boundary is implemented beside the legacy store.
+import { ClassSessionRepository } from "../../../js/services/class-session-repository.js";
+
+export { ClassSessionRepository };
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
 import { SessionStore } from "../../../js/services/session-store.js";
 // @ts-ignore - Legacy JavaScript store remains in place during migration.
