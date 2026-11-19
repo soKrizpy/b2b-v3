@@ -40,6 +40,8 @@ export interface AppRepositories {
 }
 
 export type {
+  AccountStatus,
+  AppRole,
   AppUser,
   AuthRepository,
   AuthSession,
@@ -52,6 +54,7 @@ export type {
   MonthlyEvaluationRepository,
   RepositoryChangeEvent,
   RepositoryError,
+  RepositoryListener,
   RepositoryResult,
   SessionReportRepository,
   Unsubscribe
