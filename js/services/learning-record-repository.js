@@ -22,6 +22,7 @@ export const SessionReportRepository = {
 };
 
 export const MonthlyEvaluationRepository = {
+  getRatings() { return [...MonthlyEvaluationStore.ratings]; },
   async getTutorEvaluations(tutorId) { return MonthlyEvaluationStore.getTutorEvaluations(tutorId); },
   async getStudentPublished(studentId) { return MonthlyEvaluationStore.getStudentPublished(studentId); },
   async save(data, status = 'draft') {
