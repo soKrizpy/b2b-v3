@@ -135,8 +135,11 @@ Perintah lain:
 - [x] Admin Workspace awal terhubung ke React melalui controller lama; daftar akun, filter, edit/status akun, penugasan tutor-siswa, dan tautan orang tua-anak tetap memakai IdentityStore lokal.
 - [x] Teacher Workspace awal terhubung ke React melalui controller lama; antrean review dan laporan sesi tetap memakai alur data yang sudah ada.
 - [x] Student Workspace awal memakai kembali Lesson Engine dan data contoh yang sudah ada; penyempurnaan React bertahap.
-- [ ] Integrasi akses Parent Hub yang aman sebagai area khusus di dalam Student Workspace (bukan workspace/role terpisah).
-- [ ] Integrasi backend setelah desain data dan keamanan disetujui.
+- [x] Parent Hub versi demo terintegrasi sebagai area di dalam Student Workspace; siswa membukanya dari dashboard tanpa role atau portal orang tua terpisah.
+- [x] Laporan sesi Parent Hub hanya mengambil laporan berstatus terkirim milik ID siswa yang sedang masuk.
+- [x] Tab laporan mingguan dihapus; area Parent Hub menampilkan laporan sesi, perkembangan bulanan, dan riwayat tagihan.
+- [ ] Evaluasi bulanan dan tagihan belum memiliki alur data; saat ini ditampilkan sebagai keadaan kosong, bukan data contoh yang seolah-olah aktual.
+- [ ] Otorisasi Parent Hub yang aman di sisi server dan integrasi backend masih menunggu desain data serta keamanan disetujui. Implementasi saat ini tetap demo lokal berbasis localStorage.
 
 Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di repository/proyek terpisah juga tidak disentuh oleh perubahan ini. Belum ada koneksi ke Supabase produksi.
 
@@ -149,4 +152,5 @@ Aplikasi Vanilla tidak dihapus atau ditimpa. Aplikasi Next.js yang berada di rep
 - [x] Tombol keluar mengakhiri sesi demo dan kembali ke pemilihan ruang.
 - [x] GitHub Actions menjalankan `npm run build` (TypeScript check + Vite production build) pada perubahan track Vite.
 - [ ] Autentikasi ini masih simulasi lokal berbasis `localStorage`, bukan autentikasi produksi dan belum memakai password.
-- [ ] Pengujian interaksi browser lintas peran masih perlu dilakukan.
+- [x] Pengujian browser lintas peran menggunakan Playwright dijalankan melalui GitHub Actions; hasil tiap perubahan diverifikasi pada workflow terkait.
+- [ ] Autentikasi produksi, otorisasi server-side, dan integrasi backend masih belum tersedia.
