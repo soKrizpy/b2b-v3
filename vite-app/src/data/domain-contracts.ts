@@ -370,7 +370,10 @@ export interface BillingRepository {
   getStudentTariff(studentId: UUID): Promise<StudentTariff | null>;
   setStudentTariff(studentId: UUID, amountPerSession: number): Promise<RepositoryResult<StudentTariff>>;
   listInvoices(filters?: { studentId?: UUID; status?: Invoice["status"] }): Promise<Invoice[]>;
+  /** Student dashboard: issued invoices that are still unpaid. */
   getStudentInvoices(studentId: UUID): Promise<Invoice[]>;
+  /** Parent Hub history: all issued invoices, including paid invoices. */
+  getStudentInvoiceHistory(studentId: UUID): Promise<Invoice[]>;
   createDraftInvoice(studentId: UUID, period: YearMonth): Promise<RepositoryResult<Invoice>>;
   updateDraftInvoice(invoiceId: UUID, changes: Partial<Pick<Invoice, "discountAmount" | "additionalCharges" | "totalAmount" | "adjustmentNote">> & { sessionIds?: UUID[] }): Promise<RepositoryResult<Invoice>>;
   issueInvoice(invoiceId: UUID): Promise<RepositoryResult<Invoice>>;
