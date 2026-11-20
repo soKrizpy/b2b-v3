@@ -2,8 +2,8 @@
 
 Status: in progress. This document supersedes any broad statement elsewhere that the canonical TypeScript `DomainRepositories` runtime adapter is complete. The legacy workspace gateway and compatibility adapters exist, but they are not yet a complete implementation of `domain-contracts.ts`.
 
-Audit baseline: branch `preview`, commit `e02f31b09843ee465d38027c2f9d83b1252a81a0`.
-Scope: read-only inspection of repository contracts, local-demo stores/adapters, and mock curriculum/submission data. No database or application data was changed.
+Audit baseline: branch `preview`, latest implementation checkpoint `37a28efbb22a2ee2c9b1d814b3f1f5724fa2a4c5`.
+Scope: repository contract/store audit plus local-demo adapter implementation and tests. No database schema, production Supabase data, `main`, or user application data was changed.
 
 ## Findings by domain
 
@@ -52,3 +52,41 @@ Scope: read-only inspection of repository contracts, local-demo stores/adapters,
 Added `vite-app/src/data/local-demo-learning-repository.ts` implementing the canonical `LearningRepository` shape. It maps legacy `lessonId` to `lessonKey`, normalizes timestamps and optional fields, filters submissions, converts write failures to `RepositoryResult`, keeps progress keyed by student + lesson, and delegates review version checks to the legacy store. Tests cover student isolation, DTO mapping, stale update rejection, reviewer requirement, and review conflict.
 
 Limitations: local demo only, not an authorization boundary. The reviewer callback must be wired from the active demo session; default rejects reviews. Legacy submission save has no atomic compare-and-swap, so its expectedVersion check is read-then-write and is not safe against concurrent tabs. Production must use atomic version predicates/transactions. Legacy progress save also has no compare-and-swap. Feedback history remains outside the canonical DTO.
+
+
+## Implementation checkpoint — 2026-11-20
+
+The following updates supersede the earlier "existing local implementation" notes above where they differ. All adapters remain local-demo compatibility code and are not production security boundaries.
+
+| Domain | New canonical work | Current limitation |
+|---|---|---|
+| Identity | `createLocalDemoIdentityRepository` now derives the actor internally. Admin can list/manage users and assignments; tutors see only themselves and actively assigned students; students see only themselves and their own assignments. | Legacy mutation port still accepts broad records internally. Runtime workspace has not been migrated to this canonical adapter. |
+| Learning | `createLocalDemoLearningRepository` now scopes student progress/submissions, allows tutor review only when an injected active-assignment check succeeds, and derives reviewer identity from the active actor. | Legacy submission update pre-read is not atomic. Progress has no compare-and-swap. Composition must supply current actor and active-assignment lookup. |
+| Class sessions | `createLocalDemoClassSessionRepository` now scopes list/get reads to admin, the active tutor, or the active student; mutations derive actor internally. | Replacement creation still consists of create + link + rollback in localStorage; it is not a cross-tab transaction. Tutor cancellation is intentionally fulfilled by Admin, and the Admin UI already exposes a pending-replacement form. |
+| Session reports | Canonical adapter maps legacy records, scopes tutor/student reads, derives tutor identity, and requires `expectedVersion` for updates. | Legacy report store has no `sessionId` relation. Adapter returns null for that field and rejects non-null session links rather than dropping them. |
+| Monthly evaluations | Canonical adapter maps rating/period/status, scopes reads and derives tutor identity; updates require an expected version. | Version check is read-then-write because the local store has no atomic compare-and-swap. Production must use a transaction/version predicate. |
+| Billing | Canonical adapter maps tariffs/invoices and derives Admin for writes. Student dashboard reads unpaid invoices; Parent Hub history includes unpaid and paid issued invoices. | Current tariff is overwritten; each invoice snapshots the rate. No effective-dated tariff history exists. |
+
+### CI checkpoints
+
+- `1a09a12`: canonical report/evaluation adapters — typecheck, production build, Chromium browser QA all passed (run `44664145003`).
+- `24eec1d`: canonical billing adapter and separate Parent Hub invoice history contract — typecheck, production build, Chromium browser QA all passed (run `44664376440`).
+- `b6d13ad`: session read scoping — CI passed (run `44664574556`).
+- `b4b92e1`: session + learning read scoping and learning write/review actor checks — CI passed (run `44664690828`).
+- `3c65c36`: identity actor scoping — typecheck/build passed; browser QA was still running at this checkpoint.
+- `37a28ef`: report/evaluation optimistic-version requirement — awaiting CI.
+
+### Confirmed curriculum blocker
+
+The repository tree contains one student lesson fixture (`data/mock/lesson-scratch-motion.json`) and the Admin Curriculum Studio Kiro documents. Those documents explicitly state that the Studio spec is not implemented. There is no Curriculum Store, canonical module/topic dataset, or stable module/topic ID source. The existing lesson JSON is a content fixture, not proof of a full curriculum. Therefore the canonical `CurriculumRepository` must remain unimplemented until the product's actual curriculum source/schema is decided; do not fabricate module/topic IDs or pretend the single lesson is a complete curriculum.
+
+### Remaining Stage 3 work
+
+1. Complete CI for `37a28ef` and repair any failures before proceeding.
+2. Resolve the curriculum source/schema gap without inventing content; keep Stage 3 open until there is a valid mapping or an explicitly revised contract.
+3. Reconcile canonical auth contract with the account-ID-only demo login; do not emulate email/password by ignoring credentials.
+4. Add the canonical adapters to one typed composition factory only after all required domains (including curriculum/auth decision) have real implementations.
+5. Audit remaining active workspace direct-store imports and decide migration boundaries; keep legacy UI/controller gateway intact until a tested replacement exists.
+6. Run complete contract/browser regression and close Stage 3 only after all domains and consumers are verified.
+
+The Stage 4 gate remains closed. No Supabase setup, migrations, RLS changes, or production writes are authorized by this checkpoint.
