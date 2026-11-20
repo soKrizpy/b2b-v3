@@ -94,7 +94,7 @@ The Stage 4 gate remains closed. No Supabase setup, migrations, RLS changes, or 
 
 ### Additional guardrails and runtime migration notes
 
-- `7e86bb1`: learning/report/evaluation adapters now require an active tutor-student assignment for tutor writes/reviews; student submission writes can only use `submitted`, and approved submissions cannot be resubmitted. CI typecheck/build passed; Chromium browser QA was still running at the time this note was added.
+- `7e86bb1`: learning/report/evaluation adapters now require an active tutor-student assignment for tutor writes/reviews; student submission writes can only use `submitted`, and approved submissions cannot be resubmitted. Typecheck, production build, and Chromium browser QA all passed (run `44665212697`).
 - The React login intentionally uses `DemoAuthRepository` with account-ID selection. `AuthService` explicitly does not store or verify passwords. Keep this demo port separate from canonical email/password `AuthRepository`; never adapt it by ignoring credentials.
 - Active Admin, Tutor, Student, and embedded Parent Hub controllers still use the legacy `WorkspaceRepositories` gateway. The new canonical adapters are not yet wired into active runtime controllers. This is deliberate until the missing domains and a typed composition boundary are resolved.
 - The embedded Parent Hub currently calls legacy `billing.getStudentInvoices()`, which returns all issued invoices including paid ones. During canonical consumer migration, its history tab must switch to `getStudentInvoiceHistory()`; the student-facing current-invoice view must use `getStudentInvoices()` (unpaid only).
