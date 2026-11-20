@@ -10,15 +10,16 @@
 
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
-import { IdentityRepository, BillingRepository, ClassSessionRepository } from '../services/workspace-repositories.js';
+import { createWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
 
 export class AdminWorkspace {
   /**
    * @param {HTMLElement} container
    */
-  constructor(container, currentUser = null) {
+  constructor(container, currentUser = null, repositories = WorkspaceRepositories) {
     this.container = container;
     this.currentUser = currentUser;
+    this.repositories = createWorkspaceRepositories(repositories);
     this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'billing'
     this.roleFilter = 'all';
     this.statusFilter = 'all';
@@ -38,14 +39,14 @@ export class AdminWorkspace {
   }
 
   async init() {
-    await IdentityRepository.initializeDemo();
+    await this.repositories.identity.initializeDemo();
     if (this.destroyed) return;
     await this.refreshData({ render: false });
     if (this.destroyed) return;
     if (!this._unsub) {
-      this._unsub = IdentityRepository.subscribe(() => { void this.refreshData(); });
-      this._unsubBilling = BillingRepository.subscribe(() => { void this.refreshData(); });
-      this._unsubSessions = ClassSessionRepository.subscribe(() => { void this.refreshData(); });
+      this._unsub = this.repositories.identity.subscribe(() => { void this.refreshData(); });
+      this._unsubBilling = this.repositories.billing.subscribe(() => { void this.refreshData(); });
+      this._unsubSessions = this.repositories.classSessions.subscribe(() => { void this.refreshData(); });
     }
     this.render();
   }
@@ -53,13 +54,13 @@ export class AdminWorkspace {
   async refreshData({ render = true } = {}) {
     const request = ++this.refreshSequence;
     const [users, assignments, sessions, invoices] = await Promise.all([
-      IdentityRepository.getAllUsers(),
-      IdentityRepository.getAllAssignments(),
-      ClassSessionRepository.getAllSessions(),
-      BillingRepository.getInvoices()
+      this.repositories.identity.getAllUsers(),
+      this.repositories.identity.getAllAssignments(),
+      this.repositories.classSessions.getAllSessions(),
+      this.repositories.billing.getInvoices()
     ]);
     const students = users.filter(user => user.role === 'student' && user.status === 'active');
-    const rateEntries = await Promise.all(students.map(async student => [student.id, await BillingRepository.getRate(student.id)]));
+    const rateEntries = await Promise.all(students.map(async student => [student.id, await this.repositories.billing.getRate(student.id)]));
     if (this.destroyed || request !== this.refreshSequence) return;
     this.users = users;
     this.assignments = assignments;
@@ -568,7 +569,7 @@ export class AdminWorkspace {
         if (submitButton) submitButton.disabled = true;
         const formData = new FormData(createSeriesForm);
         try {
-        const result = await ClassSessionRepository.createRecurringSessionSeries({
+        const result = await this.repositories.classSessions.createRecurringSessionSeries({
           studentId: String(formData.get('studentId') || ''),
           tutorId: String(formData.get('tutorId') || ''),
           startDate: String(formData.get('startDate') || ''),
@@ -601,7 +602,7 @@ export class AdminWorkspace {
       button.addEventListener('click', async () => {
         button.disabled = true;
         try {
-          const result = await ClassSessionRepository.cancelSession(
+          const result = await this.repositories.classSessions.cancelSession(
             button.getAttribute('data-cancel-session'),
             this.currentUser
           );
@@ -622,7 +623,7 @@ export class AdminWorkspace {
       button.addEventListener('click', async () => {
         button.disabled = true;
         try {
-          const result = await ClassSessionRepository.softDeleteSession(
+          const result = await this.repositories.classSessions.softDeleteSession(
             button.getAttribute('data-soft-delete-session'),
             this.currentUser
           );
@@ -653,7 +654,7 @@ export class AdminWorkspace {
         }
         if (submitButton) submitButton.disabled = true;
         try {
-          const result = await ClassSessionRepository.createReplacementSession(
+          const result = await this.repositories.classSessions.createReplacementSession(
             form.getAttribute('data-replacement-form'),
             { scheduledStartAt: start.toISOString() },
             this.currentUser
@@ -680,7 +681,7 @@ export class AdminWorkspace {
         const amount = Number(new FormData(form).get('amountPerSession'));
         const actor = this.currentUser;
         try {
-        const result = await BillingRepository.setRate(studentId, amount, actor);
+        const result = await this.repositories.billing.setRate(studentId, amount, actor);
         if (!result.success) {
           showToast({ title: 'Tarif gagal disimpan', message: result.message, type: 'error' });
         } else {
@@ -705,7 +706,7 @@ export class AdminWorkspace {
         const formData = new FormData(invoiceForm);
         const actor = this.currentUser;
         try {
-        const result = await BillingRepository.createInvoice(String(formData.get('studentId') || ''), String(formData.get('period') || ''), actor);
+        const result = await this.repositories.billing.createInvoice(String(formData.get('studentId') || ''), String(formData.get('period') || ''), actor);
         if (!result.success) {
           showToast({ title: 'Tagihan tidak dibuat', message: result.message, type: 'error' });
         } else {
@@ -728,7 +729,7 @@ export class AdminWorkspace {
         const invoiceId = form.getAttribute('data-draft-form');
         const formData = new FormData(form);
         try {
-        const result = await BillingRepository.updateDraftInvoice(invoiceId, {
+        const result = await this.repositories.billing.updateDraftInvoice(invoiceId, {
           sessionIds: formData.getAll('sessionIds').map(String),
           discountAmount: Number(formData.get('discountAmount')),
           additionalCharges: Number(formData.get('additionalCharges')),
@@ -753,7 +754,7 @@ export class AdminWorkspace {
       button.addEventListener('click', async () => {
         button.disabled = true;
         try {
-        const result = await BillingRepository.issueInvoice(button.getAttribute('data-issue-invoice'), this.currentUser);
+        const result = await this.repositories.billing.issueInvoice(button.getAttribute('data-issue-invoice'), this.currentUser);
         if (!result.success) {
           showToast({ title: 'Tagihan belum diterbitkan', message: result.message, type: 'error' });
         } else {
@@ -773,7 +774,7 @@ export class AdminWorkspace {
         button.disabled = true;
         const actor = this.currentUser;
         try {
-        const result = await BillingRepository.markPaid(button.getAttribute('data-mark-invoice-paid'), actor);
+        const result = await this.repositories.billing.markPaid(button.getAttribute('data-mark-invoice-paid'), actor);
         if (!result.success) {
           showToast({ title: 'Pembayaran gagal diperbarui', message: result.message, type: 'error' });
         } else {
@@ -811,8 +812,8 @@ export class AdminWorkspace {
         const uid = btn.getAttribute('data-user-id');
         const targetStatus = btn.getAttribute('data-target-status');
         const res = targetStatus === 'active'
-          ? await IdentityRepository.activateUser(uid)
-          : await IdentityRepository.deactivateUser(uid);
+          ? await this.repositories.identity.activateUser(uid)
+          : await this.repositories.identity.deactivateUser(uid);
 
         if (res.error) {
           showToast({ title: 'Gagal', message: res.message, type: 'error' });
@@ -839,7 +840,7 @@ export class AdminWorkspace {
       btn.addEventListener('click', async () => {
         const tid = btn.getAttribute('data-tutor-id');
         const sid = btn.getAttribute('data-student-id');
-        await IdentityRepository.removeTutorStudentAssignment(tid, sid);
+        await this.repositories.identity.removeTutorStudentAssignment(tid, sid);
         showToast({ title: 'Penugasan Dihapus', message: 'Relasi tutor dan siswa telah dilepas.', type: 'info' });
         this.render();
       });
@@ -946,7 +947,7 @@ export class AdminWorkspace {
 
       let res;
       if (isEdit) {
-        res = await IdentityRepository.updateUser(user.id, {
+        res = await this.repositories.identity.updateUser(user.id, {
           displayName: name,
           email,
           role,
@@ -954,7 +955,7 @@ export class AdminWorkspace {
           gradeLevel: role === 'student' ? grade : undefined
         });
       } else {
-        res = await IdentityRepository.createUser({
+        res = await this.repositories.identity.createUser({
           displayName: name,
           email,
           role,
@@ -1031,7 +1032,7 @@ export class AdminWorkspace {
       const tid = modal.querySelector('#select-rel-tutor')?.value;
       const sid = modal.querySelector('#select-rel-student')?.value;
 
-      const res = await IdentityRepository.assignStudentToTutor(tid, sid);
+      const res = await this.repositories.identity.assignStudentToTutor(tid, sid);
       if (res.error) {
         showToast({ title: 'Gagal Menugaskan', message: res.message, type: 'error' });
       } else {

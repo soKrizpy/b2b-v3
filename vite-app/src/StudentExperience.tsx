@@ -5,7 +5,7 @@ import { localDemoRepositories } from "./data/local-demo-repositories";
 // @ts-ignore - Existing JavaScript controller is reused during incremental migration.
 import { LessonWorkspace } from "../../js/lesson-workspace.js";
 // @ts-ignore - Shared workspace repository gateway wraps local demo persistence.
-import { LearningStateRepository } from "../../js/services/workspace-repositories.js";
+import { WorkspaceRepositories } from "../../js/services/workspace-repositories.js";
 
 type StudentUser = { id: string; displayName: string; avatar?: string; gradeLevel?: string; role: string };
 type WorkspaceController = { init: () => Promise<void>; destroy: () => void };
@@ -31,11 +31,11 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           throw new Error("Sesi siswa tidak valid. Silakan masuk kembali.");
         }
 
-        await LearningStateRepository.seedSubmissionsIfEmpty(submissions);
+        await WorkspaceRepositories.learning.seedSubmissionsIfEmpty(submissions);
         controller = new LessonWorkspace(host, lessonData, {
           id: user.id, name: user.displayName, avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
           role: "student", gradeLevel: user.gradeLevel || "Siswa"
-        }) as WorkspaceController;
+        }, WorkspaceRepositories) as WorkspaceController;
         controllerRef.current = controller;
         await controller.init();
         if (active) setReady(true);

@@ -20,7 +20,7 @@ export {
   BillingRepository
 };
 
-export const WorkspaceRepositories = Object.freeze({
+const defaultWorkspaceRepositories = Object.freeze({
   identity: IdentityRepository,
   learning: LearningStateRepository,
   classSessions: ClassSessionRepository,
@@ -28,3 +28,18 @@ export const WorkspaceRepositories = Object.freeze({
   monthlyEvaluations: MonthlyEvaluationRepository,
   billing: BillingRepository
 });
+
+
+/**
+ * Resolve workspace dependencies once at construction time.
+ * Partial overrides allow tests and future adapters to replace one domain
+ * without changing controller business logic.
+ */
+export function createWorkspaceRepositories(overrides = {}) {
+  return Object.freeze({
+    ...defaultWorkspaceRepositories,
+    ...overrides
+  });
+}
+
+export const WorkspaceRepositories = createWorkspaceRepositories();

@@ -6,7 +6,7 @@
 
 import { renderContentBlocks, renderQuiz, attachInteractions } from './content-renderer.js';
 import { showToast } from './components/toast.js';
-import { LearningStateRepository } from './services/workspace-repositories.js';
+import { createWorkspaceRepositories, WorkspaceRepositories } from './services/workspace-repositories.js';
 import { ParentHubView } from './student/parent-hub.js';
 import {
   SVG_MASCOT,
@@ -31,9 +31,10 @@ export class LessonWorkspace {
    * @param {Object} lessonData - Parsed lesson JSON
    * @param {Object} [currentUser=null] - Student user object
    */
-  constructor(container, lessonData, currentUser = null) {
+  constructor(container, lessonData, currentUser = null, repositories = WorkspaceRepositories) {
     this.container = container;
     this.lesson = lessonData;
+    this.repositories = createWorkspaceRepositories(repositories);
     this.stages = lessonData.stages || [];
     this.currentUser = currentUser || { id: 'usr_stu_001', name: 'Alex Pratama', avatar: 'AP' };
 
@@ -56,7 +57,7 @@ export class LessonWorkspace {
   async init() {
     // Read only progress already scoped to this student and lesson. The legacy
     // global key is intentionally not imported because its owner is unknown.
-    this._lessonProgress = await LearningStateRepository.getLessonProgress(this.currentUser.id, this.lesson.id);
+    this._lessonProgress = await this.repositories.learning.getLessonProgress(this.currentUser.id, this.lesson.id);
     if (this.destroyed) return;
     const savedProgress = this.loadProgress();
     this.progressState = savedProgress.state;
@@ -64,7 +65,7 @@ export class LessonWorkspace {
     this.submissionData = savedProgress.submission || null;
     this.currentSlideIndex = typeof savedProgress.slideIndex === 'number' ? savedProgress.slideIndex : 0;
     this.visitedSlides = new Set([0, this.currentSlideIndex]);
-    const activeSub = await LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
+    const activeSub = await this.repositories.learning.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
     if (this.destroyed) return;
     this.activeStoreSubmission = activeSub || null;
     if (activeSub && ['approved', 'revision-required', 'submitted'].includes(activeSub.status)) {
@@ -74,7 +75,7 @@ export class LessonWorkspace {
     this.render();
     this.bindKeyboardNav();
     if (!this._unsubscribeStore) {
-      this._unsubscribeStore = LearningStateRepository.subscribe(() => {
+      this._unsubscribeStore = this.repositories.learning.subscribe(() => {
         void this.handleExternalStoreUpdate();
       });
     }
@@ -87,8 +88,8 @@ export class LessonWorkspace {
   async handleExternalStoreUpdate() {
     if (this.destroyed) return;
     const [activeSub, savedProgress] = await Promise.all([
-      LearningStateRepository.getStudentLessonSubmission(this.currentUser.id, this.lesson.id),
-      LearningStateRepository.getLessonProgress(this.currentUser.id, this.lesson.id)
+      this.repositories.learning.getStudentLessonSubmission(this.currentUser.id, this.lesson.id),
+      this.repositories.learning.getLessonProgress(this.currentUser.id, this.lesson.id)
     ]);
     if (this.destroyed) return;
 
@@ -200,7 +201,7 @@ export class LessonWorkspace {
       lessonKey: this.lesson.id,
       version: (Number(this._lessonProgress?.version) || 0) + 1
     };
-    void LearningStateRepository.saveLessonProgress(
+    void this.repositories.learning.saveLessonProgress(
       this.currentUser.id,
       this.lesson.id,
       progressUpdates
@@ -244,7 +245,7 @@ export class LessonWorkspace {
         this.parentHubView = null;
         this.currentScreen = 'dashboard';
         this.render();
-      });
+      }, this.repositories);
       this.parentHubView.init();
     } else {
       this.parentHubView.container = this.container;
@@ -1295,7 +1296,7 @@ export class LessonWorkspace {
         submitBtn.disabled = true;
         try {
           const submittedAt = new Date().toISOString();
-          const subRecord = await LearningStateRepository.saveSubmission({
+          const subRecord = await this.repositories.learning.saveSubmission({
             studentId: this.currentUser.id,
             studentName: this.currentUser.name,
             studentAvatar: this.currentUser.avatar || 'AP',

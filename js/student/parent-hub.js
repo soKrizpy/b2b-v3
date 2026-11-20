@@ -4,7 +4,7 @@
  * through asynchronous repositories. Local demo stores remain the persistence layer.
  */
 
-import { SessionReportRepository, MonthlyEvaluationRepository, BillingRepository } from '../services/workspace-repositories.js';
+import { createWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },
@@ -13,9 +13,10 @@ const TABS = [
 ];
 
 export class ParentHubView {
-  constructor(container, studentUser, onBack = () => {}) {
+  constructor(container, studentUser, onBack = () => {}, repositories = WorkspaceRepositories) {
     this.container = container;
     this.studentUser = studentUser || {};
+    this.repositories = createWorkspaceRepositories(repositories);
     this.onBack = onBack;
     this.activeTab = 'sessions';
     this.unsubscribeSessionStore = null;
@@ -30,13 +31,13 @@ export class ParentHubView {
   }
 
   init() {
-    this.unsubscribeSessionStore = SessionReportRepository.subscribe(() => {
+    this.unsubscribeSessionStore = this.repositories.sessionReports.subscribe(() => {
       if (this.activeTab === 'sessions') void this.refreshActiveTab();
     });
-    this.unsubscribeBillingStore = BillingRepository.subscribe(() => {
+    this.unsubscribeBillingStore = this.repositories.billing.subscribe(() => {
       if (this.activeTab === 'invoices') void this.refreshActiveTab();
     });
-    this.unsubscribeMonthlyEvaluationStore = MonthlyEvaluationRepository.subscribe(() => {
+    this.unsubscribeMonthlyEvaluationStore = this.repositories.monthlyEvaluations.subscribe(() => {
       if (this.activeTab === 'monthly') void this.refreshActiveTab();
     });
     this.render();
@@ -117,11 +118,11 @@ export class ParentHubView {
     this.renderContent();
     try {
       if (this.activeTab === 'sessions') {
-        this.sessionReports = await SessionReportRepository.getStudentSubmittedReports(this.studentUser.id);
+        this.sessionReports = await this.repositories.sessionReports.getStudentSubmittedReports(this.studentUser.id);
       } else if (this.activeTab === 'monthly') {
-        this.monthlyEvaluations = await MonthlyEvaluationRepository.getStudentPublished(this.studentUser.id);
+        this.monthlyEvaluations = await this.repositories.monthlyEvaluations.getStudentPublished(this.studentUser.id);
       } else {
-        this.invoices = await BillingRepository.getStudentInvoices(this.studentUser.id);
+        this.invoices = await this.repositories.billing.getStudentInvoices(this.studentUser.id);
       }
       if (this.destroyed || request !== this.loadRequest) return;
       this.isLoading = false;

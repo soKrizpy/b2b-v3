@@ -15,6 +15,16 @@ const workspaceRepositoryImports = [
 
 
 test.describe("Bits2Bytes demo portal", () => {
+  test("workspace repository gateway supports domain-level dependency overrides", async () => {
+    const gatewayPath = resolve(process.cwd(), "../js/services/workspace-repositories.js");
+    const gateway = await import(gatewayPath);
+    const replacement = { testAdapter: true };
+    const resolved = gateway.createWorkspaceRepositories({ learning: replacement });
+    expect(resolved.learning).toBe(replacement);
+    expect(resolved.identity).toBe(gateway.WorkspaceRepositories.identity);
+    expect(Object.isFrozen(resolved)).toBe(true);
+  });
+
   test("active workspace controllers import domain repositories through one gateway", () => {
     for (const source of workspaceRepositoryImports) {
       expect(source).toContain("workspace-repositories.js");

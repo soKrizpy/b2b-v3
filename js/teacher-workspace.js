@@ -6,7 +6,7 @@
  */
 
 import { MockService } from './services/mock-service.js';
-import { LearningStateRepository, SessionReportRepository, MonthlyEvaluationRepository, IdentityRepository, ClassSessionRepository } from './services/workspace-repositories.js';
+import { createWorkspaceRepositories, WorkspaceRepositories } from './services/workspace-repositories.js';
 import { Drawer } from './components/drawer.js';
 import { showToast } from './components/toast.js';
 import {
@@ -21,9 +21,10 @@ export class TeacherWorkspace {
   /**
    * @param {HTMLElement} container - Root element (#teacher-container)
    */
-  constructor(container, user = null) {
+  constructor(container, user = null, repositories = WorkspaceRepositories) {
     this.container = container;
     this.user = user;
+    this.repositories = createWorkspaceRepositories(repositories);
     this.assignedStudentIds = null;
     this.assignedStudentNames = null;
     this.classSummary = null;
@@ -56,17 +57,17 @@ export class TeacherWorkspace {
       if (this.destroyed) return;
 
       // Seed StateStore if empty/uninitialized
-      await LearningStateRepository.seedSubmissionsIfEmpty(rawSubmissions);
+      await this.repositories.learning.seedSubmissionsIfEmpty(rawSubmissions);
       if (this.destroyed) return;
 
       this.user = this.user || { id: 'usr_tea_001', displayName: 'Kak Sarah', avatar: 'KS', role: 'tutor' };
       const [storeSubmissions, assignedUsers, scheduleSessions, tutorReports, monthlyEvaluations, allUsers] = await Promise.all([
-        LearningStateRepository.getAllSubmissions(),
-        IdentityRepository.getTutorStudents(this.user.id),
-        ClassSessionRepository.getAllSessions(),
-        SessionReportRepository.getTutorReports(this.user.id),
-        MonthlyEvaluationRepository.getTutorEvaluations(this.user.id),
-        IdentityRepository.getAllUsers()
+        this.repositories.learning.getAllSubmissions(),
+        this.repositories.identity.getTutorStudents(this.user.id),
+        this.repositories.classSessions.getAllSessions(),
+        this.repositories.sessionReports.getTutorReports(this.user.id),
+        this.repositories.monthlyEvaluations.getTutorEvaluations(this.user.id),
+        this.repositories.identity.getAllUsers()
       ]);
       if (this.destroyed) return;
       this.scheduleSessions = scheduleSessions;
@@ -92,27 +93,27 @@ export class TeacherWorkspace {
 
       // Subscribe to reactive store changes (cross-tab & same-tab)
       if (!this._unsubscribeStore) {
-        this._unsubscribeStore = LearningStateRepository.subscribe(() => {
+        this._unsubscribeStore = this.repositories.learning.subscribe(() => {
           void this.handleExternalStoreUpdate();
         });
       }
 
       // Subscribe to operational class-session changes.
       if (!this._unsubscribeClassSessionStore) {
-        this._unsubscribeClassSessionStore = ClassSessionRepository.subscribe(() => {
+        this._unsubscribeClassSessionStore = this.repositories.classSessions.subscribe(() => {
           void this.refreshSchedule();
         });
       }
 
       if (!this._unsubscribeMonthlyEvaluationStore) {
-        this._unsubscribeMonthlyEvaluationStore = MonthlyEvaluationRepository.subscribe(() => {
+        this._unsubscribeMonthlyEvaluationStore = this.repositories.monthlyEvaluations.subscribe(() => {
           void this.refreshMonthlyEvaluations();
         });
       }
 
       // Subscribe to SessionStore mutations
       if (!this._unsubscribeSessionStore) {
-        this._unsubscribeSessionStore = SessionReportRepository.subscribe(() => {
+        this._unsubscribeSessionStore = this.repositories.sessionReports.subscribe(() => {
           void this.refreshTutorReports();
         });
       }
@@ -145,7 +146,7 @@ export class TeacherWorkspace {
    */
   async handleExternalStoreUpdate() {
     if (this.destroyed) return;
-    const updated = await LearningStateRepository.getAllSubmissions();
+    const updated = await this.repositories.learning.getAllSubmissions();
     if (this.destroyed) return;
     this.submissions = updated.filter((submission) => this.assignedStudentIds?.has(submission.studentId));
     this.syncMetricsFromSubmissions();
@@ -155,14 +156,14 @@ export class TeacherWorkspace {
   }
 
   async refreshSchedule() {
-    const sessions = await ClassSessionRepository.getAllSessions();
+    const sessions = await this.repositories.classSessions.getAllSessions();
     if (this.destroyed) return;
     this.scheduleSessions = sessions;
     if (this.activeTab === 'schedule') this.render();
   }
 
   async refreshTutorReports() {
-    const reports = await SessionReportRepository.getTutorReports(this.user.id);
+    const reports = await this.repositories.sessionReports.getTutorReports(this.user.id);
     if (this.destroyed) return;
     this.tutorReports = reports;
     if (this.activeTab === 'session-reports') this.render();
@@ -170,7 +171,7 @@ export class TeacherWorkspace {
   }
 
   async refreshMonthlyEvaluations() {
-    const evaluations = await MonthlyEvaluationRepository.getTutorEvaluations(this.user.id);
+    const evaluations = await this.repositories.monthlyEvaluations.getTutorEvaluations(this.user.id);
     if (this.destroyed) return;
     this.monthlyEvaluations = evaluations;
     if (this.activeTab === 'monthly-evaluations') this.render();
@@ -1045,7 +1046,7 @@ export class TeacherWorkspace {
             ${this.students.map(student => `<option value="${escapeHtml(student.id)}" ${student.id === current.studentId ? 'selected' : ''}>${escapeHtml(student.name || student.displayName)}</option>`).join('')}</select></label>
           <label>Periode bulan<input name="period" type="month" required value="${escapeHtml(period)}" style="width:100%;"></label>
           <label>Penilaian keseluruhan<select name="rating" required style="width:100%;"><option value="">Pilih penilaian</option>
-            ${MonthlyEvaluationRepository.getRatings().map(rating => `<option value="${escapeHtml(rating)}" ${current.rating === rating ? 'selected' : ''}>${escapeHtml(rating)}</option>`).join('')}</select></label>
+            ${this.repositories.monthlyEvaluations.getRatings().map(rating => `<option value="${escapeHtml(rating)}" ${current.rating === rating ? 'selected' : ''}>${escapeHtml(rating)}</option>`).join('')}</select></label>
         </div>
         <label>Ringkasan perkembangan<textarea name="summary" rows="3" required maxlength="1500" style="width:100%;">${escapeHtml(current.summary || '')}</textarea></label>
         <label>Hal yang sudah dikuasai<textarea name="strengths" rows="3" required maxlength="1200" style="width:100%;">${escapeHtml(current.strengths || '')}</textarea></label>
@@ -1079,7 +1080,7 @@ export class TeacherWorkspace {
       const data = Object.fromEntries(new FormData(form).entries());
       const student = this.students.find(item => item.id === data.studentId);
       try {
-        const result = await MonthlyEvaluationRepository.save({
+        const result = await this.repositories.monthlyEvaluations.save({
           ...data, studentName: student?.name || student?.displayName || 'Siswa',
           tutorId: this.user.id, tutorName: this.user.displayName
         }, status);
@@ -1106,7 +1107,7 @@ export class TeacherWorkspace {
       button.addEventListener('click', async () => {
         button.disabled = true;
         try {
-          const result = await ClassSessionRepository.recordAttendance(
+          const result = await this.repositories.classSessions.recordAttendance(
             button.getAttribute('data-session-id'),
             button.getAttribute('data-record-attendance'),
             this.user
@@ -1136,7 +1137,7 @@ export class TeacherWorkspace {
         if (submitButton) submitButton.disabled = true;
         const reason = String(new FormData(form).get('reason') || '').trim();
         try {
-          const result = await ClassSessionRepository.cancelSession(
+          const result = await this.repositories.classSessions.cancelSession(
             form.getAttribute('data-tutor-cancel-form'),
             this.user,
             reason
@@ -1226,7 +1227,7 @@ export class TeacherWorkspace {
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         try {
-          const success = await SessionReportRepository.deleteDraft(btn.getAttribute('data-report-id'));
+          const success = await this.repositories.sessionReports.deleteDraft(btn.getAttribute('data-report-id'));
           if (success) {
             showToast({ title: 'Draf Dihapus', message: 'Draf laporan sesi berhasil dihapus.', type: 'info', duration: 3000 });
             this.render();
@@ -1325,7 +1326,7 @@ export class TeacherWorkspace {
           : null;
 
         try {
-        const result = await SessionReportRepository.saveReport(formData, 'draft', expectedVersion);
+        const result = await this.repositories.sessionReports.saveReport(formData, 'draft', expectedVersion);
 
         if (result.error) {
           showToast({
@@ -1335,7 +1336,7 @@ export class TeacherWorkspace {
             duration: 4000
           });
           if (result.error === 'STALE_UPDATE_CONFLICT' && formData.id) {
-            this.editingReport = await SessionReportRepository.getReportById(formData.id);
+            this.editingReport = await this.repositories.sessionReports.getReportById(formData.id);
             this.render();
           }
           return;
@@ -1401,7 +1402,7 @@ export class TeacherWorkspace {
           : null;
 
         try {
-        const result = await SessionReportRepository.saveReport(formData, 'submitted', expectedVersion);
+        const result = await this.repositories.sessionReports.saveReport(formData, 'submitted', expectedVersion);
 
         if (result.error) {
           showToast({
@@ -1411,7 +1412,7 @@ export class TeacherWorkspace {
             duration: 4000
           });
           if (result.error === 'STALE_UPDATE_CONFLICT' && formData.id) {
-            this.editingReport = await SessionReportRepository.getReportById(formData.id);
+            this.editingReport = await this.repositories.sessionReports.getReportById(formData.id);
             this.render();
           }
           return;
@@ -1502,7 +1503,7 @@ export class TeacherWorkspace {
 
         // Update status in unified StateStore with mandatory version check
         const expectedVersion = typeof sub.version === 'number' ? sub.version : 1;
-        const result = await LearningStateRepository.updateSubmissionStatus(sub.id, 'approved', {
+        const result = await this.repositories.learning.updateSubmissionStatus(sub.id, 'approved', {
           reviewerId: 'usr_tea_001',
           reviewerName: 'Kak Sarah',
           teacherFeedback: feedbackText
@@ -1562,7 +1563,7 @@ export class TeacherWorkspace {
 
         // Update status in unified StateStore with mandatory version check
         const expectedVersion = typeof sub.version === 'number' ? sub.version : 1;
-        const result = await LearningStateRepository.updateSubmissionStatus(sub.id, 'revision-required', {
+        const result = await this.repositories.learning.updateSubmissionStatus(sub.id, 'revision-required', {
           reviewerId: 'usr_tea_001',
           reviewerName: 'Kak Sarah',
           teacherFeedback: feedbackText
