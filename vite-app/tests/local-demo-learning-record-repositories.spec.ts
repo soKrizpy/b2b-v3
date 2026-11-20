@@ -65,11 +65,15 @@ test.describe("Canonical local-demo learning record adapters", () => {
       const tutor = createLocalDemoMonthlyEvaluationRepository(store, () => ({ id:"tutor-1", role:"tutor" }));
       const student = createLocalDemoMonthlyEvaluationRepository(store, () => ({ id:"student-1", role:"student" }));
       const blocked = await student.saveEvaluation(row);
-      const saved = await tutor.saveEvaluation(row);
+      const missingVersion = await tutor.saveEvaluation(row);
+      const staleVersion = await tutor.saveEvaluation({ ...row, expectedVersion: 0 });
+      const saved = await tutor.saveEvaluation({ ...row, expectedVersion: 1 });
       return {
         tutorList:(await tutor.listTutorEvaluations("tutor-1")).length,
         studentList:(await student.listStudentPublished("student-1")).length,
         blockedCode:blocked.success ? null : blocked.error.code,
+        missingVersionCode:missingVersion.success ? null : missingVersion.error.code,
+        staleVersionCode:staleVersion.success ? null : staleVersion.error.code,
         saved:saved.success, savedTutorId,
         rating:saved.success ? saved.data.rating : null
       };
@@ -77,6 +81,8 @@ test.describe("Canonical local-demo learning record adapters", () => {
     expect(result.tutorList).toBe(1);
     expect(result.studentList).toBe(1);
     expect(result.blockedCode).toBe("FORBIDDEN");
+    expect(result.missingVersionCode).toBe("MISSING_EXPECTED_VERSION");
+    expect(result.staleVersionCode).toBe("STALE_UPDATE_CONFLICT");
     expect(result.saved).toBe(true);
     expect(result.savedTutorId).toBe("tutor-1");
     expect(result.rating).toBe("Baik");

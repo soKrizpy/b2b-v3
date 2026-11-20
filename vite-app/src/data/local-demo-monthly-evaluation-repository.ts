@@ -56,6 +56,9 @@ export function createLocalDemoMonthlyEvaluationRepository(
       const existing = store.getAll().find(item => item.studentId === input.studentId && item.tutorId === current.id && item.period === input.period);
       if (input.id && existing && existing.id !== input.id) return fail("ID_MISMATCH", "ID evaluasi tidak cocok dengan siswa, tutor, dan periode.");
       if (input.id && !existing) return fail("NOT_FOUND", "Evaluasi untuk pembaruan tidak ditemukan.");
+      if (existing && input.expectedVersion === undefined) return fail("MISSING_EXPECTED_VERSION", "expectedVersion wajib disertakan saat memperbarui evaluasi.");
+      if (existing && input.expectedVersion !== existing.version) return fail("STALE_UPDATE_CONFLICT", "Evaluasi telah berubah. Muat ulang sebelum menyimpan.");
+      if (!existing && input.expectedVersion !== undefined) return fail("NOT_FOUND", "Evaluasi untuk pembaruan tidak ditemukan.");
       const payload: Record<string, unknown> = {
         ...(input.id ? { id: input.id } : {}), studentId: input.studentId, studentName: input.studentName,
         tutorId: current.id, tutorName: input.tutorName, period: input.period, rating: input.rating ?? "",

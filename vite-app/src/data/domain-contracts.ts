@@ -362,7 +362,7 @@ export interface SessionReportRepository {
 export interface MonthlyEvaluationRepository {
   listTutorEvaluations(tutorId: UUID): Promise<MonthlyEvaluation[]>;
   listStudentPublished(studentId: UUID): Promise<MonthlyEvaluation[]>;
-  saveEvaluation(input: Omit<MonthlyEvaluation, "id" | "version" | "createdAt" | "updatedAt"> & { id?: UUID }): Promise<RepositoryResult<MonthlyEvaluation>>;
+  saveEvaluation(input: Omit<MonthlyEvaluation, "id" | "version" | "createdAt" | "updatedAt"> & { id?: UUID; expectedVersion?: number }): Promise<RepositoryResult<MonthlyEvaluation>>;
   subscribe(listener: RepositoryListener): Unsubscribe;
 }
 

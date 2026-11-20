@@ -83,6 +83,7 @@ export function createLocalDemoSessionReportRepository(
       if (input.id) {
         const existing = store.getReportById(input.id);
         if (existing && existing.tutorId !== current.id) return fail("FORBIDDEN", "Laporan milik tutor lain tidak dapat diubah.");
+        if (existing && input.expectedVersion === undefined) return fail("MISSING_EXPECTED_VERSION", "expectedVersion wajib disertakan saat memperbarui laporan.");
         if (!existing && input.expectedVersion !== undefined) return fail("NOT_FOUND", "Laporan untuk pembaruan tidak ditemukan.");
       }
       const payload: Record<string, unknown> = {
