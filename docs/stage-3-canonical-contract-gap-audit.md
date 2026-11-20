@@ -2,7 +2,7 @@
 
 Status: in progress. This document supersedes any broad statement elsewhere that the canonical TypeScript `DomainRepositories` runtime adapter is complete. The legacy workspace gateway and compatibility adapters exist, but they are not yet a complete implementation of `domain-contracts.ts`.
 
-Audit baseline: branch `preview`, latest implementation checkpoint `37a28efbb22a2ee2c9b1d814b3f1f5724fa2a4c5`.
+Audit baseline: branch `preview`, latest implementation checkpoint `7e86bb1c218d6ee75aa1049663c70e96781399e5`.
 Scope: repository contract/store audit plus local-demo adapter implementation and tests. No database schema, production Supabase data, `main`, or user application data was changed.
 
 ## Findings by domain
@@ -73,8 +73,8 @@ The following updates supersede the earlier "existing local implementation" note
 - `24eec1d`: canonical billing adapter and separate Parent Hub invoice history contract — typecheck, production build, Chromium browser QA all passed (run `44664376440`).
 - `b6d13ad`: session read scoping — CI passed (run `44664574556`).
 - `b4b92e1`: session + learning read scoping and learning write/review actor checks — CI passed (run `44664690828`).
-- `3c65c36`: identity actor scoping — typecheck/build passed; browser QA was still running at this checkpoint.
-- `37a28ef`: report/evaluation optimistic-version requirement — awaiting CI.
+- `3c65c36`: identity actor scoping — typecheck, production build, and Chromium browser QA all passed (run `44664797419`).
+- `37a28ef`: report/evaluation optimistic-version requirement — typecheck, production build, and Chromium browser QA all passed (run `44664961723`).
 
 ### Confirmed curriculum blocker
 
@@ -90,3 +90,12 @@ The repository tree contains one student lesson fixture (`data/mock/lesson-scrat
 6. Run complete contract/browser regression and close Stage 3 only after all domains and consumers are verified.
 
 The Stage 4 gate remains closed. No Supabase setup, migrations, RLS changes, or production writes are authorized by this checkpoint.
+
+
+### Additional guardrails and runtime migration notes
+
+- `7e86bb1`: learning/report/evaluation adapters now require an active tutor-student assignment for tutor writes/reviews; student submission writes can only use `submitted`, and approved submissions cannot be resubmitted. CI typecheck/build passed; Chromium browser QA was still running at the time this note was added.
+- The React login intentionally uses `DemoAuthRepository` with account-ID selection. `AuthService` explicitly does not store or verify passwords. Keep this demo port separate from canonical email/password `AuthRepository`; never adapt it by ignoring credentials.
+- Active Admin, Tutor, Student, and embedded Parent Hub controllers still use the legacy `WorkspaceRepositories` gateway. The new canonical adapters are not yet wired into active runtime controllers. This is deliberate until the missing domains and a typed composition boundary are resolved.
+- The embedded Parent Hub currently calls legacy `billing.getStudentInvoices()`, which returns all issued invoices including paid ones. During canonical consumer migration, its history tab must switch to `getStudentInvoiceHistory()`; the student-facing current-invoice view must use `getStudentInvoices()` (unpaid only).
+- Local invoice creation has a read-then-write duplicate-session check. Production billing must enforce unique invoice-line/session ownership transactionally (e.g. unique constraint plus transaction), not rely on the demo check.
