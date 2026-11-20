@@ -83,7 +83,7 @@ test.describe("Canonical local-demo identity adapter", () => {
         }
       };
 
-      const repository = createLocalDemoIdentityRepository(store);
+      const repository = createLocalDemoIdentityRepository(store, () => ({ id: "admin-1", role: "admin" }));
       const listed = await repository.listUsers();
       const created = await repository.createUser({
         email: "new@example.test",
@@ -147,7 +147,7 @@ test.describe("Canonical local-demo identity adapter", () => {
         removeTutorStudentAssignment: () => false,
         subscribe: () => () => {}
       };
-      const repository = createLocalDemoIdentityRepository(store);
+      const repository = createLocalDemoIdentityRepository(store, () => ({ id: "admin-1", role: "admin" }));
       const teacher = await repository.listUsers();
       const failed = await repository.createUser({
         email: "teacher@example.test",
@@ -164,4 +164,24 @@ test.describe("Canonical local-demo identity adapter", () => {
       error: { code: "DUPLICATE_EMAIL", message: "Email already exists" }
     });
   });
+});
+
+
+test("identity adapter scopes reads and mutations by active role",async({page})=>{
+ await page.goto("/");
+ const result=await page.evaluate(async()=>{
+  const {createLocalDemoIdentityRepository}=await import("/src/data/local-demo-identity-repository.ts");
+  const users=[
+   {id:"t1",email:"t1@test",displayName:"Tutor",role:"tutor",status:"active",createdAt:"2026-11-01T00:00:00Z",updatedAt:"2026-11-01T00:00:00Z"},
+   {id:"s1",email:"s1@test",displayName:"Assigned",role:"student",status:"active",createdAt:"2026-11-01T00:00:00Z",updatedAt:"2026-11-01T00:00:00Z"},
+   {id:"s2",email:"s2@test",displayName:"Other",role:"student",status:"active",createdAt:"2026-11-01T00:00:00Z",updatedAt:"2026-11-01T00:00:00Z"}
+  ];
+  const assignments=[{id:"a1",tutorId:"t1",studentId:"s1",status:"active",createdAt:"2026-11-01T00:00:00Z"}];
+  const store={getAllUsers:()=>users,getUserById:(id:string)=>users.find(x=>x.id===id)??null,getAllAssignments:()=>assignments,createUser:()=>({error:"NOOP",message:"no"}),updateUser:()=>({error:"NOOP",message:"no"}),activateUser:()=>({error:"NOOP",message:"no"}),deactivateUser:()=>({error:"NOOP",message:"no"}),assignStudentToTutor:()=>({error:"NOOP",message:"no"}),removeTutorStudentAssignment:()=>false,subscribe:()=>()=>{}};
+  const tutor=createLocalDemoIdentityRepository(store,()=>({id:"t1",role:"tutor"}));
+  const student=createLocalDemoIdentityRepository(store,()=>({id:"s1",role:"student"}));
+  return {tutorUsers:(await tutor.listUsers()).map(x=>x.id),tutorOther:await tutor.getUser("s2"),studentUsers:(await student.listUsers()).map(x=>x.id),studentAssignments:(await student.listAssignments()).length,blocked:(await tutor.createUser({email:"x@test",displayName:"X",role:"student",status:"active"})).success};
+ });
+ expect(result.tutorUsers.sort()).toEqual(["s1","t1"]);expect(result.tutorOther).toBeNull();
+ expect(result.studentUsers).toEqual(["s1"]);expect(result.studentAssignments).toBe(1);expect(result.blocked).toBe(false);
 });
