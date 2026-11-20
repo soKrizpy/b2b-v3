@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 
 const classSessionStoreSource = readFileSync(resolve(process.cwd(), "../js/services/class-session-store.js"), "utf8");
@@ -15,14 +16,29 @@ const workspaceRepositoryImports = [
 
 
 test.describe("Bits2Bytes demo portal", () => {
-  test("workspace repository gateway supports domain-level dependency overrides", async () => {
+  test("workspace repository gateway supports domain-level dependency overrides", () => {
     const gatewayPath = resolve(process.cwd(), "../js/services/workspace-repositories.js");
-    const gateway = await import(gatewayPath);
-    const replacement = { testAdapter: true };
-    const resolved = gateway.createWorkspaceRepositories({ learning: replacement });
-    expect(resolved.learning).toBe(replacement);
-    expect(resolved.identity).toBe(gateway.WorkspaceRepositories.identity);
-    expect(Object.isFrozen(resolved)).toBe(true);
+    // The legacy JavaScript runtime is ESM but the repository root has no
+    // package.json type=module. Run Node with its ESM default explicitly so
+    // this test exercises the real module and its imported adapters.
+    const output = execFileSync(process.execPath, [
+      "--experimental-default-type=module",
+      "--input-type=module",
+      "-e",
+      `const gateway = await import(${JSON.stringify(gatewayPath)});
+       const replacement = { testAdapter: true };
+       const resolved = gateway.createWorkspaceRepositories({ learning: replacement });
+       process.stdout.write(JSON.stringify({
+         learningOverridden: resolved.learning === replacement,
+         identityRetained: resolved.identity === gateway.WorkspaceRepositories.identity,
+         frozen: Object.isFrozen(resolved)
+       }));`
+    ], { encoding: "utf8" });
+    expect(JSON.parse(output)).toEqual({
+      learningOverridden: true,
+      identityRetained: true,
+      frozen: true
+    });
   });
 
   test("active workspace controllers import domain repositories through one gateway", () => {
