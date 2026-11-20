@@ -35,3 +35,19 @@ test.describe("Canonical local-demo class session adapter",()=>{
   expect(result.denied.success).toBe(false);expect(result.denied.error.code).toBe("FORBIDDEN");expect(result.created.success).toBe(true);expect(result.created.data).toHaveLength(1);expect(result.replacement.success).toBe(true);expect(result.replacement.data.replacement.id).toBe("replacement-1");
  });
 });
+
+
+test("scopes session reads to the active student or tutor",async({page})=>{
+ await page.goto("/");
+ const result=await page.evaluate(async()=>{
+  const {createLocalDemoClassSessionRepository}=await import("/src/data/local-demo-class-session-repository.ts");
+  const row=(id:string,studentId:string,tutorId:string)=>({id,seriesId:"series-1",sessionNumber:1,studentId,tutorId,scheduledStartAt:"2026-11-20T02:00:00.000Z",durationMinutes:60,meetingUrl:null,status:"scheduled",attendanceStatus:"not_recorded",attendanceRecordedBy:null,attendanceRecordedAt:null,cancellation:null,replacementRequired:false,replacementSessionId:null,replacementForSessionId:null,deletedAt:null,deletedBy:null,createdAt:"2026-11-01T00:00:00.000Z",updatedAt:"2026-11-01T00:00:00.000Z",version:1});
+  const rows=[row("s1","student-1","tutor-1"),row("s2","student-2","tutor-2")];
+  const store={getAllSessions:()=>rows,getSession:(id:string)=>rows.find(x=>x.id===id)??null,getBillableSessions:()=>rows,createRecurringSessionSeries:()=>({success:true,sessions:[]}),recordAttendance:()=>({success:false,error:"NOOP"}),cancelSession:()=>({success:false,error:"NOOP"}),softDeleteSession:()=>({success:false,error:"NOOP"}),createReplacementSession:()=>({success:false,error:"NOOP"}),subscribe:()=>()=>{}};
+  const student=createLocalDemoClassSessionRepository(store,()=>({id:"student-1",role:"student"}));
+  const tutor=createLocalDemoClassSessionRepository(store,()=>({id:"tutor-1",role:"tutor"}));
+  return {studentRows:(await student.listSessions()).map(x=>x.id),studentForeign:await student.getSession("s2"),tutorRows:(await tutor.listSessions()).map(x=>x.id),tutorForeignFilter:(await tutor.listSessions({tutorId:"tutor-2"})).length,tutorOwn:(await tutor.getSession("s1"))?.id};
+ });
+ expect(result.studentRows).toEqual(["s1"]);expect(result.studentForeign).toBeNull();
+ expect(result.tutorRows).toEqual(["s1"]);expect(result.tutorForeignFilter).toBe(0);expect(result.tutorOwn).toBe("s1");
+});
