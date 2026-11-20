@@ -46,3 +46,9 @@ Scope: read-only inspection of repository contracts, local-demo stores/adapters,
 - Do not modify `main`.
 - Do not access or write to production Supabase. No SQL/migrations/RLS changes in Stage 3.
 - Do not begin Stage 4 until Stage 3 is complete and the user explicitly approves the next gate.
+
+## Learning adapter implementation checkpoint
+
+Added `vite-app/src/data/local-demo-learning-repository.ts` implementing the canonical `LearningRepository` shape. It maps legacy `lessonId` to `lessonKey`, normalizes timestamps and optional fields, filters submissions, converts write failures to `RepositoryResult`, keeps progress keyed by student + lesson, and delegates review version checks to the legacy store. Tests cover student isolation, DTO mapping, stale update rejection, reviewer requirement, and review conflict.
+
+Limitations: local demo only, not an authorization boundary. The reviewer callback must be wired from the active demo session; default rejects reviews. Legacy submission save has no atomic compare-and-swap, so its expectedVersion check is read-then-write and is not safe against concurrent tabs. Production must use atomic version predicates/transactions. Legacy progress save also has no compare-and-swap. Feedback history remains outside the canonical DTO.
