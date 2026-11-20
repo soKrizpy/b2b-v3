@@ -22,7 +22,8 @@ function submissionDto(v:LegacySubmission):StudentSubmission {
  const submittedAt=iso(v.submittedAt);
  return {id:v.id,studentId:v.studentId,...(v.studentName?{studentName:v.studentName}:{}),...(v.studentGrade?{studentGrade:v.studentGrade}:{}),...(v.studentAvatar?{studentAvatar:v.studentAvatar}:{}),lessonKey:v.lessonId,...(v.lessonTitle?{lessonTitle:v.lessonTitle}:{}),projectUrl:v.projectUrl??"",studentNotes:v.studentNotes??"",status:v.status,checkpointsPassed:Number.isFinite(v.checkpointsPassed)?v.checkpointsPassed as number:0,checkpointsTotal:Number.isFinite(v.checkpointsTotal)?v.checkpointsTotal as number:0,quizScore:v.quizScore??null,reviewerId:v.reviewerId??null,reviewerName:v.reviewerName??null,reviewedAt:v.reviewedAt?iso(v.reviewedAt):null,teacherFeedback:v.teacherFeedback??null,version:Number.isInteger(v.version)&&v.version!>0?v.version!:1,submittedAt,updatedAt:iso(v.updatedAt,submittedAt)};
 }
-const fail=<T>(code:string,message:string,details?:unknown):RepositoryResult<T>=>({success:false,error:{code,message,...(details===undefined?{}:{details})}});\nfunction isReviewFailure(value:LegacySubmission|ReviewFailure):value is ReviewFailure{return "success" in value && value.success===false;}
+const fail=<T>(code:string,message:string,details?:unknown):RepositoryResult<T>=>({success:false,error:{code,message,...(details===undefined?{}:{details})}});
+function isReviewFailure(value:LegacySubmission|ReviewFailure):value is ReviewFailure{return "success" in value && value.success===false;}
 export function createLocalDemoLearningRepository(store:LocalDemoLearningStorePort,reviewer:()=>{id:string;displayName:string}|null=()=>null):LearningRepository {
  return {
   async getLessonProgress(studentId,lessonKey){if(!studentId||!lessonKey)return null;return progressDto(await store.getProgress(studentId,lessonKey),studentId,lessonKey);},
