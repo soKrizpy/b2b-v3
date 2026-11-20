@@ -20,7 +20,7 @@ test.describe("Canonical local-demo learning record adapters", () => {
         deleteDraft: () => false,
         subscribe: () => () => {}
       };
-      const tutor = createLocalDemoSessionReportRepository(store, () => ({ id:"tutor-1", role:"tutor" }));
+      const tutor = createLocalDemoSessionReportRepository(store, () => ({ id:"tutor-1", role:"tutor" }), () => true);
       const other = createLocalDemoSessionReportRepository(store, () => ({ id:"tutor-2", role:"tutor" }));
       const student = createLocalDemoSessionReportRepository(store, () => ({ id:"student-1", role:"student" }));
       const input = { ...row, id:undefined, sessionId:null, expectedVersion:undefined };
@@ -62,7 +62,7 @@ test.describe("Canonical local-demo learning record adapters", () => {
         },
         subscribe: () => () => {}
       };
-      const tutor = createLocalDemoMonthlyEvaluationRepository(store, () => ({ id:"tutor-1", role:"tutor" }));
+      const tutor = createLocalDemoMonthlyEvaluationRepository(store, () => ({ id:"tutor-1", role:"tutor" }), () => true);
       const student = createLocalDemoMonthlyEvaluationRepository(store, () => ({ id:"student-1", role:"student" }));
       const blocked = await student.saveEvaluation(row);
       const missingVersion = await tutor.saveEvaluation(row);

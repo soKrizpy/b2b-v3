@@ -43,7 +43,8 @@ export function createLocalDemoLearningRepository(
    const actor=getActor();
    if(!actor||actor.role!=="student"||actor.id!==input.studentId)return fail("FORBIDDEN","Siswa hanya dapat mengirim karya atas namanya sendiri.");
    if(!input.studentId||!input.lessonKey)return fail("INVALID_SUBMISSION","studentId dan lessonKey wajib diisi.");
-   if(input.id){const existing=await store.getSubmission(input.id);if(existing&&existing.studentId!==actor.id)return fail("FORBIDDEN","Submission milik siswa lain tidak dapat diubah.");}
+   if(input.status!=="submitted")return fail("INVALID_STATUS","Siswa hanya dapat mengirim submission dengan status submitted.");
+   if(input.id){const existing=await store.getSubmission(input.id);if(existing&&existing.studentId!==actor.id)return fail("FORBIDDEN","Submission milik siswa lain tidak dapat diubah.");if(existing?.status==="approved")return fail("INVALID_TRANSITION","Submission yang sudah disetujui tidak dapat dikirim ulang.");}
    if(input.expectedVersion!==undefined){if(!input.id)return fail("INVALID_VERSION","expectedVersion hanya berlaku saat memperbarui submission.");const current=await store.getSubmission(input.id);if(!current)return fail("NOT_FOUND","Submission tidak ditemukan.");const version=Number(current.version)||1;if(version!==input.expectedVersion)return fail("STALE_UPDATE_CONFLICT","Submission telah berubah. Muat ulang sebelum menyimpan.",{expectedVersion:input.expectedVersion,currentVersion:version});}
    const payload:Record<string,unknown>={...(input.id?{id:input.id}:{}),studentId:actor.id,studentName:input.studentName,studentGrade:input.studentGrade,studentAvatar:input.studentAvatar,lessonId:input.lessonKey,lessonTitle:input.lessonTitle,projectUrl:input.projectUrl,studentNotes:input.studentNotes,status:input.status,checkpointsPassed:input.checkpointsPassed,checkpointsTotal:input.checkpointsTotal,quizScore:input.quizScore,submittedAt:input.submittedAt};
    try{const saved=await store.saveSubmission(payload);return saved?{success:true,data:submissionDto(saved)}:fail("SAVE_FAILED","Submission gagal disimpan.");}catch(e){return fail("SAVE_FAILED",e instanceof Error?e.message:"Gagal menyimpan submission.");}
@@ -52,6 +53,7 @@ export function createLocalDemoLearningRepository(
    const actor=getActor();if(!actor||actor.role!=="tutor")return fail("FORBIDDEN","Sesi tutor aktif diperlukan untuk meninjau submission.");
    if(status==="revision-required"&&!feedback.trim())return fail("FEEDBACK_REQUIRED","Catatan revisi wajib diisi.");
    const current=await store.getSubmission(id);if(!current)return fail("NOT_FOUND","Submission tidak ditemukan.");
+   if(!["submitted","revision-required"].includes(current.status))return fail("INVALID_TRANSITION","Hanya submission yang menunggu peninjauan atau revisi yang dapat ditinjau.");
    if(!isTutorAssigned(actor.id,current.studentId))return fail("NOT_ASSIGNED_TUTOR","Tutor tidak memiliki penugasan aktif untuk siswa ini.");
    try{const result=await store.updateSubmissionStatus(id,status,{reviewerId:actor.id,reviewerName:actor.displayName??actor.id,teacherFeedback:feedback},expectedVersion);if(!result)return fail("REVIEW_FAILED","Review gagal disimpan atau data tidak valid.");if(isReviewFailure(result))return fail(result.error,result.message??"Review ditolak.",{currentVersion:result.currentVersion});return {success:true,data:submissionDto(result)};}catch(e){return fail("REVIEW_FAILED",e instanceof Error?e.message:"Gagal menyimpan review.");}
   },

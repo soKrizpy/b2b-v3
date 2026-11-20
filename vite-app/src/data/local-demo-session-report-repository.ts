@@ -50,7 +50,8 @@ function eventTime(value?: string): string {
 }
 export function createLocalDemoSessionReportRepository(
   store: LocalDemoSessionReportStorePort,
-  getActor: () => DemoActor | null
+  getActor: () => DemoActor | null,
+  isTutorAssigned: (tutorId: string, studentId: string) => boolean = () => false
 ): SessionReportRepository {
   const actor = () => getActor();
   return {
@@ -80,6 +81,7 @@ export function createLocalDemoSessionReportRepository(
       if (input.tutorId !== current.id) return fail("ACTOR_MISMATCH", "Laporan hanya dapat disimpan atas nama tutor yang sedang aktif.");
       if (input.sessionId) return fail("SESSION_LINK_UNSUPPORTED", "Penyimpanan laporan demo belum mendukung relasi langsung ke sesi.");
       if (!input.studentId) return fail("INVALID_REPORT", "Siswa wajib dipilih.");
+      if (!isTutorAssigned(current.id, input.studentId)) return fail("NOT_ASSIGNED_TUTOR", "Tutor tidak memiliki penugasan aktif untuk siswa ini.");
       if (input.id) {
         const existing = store.getReportById(input.id);
         if (existing && existing.tutorId !== current.id) return fail("FORBIDDEN", "Laporan milik tutor lain tidak dapat diubah.");

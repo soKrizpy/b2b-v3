@@ -35,7 +35,8 @@ function eventTime(value?: string): string {
 }
 export function createLocalDemoMonthlyEvaluationRepository(
   store: LocalDemoMonthlyEvaluationStorePort,
-  getActor: () => DemoActor | null
+  getActor: () => DemoActor | null,
+  isTutorAssigned: (tutorId: string, studentId: string) => boolean = () => false
 ): MonthlyEvaluationRepository {
   return {
     async listTutorEvaluations(tutorId) {
@@ -52,6 +53,7 @@ export function createLocalDemoMonthlyEvaluationRepository(
       const current = getActor();
       if (!current || current.role !== "tutor") return fail("FORBIDDEN", "Sesi tutor aktif diperlukan untuk menyimpan evaluasi.");
       if (input.tutorId !== current.id) return fail("ACTOR_MISMATCH", "Evaluasi hanya dapat disimpan atas nama tutor yang sedang aktif.");
+      if (!isTutorAssigned(current.id, input.studentId)) return fail("NOT_ASSIGNED_TUTOR", "Tutor tidak memiliki penugasan aktif untuk siswa ini.");
       if (input.rating !== null && !ratings.has(input.rating)) return fail("INVALID_RATING", "Kategori penilaian tidak valid.");
       const existing = store.getAll().find(item => item.studentId === input.studentId && item.tutorId === current.id && item.period === input.period);
       if (input.id && existing && existing.id !== input.id) return fail("ID_MISMATCH", "ID evaluasi tidak cocok dengan siswa, tutor, dan periode.");
