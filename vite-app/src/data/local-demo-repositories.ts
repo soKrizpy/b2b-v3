@@ -1,26 +1,22 @@
 /**
- * Local-demo adapters for the portal repositories.
+ * Typed facade over the single local-demo repository composition root.
  *
- * This module deliberately wraps the existing localStorage stores. It is not
- * production authentication, persistence, or an authorization boundary.
- * A future Supabase adapter must implement the same interfaces without
- * accepting caller-supplied identity as proof of authority.
+ * The imported gateway owns all local-demo service wiring. This facade only
+ * narrows the legacy JavaScript API to the React portal's login contract.
+ * It is not production authentication or an authorization boundary.
  */
 
-// @ts-ignore - Existing JavaScript demo identity store is retained during migration.
-import { IdentityStore } from "../../../js/services/identity-store.js";
-// @ts-ignore - Existing JavaScript demo auth service is retained during migration.
-import { AuthService } from "../../../js/services/auth-service.js";
+// @ts-ignore - JavaScript gateway remains the runtime composition root during migration.
+import { WorkspaceRepositories } from "../../../js/services/workspace-repositories.js";
 import type { AppRepositories, DemoSession, RoleId } from "./repositories";
 
 export const localDemoRepositories: AppRepositories = {
   auth: {
     async getSession() {
-      return AuthService.getCurrentSession() as DemoSession;
+      return await WorkspaceRepositories.auth.getSession() as DemoSession;
     },
-
     async signIn(accountId) {
-      const result = AuthService.signInDemo(accountId);
+      const result = await WorkspaceRepositories.auth.signIn(accountId);
       if (!result?.success) {
         return {
           success: false as const,
@@ -30,23 +26,19 @@ export const localDemoRepositories: AppRepositories = {
       }
       return { success: true as const, session: result.session as DemoSession };
     },
-
     async signOut() {
-      AuthService.signOut();
+      await WorkspaceRepositories.auth.signOut();
     },
-
     subscribe(callback) {
-      return AuthService.subscribe((session: DemoSession) => callback(session));
+      return WorkspaceRepositories.auth.subscribe((session: DemoSession) => callback(session));
     }
   },
-
   identity: {
     async initializeDemo() {
-      IdentityStore.seedIfEmpty();
+      await WorkspaceRepositories.identity.initializeDemo();
     },
-
     async listActiveAccounts(role: RoleId) {
-      return IdentityStore.getAllUsers({ role, status: "active" });
+      return await WorkspaceRepositories.identity.listActiveAccounts(role);
     }
   }
 };

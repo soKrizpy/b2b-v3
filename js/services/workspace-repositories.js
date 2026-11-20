@@ -1,15 +1,30 @@
 /**
- * Composition root for repository operations used by active workspaces.
+ * Composition root for repository operations used by the active application.
  *
- * Keep store-specific adapters behind this module so workspace controllers
- * have one stable import boundary. These repositories still use local-demo
- * persistence; this gateway is not a production authorization boundary.
+ * All adapters here currently use local-demo persistence. This gateway is not
+ * production authentication, persistence, or an authorization boundary.
  */
+import { AuthService } from './auth-service.js';
 import { IdentityRepository } from './identity-repository.js';
 import { LearningStateRepository } from './learning-state-repository.js';
 import { ClassSessionRepository } from './class-session-repository.js';
 import { SessionReportRepository, MonthlyEvaluationRepository } from './learning-record-repository.js';
 import { BillingRepository } from './billing-repository.js';
+
+export const DemoAuthRepository = Object.freeze({
+  async getSession() {
+    return AuthService.getCurrentSession();
+  },
+  async signIn(accountId) {
+    return AuthService.signInDemo(accountId);
+  },
+  async signOut() {
+    return AuthService.signOut();
+  },
+  subscribe(callback) {
+    return AuthService.subscribe(callback);
+  }
+});
 
 export {
   IdentityRepository,
@@ -21,6 +36,7 @@ export {
 };
 
 const defaultWorkspaceRepositories = Object.freeze({
+  auth: DemoAuthRepository,
   identity: IdentityRepository,
   learning: LearningStateRepository,
   classSessions: ClassSessionRepository,
@@ -29,11 +45,9 @@ const defaultWorkspaceRepositories = Object.freeze({
   billing: BillingRepository
 });
 
-
 /**
- * Resolve workspace dependencies once at construction time.
- * Partial overrides allow tests and future adapters to replace one domain
- * without changing controller business logic.
+ * Resolve dependencies once at construction time. Partial overrides support
+ * isolated adapters in tests without changing workspace business logic.
  */
 export function createWorkspaceRepositories(overrides = {}) {
   return Object.freeze({

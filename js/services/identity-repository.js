@@ -8,6 +8,7 @@ export { IdentityStore };
 
 export const IdentityRepository = {
   async getAllUsers(filters = {}) { return IdentityStore.getAllUsers(filters); },
+  async listActiveAccounts(role) { return IdentityStore.getAllUsers({ role, status: 'active' }); },
   async getUserById(userId) { return IdentityStore.getUserById(userId); },
   async getTutorStudents(tutorId) { return IdentityStore.getTutorStudents(tutorId); },
   async getAllAssignments() { return IdentityStore.getAllAssignments(); },
