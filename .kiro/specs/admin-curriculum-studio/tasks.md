@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Admin Curriculum Studio is implemented as a new section within the existing Admin Workspace, adding a `curriculum` tab that delegates to a dedicated `CurriculumStudio` controller. It does not replace user management. The studio manages the full curriculum hierarchy — Curriculum → Module → Topic → Lesson (+Slides) → Quiz → Final Boss → Certificate — plus the Draft/Review/Published/Archived lifecycle and a versioning system that keeps student progress bound to the version a learner started on.
+The Admin Curriculum Studio is implemented as a new section within the existing Admin Workspace, adding a `curriculum` tab that delegates to a dedicated `CurriculumStudio` controller. It does not replace user management. The studio manages the full curriculum hierarchy — Curriculum → Module (one Island; 12–16 Topics) → Topic/Node → Lesson (10–20 slides across the six existing stages) + formative Quiz → scheduled Topic progression → Final Boss → Certificate, with flexible positive achievements — plus the Draft/Review/Published/Archived lifecycle and a versioning system that keeps student progress bound to the version a learner started on.
 
 Implementation is organized into ten incremental phases. Phase 1 builds the Curriculum Store and RBAC foundation; Phase 2 integrates navigation into the Admin Workspace; Phases 3–6 layer in CRUD views, lesson/slide authoring, topic quiz authoring, and Final Boss/certificate authoring; Phase 7 adds lifecycle and versioning; Phase 8 adds preview mode; Phase 9 adds mock data seeding; Phase 10 verifies the result. Each phase builds on the previous one and references the existing files involved.
 
@@ -19,6 +19,8 @@ Implementation order follows PROJECT_RULES Section 16 (inspect → identify affe
 - [ ] 1.3 Define entity schemas in `curriculum-store.js`: Curriculum, Module, Topic, Lesson, Slide, Quiz/Question, Final_Boss, CertificateTemplate, IssuedCertificate, Curriculum_Version (Design §4.2).
 - [ ] 1.4 Implement CRUD + list/get for Curriculum and Module, with `createdAt`/`updatedAt` tracking (Requirements 3.1–3.3, 4.1).
 - [ ] 1.5 Implement JSON serialize/deserialize round-trip helpers and a malformed-JSON guard that never discards existing data (Requirement 12.1–12.3).
+- [ ] 1.6 Define extensible `AchievementDefinition` and `AchievementAward` records in the curriculum/learning domain without hardcoding badge tiers or thresholds.
+- [ ] 1.7 Implement an idempotent achievement evaluator that can award badges from positive learning and attendance events.
 
 ### Phase 2 — Curriculum Studio Navigation Integration
 
@@ -35,7 +37,8 @@ Implementation order follows PROJECT_RULES Section 16 (inspect → identify affe
 - [ ] 3.4 Implement Module editor with the 7-island picker rendering the existing `illustrations.js` SVG thumbnails as read-only previews; store only the island key; reject unknown keys (Requirements 4.1–4.4, Design §4.3).
 - [ ] 3.5 Model Beginner/Intermediate/Advanced as independent Modules with no enforced prerequisite among them (Requirement 4.3).
 - [ ] 3.6 Implement Topic editor with order index and reorder controls; each Topic links one Lesson and one Quiz (Requirements 5.1–5.2).
-- [ ] 3.7 Implement the topic-gate relationship: non-first Topic unlocks when the preceding Topic's Quiz is passed (Requirement 5.3).
+- [ ] 3.7 Implement Topic release according to the student's next scheduled class meeting; Quiz result, score, or completion must never gate Topic availability (Requirement 5.3).
+- [ ] 3.8 Validate the 12–16 Topic target per Module without inventing, deleting, or renumbering existing Topic IDs; report any existing Module outside the target range for review.
 
 ### Phase 4 — Lesson and Slide Authoring
 
@@ -48,8 +51,8 @@ Implementation order follows PROJECT_RULES Section 16 (inspect → identify affe
 
 - [ ] 5.1 Implement the Quiz editor supporting `mcq`, `true-false`, and `prediction` questions, consistent with `content-renderer.js` `renderQuiz` (Requirement 7.1).
 - [ ] 5.2 Allow each option to carry an explanation and an optional hint, matching Content_Renderer behavior (Requirement 7.3).
-- [ ] 5.3 Implement a configurable passing-threshold field on the Quiz that references Open Decision 1 without hardcoding a value; the Quiz_Gate marks passed when score ≥ threshold (Requirement 7.2).
-- [ ] 5.4 Implement an attempt-limit field referencing Open Decision 2; leave the limit value unset (Requirement 7.4).
+- [ ] 5.3 Record Quiz completion, answers, score/result, and timestamp for learning history and Parent Hub reporting; Quiz results do not affect Topic release (Requirement 7.2).
+- [ ] 5.4 Keep any attempt-limit policy configurable and unset until approved; attempt limits must not be used to block the next scheduled Topic (Requirement 7.4).
 
 ### Phase 6 — Final Boss and Certificate
 
@@ -67,6 +70,10 @@ Implementation order follows PROJECT_RULES Section 16 (inspect → identify affe
 - [ ] 7.4 Bind student progress records to the Curriculum_Version in use at start; preserve superseded versions (Requirements 11.2–11.3).
 - [ ] 7.5 Implement the Module version history list, reverse-chronological, read-only snapshot view (Requirement 11.4).
 - [ ] 7.6 Enforce that a `published` Module in use by students is never silently overwritten (Requirement 10.4).
+- [ ] 7.7 Add flexible achievement catalogue CRUD/configuration for positive actions and milestones (Quiz, Challenge, Final Boss, attendance, creativity, persistence, consistency).
+- [ ] 7.8 Record student badge awards with criterion/reason and timestamp; prevent duplicate awards for the same milestone.
+- [ ] 7.9 Surface earned badges and their positive context in the Student experience and Parent Hub.
+- [ ] 7.10 Preserve earned badges permanently in achievement history; prohibit deficit/shaming badges and public student rankings.
 
 ### Phase 8 — Preview Mode
 
@@ -92,6 +99,8 @@ Follow PROJECT_RULES Section 17. Never report an untested feature as tested.
 - [ ] 10.8 Verify round-trip: edit → save → reload → content identical (Requirement 12.2).
 - [ ] 10.9 Verify versioning: edit a published Module → new version created → prior version preserved → progress still bound to prior version (Requirements 11.1–11.3).
 - [ ] 10.10 Verify Final Boss publish guard blocks under-20-MCQ publish (Requirement 8.2).
+- [ ] 10.11 Verify Quiz completion/reporting does not gate the next Topic and the next Topic is released with the next scheduled class meeting.
+- [ ] 10.12 Verify positive achievement rules are configurable, idempotent, student-scoped, visible in Parent Hub, and never revoke previously earned badges.
 
 ## Notes
 
@@ -107,7 +116,7 @@ Follow PROJECT_RULES Section 17. Never report an untested feature as tested.
 
 These must be approved before encoding any value (see requirements.md). The implementation leaves them configurable/blank until decided:
 
-- Open Decision 1 — Assessment passing scores (Quiz & Final Boss)
+- Open Decision 1 — Final Boss passing score (Topic Quizzes are formative and report observed results)
 - Open Decision 2 — Maximum attempt limits
 - Open Decision 3 — Retake rules
 - Open Decision 4 — Module repetition policy
@@ -148,7 +157,9 @@ These must be approved before encoding any value (see requirements.md). The impl
     { "id": 24, "tasks": ["8.2"] },
     { "id": 25, "tasks": ["4.4"] },
     { "id": 26, "tasks": ["10.2", "10.3", "10.4", "10.5", "10.6", "10.7", "10.9", "10.10"] },
-    { "id": 27, "tasks": ["10.1", "10.8"] }
+    { "id": 27, "tasks": ["10.1", "10.8"] },
+    { "id": 28, "tasks": ["1.6", "1.7"] },
+    { "id": 29, "tasks": ["3.7", "3.8", "5.3", "7.7", "7.8", "7.9", "7.10", "10.11", "10.12"] }
   ]
 }
 ```
