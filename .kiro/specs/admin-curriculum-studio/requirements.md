@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Admin Curriculum Studio is the central content-authoring hub for the Bits2Bytes Learning Engine. It enables Administrators to build and govern the official learning program: Curricula, Modules, Topics, Lessons, Slides, topic-gate Quizzes, per-module Final Boss assessments, and Certificates — together with the curriculum lifecycle (Draft, Review, Published, Archived) and a versioning system that keeps student progress bound to the version a learner started on.
+The Admin Curriculum Studio is the central content-authoring hub for the Bits2Bytes Learning Engine. It enables Administrators to build and govern the official learning program: Curricula, Modules, Topics, Lessons, Slides, formative topic Quizzes, flexible positive achievements, per-module Final Boss assessments, and Certificates — together with the curriculum lifecycle (Draft, Review, Published, Archived) and a versioning system that keeps student progress bound to the version a learner started on.
 
 The Studio integrates into the existing Admin Workspace as an additional section alongside the current user-management views. It reuses the existing Bright Adventure design system, design tokens, components (modal, drawer, toast), and the existing Content_Renderer block vocabulary so that authored lessons render identically to the student experience. The seven existing GAS Island illustrations are preserved verbatim; Modules are linked to islands by reference rather than by recreating artwork.
 
@@ -12,12 +12,12 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 
 - **Admin_Curriculum_Studio**: The new admin section that manages curriculum content, accessed from the existing Admin Workspace navigation.
 - **Curriculum**: The top-level learning program container that groups one or more Modules (e.g. "Scratch Starter Adventure").
-- **Module**: A major learning unit bound to exactly one GAS_Island. Beginner, Intermediate, and Advanced are independent Modules with no enforced prerequisite ordering between them.
-- **Topic**: A unit within a Module that contains exactly one Lesson and exactly one Quiz. A Topic is unlocked when its prerequisite Topic's Quiz is passed.
+- **Module**: A major learning unit bound to exactly one GAS_Island. Each Module targets 12–16 Topics. Beginner, Intermediate, and Advanced are independent learning levels with no enforced prerequisite ordering; each level can be assigned according to student needs.
+- **Topic / Node**: A learning unit within a Module that contains exactly one Lesson and exactly one Quiz. A Topic becomes available according to the student's next scheduled class meeting, not according to a Quiz result.
 - **Lesson**: A sequence of 10–20 Slides plus guided-practice and project-challenge stages, structured to match the existing lesson JSON model used by the Student Lesson Workspace.
 - **Slide**: A single learning screen composed of one or more Content_Blocks.
 - **Content_Block**: A typed renderable unit (text, callout, image, diagram, scratch-block, code-stack, copyable-prompt, ai-prompt, comparison-table, video-embed, checklist-summary, interactive-quiz) reused by the existing Content_Renderer.
-- **Quiz**: A topic-gate assessment composed of questions (mcq, true-false, prediction). Passing the Quiz unlocks the next Topic.
+- **Quiz**: A formative understanding check associated with a Topic, composed of questions (mcq, true-false, prediction). Results and completion history are recorded for learning analytics and Parent Hub reporting. A Quiz never gates or delays the next Topic.
 - **Final_Boss**: A 20-question multiple-choice assessment that becomes available after all Topics in a Module are completed.
 - **Certificate**: A completion credential issued for a Module when the student passes the Final_Boss.
 - **Curriculum_Version**: An immutable snapshot of curriculum content identified by a version number; student progress is bound to the Curriculum_Version in use when the learner began.
@@ -83,7 +83,7 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 
 1. WHEN the Admin creates a Topic within a Module, THE Curriculum_Store SHALL persist a Topic record with a stable ID, title, an order index, and links to exactly one Lesson and exactly one Quiz.
 2. THE Curriculum_Studio SHALL allow the Admin to reorder Topics within a Module.
-3. WHEN a Topic is not the first Topic in its Module, THE Curriculum_Studio SHALL treat the preceding Topic's Quiz as the gate that unlocks this Topic.
+3. THE learning progression SHALL make the next Topic available in alignment with the student's next scheduled class meeting. Quiz completion, score, or failure SHALL NOT block, delay, or unlock a Topic.
 
 ### Requirement 6: Lesson and Slide Authoring
 
@@ -98,14 +98,14 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 
 ### Requirement 7: Topic Quiz Authoring
 
-**User Story:** As an Administrator, I want to author the quiz that gates each topic, so that students must demonstrate understanding before proceeding.
+**User Story:** As an Administrator, I want to author a formative Quiz for each Topic, so that the student's understanding can be observed, recorded, and shared with parents without turning assessment into a barrier to learning.
 
 #### Acceptance Criteria
 
 1. WHEN the Admin authors a Quiz, THE Curriculum_Studio SHALL support question types `mcq`, `true-false`, and `prediction`, consistent with the Content_Renderer quiz vocabulary.
-2. WHERE a passing threshold is configured (Open Decision 1), THE Quiz_Gate SHALL mark the Quiz as passed when the student score meets or exceeds the configured threshold.
+2. WHEN a student completes a Quiz, THE assessment service SHALL record the completion, answers, score/result, and completion time for learning-history and Parent Hub reporting. Quiz results SHALL NOT control Topic availability.
 3. THE Curriculum_Studio SHALL allow each Quiz option to carry an explanation shown after answering, consistent with the existing Content_Renderer behavior.
-4. WHERE a maximum attempt limit is configured (Open Decision 2) and the student exceeds it, THE Quiz_Gate SHALL apply the configured attempt-limit rule; the limit value itself remains an open decision.
+4. WHERE an attempt policy is configured (Open Decision 2), THE assessment service SHALL apply it to Quiz attempts without changing the rule that Topic availability follows the class schedule.
 
 ### Requirement 8: Final Boss Authoring
 
@@ -193,11 +193,26 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 1. THE Requirements_Document SHALL list the open decisions without assigning values: quiz passing score, Final_Boss passing score, maximum attempt limits, retake rules, module repetition policy, certificate validity period, whether Tutors may modify official material, and rules for assigning multiple Modules to students.
 2. WHERE any requirement depends on an open decision, THE Requirements_Document SHALL reference the open decision by identifier rather than assuming a value.
 
+
+### Requirement 16: Flexible, Positive Achievement System
+
+**User Story:** As a student, I want my positive effort and progress to be recognized in different ways, so that I feel encouraged to keep learning rather than judged against other students.
+
+#### Acceptance Criteria
+
+1. THE Achievement_System SHALL support an extensible catalogue of badge definitions and configurable criteria; new positive achievements SHALL be addable without changing the core application code.
+2. THE Achievement_System SHALL support event-based and milestone-based criteria, including (but not limited to) completing a Quiz, completing a Challenge, attempting or completing a Final_Boss, attending at least 8 class meetings in a calendar month, demonstrating creativity, persistence, and consistent participation.
+3. WHEN a student earns a badge, THE Achievement_System SHALL record the student, badge, reason/criterion, and earned timestamp, and SHALL make the achievement visible in the student experience and Parent Hub.
+4. THE Achievement_System SHALL prevent duplicate grants for the same student and achievement milestone.
+5. EARNED badges SHALL remain in the student's achievement history; later inactivity SHALL NOT revoke a previously earned badge.
+6. THE Achievement_System SHALL NOT use humiliating or deficit labels, punish students for missed milestones, or require public student rankings/comparisons.
+7. Badge tiers and thresholds MAY be configured flexibly; no universal badge count or tier threshold is hardcoded by this requirement.
+
 ## Open Decisions
 
 The following decisions are intentionally unresolved and require explicit user approval before implementation. No requirement in this document assigns a value to any of them.
 
-- **Open Decision 1 — Assessment Passing Scores**: The passing score threshold for topic Quizzes and for the Final_Boss is undecided. Requirements 7 and 8 reference this decision rather than fixing a value.
+- **Open Decision 1 — Final Boss Passing Score**: The passing score threshold for the Final_Boss is undecided. Topic Quiz results are formative and must be reported as observed results; they do not require a pass threshold to unlock learning.
 - **Open Decision 2 — Maximum Attempt Limits**: The maximum number of attempts a student may take on a Quiz or Final_Boss is undecided. Requirement 7 references this decision.
 - **Open Decision 3 — Retake Rules**: The rules governing retakes (cool-down period, question reshuffling, feedback visibility) are undecided.
 - **Open Decision 4 — Module Repetition Policy**: Whether a student may repeat a completed Module, and what happens to an existing Certificate on repetition, is undecided.
