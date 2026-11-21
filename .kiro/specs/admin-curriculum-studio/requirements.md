@@ -14,7 +14,7 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 - **Curriculum**: The top-level learning program container that groups one or more Modules (e.g. "Scratch Starter Adventure").
 - **Module**: A major learning unit bound to exactly one GAS_Island. Each Module targets 12–16 Topics. Beginner, Intermediate, and Advanced are independent learning levels with no enforced prerequisite ordering; each level can be assigned according to student needs.
 - **Topic / Node**: A learning unit within a Module that contains exactly one Lesson and exactly one Quiz. A Topic becomes available according to the student's next scheduled class meeting, not according to a Quiz result.
-- **Lesson**: A sequence of 10–20 Slides plus guided-practice and project-challenge stages, structured to match the existing lesson JSON model used by the Student Lesson Workspace.
+- **Lesson**: A learning sequence with the six existing stages — `brief`, `materials`, `practice`, `check`, `challenge`, and `submission`. The `materials` stage normally contains 10–20 Slides per Topic; the slide count remains flexible and each slide focuses on one learning objective.
 - **Slide**: A single learning screen composed of one or more Content_Blocks.
 - **Content_Block**: A typed renderable unit (text, callout, image, diagram, scratch-block, code-stack, copyable-prompt, ai-prompt, comparison-table, video-embed, checklist-summary, interactive-quiz) reused by the existing Content_Renderer.
 - **Quiz**: A formative understanding check associated with a Topic, composed of questions (mcq, true-false, prediction). Results and completion history are recorded for learning analytics and Parent Hub reporting. A Quiz never gates or delays the next Topic.
@@ -74,6 +74,7 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 2. THE Curriculum_Studio SHALL offer the seven existing GAS_Island keys as binding options and SHALL NOT allow defining new islands or altering the existing island SVG artwork.
 3. WHERE the Beginner, Intermediate, and Advanced Modules exist, THE Curriculum_Studio SHALL model them as independent Modules and SHALL NOT enforce a completion prerequisite among them.
 4. WHEN the Admin attempts to bind a Module to an unknown island key, THE Curriculum_Studio SHALL reject the binding and SHALL display a validation error.
+5. A Module's curriculum target SHALL contain 12–16 Topics. Existing published Topic records SHALL be preserved; the Studio SHALL flag out-of-range legacy counts for review and SHALL NOT silently create, delete, or renumber Topics.
 
 ### Requirement 5: Topic Management
 
