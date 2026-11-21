@@ -99,3 +99,21 @@ The Stage 4 gate remains closed. No Supabase setup, migrations, RLS changes, or 
 - Active Admin, Tutor, Student, and embedded Parent Hub controllers still use the legacy `WorkspaceRepositories` gateway. The new canonical adapters are not yet wired into active runtime controllers. This is deliberate until the missing domains and a typed composition boundary are resolved.
 - The embedded Parent Hub currently calls legacy `billing.getStudentInvoices()`, which returns all issued invoices including paid ones. During canonical consumer migration, its history tab must switch to `getStudentInvoiceHistory()`; the student-facing current-invoice view must use `getStudentInvoices()` (unpaid only).
 - Local invoice creation has a read-then-write duplicate-session check. Production billing must enforce unique invoice-line/session ownership transactionally (e.g. unique constraint plus transaction), not rely on the demo check.
+
+## Curriculum decision update — 2026-11-21
+
+The product rules below are now confirmed by the user and supersede the earlier Admin Curriculum Studio spec language wherever it describes a Quiz as a Topic gate:
+
+- One Island represents one Module.
+- A Module targets 12–16 Topics/Nodes. Existing IDs and published content must be preserved; actual per-Module counts still require verification before any cleanup.
+- Beginner, Intermediate, and Advanced are independent learning levels. No mandatory level prerequisite is enforced.
+- Each Topic contains one Lesson and one formative Quiz.
+- The Lesson Workspace preserves exactly six stages: `brief`, `materials`, `practice`, `check`, `challenge`, and `submission`. The Materials stage normally contains 10–20 slides per Topic; the count remains flexible.
+- Topic Quiz records understanding, answers/results, and completion history for Parent Hub reporting. It does not gate, delay, or unlock the next Topic.
+- The next Topic becomes available in alignment with the student's next scheduled class meeting.
+- Completing all Topics makes the module's Final Boss available. Final Boss contains exactly 20 multiple-choice questions; passing it grants the module certificate. The passing threshold and attempt/retake policies remain undecided.
+- Achievements are flexible and positive. Configurable criteria may reward Quiz/Challenge/Final Boss activity, attendance (including at least 8 meetings in a calendar month), creativity, persistence, and consistency. Awards are student-scoped, idempotent, retained once earned, and never used to shame or publicly rank students.
+
+The existing source inventory previously inspected contains 7 Modules, 100 Topics, 33 Quizzes, and 30 Quiz questions; all 7 existing Modules were recorded as Beginner. The aggregate average is not a substitute for verifying each Module's Topic count. The current repository still contains only one Lesson fixture, not a complete local curriculum catalogue. Do not fabricate the missing module/topic mapping or IDs.
+
+Stage 3 must preserve the existing stable `lessonKey` and progress relationship (`studentId + lessonKey`). Production Supabase remains out of scope; no database reads/writes, migrations, RLS changes, or Stage 4 work are authorized by this update. The remaining curriculum implementation must use verified local/exported source data or wait for the separately approved backend stage.
