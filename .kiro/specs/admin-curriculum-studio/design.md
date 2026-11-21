@@ -139,10 +139,17 @@ The studio uses a **master–detail** layout so the administrator keeps context 
 
 ### Progress and Certificate Rules
 
-- A Topic unlocks when the preceding Topic's Quiz is passed (Requirement 5.3). The first Topic in a Module is unlocked by default.
+- Topic availability follows the student's scheduled class progression: the next Topic becomes available with the next scheduled class meeting. Quiz completion, score, or failure never gates Topic availability.
 - The Final Boss becomes available only when all Topics in a Module are completed (Requirement 8.3–8.4).
 - Passing the Final Boss issues a Certificate bound to the student and the active Curriculum_Version (Requirement 9.1).
 - The specific **passing scores, attempt limits, retake rules, module repetition, and certificate validity** are Open Decisions 1–5 and are intentionally not encoded in this design.
+
+
+### Positive Achievement System
+
+Achievement definitions are extensible catalogue records, not hardcoded UI cases. Each definition may describe an event or milestone criterion, tier, display name, description, and presentation asset. Examples include completing a Quiz or Challenge, attempting/completing a Final Boss, attending at least eight class meetings in a calendar month, showing creativity, persistence, or consistent participation.
+
+Achievement awards are student-scoped, idempotent, and include the earned time and reason. The student and Parent Hub can view earned badges. Previously earned badges remain in history. The system must not issue humiliating/deficit badges, punish missed targets, or rely on public student rankings.
 
 ### File Impact
 
@@ -249,7 +256,7 @@ Module ──binds──▶ GAS_Island (one of 7 existing keys, reference only)
 { id, title, type, content: [Content_Block, ...] }
 ```
 
-**Quiz (topic gate)**
+**Quiz (formative assessment)**
 ```
 { id, title, questions: [
   { id, type: 'mcq'|'true-false'|'prediction',
@@ -320,9 +327,9 @@ This feature contains a pure serialization/storage layer and well-defined busine
 
 **Validates: Requirements 4.1, 4.2, 4.4**
 
-### Property 5: Topic creation links one lesson and one quiz, gated by the preceding quiz
+### Property 5: Topic creation links one lesson and one formative quiz; progression follows the class schedule
 
-*For any* Topic created within a Module, the persisted record SHALL link to exactly one Lesson and exactly one Quiz; for any Topic at order index N > 0, the Topic SHALL be unlocked if and only if the preceding Topic's Quiz is passed, and the first Topic SHALL be unlocked by default.
+*For any* Topic created within a Module, the persisted record SHALL link to exactly one Lesson and exactly one Quiz; Topic availability SHALL follow the student's next scheduled class meeting and SHALL be independent of all Quiz results.
 
 **Validates: Requirements 5.1, 5.3**
 
@@ -346,7 +353,7 @@ This feature contains a pure serialization/storage layer and well-defined busine
 
 ### Property 9: Assessment passing follows the configured threshold
 
-*For any* configured passing threshold (Open Decision 1) and any student score, a Quiz or Final_Boss SHALL be marked passed if and only if the score is greater than or equal to the threshold. The threshold value itself is not fixed by this design.
+*For any* configured passing threshold (Open Decision 1) and any student score, the Final_Boss SHALL be marked passed if and only if the score is greater than or equal to its configured threshold; Topic Quizzes remain formative and do not gate progression. The threshold value itself is not fixed by this design.
 
 **Validates: Requirements 7.2, 8.5**
 
