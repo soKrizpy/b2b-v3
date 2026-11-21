@@ -6,11 +6,11 @@ The Admin Curriculum Studio is implemented as a new section within the existing 
 
 Implementation is organized into ten incremental phases. Phase 1 builds the Curriculum Store and RBAC foundation; Phase 2 integrates navigation into the Admin Workspace; Phases 3–6 layer in CRUD views, lesson/slide authoring, topic quiz authoring, and Final Boss/certificate authoring; Phase 7 adds lifecycle and versioning; Phase 8 adds preview mode; Phase 9 adds mock data seeding; Phase 10 verifies the result. Each phase builds on the previous one and references the existing files involved.
 
-The approach preserves all existing work: the Student, Tutor, and Parent dashboards, the seven GAS Island illustrations, the design tokens, the app shell, the existing user-management admin views, and the Content_Renderer are consumed unchanged so authored content renders identically to the student experience. No phase introduces a backend, deployment, or Git change. Open decisions (passing scores, attempt limits, retake rules, module repetition, certificate validity, tutor authoring rights, multiple-module assignment) remain unresolved and are left configurable/blank until user approval.
+The approach preserves all existing work: the Student, Tutor, and Parent dashboards, the seven GAS Island illustrations, the design tokens, the app shell, the existing user-management admin views, and the Content_Renderer are consumed unchanged so authored content renders identically to the student experience. No phase introduces a backend or deployment. Repository changes stay on the existing `preview` branch; do not create branches or modify `main`. Open decisions (passing scores, attempt limits, retake rules, module repetition, certificate validity, tutor authoring rights, multiple-module assignment) remain unresolved and are left configurable/blank until user approval.
 
 ## Tasks
 
-Implementation order follows PROJECT_RULES Section 16 (inspect → identify affected files → identify regressions → preserve checkpoint → scoped change → verify → report) and Section 19 (incremental, working flows first). Each phase builds on the previous one and references the existing files involved. No phase introduces a backend, deployment, or Git change.
+Implementation order follows PROJECT_RULES Section 16 (inspect → identify affected files → identify regressions → preserve checkpoint → scoped change → verify → report) and Section 19 (incremental, working flows first). Each phase builds on the previous one and references the existing files involved. No phase introduces a backend or deployment. Repository changes stay on the existing `preview` branch; do not create branches or modify `main`.
 
 ### Phase 1 — Curriculum Store and RBAC Foundation
 
@@ -42,7 +42,7 @@ Implementation order follows PROJECT_RULES Section 16 (inspect → identify affe
 
 ### Phase 4 — Lesson and Slide Authoring
 
-- [ ] 4.1 Implement the Lesson editor showing a 10–20 slide list with reorder and add/remove (Requirements 6.1, 6.3).
+- [ ] 4.1 Implement the Lesson editor showing a 10–20 slide list inside the `materials` stage, preserving all six stages (`brief`, `materials`, `practice`, `check`, `challenge`, `submission`) with reorder and add/remove (Requirements 6.1, 6.3).
 - [ ] 4.2 Implement the Slide editor in the existing Drawer component, offering only the Content_Block types `content-renderer.js` supports (`text`, `callout`, `image`, `diagram`, `scratch-block`, `code-stack`, `copyable-prompt`, `ai-prompt`, `comparison-table`, `video-embed`, `checklist-summary`, `interactive-quiz`) (Requirement 6.2).
 - [ ] 4.3 Persist Slide content blocks using the exact shape the Content_Renderer expects, so storage and render share one schema (Requirement 6.4, 12.1).
 - [ ] 4.4 Wire the round-trip check: save → reload → verify structural equivalence (Requirement 12.2).
