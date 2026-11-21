@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Admin Curriculum Studio is a content-authoring surface added to the existing Admin Workspace. It does not replace user management; it adds a new tab that the Admin Workspace delegates to a dedicated `CurriculumStudio` controller. The studio manages the full curriculum hierarchy — Curriculum → Module → Topic → Lesson (+Slides) → Quiz → Final Boss → Certificate — plus the Draft/Review/Published/Archived lifecycle and the versioning system that keeps student progress bound to the version a learner started on.
+The Admin Curriculum Studio is a content-authoring surface added to the existing Admin Workspace. It does not replace user management; it adds a new tab that the Admin Workspace delegates to a dedicated `CurriculumStudio` controller. The studio manages the full curriculum hierarchy — Curriculum → Module (one Island, 12–16 Topics) → Topic/Node → Lesson (six stages; 10–20 flexible slides in Materials) + formative Quiz → Final Boss → Certificate — plus flexible positive achievements, the Draft/Review/Published/Archived lifecycle, and versioning that keeps student progress bound to the version a learner started on.
 
 The design follows three hard constraints from the project rules and the user request:
 
@@ -216,7 +216,7 @@ Entities are normalized and stored by the new `Curriculum_Store` (a localStorage
 Curriculum
   └─ modules[]  ────────────────────────────────────┐
                                                      ▼
-Module ──binds──▶ GAS_Island (one of 7 existing keys, reference only)
+Module ──binds──▶ GAS_Island (one of 7 existing keys, reference only; target 12–16 Topics)
   ├─ topics[]
   │    Topic
   │      ├─ Lesson ── slides[] ── content[] (Content_Blocks)
@@ -235,7 +235,7 @@ Module ──binds──▶ GAS_Island (one of 7 existing keys, reference only)
 
 **Module**
 ```
-{ id, curriculumId, title, description, islandKey,
+{ id, curriculumId, title, description, level, islandKey,
   lifecycleState, version, order,
   topicIds: [], finalBossId, certificateTemplateId,
   createdAt, updatedAt }
@@ -246,9 +246,16 @@ Module ──binds──▶ GAS_Island (one of 7 existing keys, reference only)
 { id, moduleId, title, order, lessonId, quizId }
 ```
 
-**Lesson** — matches the existing `lesson-scratch-motion.json` lesson/stage model; the studio focuses on the `materials` slides plus practice/check/challenge/submission stage references.
+**Lesson** — preserves the six-stage structure in the existing lesson JSON model. `materials.slides` normally contains 10–20 slides per Topic; slide count is flexible.
 ```
-{ id, title, slides: [] }
+{ id, title, stages: [
+  { id: 'brief', ... },
+  { id: 'materials', slides: [] },
+  { id: 'practice', ... },
+  { id: 'check', ... },
+  { id: 'challenge', ... },
+  { id: 'submission', ... }
+] }
 ```
 
 **Slide** — content blocks use the exact vocabulary the Content_Renderer already supports (`text`, `callout`, `image`, `diagram`, `scratch-block`, `code-stack`, `copyable-prompt`, `ai-prompt`, `comparison-table`, `video-embed`, `checklist-summary`, `interactive-quiz`).
@@ -262,6 +269,8 @@ Module ──binds──▶ GAS_Island (one of 7 existing keys, reference only)
   { id, type: 'mcq'|'true-false'|'prediction',
     question, options: [{id, text, correct, explanation}], hint? }
 ] }
+
+Quiz attempts/results are recorded for learning analytics and Parent Hub. They never unlock, block, or delay the next Topic.
 ```
 
 **Final_Boss**
