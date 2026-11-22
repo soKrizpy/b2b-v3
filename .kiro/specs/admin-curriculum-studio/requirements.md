@@ -78,7 +78,7 @@ This phase is SPEC ONLY. No implementation is performed. Open decisions that req
 
 ### Requirement 5: Topic Management
 
-**User Story:** As an Administrator, I want to create Topics within a Module, so that each topic carries one lesson and one gate quiz.
+**User Story:** As an Administrator, I want to create Topics within a Module, so that each Topic carries exactly one Lesson and one formative Quiz whose result never gates Topic progression.
 
 #### Acceptance Criteria
 
