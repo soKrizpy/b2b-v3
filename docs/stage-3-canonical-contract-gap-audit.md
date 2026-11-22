@@ -83,7 +83,7 @@ The repository tree contains one student lesson fixture (`data/mock/lesson-scrat
 ### Remaining Stage 3 work
 
 1. Resolve the curriculum source/schema gap without inventing content; keep Stage 3 open until a valid mapping or an explicitly revised contract exists.
-2. Reconcile canonical auth contract with the account-ID-only demo login; do not emulate email/password by ignoring credentials.
+2. Keep the account-ID `DemoAuthRepository` isolated from the canonical email/password `AuthRepository`; implement a real credential adapter only when a verified credential provider and session lifecycle are approved.
 3. Add canonical adapters to one typed composition factory only after all required domains (including curriculum/auth) have real implementations.
 4. Audit remaining active workspace direct-store imports and decide migration boundaries; keep the legacy UI/controller gateway intact until a tested replacement exists.
 5. Run complete contract/browser regression and close Stage 3 only after all domains and consumers are verified.
@@ -128,3 +128,19 @@ Stage 3 must preserve the existing stable `lessonKey` and progress relationship 
 - No curriculum IDs, module/topic mappings, lesson fixtures, auth behavior, database schema, Supabase data, or `main` branch were changed.
 
 The next safe implementation task remains an evidence-based curriculum source inventory and schema decision. The repository currently has one lesson fixture and no authoritative Module–Topic–Lesson ID mapping; do not construct a CurriculumRepository until that source is available or the canonical contract is deliberately revised.
+
+## Auth audit decision — 2026-11-22
+
+The auth boundary was inspected in the current `preview` tree:
+
+- `vite-app/src/data/domain-contracts.ts` defines canonical `AuthRepository.signIn({ email, password })` and `AuthSession`.
+- `vite-app/src/data/repositories.ts` separately defines `DemoAuthRepository.signIn(accountId)` and the legacy `DemoSession` shape. This is the correct boundary for the current React demo portal.
+- `vite-app/src/App.tsx` selects a role and active demo account, validates the selected account against the role/status list, then calls the demo repository with the account ID. The UI explicitly tells users that no password or production authentication is used.
+- `vite-app/src/data/local-demo-repositories.ts` adapts the React demo port to `WorkspaceRepositories.auth`; it does not claim to implement the canonical credential contract.
+- `js/services/auth-service.js` labels itself a local demo session manager, exposes `signInDemo(userId)`, checks account status through `IdentityStore`, and explicitly does not store or verify passwords.
+
+**Decision:** no auth code change is justified in this audit. The current demo port is explicitly separate and the canonical email/password contract is not implemented by it. Do not add a fake `AuthRepository` adapter, ignore a password argument, or infer credentials from an account ID. A future canonical adapter requires an approved credential provider, verified session semantics, and dedicated tests for invalid credentials, inactive accounts, session restoration, sign-out, and subscription updates.
+
+**Runtime verification:** existing portal browser tests exercise account-ID demo login for Admin, Tutor, and Student. These tests validate demo navigation only; they do not establish production credential authentication or security.
+
+No auth behavior, Supabase configuration/data, database schema, or `main` branch was changed by this audit.
