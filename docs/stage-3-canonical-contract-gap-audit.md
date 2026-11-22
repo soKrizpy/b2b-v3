@@ -223,3 +223,44 @@ The other modules do not share one uniform quiz storage pattern. For example, so
 
 No production curriculum rows, module descriptions, topics, quizzes, or question records were modified during this inspection.
 
+
+
+## Active production runtime reconciliation — 2026-11-23
+
+This checkpoint supersedes older runtime statements above wherever they describe the active Vite portal as demo-authenticated or as using only local-demo curriculum data. The older local-demo adapter findings remain valid for those adapters themselves, but they do not describe the current active runtime.
+
+### Verified active runtime paths on `preview` at `7970bb84402935788925982ffa168873795cd03e`
+
+| Area | Active implementation | Verified limitation |
+|---|---|---|
+| Authentication | `App.tsx` uses `supabaseAuthRepository`; staff uses Supabase email/password; student uses the `student-mpin-login` Edge Function with WhatsApp + six-digit MPIN; session restore/subscription/sign-out are implemented. | This is a production auth adapter, but it is not yet composed into a complete `DomainRepositories` factory. |
+| Identity/Admin | `AdminExperience.tsx` injects `supabaseAdminIdentityRepository`; account list is fetched from `admin-list-users`. | Read-only. Account CRUD and tutor-student assignment writes are deliberately unavailable; assignments return an empty list because no production assignment table is mapped. |
+| Curriculum | `StudentExperience.tsx` reads active modules/topics through `supabaseCurriculumRepository`; published topic JSONB is adapted by `supabase-lesson-adapter.ts` into the six-stage lesson renderer. | This is a direct production repository path, not a canonical `DomainRepositories` composition. Curriculum visibility depends on `student_modules` for student actors. |
+| Student learning progress | `createSupabaseLegacyLearningBridge()` verifies the current Auth user against the student ID, reads/writes `student_lesson_progress`, and uses the versioned `save_student_lesson_progress` RPC. | This is a focused compatibility bridge, not the full canonical `LearningRepository`. Submission read/write/review remains disabled pending a secure production review path. |
+| Topic quiz | `supabase-quiz-repository.ts` submits attempts through `student-submit-topic-quiz`. | Separate formative quiz data and legacy assessment records still require module-by-module mapping; do not assume every module stores quiz data identically. |
+| Tutor schedule | `TutorExperience.tsx` reads `meetings` filtered by the authenticated tutor ID and reads linked `meeting_students`. | Direct Supabase queries remain outside a canonical `ClassSessionRepository`; no claim is made that all session lifecycle operations are implemented. |
+| Reports/evaluations/billing | No complete active production repository/controller path was verified in the current React runtime files. | Canonical local-demo adapters are not production implementations. Keep these domains open. |
+
+### Composition decision
+
+- `local-demo-domain-repositories.ts` is a legacy compatibility composition over JavaScript stores. Its own comments explicitly say it is not the canonical runtime repository boundary or a production authorization boundary.
+- `local-demo-repositories.ts` is the demo account-ID gateway and must remain isolated from production authentication.
+- Do not satisfy the full `DomainRepositories` interface with placeholder methods, no-op writes, or local-demo fallbacks in production.
+- The next implementation should define an explicitly partial, capability-scoped production composition for the repositories that genuinely exist, or complete the missing production repositories first. A full `DomainRepositories` factory is only valid when all eight required domains have honest implementations and tested consumers.
+- The canonical `CurriculumRepository` is now backed by a real Supabase repository in the active student runtime; the older claim that no production curriculum source exists is superseded. The remaining gap is canonical composition and validation of schema/content variants, not absence of production curriculum data.
+
+### Latest verification checkpoint
+
+- Branch: `preview`; commit: `7970bb84402935788925982ffa168873795cd03e`.
+- GitHub Actions Preview Build completed successfully.
+- Vite App CI / Browser QA completed successfully on the latest commit. The job reported 40 passed and 21 skipped, 0 failed. Skipped legacy/demo tests are not evidence of production end-to-end coverage.
+- Vercel reported a successful check for the commit, but this checkpoint does not claim that a live production browser sign-in was performed.
+- No Supabase schema, RLS policies, production rows, Auth users, or `main` branch were changed.
+
+### Revised immediate work order
+
+1. Add focused tests for the active Supabase repositories and adapters: auth/profile mapping, curriculum access scoping and JSONB validation, lesson adaptation, progress version conflicts, and quiz function request/response validation.
+2. Define a capability-scoped production composition root for currently implemented auth, identity-read, curriculum, student-progress, and quiz capabilities without pretending reports/evaluations/billing are ready.
+3. Migrate consumers only behind tested adapters; retain current legacy UI/controller boundaries where functionality is not yet covered.
+4. Specify secure production contracts for project submission/review, session lifecycle, reports, evaluations, and billing before implementation.
+5. Recalculate Stage 3 completion only from explicit acceptance criteria and verified test evidence; do not infer completion from CI success alone.
