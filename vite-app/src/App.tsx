@@ -18,6 +18,9 @@ export default function App() {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [loginMode, setLoginMode] = useState<"student" | "staff">("student");
+  const [phone, setPhone] = useState("");
+  const [mpin, setMpin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -54,23 +57,28 @@ export default function App() {
     event.preventDefault();
     setLoginError("");
 
-    if (!email.trim() || !password) {
+    if (loginMode === "student" && (!phone.trim() || !/^\\d{6}$/.test(mpin))) {
+      setLoginError("Masukkan nomor WhatsApp dan MPIN 6 digit.");
+      return;
+    }
+    if (loginMode === "staff" && (!email.trim() || !password)) {
       setLoginError("Masukkan email dan password.");
       return;
     }
 
     setSubmitting(true);
     try {
-      const result = await supabaseAuthRepository.signIn({
-        email: email.trim(),
-        password
-      });
+      const result = loginMode === "student"
+        ? await supabaseAuthRepository.signInStudent({ phone: phone.trim(), mpin })
+        : await supabaseAuthRepository.signIn({ email: email.trim(), password });
+
       if (!result.success) {
         setLoginError(result.error.message);
         return;
       }
       setSession(result.data);
       setPassword("");
+      setMpin("");
     } catch (error) {
       console.error("Login Supabase gagal:", error);
       setLoginError("Terjadi kendala saat masuk. Periksa koneksi lalu coba lagi.");
@@ -127,10 +135,21 @@ export default function App() {
             </div>
             {!supabaseAuthRepository.isConfigured && <p className="b2b-login-error" role="alert">Konfigurasi Supabase belum lengkap. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY pada environment aplikasi.</p>}
             <form onSubmit={signIn}>
-              <label className="form-label" htmlFor="login-email">Email</label>
-              <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
-              <label className="form-label" htmlFor="login-password">Password</label>
-              <input id="login-password" className="form-control" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Masukkan password" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+              <div className="b2b-login-mode" role="group" aria-label="Jenis akun">
+                <button type="button" className={loginMode === "student" ? "btn btn-primary" : "btn btn-secondary"} aria-pressed={loginMode === "student"} onClick={() => { setLoginMode("student"); setLoginError(""); }}>Siswa</button>
+                <button type="button" className={loginMode === "staff" ? "btn btn-primary" : "btn btn-secondary"} aria-pressed={loginMode === "staff"} onClick={() => { setLoginMode("staff"); setLoginError(""); }}>Guru / Admin</button>
+              </div>
+              {loginMode === "student" ? <>
+                <label className="form-label" htmlFor="login-phone">Nomor WhatsApp</label>
+                <input id="login-phone" className="form-control" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="Contoh: 08xxxxxxxxxx" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <label className="form-label" htmlFor="login-mpin">MPIN (6 digit)</label>
+                <input id="login-mpin" className="form-control" type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={mpin} onChange={(event) => setMpin(event.target.value.replace(/\\D/g, "").slice(0, 6))} placeholder="Masukkan MPIN" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+              </> : <>
+                <label className="form-label" htmlFor="login-email">Email</label>
+                <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <label className="form-label" htmlFor="login-password">Password</label>
+                <input id="login-password" className="form-control" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Masukkan password" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+              </>}
               {loginError && <p className="b2b-login-error" role="alert">{loginError}</p>}
               <button type="submit" className="btn btn-primary" disabled={!supabaseAuthRepository.isConfigured || submitting}>{submitting ? "Memeriksa akun…" : "Masuk"}</button>
             </form>
