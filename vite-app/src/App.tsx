@@ -1,25 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import logoLight from "../../logo-b2b-light.svg";
 import logoDark from "../../logo-b2b-dark.svg";
 import StudentExperience from "./StudentExperience";
 import TutorExperience from "./TutorExperience";
 import AdminExperience from "./AdminExperience";
-import { localDemoRepositories } from "./data/local-demo-repositories";
-import type { DemoSession, DemoUser, RoleId } from "./data/repositories";
+import { supabaseAuthRepository } from "./data/supabase-auth-repository";
+import type { AuthSession } from "./data/domain-contracts";
 
-type Role = { id: RoleId; icon: string; label: string; title: string; description: string; badgeClass: string; accentClass: string };
-const roles: Role[] = [
-  { id: "admin", icon: "👑", label: "Admin", title: "Ruang Admin", description: "Atur akun, tutor, siswa, jadwal belajar, dan materi.", badgeClass: "badge-warning", accentClass: "role-card--admin" },
-  { id: "tutor", icon: "👩‍🏫", label: "Tutor", title: "Ruang Tutor", description: "Lihat siswa, periksa hasil karya, dan kirim laporan belajar.", badgeClass: "badge-scratch", accentClass: "role-card--tutor" },
-  { id: "student", icon: "🎒", label: "Siswa", title: "Ruang Belajarku", description: "Lanjutkan petualangan coding, kerjakan tantangan, dan lihat perkembangan belajarmu.", badgeClass: "badge-approved", accentClass: "role-card--student" }
-];
+const workspaceTitles = {
+  admin: "Ruang Admin",
+  tutor: "Ruang Tutor",
+  student: "Ruang Belajarku"
+} as const;
 
 export default function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [selectedRole, setSelectedRole] = useState<RoleId | null>(null);
-  const [session, setSession] = useState<DemoSession>(null);
-  const [accounts, setAccounts] = useState<DemoUser[]>([]);
-  const [selectedAccountId, setSelectedAccountId] = useState("");
+  const [session, setSession] = useState<AuthSession | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
@@ -28,26 +28,21 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
-    const unsubscribe = localDemoRepositories.auth.subscribe((next) => {
-      if (!active) return;
-      setSession(next);
-      if (next && ["admin", "tutor", "student"].includes(next.user.role)) {
-        setSelectedRole(next.user.role as RoleId);
-      }
-      if (!next) setSelectedRole(null);
+    const unsubscribe = supabaseAuthRepository.subscribe((next) => {
+      if (active) setSession(next);
     });
 
-    void (async () => {
-      await localDemoRepositories.identity.initializeDemo();
-      const activeSession = await localDemoRepositories.auth.getSession();
-      if (!active) return;
-      setSession(activeSession);
-      if (activeSession && ["admin", "tutor", "student"].includes(activeSession.user.role)) {
-        setSelectedRole(activeSession.user.role as RoleId);
-      }
-    })().catch((error: unknown) => {
-      console.error("Portal demo gagal diinisialisasi:", error);
-    });
+    void supabaseAuthRepository.getSession()
+      .then((current) => {
+        if (active) setSession(current);
+      })
+      .catch((error: unknown) => {
+        console.error("Pemulihan sesi Supabase gagal:", error);
+        if (active) setLoginError("Sesi tidak dapat dipulihkan. Silakan masuk kembali.");
+      })
+      .finally(() => {
+        if (active) setAuthLoading(false);
+      });
 
     return () => {
       active = false;
@@ -55,66 +50,49 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    let active = true;
-    if (!selectedRole) {
-      setAccounts([]);
+  async function signIn(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoginError("");
+
+    if (!email.trim() || !password) {
+      setLoginError("Masukkan email dan password.");
       return;
     }
-    void localDemoRepositories.identity.listActiveAccounts(selectedRole)
-      .then((activeAccounts) => {
-        if (active) setAccounts(activeAccounts);
-      })
-      .catch((error: unknown) => {
-        console.error("Daftar akun demo gagal dimuat:", error);
-        if (active) setAccounts([]);
+
+    setSubmitting(true);
+    try {
+      const result = await supabaseAuthRepository.signIn({
+        email: email.trim(),
+        password
       });
-    return () => {
-      active = false;
-    };
-  }, [selectedRole]);
-
-  const selectedRoleInfo = roles.find((role) => role.id === selectedRole);
-  const roleAccounts = useMemo(
-    () => accounts.filter((account) => account.role === selectedRole && account.status === "active"),
-    [accounts, selectedRole]
-  );
-
-  function chooseRole(role: RoleId) {
-    setLoginError("");
-    setSelectedRole(role);
-    setSelectedAccountId("");
-  }
-
-  async function signIn() {
-    setLoginError("");
-    if (!selectedRole || !selectedAccountId) {
-      setLoginError("Pilih akun terlebih dahulu.");
-      return;
+      if (!result.success) {
+        setLoginError(result.error.message);
+        return;
+      }
+      setSession(result.data);
+      setPassword("");
+    } catch (error) {
+      console.error("Login Supabase gagal:", error);
+      setLoginError("Terjadi kendala saat masuk. Periksa koneksi lalu coba lagi.");
+    } finally {
+      setSubmitting(false);
     }
-    const account = roleAccounts.find((item) => item.id === selectedAccountId);
-    if (!account || account.role !== selectedRole || account.status !== "active") {
-      setLoginError("Akun tidak sesuai atau sedang tidak aktif.");
-      return;
-    }
-    const result = await localDemoRepositories.auth.signIn(selectedAccountId);
-    if (!result.success) {
-      setLoginError(result.message || "Akun demo tidak dapat digunakan.");
-      return;
-    }
-    setSession(result.session);
   }
 
   async function signOut() {
-    await localDemoRepositories.auth.signOut();
-    setSession(null);
-    setSelectedRole(null);
-    setSelectedAccountId("");
     setLoginError("");
+    try {
+      await supabaseAuthRepository.signOut();
+      setSession(null);
+      setPassword("");
+    } catch (error) {
+      console.error("Logout Supabase gagal:", error);
+      setLoginError("Tidak dapat mengakhiri sesi. Silakan coba lagi.");
+    }
   }
 
-  const authenticated = Boolean(session && selectedRole && session.user.role === selectedRole);
-  const workspaceTitle = selectedRole === "student" ? "Ruang Belajarku" : selectedRole === "tutor" ? "Ruang Tutor" : selectedRole === "admin" ? "Ruang Admin" : "Bits2Bytes";
+  const user = session?.user ?? null;
+  const workspaceTitle = user ? workspaceTitles[user.role] : "Bits2Bytes";
 
   return (
     <div className="app-shell b2b-vite-shell">
@@ -124,46 +102,43 @@ export default function App() {
           <div><div className="brand-title">Bits2Bytes</div><div className="brand-subtitle">Tempat belajar coding</div></div>
         </div>
         <nav className="sidebar-content" aria-label="Menu">
-          <div><div className="nav-section-title">Menu utama</div><ul className="nav-list"><li className="nav-item"><a className="nav-link active" href="#portal" aria-current="page"><span className="nav-icon" aria-hidden="true">🚪</span><span>{authenticated ? workspaceTitle : "Pilih Ruang"}</span></a></li></ul></div>
+          <div><div className="nav-section-title">Menu utama</div><ul className="nav-list"><li className="nav-item"><a className="nav-link active" href="#portal" aria-current="page"><span className="nav-icon" aria-hidden="true">🚪</span><span>{user ? workspaceTitle : "Masuk"}</span></a></li></ul></div>
           <div className="sidebar-footer b2b-vite-sidebar-note"><strong>Belajar, berkarya, dan bertumbuh!</strong><small>Temukan hal baru dan buat karya hebat bersama Bits2Bytes.</small></div>
         </nav>
         <div className="sidebar-footer"><small>Bits2Bytes Learning</small></div>
       </aside>
+
       <div className="app-container">
         <header className="app-header">
           <div className="header-left"><h1 id="page-heading">{workspaceTitle}</h1></div>
           <div className="header-right">
-            {authenticated && <button type="button" className="btn btn-secondary btn-sm" onClick={signOut}>Keluar</button>}
+            {user && <button type="button" className="btn btn-secondary btn-sm" onClick={signOut}>Keluar</button>}
             <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTheme((current) => current === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Ganti ke tampilan gelap" : "Ganti ke tampilan terang"} aria-pressed={theme === "dark"}><span aria-hidden="true">{theme === "light" ? "🌙" : "☀️"}</span><span>{theme === "light" ? "Tampilan gelap" : "Tampilan terang"}</span></button>
           </div>
         </header>
+
         <main className="app-main" id="portal">
-          {!selectedRole && <section aria-labelledby="portal-title">
-            <div className="b2b-vite-intro"><h2 id="portal-title">Selamat datang di Bits2Bytes!</h2><p>Pilih ruang sesuai kebutuhanmu untuk mulai beraktivitas.</p></div>
-            <div className="b2b-vite-role-grid">{roles.map((role) => <article className={`card b2b-vite-role-card ${role.accentClass}`} key={role.id}>
-              <div><div className="b2b-vite-role-meta"><span className="b2b-vite-role-icon" aria-hidden="true">{role.icon}</span><span className={`badge ${role.badgeClass}`}>{role.label}</span></div><h3>{role.title}</h3><p>{role.description}</p></div>
-              <button type="button" className="btn btn-primary btn-sm b2b-vite-role-action" onClick={() => chooseRole(role.id)}>Pilih ruang <span aria-hidden="true">→</span></button>
-            </article>)}</div>
-            <p className="b2b-vite-demo-note">Mode uji coba: masuk menggunakan akun demo yang tersedia.</p>
+          {authLoading && <section className="card student-loading" role="status">Memeriksa sesi Bits2Bytes…</section>}
+
+          {!authLoading && !user && <section className="b2b-login-panel card" aria-labelledby="login-title">
+            <div className="b2b-vite-intro">
+              <h2 id="login-title">Selamat datang di Bits2Bytes!</h2>
+              <p>Masuk menggunakan akun Bits2Bytes yang sudah terdaftar.</p>
+            </div>
+            {!supabaseAuthRepository.isConfigured && <p className="b2b-login-error" role="alert">Konfigurasi Supabase belum lengkap. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY pada environment aplikasi.</p>}
+            <form onSubmit={signIn}>
+              <label className="form-label" htmlFor="login-email">Email</label>
+              <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+              <label className="form-label" htmlFor="login-password">Password</label>
+              <input id="login-password" className="form-control" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Masukkan password" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+              {loginError && <p className="b2b-login-error" role="alert">{loginError}</p>}
+              <button type="submit" className="btn btn-primary" disabled={!supabaseAuthRepository.isConfigured || submitting}>{submitting ? "Memeriksa akun…" : "Masuk"}</button>
+            </form>
           </section>}
 
-          {selectedRole && !authenticated && <section className="b2b-login-panel card" aria-labelledby="login-title">
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setSelectedRole(null); setLoginError(""); }}>← Kembali</button>
-            <div className="b2b-vite-intro"><h2 id="login-title">Masuk ke {selectedRoleInfo?.title}</h2><p>Pilih akun demo yang ingin digunakan.</p></div>
-            <label className="form-label" htmlFor="demo-account">Akun {selectedRoleInfo?.label}</label>
-            <select id="demo-account" className="form-control" value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
-              <option value="">Pilih akun…</option>
-              {roleAccounts.map((account) => <option value={account.id} key={account.id}>{account.displayName} — {account.email}</option>)}
-            </select>
-            {loginError && <p className="b2b-login-error" role="alert">{loginError}</p>}
-            <p className="b2b-login-disclaimer">Ini akun simulasi untuk pengujian. Belum menggunakan password atau autentikasi produksi.</p>
-            <button type="button" className="btn btn-primary" onClick={signIn} disabled={!selectedAccountId}>Masuk sebagai {selectedRoleInfo?.label}</button>
-          </section>}
-
-          {authenticated && selectedRole === "student" && <StudentExperience user={session!.user} />}
-          {authenticated && selectedRole === "tutor" && <TutorExperience user={session!.user} />}
-          {authenticated && selectedRole === "admin" && <AdminExperience />}
-          {session && selectedRole && !authenticated && <p className="b2b-login-error" role="alert">Peran akun tidak cocok dengan ruang yang dipilih. Silakan keluar dan masuk kembali.</p>}
+          {!authLoading && user?.role === "student" && <StudentExperience user={user} />}
+          {!authLoading && user?.role === "tutor" && <TutorExperience user={user} />}
+          {!authLoading && user?.role === "admin" && <AdminExperience />}
         </main>
       </div>
     </div>
