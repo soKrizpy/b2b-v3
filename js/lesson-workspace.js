@@ -36,7 +36,8 @@ export class LessonWorkspace {
     this.lesson = lessonData;
     this.repositories = createWorkspaceRepositories(repositories);
     this.stages = lessonData.stages || [];
-    this.currentUser = currentUser || { id: 'usr_stu_001', name: 'Alex Pratama', avatar: 'AP' };
+    if (!currentUser?.id) throw new Error('Sesi siswa diperlukan untuk membuka ruang belajar.');
+    this.currentUser = currentUser;
 
     // Current State
     this.currentScreen = 'dashboard'; // 'dashboard' | 'workspace'
@@ -280,9 +281,9 @@ export class LessonWorkspace {
           <div class="hero-profile-info">
             <div class="hero-badge-row">
               <span class="badge badge-level">Level 3 • Jago Scratch</span>
-              <span class="badge badge-scratch">Jalur: Scratch Starter</span>
+              <span class="badge badge-scratch">Jalur: ${escapeHtml(this.lesson.trackTitle || this.lesson.category || "Kurikulum Bits2Bytes")}</span>
             </div>
-            <h2 class="hero-greeting-title">Halo, Alex! Siap Lanjut Berpetualang? 🚀</h2>
+            <h2 class="hero-greeting-title">Halo, ${escapeHtml(this.currentUser.name || "Teman")}! Siap Lanjut Berpetualang? 🚀</h2>
             <p class="hero-greeting-sub">Jelajahi kepulauan koding, kumpulkan bintang, dan kuasai logika pemrograman!</p>
             <div class="hero-xp-container">
               <div class="hero-xp-label">
@@ -358,7 +359,7 @@ export class LessonWorkspace {
                   <h3 class="active-mission-title">${escapeHtml(this.lesson.title)}</h3>
                   <p class="active-mission-desc">${escapeHtml(this.lesson.subtitle || this.lesson.description)}</p>
                   <div class="active-mission-meta">
-                    <span class="meta-tag">Alat: Scratch 3.0 MIT</span>
+                    <span class="meta-tag">Alat: ${escapeHtml(this.lesson.requiredTool?.name || "Sesuai materi")}</span>
                     <span class="meta-tag">Tingkat: Pemula</span>
                     <span class="meta-tag reward-tag">+50 poin</span>
                   </div>
@@ -780,7 +781,7 @@ export class LessonWorkspace {
             </span>
             <a href="${lesson.requiredTool ? lesson.requiredTool.url : '#'}" target="_blank" rel="noopener noreferrer"
                class="btn btn-secondary btn-sm">
-              🔗 Buka Scratch ↗
+              🔗 ${escapeHtml(lesson.requiredTool?.name || "Buka alat belajar")} ↗
             </a>
           </div>
         </div>
