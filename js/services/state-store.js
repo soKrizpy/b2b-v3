@@ -257,11 +257,14 @@ export const StateStore = {
       status: submission.status || 'submitted',
       checkpointsPassed: typeof submission.checkpointsPassed === 'number'
         ? submission.checkpointsPassed
-        : (existing ? existing.checkpointsPassed : 4),
+        : (existing ? existing.checkpointsPassed : null),
       checkpointsTotal: typeof submission.checkpointsTotal === 'number'
         ? submission.checkpointsTotal
-        : (existing ? existing.checkpointsTotal : 4),
-      quizScore: submission.quizScore || (existing ? existing.quizScore : '3/3 (100%)'),
+        : (existing ? existing.checkpointsTotal : null),
+      // A missing quiz result must stay unknown; never invent a perfect score.
+      quizScore: submission.quizScore !== undefined
+        ? submission.quizScore
+        : (existing ? existing.quizScore : null),
       reviewerId: existing ? existing.reviewerId : null,
       reviewerName: existing ? existing.reviewerName : null,
       reviewedAt: existing ? existing.reviewedAt : null,
