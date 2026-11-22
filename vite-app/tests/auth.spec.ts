@@ -24,6 +24,50 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
       return;
     }
 
+    if (url.pathname === "/functions/v1/student-mpin-login" && request.method() === "POST") {
+      const payload = Buffer.from(JSON.stringify({
+        sub: userId,
+        aud: "authenticated",
+        role: "authenticated",
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        email
+      })).toString("base64url");
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          session: {
+            access_token: `eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.${payload}.signature`,
+            token_type: "bearer",
+            expires_in: 3600,
+            expires_at: Math.floor(Date.now() / 1000) + 3600,
+            refresh_token: "e2e-student-refresh-token",
+            user: { id: userId, email, app_metadata: { provider: "email", providers: ["email"] }, user_metadata: {}, created_at: createdAt }
+          }
+        })
+      });
+      return;
+    }
+
+    if (url.pathname === "/auth/v1/user" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          id: userId,
+          aud: "authenticated",
+          role: "authenticated",
+          email,
+          app_metadata: { provider: "email", providers: ["email"] },
+          user_metadata: {},
+          created_at: createdAt,
+          updated_at: createdAt,
+          is_anonymous: false
+        })
+      });
+      return;
+    }
+
     if (url.pathname === "/auth/v1/token" && request.method() === "POST") {
       await route.fulfill({
         status: 200,
@@ -88,11 +132,12 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
 }
 
 test.describe("Supabase Auth portal", () => {
-  test("shows email/password login and does not expose demo-account selection", async ({ page }) => {
+  test("shows WhatsApp/MPIN student login by default and no demo-account selection", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Selamat datang di Bits2Bytes!" })).toBeVisible();
-    await expect(page.getByLabel("Email")).toBeVisible();
-    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.getByLabel("Nomor WhatsApp")).toBeVisible();
+    await expect(page.getByLabel("MPIN (6 digit)")).toBeVisible();
+    await expect(page.getByLabel("Email")).toHaveCount(0);
     await expect(page.locator("#demo-account")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Pilih ruang/ })).toHaveCount(0);
   });
@@ -101,6 +146,7 @@ test.describe("Supabase Auth portal", () => {
     test(`authenticates a real ${role} profile and resolves its trusted database role`, async ({ page }) => {
       await mockSupabaseAuth(page, role);
       await page.goto("/");
+      await page.getByRole("button", { name: "Guru / Admin" }).click();
       await page.getByLabel("Email").fill(`${role}@bits2bytes.test`);
       await page.getByLabel("Password").fill("valid-e2e-password");
       await page.getByRole("button", { name: "Masuk" }).click();
