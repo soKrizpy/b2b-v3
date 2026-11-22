@@ -52,7 +52,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
         .from("meetings")
         .select("id,title,meeting_date,link_url,notes,session_count,session_number,completion_status,is_completed")
         .eq("teacher_id", user.id)
-        .order("meeting_date", { ascending: true })
+        .order("meeting_date", { ascending: false })
         .limit(100);
       if (!active) return;
       if (meetingError) {
@@ -62,7 +62,11 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
         return;
       }
 
-      const rows = (data ?? []) as MeetingRow[];
+      const rows = ((data ?? []) as MeetingRow[]).sort((a, b) => {
+        if (!a.meeting_date) return 1;
+        if (!b.meeting_date) return -1;
+        return new Date(a.meeting_date).getTime() - new Date(b.meeting_date).getTime();
+      });
       setMeetings(rows);
       if (rows.length > 0) {
         const { data: links, error: linksError } = await supabase
@@ -92,7 +96,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
     return () => { active = false; };
   }, [user.id]);
 
-  const uniqueStudents = useMemo(() => {
+  const totalStudentLinks = useMemo(() => {
     // Only count linked student IDs; student profile names are intentionally not
     // queried because the current production RLS policy does not grant tutors
     // general access to the students table.
@@ -121,13 +125,13 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
       {!loading && !error && (
         <>
           <div className="tutor-live-stats">
-            <article className="card tutor-live-stat"><span>Total jadwal terbaca</span><strong>{meetings.length}</strong></article>
+            <article className="card tutor-live-stat"><span>Jadwal terbaru ditampilkan</span><strong>{meetings.length}</strong></article>
             <article className="card tutor-live-stat"><span>Jadwal mendatang</span><strong>{upcoming.length}</strong></article>
-            <article className="card tutor-live-stat"><span>Relasi siswa per jadwal*</span><strong>{uniqueStudents}</strong></article>
+            <article className="card tutor-live-stat"><span>Total relasi siswa pada jadwal*</span><strong>{totalStudentLinks}</strong></article>
           </div>
           <div className="card tutor-live-list">
             <div className="tutor-live-list-heading">
-              <div><h3>Jadwal Mengajar</h3><p>Daftar pertemuan yang ditautkan ke akun guru ini.</p></div>
+              <div><h3>Jadwal Mengajar</h3><p>100 pertemuan terbaru yang ditautkan ke akun guru ini, diurutkan dari jadwal terdekat.</p></div>
             </div>
             {meetings.length === 0 ? (
               <p className="tutor-live-empty">Belum ada jadwal yang ditautkan ke akun guru ini di Supabase.</p>
