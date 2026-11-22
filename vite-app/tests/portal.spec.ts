@@ -1468,4 +1468,86 @@ test.describe("Local demo domain repository adapters", () => {
     expect(result.reason).toBe("Tutor berhalangan");
     expect(result.replacementRequired).toBe(true);
   });
+
+  test("Supabase lesson adapter preserves topic identity and maps production JSONB into the six learning stages", async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      const { adaptSupabaseTopicToLegacyLesson } = await import("/src/data/supabase-lesson-adapter.ts");
+      const lesson = adaptSupabaseTopicToLegacyLesson(
+        {
+          id: 29,
+          title: "Scratch Beginner",
+          description: "Belajar membuat animasi",
+          sortOrder: 0,
+          isPublished: true
+        },
+        {
+          id: 146,
+          moduleId: 29,
+          title: "Mengenal Sprite",
+          description: "Mengenal karakter dan panggung",
+          sortOrder: 1,
+          lessonContent: {
+            estimatedDurationMinutes: 45,
+            learningPath: [
+              { id: "step-2", order: 2, title: "Gerakkan Sprite", content: "Gunakan blok gerak." },
+              { id: "step-1", order: 1, title: "Kenali Sprite", content: "Sprite adalah objek." }
+            ],
+            challenge: [{
+              title: "Animasi Pertama",
+              instructions: "Pilih sprite.\nTambahkan gerakan.\nJalankan animasi.",
+              submission_type: "Tautan proyek"
+            }],
+            quiz: [{
+              question: "Apa itu sprite?",
+              options: ["Karakter", "Suara", "Latar", "Blok"],
+              answer_index: 0,
+              explanation: "Sprite adalah objek atau karakter."
+            }],
+            requiredTool: {
+              name: "Scratch",
+              url: "https://scratch.mit.edu",
+              instructions: "Buka editor Scratch."
+            }
+          }
+        }
+      );
+      const materials = lesson.stages.find((stage) => stage.id === "materials") as { slides: Array<{ title: string }> };
+      const check = lesson.stages.find((stage) => stage.id === "check") as {
+        questions: Array<{ prompt: string; options: Array<{ text: string; correct: boolean }> }>;
+      };
+      const challenge = lesson.stages.find((stage) => stage.id === "challenge") as {
+        challenge: { title: string; requirements: string[] };
+      };
+      return {
+        id: lesson.id,
+        topicId: lesson.topicId,
+        trackId: lesson.trackId,
+        order: lesson.order,
+        duration: lesson.estimatedDurationMinutes,
+        stageIds: lesson.stages.map((stage) => stage.id),
+        slideTitles: materials.slides.map((slide) => slide.title),
+        question: check.questions[0]?.prompt,
+        correctOptions: check.questions[0]?.options.filter((option) => option.correct).map((option) => option.text),
+        challengeTitle: challenge.challenge.title,
+        requirements: challenge.challenge.requirements,
+        requiredTool: lesson.requiredTool?.name
+      };
+    });
+
+    expect(result).toEqual({
+      id: "topic-146",
+      topicId: 146,
+      trackId: "module-29",
+      order: 1,
+      duration: 45,
+      stageIds: ["brief", "materials", "practice", "check", "challenge", "submission"],
+      slideTitles: ["Kenali Sprite", "Gerakkan Sprite"],
+      question: "Apa itu sprite?",
+      correctOptions: ["Karakter"],
+      challengeTitle: "Animasi Pertama",
+      requirements: ["Pilih sprite.", "Tambahkan gerakan.", "Jalankan animasi."],
+      requiredTool: "Scratch"
+    });
+  });
+
 });
