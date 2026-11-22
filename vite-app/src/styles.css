@@ -90,3 +90,35 @@
 .b2b-login-mode .btn {
   flex: 1;
 }
+
+
+/* Supabase-backed tutor workspace. */
+.tutor-live-header { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); padding:clamp(1.25rem,3vw,2rem); }
+.tutor-live-header h2 { margin:var(--space-2) 0; }
+.tutor-live-header p { margin:0; color:var(--color-text-muted); }
+.tutor-live-eyebrow { font-size:var(--font-size-xs); font-weight:800; letter-spacing:.08em; }
+.tutor-live-source { flex:0 0 auto; padding:var(--space-2) var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-full); color:var(--color-text-secondary); font-size:var(--font-size-xs); }
+.tutor-live-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-4); }
+.tutor-live-stat { display:grid; gap:var(--space-2); padding:var(--space-5); }
+.tutor-live-stat span { color:var(--color-text-muted); font-size:var(--font-size-sm); }
+.tutor-live-stat strong { font-size:clamp(1.5rem,3vw,2rem); }
+.tutor-live-list { padding:var(--space-5); }
+.tutor-live-list-heading { margin-bottom:var(--space-4); }
+.tutor-live-list-heading h3 { margin:0 0 var(--space-1); }
+.tutor-live-list-heading p,.tutor-live-footnote { margin:0; color:var(--color-text-muted); font-size:var(--font-size-sm); }
+.tutor-live-meetings { display:grid; gap:var(--space-3); }
+.tutor-live-meeting { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); padding:var(--space-4); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); }
+.tutor-live-meeting-main { min-width:0; }
+.tutor-live-meeting-title-row { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-2); }
+.tutor-live-meeting h4 { margin:0; }
+.tutor-live-meeting p { margin:var(--space-2) 0; color:var(--color-text-secondary); }
+.tutor-live-meeting small { color:var(--color-text-muted); }
+.tutor-live-notes { overflow-wrap:anywhere; }
+.tutor-live-status { padding:2px var(--space-2); border-radius:var(--radius-full); background:var(--color-bg-surface-subtle); color:var(--color-text-secondary); font-size:var(--font-size-xs); }
+.tutor-live-status.is-done { color:var(--color-success); }
+.tutor-live-status.is-cancelled { color:var(--color-danger); }
+.tutor-live-empty,.tutor-live-error { padding:var(--space-4); color:var(--color-text-secondary); }
+@media(max-width:768px) {
+  .tutor-live-header,.tutor-live-meeting { align-items:flex-start; flex-direction:column; }
+  .tutor-live-stats { grid-template-columns:1fr; }
+}
