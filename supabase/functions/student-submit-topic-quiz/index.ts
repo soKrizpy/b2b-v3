@@ -121,11 +121,15 @@ Deno.serve(async (req: Request) => {
     }
     const question = quiz[Number(questionIndex)];
     const options = Array.isArray(question?.options) ? question.options : [];
+    const answerIndex = Number(question?.answer_index);
+    if (!Number.isSafeInteger(answerIndex) || answerIndex < 0 || answerIndex >= options.length) {
+      return json({ error: "Published quiz contains an invalid answer key" }, 422);
+    }
     if (!Number.isSafeInteger(selectedIndex) || Number(selectedIndex) < 0 || Number(selectedIndex) >= options.length) {
       return json({ error: "Selected option is invalid" }, 400);
     }
     seen.add(Number(questionIndex));
-    if (Number(selectedIndex) === Number(question.answer_index)) correct += 1;
+    if (Number(selectedIndex) === answerIndex) correct += 1;
     normalizedAnswers.push({
       question_index: Number(questionIndex),
       selected_index: Number(selectedIndex),
