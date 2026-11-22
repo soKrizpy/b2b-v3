@@ -207,7 +207,7 @@ export function renderQuiz(quiz) {
   const optionsHtml = (quiz.options || []).map((opt, idx) => {
     const letter = String.fromCharCode(65 + idx);
     return `
-      <div class="quiz-option" data-option-id="${opt.id}" data-correct="${opt.correct}"
+      <div class="quiz-option" data-option-id="${opt.id}" data-option-index="${idx}" data-correct="${opt.correct}"
            role="radio" aria-checked="false" tabindex="0">
         <span class="quiz-option-marker">${letter}</span>
         <div style="flex: 1;">
@@ -222,7 +222,7 @@ export function renderQuiz(quiz) {
     : '';
 
   return `
-    <div class="quiz-container" data-quiz-id="${quiz.id}">
+    <div class="quiz-container" data-quiz-id="${quiz.id}" data-question-index="${Number.isInteger(quiz.questionIndex) ? quiz.questionIndex : ""}">
       <div class="quiz-type-badge">${typeLabel}</div>
       <div class="quiz-prompt">${escapeHtml(quiz.question || quiz.prompt)}</div>
       <div class="quiz-options" role="radiogroup">${optionsHtml}</div>
@@ -241,7 +241,7 @@ export function renderQuiz(quiz) {
  * @param {HTMLElement} container
  * @param {Function} [onCheckpointChange] - Optional callback when checkpoint changes
  */
-export function attachInteractions(container, onCheckpointChange) {
+export function attachInteractions(container, onCheckpointChange, onQuizAnswered) {
   if (!container) return;
 
   // 1. Copy Buttons (Section 8)
@@ -304,6 +304,12 @@ export function attachInteractions(container, onCheckpointChange) {
         if (!selectedOption || answered) return;
         answered = true;
         const isCorrect = selectedOption.getAttribute('data-correct') === 'true';
+        const questionIndex = Number(quiz.getAttribute('data-question-index'));
+        const selectedIndex = Number(selectedOption.getAttribute('data-option-index'));
+        if (Number.isInteger(questionIndex) && Number.isInteger(selectedIndex) &&
+            typeof onQuizAnswered === 'function') {
+          onQuizAnswered(questionIndex, selectedIndex);
+        }
 
         options.forEach(o => {
           const correct = o.getAttribute('data-correct') === 'true';
