@@ -5,6 +5,7 @@ on:
     branches: [preview]
     paths:
       - "vite-app/**"
+      - "supabase/**"
       - "vercel.json"
       - "js/**"
       - "css/**"
@@ -15,6 +16,7 @@ on:
     branches: [preview]
     paths:
       - "vite-app/**"
+      - "supabase/**"
       - "js/**"
       - "css/**"
       - "data/mock/**"
