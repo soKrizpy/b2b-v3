@@ -27,14 +27,29 @@ language sql
 stable
 security definer
 set search_path = pg_catalog
-as $$
+as $
   select exists (
     select 1
     from public.profiles p
     where p.id = auth.uid()
       and p.role = 'student'
   );
-$$;
+$;
+
+create or replace function private.is_teacher_actor()
+returns boolean
+language sql
+stable
+security definer
+set search_path = pg_catalog
+as $
+  select exists (
+    select 1
+    from public.profiles p
+    where p.id = auth.uid()
+      and p.role = 'teacher'
+  );
+$;
 
 create or replace function private.can_manage_meeting(p_meeting_id bigint)
 returns boolean
@@ -85,10 +100,12 @@ $$;
 
 revoke all on function private.is_admin_actor() from public, anon;
 revoke all on function private.is_student_actor() from public, anon;
+revoke all on function private.is_teacher_actor() from public, anon;
 revoke all on function private.can_manage_meeting(bigint) from public, anon;
 revoke all on function private.can_access_meeting(bigint) from public, anon;
 grant execute on function private.is_admin_actor() to authenticated;
 grant execute on function private.is_student_actor() to authenticated;
+grant execute on function private.is_teacher_actor() to authenticated;
 grant execute on function private.can_manage_meeting(bigint) to authenticated;
 grant execute on function private.can_access_meeting(bigint) to authenticated;
 
@@ -107,7 +124,10 @@ create policy meetings_insert_admin_or_owner_teacher
 on public.meetings
 for insert
 to authenticated
-with check (private.can_manage_meeting(id));
+with check (
+  private.is_admin_actor()
+  or (private.is_teacher_actor() and teacher_id = (select auth.uid()))
+);
 
 create policy meetings_update_admin_or_owner_teacher
 on public.meetings
@@ -130,7 +150,7 @@ on public.meeting_students
 for select
 to authenticated
 using (
-  student_id = (select auth.uid())
+  (student_id = (select auth.uid()) and private.is_student_actor())
   or private.can_manage_meeting(meeting_id)
 );
 
