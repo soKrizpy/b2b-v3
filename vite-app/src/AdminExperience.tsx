@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { localDemoRepositories } from "./data/local-demo-repositories";
+import { supabaseAuthRepository } from "./data/supabase-auth-repository";
 // @ts-ignore - Existing Admin controller is reused during incremental migration.
 import { AdminWorkspace } from "../../js/admin/admin-workspace.js";
 
@@ -23,7 +24,7 @@ export default function AdminExperience() {
         if (!active) return;
 
         // Selecting the Admin workspace must not silently authenticate or elevate a user.
-        const session = await localDemoRepositories.auth.getSession();
+        const session = await supabaseAuthRepository.getSession();
         if (!active) return;
         if (session?.user?.role !== "admin") {
           throw new Error("Sesi Admin belum aktif. Silakan masuk menggunakan akun Admin.");
