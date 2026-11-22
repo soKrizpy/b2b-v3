@@ -177,3 +177,49 @@ The active Vite portal has now been switched from the role/account demo selector
 - Domain data inside the existing workspaces is still served by local-demo repositories/controllers. Supabase Auth integration does not make those data workflows production-ready; canonical remote repositories, RLS coverage, and workspace-specific authorization remain outstanding.
 - No production Supabase rows, schema, Auth users, grants, or RLS policies were changed as part of this implementation.
 
+## Production curriculum source inspection — 2026-11-22
+
+Read-only inspection confirms that the selected production database already contains the canonical curriculum data. Do not replace it with a new local fixture or create duplicate quiz rows.
+
+### Existing catalog
+
+The seven active beginner modules currently contain 100 topics in total:
+
+| Module ID | Module | Topics |
+|---:|---|---:|
+| 10 | BASIC VISUAL WEB | 30 |
+| 11 | Begin to Scratch | 10 |
+| 20 | Scratch Visual Block Coding & Games | 12 |
+| 27 | 3D Design Beginner | 12 |
+| 28 | ScratchJr — Petualangan Pemrograman Visual | 12 |
+| 29 | Scratch Beginner — 12 Topik | 12 |
+| 30 | Tinkercad 3D Beginner — 12 Topik | 12 |
+
+The module records expose `level`, `is_active`, and `gamification_type`. Topic records expose `order_index`, `status`, `published_at`, `engine_topic_id`, and JSONB `lesson_content`.
+
+### Scratch Beginner — Module 29
+
+The exact target module already exists in production:
+
+- Module ID: `29`; title: `Scratch Beginner — 12 Topik`; level: `beginner`; active.
+- Topic IDs: `146–157`; all 12 topics are published and ordered 0–11.
+- Every topic has `lesson_content` JSONB with 11 `learningPath` steps, one `challenge`, five embedded `quiz` questions, and one active challenge ID.
+- The module description embeds `FINAL_ASSESSMENT` JSON containing exactly 20 questions.
+- No topic in this module currently has an `engine_topic_id`.
+- The separate `quizzes` table has no quiz rows for Module 29. The formative questions are already embedded in `topics.lesson_content`; do not insert duplicate quiz records just to satisfy a table-level count.
+
+### Content validation performed read-only
+
+- 12/12 topics have the expected lesson/challenge/quiz array counts.
+- 60/60 embedded formative questions have a non-empty question and explanation, four options, and an answer index in the range 0–3.
+- 20/20 final-assessment questions have the same required question structure.
+- No invalid formative or final-assessment question objects were found by these structural checks.
+
+This verifies structural completeness only; it does not replace pedagogical review of wording, difficulty progression, answer correctness, or age/grade alignment.
+
+### Other catalog quiz-table gaps
+
+The other modules do not share one uniform quiz storage pattern. For example, some have quiz rows with no linked question rows, while others have no quiz rows at all. The runtime curriculum adapter must inspect the JSONB lesson content and the separate quiz tables without assuming that a missing row in `quizzes` means the topic has no quiz. A module-specific mapping audit is required before consolidating assessment data.
+
+No production curriculum rows, module descriptions, topics, quizzes, or question records were modified during this inspection.
+
