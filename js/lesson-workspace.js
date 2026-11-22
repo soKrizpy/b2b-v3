@@ -280,18 +280,18 @@ export class LessonWorkspace {
           </div>
           <div class="hero-profile-info">
             <div class="hero-badge-row">
-              <span class="badge badge-level">Level 3 • Jago Scratch</span>
+              <span class="badge badge-level">Petualang Koding</span>
               <span class="badge badge-scratch">Jalur: ${escapeHtml(this.lesson.trackTitle || this.lesson.category || "Kurikulum Bits2Bytes")}</span>
             </div>
             <h2 class="hero-greeting-title">Halo, ${escapeHtml(this.currentUser.name || "Teman")}! Siap Lanjut Berpetualang? 🚀</h2>
             <p class="hero-greeting-sub">Jelajahi kepulauan koding, kumpulkan bintang, dan kuasai logika pemrograman!</p>
             <div class="hero-xp-container">
               <div class="hero-xp-label">
-                <span>Poin menuju level berikutnya: <strong>450 / 600 poin</strong></span>
-                <span class="hero-xp-pct">75% → Level 4</span>
+                <span>Poin pengalaman: <strong>Belum tersedia</strong></span>
+                <span class="hero-xp-pct">Menunggu integrasi XP</span>
               </div>
               <div class="hero-xp-bar-bg" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                <div class="hero-xp-bar-fill" style="width: 75%;"></div>
+                <div class="hero-xp-bar-fill" style="width: 0%;"></div>
               </div>
             </div>
           </div>
@@ -301,28 +301,28 @@ export class LessonWorkspace {
             <div class="stat-pill stat-pill--fire">
               <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_STREAK}</div>
               <div class="stat-pill-data">
-                <span class="stat-pill-value">5 Hari</span>
+                <span class="stat-pill-value">—</span>
                 <span class="stat-pill-label">Hari belajar</span>
               </div>
             </div>
             <div class="stat-pill stat-pill--gold">
               <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_STAR}</div>
               <div class="stat-pill-data">
-                <span class="stat-pill-value">450 poin</span>
+                <span class="stat-pill-value">—</span>
                 <span class="stat-pill-label">Total Poin</span>
               </div>
             </div>
             <div class="stat-pill stat-pill--red">
               <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_TARGET}</div>
               <div class="stat-pill-data">
-                <span class="stat-pill-value">1 / 2</span>
+                <span class="stat-pill-value">—</span>
                 <span class="stat-pill-label">Target Harian</span>
               </div>
             </div>
             <div class="stat-pill stat-pill--purple">
               <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_TROPHY}</div>
               <div class="stat-pill-data">
-                <span class="stat-pill-value">4 Dibuka</span>
+                <span class="stat-pill-value">—</span>
                 <span class="stat-pill-label">Lencana</span>
               </div>
             </div>
