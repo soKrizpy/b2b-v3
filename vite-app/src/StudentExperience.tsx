@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import lessonData from "../../data/mock/lesson-scratch-motion.json";
 import submissions from "../../data/mock/submissions.json";
-import { localDemoRepositories } from "./data/local-demo-repositories";
+import { supabaseAuthRepository } from "./data/supabase-auth-repository";
 // @ts-ignore - Existing JavaScript controller is reused during incremental migration.
 import { LessonWorkspace } from "../../js/lesson-workspace.js";
 // @ts-ignore - Shared workspace repository gateway wraps local demo persistence.
@@ -25,7 +25,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
     void (async () => {
       try {
         // Re-read identity through the same repository boundary used by portal login.
-        const session = await localDemoRepositories.auth.getSession();
+        const session = await supabaseAuthRepository.getSession();
         if (!active) return;
         if (user.role !== "student" || session?.user?.id !== user.id || session?.user?.role !== "student") {
           throw new Error("Sesi siswa tidak valid. Silakan masuk kembali.");
