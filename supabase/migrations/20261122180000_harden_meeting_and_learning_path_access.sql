@@ -194,10 +194,12 @@ using (private.is_admin_actor())
 with check (private.is_admin_actor());
 
 -- Remove direct anonymous access. Authenticated access is still constrained by RLS.
-revoke all privileges on table public.meetings from anon;
-revoke all privileges on table public.meeting_students from anon;
-revoke all privileges on table public.student_modules from anon;
+revoke all privileges on table public.meetings from anon, authenticated;
+revoke all privileges on table public.meeting_students from anon, authenticated;
+revoke all privileges on table public.student_modules from anon, authenticated;
 
+-- Restore only row-level operations; TRUNCATE, TRIGGER, REFERENCES, and MAINTAIN
+-- remain unavailable to browser-facing roles.
 grant select, insert, update, delete on table public.meetings to authenticated;
 grant select, insert, update, delete on table public.meeting_students to authenticated;
 grant select, insert, update, delete on table public.student_modules to authenticated;
