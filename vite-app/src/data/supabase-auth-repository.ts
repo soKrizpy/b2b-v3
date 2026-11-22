@@ -24,11 +24,12 @@ async function mapSession(authSession: SupabaseSession): Promise<AuthSession> {
   if (!supabase) throw new Error("Konfigurasi Supabase belum tersedia.");
 
   const authUser: SupabaseUser = authSession.user;
-  const { data: profile, error: profileError } = await supabase
+  const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("id, full_name, role, email, created_at")
     .eq("id", authUser.id)
-    .maybeSingle<ProfileRow>();
+    .maybeSingle();
+  const profile = profileData as ProfileRow | null;
 
   if (profileError) throw new Error("Profil akun tidak dapat dibaca. Periksa kebijakan akses Supabase.");
   if (!profile) throw new Error("Akun berhasil diautentikasi, tetapi profil Bits2Bytes tidak ditemukan.");
@@ -37,11 +38,12 @@ async function mapSession(authSession: SupabaseSession): Promise<AuthSession> {
   let gradeLevel: string | null = null;
 
   if (role === "student") {
-    const { data: student, error: studentError } = await supabase
+    const { data: studentData, error: studentError } = await supabase
       .from("students")
       .select("grade")
       .eq("id", authUser.id)
-      .maybeSingle<StudentRow>();
+      .maybeSingle();
+    const student = studentData as StudentRow | null;
 
     if (studentError) throw new Error("Data siswa tidak dapat dibaca. Periksa kebijakan akses Supabase.");
     gradeLevel = student?.grade ?? null;
