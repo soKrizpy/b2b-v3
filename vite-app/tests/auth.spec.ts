@@ -162,4 +162,16 @@ test.describe("Supabase Auth portal", () => {
       await expect(page.locator("#demo-account")).toHaveCount(0);
     });
   }
+
+  test("authenticates a student with WhatsApp and six-digit MPIN through the server function", async ({ page }) => {
+    await mockSupabaseAuth(page, "student");
+    await page.goto("/");
+    await page.getByLabel("Nomor WhatsApp").fill("081234567890");
+    await page.getByLabel("MPIN (6 digit)").fill("123456");
+    await page.getByRole("button", { name: "Masuk" }).click();
+
+    await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
+  });
+
 });
