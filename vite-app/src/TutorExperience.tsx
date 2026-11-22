@@ -105,12 +105,12 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
   });
 
   return (
-    <section className="tutor-experience" aria-label="Ruang Tutor" aria-busy={loading}>
+    <section className="tutor-experience" aria-label="Dashboard Guru Bits2Bytes" aria-busy={loading}>
       <div className="tutor-live-header card">
         <div>
-          <p className="tutor-live-eyebrow">RUANG TUTOR · DATA SUPABASE</p>
+          <p className="tutor-live-eyebrow">DASHBOARD GURU · BITS2BYTES</p>
           <h2>Halo, {user.displayName}!</h2>
-          <p>Ringkasan jadwal mengajar dari akun Bits2Bytes yang sedang masuk.</p>
+          <p>Ringkasan jadwal mengajar dari akun guru Bits2Bytes yang sedang masuk.</p>
         </div>
         <span className="tutor-live-source">Terhubung ke Supabase</span>
       </div>
