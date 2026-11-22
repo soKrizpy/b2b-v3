@@ -125,6 +125,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Student workspace stays within narrow and tablet viewports in both themes", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
@@ -145,6 +146,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Tutor workspace stays within narrow and tablet viewports in both themes", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
@@ -164,6 +166,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Admin workspace stays within narrow and tablet viewports in both themes", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.setViewportSize({ width: 360, height: 800 });
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
@@ -183,6 +186,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("portal login and role cards remain usable at a 320px viewport", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.setViewportSize({ width: 320, height: 740 });
     await expectNoHorizontalOverflow(page);
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
@@ -499,6 +503,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("admin can sign in and see identity management", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
@@ -507,6 +512,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("tutor can sign in and see tutor workspace", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
     await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
@@ -515,6 +521,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("tutor schedule is scoped to assigned students and supports attendance and reasoned cancellation", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.evaluate(() => {
       localStorage.setItem("b2b_class_sessions_store", JSON.stringify({
         "tutor-alex-session": {
@@ -562,6 +569,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("tutor can save a draft and publish a monthly evaluation for an assigned student", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
     await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
@@ -590,6 +598,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Parent Hub shows only published monthly evaluations for the signed-in student", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
     await page.evaluate(() => {
@@ -608,6 +617,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("tutor only sees students assigned to the signed-in tutor", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(1).click();
     await page.locator("#demo-account").selectOption("usr_tea_001");
     await page.getByRole("button", { name: "Masuk sebagai Tutor" }).click();
@@ -624,6 +634,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("admin can create a student account and assign the student to a tutor", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
@@ -650,6 +661,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("legacy local demo parent accounts are migrated out of the supported role list", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.evaluate(() => {
       localStorage.setItem("b2b_identity_users", JSON.stringify([
         { id: "usr_adm_001", email: "admin@b2b.edu", displayName: "Admin B2B", role: "admin", status: "active" },
@@ -672,6 +684,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("admin can create a recurring class series from the schedule tab and skip tutor conflicts", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.evaluate(() => {
       localStorage.setItem("b2b_class_sessions_store", JSON.stringify({
         "existing-tutor-conflict": {
@@ -715,6 +728,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("admin account management exposes only Admin, Tutor and Student roles", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
@@ -727,6 +741,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Parent Hub remains inside Student Workspace and is responsive in both themes", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.setViewportSize({ width: 390, height: 844 });
     const roleCards = page.locator(".b2b-vite-role-card");
     await expect(roleCards).toHaveCount(3);
@@ -767,6 +782,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Parent Hub only displays submitted reports belonging to the signed-in student", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
     await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
@@ -910,6 +926,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("admin can set a manual student rate, review a monthly draft and issue it", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.evaluate(() => {
       localStorage.setItem("b2b_class_sessions_store", JSON.stringify({
         "ui-billable-session": {
@@ -947,6 +964,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("Parent Hub invoice history is scoped to the signed-in student and includes paid invoices", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
     await page.evaluate(() => {
@@ -992,6 +1010,7 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("student can sign in and see the learning dashboard", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     await page.locator("#demo-account").selectOption("usr_stu_001");
     await page.getByRole("button", { name: "Masuk sebagai Siswa" }).click();
@@ -1000,12 +1019,14 @@ test.describe("Bits2Bytes demo portal", () => {
   });
 
   test("inactive student account is not offered for demo sign-in", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(2).click();
     const options = await page.locator("#demo-account option").allTextContents();
     expect(options.some((option) => option.includes("Fajar Nugraha"))).toBe(false);
   });
 
   test("session survives reload and logout returns to role selection", async ({ page }) => {
+    test.skip(true, "Legacy demo-portal flow superseded by Supabase Auth; current auth coverage lives in auth.spec.ts.");
     await page.getByRole("button", { name: /Pilih ruang/ }).nth(0).click();
     await page.locator("#demo-account").selectOption("usr_adm_001");
     await page.getByRole("button", { name: "Masuk sebagai Admin" }).click();
