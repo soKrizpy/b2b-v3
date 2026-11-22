@@ -1,4 +1,5 @@
 import { supabase } from "./supabase-client";
+import { submitStudentTopicQuiz, type TopicQuizAnswer } from "./supabase-quiz-repository";
 import {
   getStudentLessonProgress,
   saveStudentLessonProgress,
@@ -107,6 +108,14 @@ export function createSupabaseLegacyLearningBridge() {
 
       writeQueue = operation.catch(() => undefined);
       return operation;
+    },
+
+    async submitTopicQuizAttempt(topicId: number, answers: TopicQuizAnswer[]) {
+      const client = supabase;
+      if (!client) throw new Error("Konfigurasi Supabase belum tersedia.");
+      const { data, error } = await client.auth.getUser();
+      if (error || !data.user) throw new Error("Sesi siswa tidak valid.");
+      return submitStudentTopicQuiz(topicId, answers);
     },
 
     async saveSubmission() {
