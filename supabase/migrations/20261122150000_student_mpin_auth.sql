@@ -13,6 +13,8 @@ create table if not exists private.student_login_attempts (
 alter table private.student_login_attempts enable row level security;
 revoke all on private.student_login_attempts from public, anon, authenticated, service_role;
 
+alter table public.students alter column mpin type text using btrim(mpin::text);
+
 update public.students
 set mpin = extensions.crypt(btrim(mpin::text), extensions.gen_salt('bf', 12))
 where mpin is not null
@@ -77,7 +79,7 @@ begin
   join public.profiles p on p.id = s.id and p.role = 'student'
   where (
     case
-      when left(regexp_replace(coalesce(s.whatsapp, s.email_or_phone, ''), '[^0-9]', '', 'g'), 1) = '0'
+      when left(regexp_replace(coalesce(nullif(btrim(s.whatsapp), ''), s.email_or_phone, ''), '[^0-9]', '', 'g'), 1) = '0'
         then '62' || substr(regexp_replace(coalesce(s.whatsapp, s.email_or_phone, ''), '[^0-9]', '', 'g'), 2)
       else regexp_replace(coalesce(s.whatsapp, s.email_or_phone, ''), '[^0-9]', '', 'g')
     end
