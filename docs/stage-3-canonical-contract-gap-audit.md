@@ -156,3 +156,24 @@ The user reconfirmed that B2B v3 must use the existing/original Supabase project
 - No users were created/deleted, no data rows were changed, no DDL/migrations/RLS policies were changed, and no secrets or credentials were read.
 
 **Updated implementation direction:** replace the temporary demo login in the active Vite portal with Supabase Auth against this existing project; resolve the signed-in user's role/profile from trusted database records; then compose canonical repositories against the existing schema. Keep `service_role` out of browser code. Continue read-only schema/RLS inspection before any writes. Any production data mutation, schema migration, or policy change still requires its own explicit scope and safety review.
+
+## Supabase Auth implementation update — 2026-11-22
+
+The active Vite portal has now been switched from the role/account demo selector to credential-based Supabase Auth.
+
+- Added the pinned browser dependency `@supabase/supabase-js@2.119.0`.
+- Added a browser client configured only with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`; no service-role or secret key is included in frontend code.
+- Added an AuthRepository adapter using `signInWithPassword`, session restoration, `onAuthStateChange`, and `signOut`.
+- Profile resolution reads only the signed-in user's `profiles` row. Database role `teacher` maps to application role `tutor`; admin/student retain their names. Student grade is read from that same user's `students` row.
+- The inspected production policies permit a signed-in user to select only their own `profiles` and `students` rows. This supports self-profile hydration without widening RLS.
+- The inspected production schema has no account-status column in `profiles`; the adapter marks a successfully authenticated account with a matching profile as active. Supabase Auth remains responsible for credential and banned-user enforcement.
+- Student, Tutor, and Admin workspace entry checks now revalidate the Supabase session. Existing workspace controllers and local-demo domain repositories remain in place during the separate data-migration workstream.
+
+### Remaining validation and limits
+
+- Configure the Vercel Preview and Production environment variables for the Vite project using the existing project URL and its browser-safe publishable key. The Vercel integration currently exposes no `b2b-v3` project in the connected team, so this session has not changed Vercel environment variables or claimed a successful deployment.
+- Sign in with the already-provisioned teacher and student accounts in the deployed preview to verify credentials, profile hydration, role routing, session persistence, and sign-out. Do not create or reset accounts for this test.
+- Verify admin login in the same way.
+- Domain data inside the existing workspaces is still served by local-demo repositories/controllers. Supabase Auth integration does not make those data workflows production-ready; canonical remote repositories, RLS coverage, and workspace-specific authorization remain outstanding.
+- No production Supabase rows, schema, Auth users, grants, or RLS policies were changed as part of this implementation.
+
