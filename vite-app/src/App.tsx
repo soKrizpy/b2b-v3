@@ -136,7 +136,7 @@ export default function App() {
             </form>
           </section>}
 
-          {!authLoading && user?.role === "student" && <StudentExperience user={user} />}
+          {!authLoading && user?.role === "student" && <StudentExperience user={{ ...user, avatar: user.avatar ?? undefined, gradeLevel: user.gradeLevel ?? undefined }} />}
           {!authLoading && user?.role === "tutor" && <TutorExperience user={user} />}
           {!authLoading && user?.role === "admin" && <AdminExperience />}
         </main>
