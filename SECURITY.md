@@ -32,7 +32,8 @@ Live database inspection found **zero Storage buckets and zero Storage RLS polic
 - All 31 tables in the exposed `public` schema have RLS enabled.
 - Anonymous table privileges have been revoked broadly; only explicitly public read-only catalog/announcement access is granted.
 - Service-only verification data remains in the unexposed `private` schema.
-- Default privileges could not be changed with the current database role because PostgreSQL returned permission denied. Existing tables were explicitly hardened; future objects still require an owner-level default-privilege review.
+- Default privileges for objects created by `postgres` are now hardened: future public tables, sequences, and functions receive no automatic grants to `anon`, `authenticated`, or `service_role`, and future functions created by `postgres` do not receive default `PUBLIC EXECUTE`. This is recorded in `supabase/migrations/20261122104836_harden_postgres_default_privileges.sql`.
+- Supabase reserves the `supabase_admin` default privileges; PostgreSQL correctly rejects attempts to alter them. Objects created by `supabase_admin` may still inherit its grants. Do not attempt to bypass Supabase's protected role membership. Review which extensions or platform operations create objects in `public` before considering any schema relocation. See [Supabase's explanation of protected default privileges](https://supabase.com/kb/troubleshooting/cant-change-the-default-privileges-of-supabase_admin-in-the-public-schema-448af9).
 
 ## Compensating controls and operating rules
 
@@ -51,6 +52,6 @@ Because the hosted leaked-password check is unavailable on the current plan, Sup
 
 - Repository branch: `preview`
 - Live Supabase project: `bits2bytes`
-- Database hardening includes `20261122110000_close_legacy_public_table_access.sql`
+- Database hardening includes `20261122104228_close_legacy_public_table_access.sql` and `20261122104836_harden_postgres_default_privileges.sql`
 - 31/31 public tables have RLS enabled; zero Storage buckets/policies exist.
 - CI run for commit `342c23d49121c39273fb75cbc8f6e856fbc8d1a8`: typecheck, production build, and Playwright browser QA succeeded.
