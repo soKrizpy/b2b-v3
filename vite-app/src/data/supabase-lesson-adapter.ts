@@ -92,6 +92,7 @@ export function adaptSupabaseTopicToLegacyLesson(
     const answerIndex = asNumber(quiz.answer_index, -1);
     return {
       id: `topic-${topic.id}-quiz-${index + 1}`,
+      questionIndex: index,
       type: "mcq",
       prompt: asText(quiz.question, `Pertanyaan ${index + 1}`),
       options: makeQuizOptions(options, answerIndex, asText(quiz.explanation))
