@@ -1,5 +1,8 @@
 -- Allow signed-in users to read only active curriculum modules and published topics.
 -- Curriculum content is shared; student progress and submissions remain separately protected.
+DROP POLICY IF EXISTS modules_select_active_for_authenticated ON public.modules;
+DROP POLICY IF EXISTS topics_select_published_for_authenticated ON public.topics;
+
 CREATE POLICY modules_select_active_for_authenticated
 ON public.modules
 FOR SELECT
