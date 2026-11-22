@@ -146,8 +146,8 @@ export interface StudentSubmission {
   projectUrl: string;
   studentNotes: string;
   status: SubmissionStatus;
-  checkpointsPassed: number;
-  checkpointsTotal: number;
+  checkpointsPassed: number | null;
+  checkpointsTotal: number | null;
   quizScore: string | null;
   reviewerId: UUID | null;
   reviewerName: string | null;

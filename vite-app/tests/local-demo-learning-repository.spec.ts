@@ -44,4 +44,25 @@ test.describe("Canonical local-demo learning adapter",()=>{
   expect(r.unassigned.success).toBe(false);expect(r.unassigned.error.code).toBe("NOT_ASSIGNED_TUTOR");
   expect(r.assigned.success).toBe(false);expect(r.assigned.error.code).toBe("STALE_UPDATE_CONFLICT");
  });
+
+ test("preserves unknown checkpoint counts instead of inventing zero scores",async({page})=>{
+  await page.goto("/");
+  const r=await page.evaluate(async()=>{
+   const {createLocalDemoLearningRepository}=await import("/src/data/local-demo-learning-repository.ts");
+   const rows=[
+    {id:"unknown",studentId:"s1",lessonId:"lesson-unknown",status:"submitted" as const,submittedAt:"2026-11-20T00:00:00Z",updatedAt:"2026-11-20T00:00:00Z"},
+    {id:"partial",studentId:"s1",lessonId:"lesson-partial",status:"submitted" as const,checkpointsPassed:2,submittedAt:"2026-11-20T00:00:00Z",updatedAt:"2026-11-20T00:00:00Z"},
+    {id:"measured",studentId:"s1",lessonId:"lesson-measured",status:"submitted" as const,checkpointsPassed:3,checkpointsTotal:5,submittedAt:"2026-11-20T00:00:00Z",updatedAt:"2026-11-20T00:00:00Z"}
+   ];
+   const store={getProgress:async()=>null,saveProgress:async()=>null,getAllSubmissions:async()=>rows,getSubmission:async(id:string)=>rows.find(x=>x.id===id)??null,saveSubmission:async()=>null,updateSubmissionStatus:async()=>null,subscribe:()=>()=>{}};
+   const repo=createLocalDemoLearningRepository(store,()=>({id:"s1",role:"student"}));
+   return await repo.listSubmissions();
+  });
+  expect(r.find(x=>x.id==="unknown")?.checkpointsPassed).toBeNull();
+  expect(r.find(x=>x.id==="unknown")?.checkpointsTotal).toBeNull();
+  expect(r.find(x=>x.id==="partial")?.checkpointsPassed).toBe(2);
+  expect(r.find(x=>x.id==="partial")?.checkpointsTotal).toBeNull();
+  expect(r.find(x=>x.id==="measured")?.checkpointsPassed).toBe(3);
+  expect(r.find(x=>x.id==="measured")?.checkpointsTotal).toBe(5);
+ });
 });
