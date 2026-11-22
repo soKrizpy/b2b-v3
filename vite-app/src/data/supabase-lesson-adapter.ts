@@ -36,12 +36,12 @@ function asNumber(value: JsonValue | undefined, fallback = 0): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
-function makeQuizOptions(options: JsonValue[] | undefined, answerIndex: number) {
+function makeQuizOptions(options: JsonValue[] | undefined, answerIndex: number, explanation = "") {
   return (options ?? []).filter((option): option is string => typeof option === "string").map((text, index) => ({
     id: `option-${index + 1}`,
     text,
     correct: index === answerIndex,
-    explanation: ""
+    explanation
   }));
 }
 
@@ -94,12 +94,12 @@ export function adaptSupabaseTopicToLegacyLesson(
       id: `topic-${topic.id}-quiz-${index + 1}`,
       type: "mcq",
       prompt: asText(quiz.question, `Pertanyaan ${index + 1}`),
-      options: makeQuizOptions(options, answerIndex)
+      options: makeQuizOptions(options, answerIndex, asText(quiz.explanation))
     };
   });
 
   const requirements = asText(firstChallenge.instructions)
-    .split(/\\n|(?<=[.!?])\\s+/)
+    .split(/\n|(?<=[.!?])\s+/)
     .map((line) => line.trim())
     .filter(Boolean);
 
