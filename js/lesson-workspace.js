@@ -176,7 +176,8 @@ export class LessonWorkspace {
   loadProgress() {
     const saved = this._lessonProgress || {};
     return {
-      state: saved.state || 'in-progress',
+      // A new student/topic starts at zero; never invent demo progress.
+      state: saved.state || 'not-started',
       checkpoints: saved.checkpoints || {},
       submission: saved.submissionDraft || null,
       slideIndex: Number.isInteger(saved.slideIndex) ? saved.slideIndex : 0
@@ -293,7 +294,7 @@ export class LessonWorkspace {
                 <span>Poin pengalaman: <strong>Belum tersedia</strong></span>
                 <span class="hero-xp-pct">Menunggu integrasi XP</span>
               </div>
-              <div class="hero-xp-bar-bg" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+              <div class="hero-xp-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                 <div class="hero-xp-bar-fill" style="width: 0%;"></div>
               </div>
             </div>
@@ -456,67 +457,17 @@ export class LessonWorkspace {
             </div>
           </div>
 
-          <!-- RIGHT: Daily Goals + Achievements -->
+          <!-- RIGHT: Production-backed gamification is not available yet. -->
           <div class="dashboard-col-side">
-
-            <!-- DAILY GOALS -->
-            <div class="daily-goals-card">
-              <div class="daily-goals-header">
-                <div class="daily-icon-wrap" aria-hidden="true">${SVG_ICON_TARGET}</div>
-                <div>
-                  <h4 class="daily-title">Target Hari Ini</h4>
-                  <span class="badge badge-xp">1 / 2 Selesai</span>
-                </div>
-              </div>
-              <p class="daily-sub">Capai target harian untuk mempertahankan streak kodingmu!</p>
-              <div class="daily-checklist">
-                <div class="daily-task is-done">
-                  <div class="task-check-icon" aria-hidden="true">${SVG_ICON_CHECK}</div>
-                  <div class="task-info">
-                    <span class="task-title">Buka 1 Materi Modul Koding</span>
-                    <span class="task-xp">+20 poin didapatkan</span>
-                  </div>
-                </div>
-                <div class="daily-task">
-                  <div class="task-check-empty" aria-hidden="true"></div>
-                  <div class="task-info">
-                    <span class="task-title">Kirim 1 Tantangan Proyek</span>
-                    <span class="task-xp">+50 poin saat dikirim</span>
-                  </div>
-                </div>
-              </div>
-              <div class="daily-footer">
-                <small>Reset otomatis setiap tengah malam.</small>
-              </div>
-            </div>
-
-            <!-- ACHIEVEMENTS -->
             <div class="achievements-card">
               <div class="achievements-header">
                 <div class="achieve-icon-wrap" aria-hidden="true">${SVG_ICON_BADGE_SHIELD}</div>
                 <div>
-                  <h4 class="achieve-title">Lencana Petualang</h4>
-                  <span class="badge badge-level">4 / 8</span>
+                  <h4 class="achieve-title">Gamifikasi</h4>
+                  <span class="badge badge-not-started">Belum tersedia</span>
                 </div>
               </div>
-              <div class="achievements-grid">
-                <div class="achievement-badge-item" title="Langkah Pertama: Memulai modul pertama">
-                  <div class="badge-icon-circle is-unlocked">${SVG_ICON_CHECK}</div>
-                  <span class="badge-name">Langkah 1</span>
-                </div>
-                <div class="achievement-badge-item" title="Penjelajah Koordinat: Memahami sumbu X dan Y">
-                  <div class="badge-icon-circle is-unlocked">${SVG_ICON_STAR}</div>
-                  <span class="badge-name">Koordinat</span>
-                </div>
-                <div class="achievement-badge-item" title="Speed Coder: Menyelesaikan praktik tepat waktu">
-                  <div class="badge-icon-circle is-unlocked">${SVG_ICON_TROPHY}</div>
-                  <span class="badge-name">Speed Coder</span>
-                </div>
-                <div class="achievement-badge-item is-locked" title="Master Gerak: Kumpulkan proyek tantangan">
-                  <div class="badge-icon-circle is-locked">${SVG_ICON_LOCK}</div>
-                  <span class="badge-name">Master Gerak</span>
-                </div>
-              </div>
+              <p class="daily-sub">Target harian, streak, total poin, dan lencana akan ditampilkan setelah pencatatan gamifikasi terhubung ke data akun. Saat ini Bits2Bytes tidak menampilkan angka contoh sebagai progres asli.</p>
             </div>
 
             <!-- PARENT HUB: parent-facing area remains inside Student Workspace -->
