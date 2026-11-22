@@ -19,9 +19,9 @@ The live project currently has two active Edge Functions:
 - `private.verify_student_mpin` is SECURITY DEFINER with a fixed search_path and is executable only by `service_role`.
 - The public RPC wrapper is SECURITY INVOKER and is also executable only by `service_role`; anon and authenticated execution checks return false.
 - The private attempt table is inaccessible directly to anon/authenticated/service_role clients; the function owner accesses it internally.
-- Failed attempts are counted per normalized phone number, with a 15-minute window and lockout after five attempts. Successful verification clears that phone's attempt counter.
+- Only failed credential checks are counted per normalized phone number. Five failures within a 15-minute window trigger a 15-minute lockout; a successful verification clears that phone's counter. Per-phone advisory transaction locking serializes concurrent checks so parallel requests cannot race the counter. This correction is in `supabase/migrations/20261122104947_count_only_failed_student_mpin_attempts.sql`.
 
-**Residual operational risk:** Because lockout is keyed to the phone number, someone who knows a student's number can intentionally trigger the five-failure lockout and temporarily deny that student login. This is an availability/abuse tradeoff in the current anti-brute-force design. Monitor support reports and consider adding trusted edge-level/IP-based throttling or CAPTCHA only after verifying the hosting headers and UX; do not weaken the MPIN attempt limit.
+**Residual operational risk:** Because lockout is keyed to the phone number, someone who knows a student's number can intentionally trigger five failed attempts and temporarily deny that student login. This is an availability/abuse tradeoff in the current anti-brute-force design. Monitor support reports and consider adding trusted edge-level/IP-based throttling or CAPTCHA only after verifying the hosting headers and UX; do not weaken the MPIN attempt limit.
 
 ## Storage review
 
@@ -52,6 +52,6 @@ Because the hosted leaked-password check is unavailable on the current plan, Sup
 
 - Repository branch: `preview`
 - Live Supabase project: `bits2bytes`
-- Database hardening includes `20261122104228_close_legacy_public_table_access.sql` and `20261122104836_harden_postgres_default_privileges.sql`
+- Database hardening includes `20261122104228_close_legacy_public_table_access.sql`, `20261122104836_harden_postgres_default_privileges.sql`, and `20261122104947_count_only_failed_student_mpin_attempts.sql`
 - 31/31 public tables have RLS enabled; zero Storage buckets/policies exist.
 - CI run for commit `342c23d49121c39273fb75cbc8f6e856fbc8d1a8`: typecheck, production build, and Playwright browser QA succeeded.
