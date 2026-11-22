@@ -107,6 +107,34 @@ export const supabaseAuthRepository = {
     }
   },
 
+  async signInStudent(credentials: { phone: string; mpin: string }): Promise<RepositoryResult<AuthSession>> {
+    if (!supabase) return failure("SUPABASE_NOT_CONFIGURED", "Konfigurasi Supabase belum tersedia.");
+
+    const { data, error } = await supabase.functions.invoke("student-mpin-login", {
+      body: { phone: credentials.phone, mpin: credentials.mpin }
+    });
+
+    if (error || !data?.session?.access_token || !data?.session?.refresh_token) {
+      return failure("STUDENT_LOGIN_FAILED", "Nomor WhatsApp atau MPIN tidak sesuai, atau layanan login sedang dibatasi.");
+    }
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token
+    });
+
+    if (sessionError || !sessionData.session) {
+      return failure("STUDENT_SESSION_FAILED", "Sesi siswa tidak dapat dibuat. Silakan coba lagi.");
+    }
+
+    try {
+      return { success: true, data: await mapSession(sessionData.session) };
+    } catch (profileError) {
+      await supabase.auth.signOut({ scope: "local" });
+      return failure("PROFILE_RESOLUTION_FAILED", profileError instanceof Error ? profileError.message : "Profil akun tidak dapat diverifikasi.");
+    }
+  },
+
   async signOut(): Promise<void> {
     if (!supabase) return;
     const { error } = await supabase.auth.signOut();
