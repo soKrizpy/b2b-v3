@@ -304,7 +304,8 @@ export function attachInteractions(container, onCheckpointChange, onQuizAnswered
         if (!selectedOption || answered) return;
         answered = true;
         const isCorrect = selectedOption.getAttribute('data-correct') === 'true';
-        const questionIndex = Number(quiz.getAttribute('data-question-index'));
+        const questionIndexValue = quiz.getAttribute('data-question-index');
+        const questionIndex = questionIndexValue === null || questionIndexValue === '' ? NaN : Number(questionIndexValue);
         const selectedIndex = Number(selectedOption.getAttribute('data-option-index'));
         if (Number.isInteger(questionIndex) && Number.isInteger(selectedIndex) &&
             typeof onQuizAnswered === 'function') {
