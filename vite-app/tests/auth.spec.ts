@@ -37,7 +37,7 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
         headers: jsonHeaders,
         body: JSON.stringify({
           session: {
-            access_token: `eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.${payload}.signature`,
+            access_token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${payload}.ZDJlLXNpZ25hdHVyZQ`,
             token_type: "bearer",
             expires_in: 3600,
             expires_at: Math.floor(Date.now() / 1000) + 3600,
