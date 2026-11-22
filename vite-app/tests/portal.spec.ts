@@ -13,6 +13,10 @@ const workspaceRepositoryImports = [
   "../js/student/parent-hub.js"
 ].map((path) => readFileSync(resolve(process.cwd(), path), "utf8"));
 const studentExperienceSource = readFileSync(resolve(process.cwd(), "src/StudentExperience.tsx"), "utf8");
+const adminExperienceSource = readFileSync(resolve(process.cwd(), "src/AdminExperience.tsx"), "utf8");
+const adminWorkspaceSource = readFileSync(resolve(process.cwd(), "../js/admin/admin-workspace.js"), "utf8");
+const adminIdentityRepositorySource = readFileSync(resolve(process.cwd(), "src/data/supabase-admin-identity-repository.ts"), "utf8");
+const adminListUsersFunctionSource = readFileSync(resolve(process.cwd(), "../supabase/functions/admin-list-users/index.ts"), "utf8");
 
 
 test.describe("Bits2Bytes demo portal", () => {
@@ -49,6 +53,28 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(studentExperienceSource).toContain("createSupabaseLegacyLearningBridge()");
     expect(studentExperienceSource).toContain("{ learning: createSupabaseLegacyLearningBridge() }");
     expect(studentExperienceSource).not.toContain("workspace-repositories.js");
+  });
+
+  test("active Admin workspace is Supabase-backed, read-only, and does not expose legacy demo controls", () => {
+    expect(adminExperienceSource).toContain("new AdminWorkspace(host, session.user, { identity: supabaseAdminIdentityRepository })");
+    expect(adminIdentityRepositorySource).toContain('supabase.functions.invoke("admin-list-users"');
+    expect(adminIdentityRepositorySource).toContain("Compatibility no-op: production must never initialize local demo data.");
+    expect(adminIdentityRepositorySource).toContain('error: "READ_ONLY"');
+
+    const activeContent = adminWorkspaceSource.match(/renderActiveTabContent\(\)\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
+    expect(activeContent).toContain("return this.renderUsersView()");
+    expect(activeContent).not.toContain("renderTutorRelationsView");
+    expect(activeContent).not.toContain("renderBillingView");
+
+    const usersView = adminWorkspaceSource.match(/renderUsersView\(\)\s*\{([\s\S]*?)\n  \}\n\n  \/\*/)?.[1] ?? "";
+    expect(usersView).not.toContain("btn-admin-add-user");
+    expect(usersView).not.toContain('data-action="edit-user"');
+    expect(usersView).not.toContain('data-action="toggle-status"');
+    expect(usersView).toContain("Data Supabase");
+
+    expect(adminListUsersFunctionSource).toContain("auth.getUser(token)");
+    expect(adminListUsersFunctionSource).toContain('actor?.role !== "admin"');
+    expect(adminListUsersFunctionSource).toContain('return json({ accounts, source: "supabase" })');
   });
 
   test.beforeEach(async ({ page }) => {
