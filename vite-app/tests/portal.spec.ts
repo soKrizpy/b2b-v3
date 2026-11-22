@@ -17,6 +17,20 @@ const adminExperienceSource = readFileSync(resolve(process.cwd(), "src/AdminExpe
 const adminWorkspaceSource = readFileSync(resolve(process.cwd(), "../js/admin/admin-workspace.js"), "utf8");
 const adminIdentityRepositorySource = readFileSync(resolve(process.cwd(), "src/data/supabase-admin-identity-repository.ts"), "utf8");
 const adminListUsersFunctionSource = readFileSync(resolve(process.cwd(), "../supabase/functions/admin-list-users/index.ts"), "utf8");
+  test("admin-list-users protects account data and returns only the production account contract", () => {
+    expect(adminListUsersFunctionSource).toContain('if (req.method !== "POST")');
+    expect(adminListUsersFunctionSource).toContain('if (!token) return json({ error: "Unauthorized" }, 401)');
+    expect(adminListUsersFunctionSource).toContain("publicClient.auth.getUser(token)");
+    expect(adminListUsersFunctionSource).toContain('.from("profiles")');
+    expect(adminListUsersFunctionSource).toContain('.eq("id", authData.user.id)');
+    expect(adminListUsersFunctionSource).toContain('actor?.role !== "admin"');
+    expect(adminListUsersFunctionSource).toContain('.select("id, full_name, role, email, created_at")');
+    expect(adminListUsersFunctionSource).toContain('profile.role === "teacher" ? "tutor" : profile.role');
+    expect(adminListUsersFunctionSource).toContain('isBanned ? "inactive" : "active"');
+    expect(adminListUsersFunctionSource).toContain('return json({ accounts, source: "supabase" })');
+    expect(adminListUsersFunctionSource).not.toMatch(/mpin_hash|password_hash|phone_number|whatsapp/);
+    expect(adminListUsersFunctionSource).toContain('Deno.env.get("SUPABASE_SECRET_KEYS")');
+  });
 
 
 test.describe("Bits2Bytes demo portal", () => {
