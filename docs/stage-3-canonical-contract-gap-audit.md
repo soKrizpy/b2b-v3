@@ -2,7 +2,7 @@
 
 Status: in progress. This document supersedes any broad statement elsewhere that the canonical TypeScript `DomainRepositories` runtime adapter is complete. The legacy workspace gateway and compatibility adapters exist, but they are not yet a complete implementation of `domain-contracts.ts`.
 
-Audit baseline: branch `preview`, latest implementation checkpoint `7e86bb1c218d6ee75aa1049663c70e96781399e5`.
+Audit baseline: branch `preview`, latest implementation checkpoint `89633b46e14ed52ed27022948bf8c6f08a3d27e3` (2026-11-22).
 Scope: repository contract/store audit plus local-demo adapter implementation and tests. No database schema, production Supabase data, `main`, or user application data was changed.
 
 ## Findings by domain
@@ -82,12 +82,11 @@ The repository tree contains one student lesson fixture (`data/mock/lesson-scrat
 
 ### Remaining Stage 3 work
 
-1. Complete CI for `37a28ef` and repair any failures before proceeding.
-2. Resolve the curriculum source/schema gap without inventing content; keep Stage 3 open until there is a valid mapping or an explicitly revised contract.
-3. Reconcile canonical auth contract with the account-ID-only demo login; do not emulate email/password by ignoring credentials.
-4. Add the canonical adapters to one typed composition factory only after all required domains (including curriculum/auth decision) have real implementations.
-5. Audit remaining active workspace direct-store imports and decide migration boundaries; keep legacy UI/controller gateway intact until a tested replacement exists.
-6. Run complete contract/browser regression and close Stage 3 only after all domains and consumers are verified.
+1. Resolve the curriculum source/schema gap without inventing content; keep Stage 3 open until a valid mapping or an explicitly revised contract exists.
+2. Reconcile canonical auth contract with the account-ID-only demo login; do not emulate email/password by ignoring credentials.
+3. Add canonical adapters to one typed composition factory only after all required domains (including curriculum/auth) have real implementations.
+4. Audit remaining active workspace direct-store imports and decide migration boundaries; keep the legacy UI/controller gateway intact until a tested replacement exists.
+5. Run complete contract/browser regression and close Stage 3 only after all domains and consumers are verified.
 
 The Stage 4 gate remains closed. No Supabase setup, migrations, RLS changes, or production writes are authorized by this checkpoint.
 
@@ -117,3 +116,15 @@ The product rules below are now confirmed by the user and supersede the earlier 
 The existing source inventory previously inspected contains 7 Modules, 100 Topics, 33 Quizzes, and 30 Quiz questions; all 7 existing Modules were recorded as Beginner. The aggregate average is not a substitute for verifying each Module's Topic count. The current repository still contains only one Lesson fixture, not a complete local curriculum catalogue. Do not fabricate the missing module/topic mapping or IDs.
 
 Stage 3 must preserve the existing stable `lessonKey` and progress relationship (`studentId + lessonKey`). Production Supabase remains out of scope; no database reads/writes, migrations, RLS changes, or Stage 4 work are authorized by this update. The remaining curriculum implementation must use verified local/exported source data or wait for the separately approved backend stage.
+
+
+## Implementation checkpoint — 2026-11-22
+
+- Commit `89633b4` (`fix(learning): preserve unknown checkpoint counts`) changed canonical checkpoint totals to `number | null` and preserved unknown legacy values as `null` instead of coercing them to zero.
+- Added regression coverage for fully unknown, partially known, and fully known checkpoint counts.
+- GitHub Actions run [44974291786](https://github.com/soKrizpy/b2b-v3/actions/runs/44974291786) completed successfully: TypeScript check, production build, and Chromium browser QA all passed; browser QA reported 54 tests passed, 0 failed.
+- Build emitted a bundle-size warning (main JavaScript bundle approximately 539 KB, above the 500 KB warning threshold). This is a non-blocking optimization item, not a test failure.
+- The Admin Curriculum Studio requirement wording was corrected so the Topic Quiz is explicitly formative and does not gate progression. The matching acceptance criteria and product decision update already prohibit Quiz-based gating.
+- No curriculum IDs, module/topic mappings, lesson fixtures, auth behavior, database schema, Supabase data, or `main` branch were changed.
+
+The next safe implementation task remains an evidence-based curriculum source inventory and schema decision. The repository currently has one lesson fixture and no authoritative Module–Topic–Lesson ID mapping; do not construct a CurriculumRepository until that source is available or the canonical contract is deliberately revised.
