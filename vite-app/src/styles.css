@@ -79,3 +79,14 @@
 .b2b-login-panel > .btn-primary { width:100%; min-height:44px; }
 .b2b-login-disclaimer { margin:0; padding:var(--space-3); color:var(--color-text-muted); background:var(--color-bg-surface-subtle); border-radius:var(--radius-md); font-size:var(--font-size-xs); line-height:var(--line-height-relaxed); }
 .b2b-login-error { margin:0; color:var(--color-danger); font-size:var(--font-size-sm); }
+
+
+/* Authentication mode selector */
+.b2b-login-mode {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+}
+.b2b-login-mode .btn {
+  flex: 1;
+}
