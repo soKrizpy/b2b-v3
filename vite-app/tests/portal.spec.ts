@@ -1470,6 +1470,7 @@ test.describe("Local demo domain repository adapters", () => {
   });
 
   test("Supabase lesson adapter preserves topic identity and maps production JSONB into the six learning stages", async ({ page }) => {
+    await page.goto("/");
     const result = await page.evaluate(async () => {
       const { adaptSupabaseTopicToLegacyLesson } = await import("/src/data/supabase-lesson-adapter.ts");
       const lesson = adaptSupabaseTopicToLegacyLesson(
