@@ -43,6 +43,9 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run browser QA
+        env:
+          VITE_SUPABASE_URL: https://b2b-e2e.supabase.test
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_e2e_test_key
         run: npx playwright test
       - name: Upload browser test report
         if: always()
