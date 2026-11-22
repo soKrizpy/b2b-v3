@@ -116,7 +116,7 @@ export class AdminWorkspace {
             <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
               <span class="badge badge-warning" style="font-weight: var(--font-weight-bold);">ADMIN CONSOLE</span>
               <span class="badge badge-scratch">Phase 4 RBAC</span>
-              <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Simulasi Akses Lokal</span>
+              <span style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Data akun Supabase</span>
             </div>
             <h2 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-1) 0; color: var(--color-text-primary);">
               Manajemen Identitas &amp; Hak Akses Pengguna
@@ -131,9 +131,6 @@ export class AdminWorkspace {
               <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-text-primary);">${activeCount} / ${totalCount}</span>
               <div style="font-size: 11px; color: var(--color-text-muted);">Akun Aktif</div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" id="btn-admin-add-user">
-              ➕ Tambah Akun Demo
-            </button>
           </div>
         </header>
 
@@ -222,7 +219,7 @@ export class AdminWorkspace {
               Tidak Ada Pengguna Sesuai Filter
             </h4>
             <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0;">
-              Coba reset filter atau tambahkan akun demo baru melalui tombol di atas.
+              Belum ada akun Supabase yang sesuai dengan filter ini.
             </p>
           </div>
         ` : `
@@ -260,18 +257,7 @@ export class AdminWorkspace {
                   </div>
 
                   <div style="display: flex; gap: var(--space-2); align-items: center;">
-                    <button type="button" class="btn btn-secondary btn-sm" data-action="edit-user" data-user-id="${u.id}">
-                      ✏️ Edit
-                    </button>
-                    ${isInactive ? `
-                      <button type="button" class="btn btn-ghost btn-sm" style="color: var(--color-success-text);" data-action="toggle-status" data-user-id="${u.id}" data-target-status="active">
-                        ✅ Aktifkan
-                      </button>
-                    ` : `
-                      <button type="button" class="btn btn-ghost btn-sm" style="color: var(--color-danger);" data-action="toggle-status" data-user-id="${u.id}" data-target-status="inactive">
-                        ⏸️ Nonaktifkan
-                      </button>
-                    `}
+                    <span class="badge badge-scratch">Data Supabase</span>
                   </div>
                 </div>
               `;
