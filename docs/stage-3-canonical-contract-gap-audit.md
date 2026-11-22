@@ -44,7 +44,7 @@ Scope: repository contract/store audit plus local-demo adapter implementation an
 
 - Continue only on branch `preview`; do not create branches.
 - Do not modify `main`.
-- Do not access or write to production Supabase. No SQL/migrations/RLS changes in Stage 3.
+- Use the existing production Supabase project `bits2bytes` (`enfqoofluceqrlcjemfu`) as the authoritative data/auth target. Read-only schema and aggregate-data inspection is allowed. Do not create/delete users, alter schema, apply migrations, change RLS/policies, or write production rows without a separately scoped and explicit user instruction.
 - Do not begin Stage 4 until Stage 3 is complete and the user explicitly approves the next gate.
 
 ## Learning adapter implementation checkpoint
@@ -139,8 +139,20 @@ The auth boundary was inspected in the current `preview` tree:
 - `vite-app/src/data/local-demo-repositories.ts` adapts the React demo port to `WorkspaceRepositories.auth`; it does not claim to implement the canonical credential contract.
 - `js/services/auth-service.js` labels itself a local demo session manager, exposes `signInDemo(userId)`, checks account status through `IdentityStore`, and explicitly does not store or verify passwords.
 
-**Decision:** no auth code change is justified in this audit. The current demo port is explicitly separate and the canonical email/password contract is not implemented by it. Do not add a fake `AuthRepository` adapter, ignore a password argument, or infer credentials from an account ID. A future canonical adapter requires an approved credential provider, verified session semantics, and dedicated tests for invalid credentials, inactive accounts, session restoration, sign-out, and subscription updates.
+**Decision:** the intended authentication provider is the existing real Supabase Auth project `bits2bytes` (`enfqoofluceqrlcjemfu`), using the already-created teacher/student identities. A read-only profile aggregate query on 2026-11-22 confirmed 1 admin, 2 teacher, and 12 student profiles. Preserve the existing Auth user UUIDs and `auth.users → public.profiles → public.students` relationships; do not recreate accounts or alter UUIDs. The demo account-ID port is only a temporary prototype path and must be replaced in the active portal by real Supabase email/password sign-in, session restoration, sign-out, and profile/role resolution. Never infer a production role from user-editable `user_metadata`; use the trusted profile row / server-side authorization and existing RLS.
 
-**Runtime verification:** existing portal browser tests exercise account-ID demo login for Admin, Tutor, and Student. These tests validate demo navigation only; they do not establish production credential authentication or security.
+**Runtime verification:** existing portal browser tests exercise account-ID demo login for Admin, Tutor, and Student. These tests validate demo navigation only; they do not establish production credential authentication or security. The actual Supabase project and profile role counts were verified read-only. No auth behavior, Supabase configuration/data, database schema, or `main` branch was changed by this audit.
 
-No auth behavior, Supabase configuration/data, database schema, or `main` branch was changed by this audit.
+
+## Supabase target correction — 2026-11-22
+
+The user reconfirmed that B2B v3 must use the existing/original Supabase project and the dummy teacher/student accounts already created there. This supersedes earlier audit wording that treated production Supabase as out of scope for even read-only inspection.
+
+- Confirmed project: `bits2bytes`, ref `enfqoofluceqrlcjemfu`, region `ap-northeast-1`, status `ACTIVE_HEALTHY`.
+- A separate project named `bits2bytes-v3` is inactive; it is not the selected target. Do not switch to it.
+- Read-only schema inspection confirmed `profiles` (15 rows), `students` (12), `modules` (7), `topics` (100), `quizzes` (33), and `quiz_questions` (30). The inspected public tables have RLS enabled.
+- Read-only role aggregate: 1 admin, 2 teacher, 12 student profiles.
+- Existing identity relationship is `auth.users → public.profiles → public.students`; preserve the existing identities and UUIDs.
+- No users were created/deleted, no data rows were changed, no DDL/migrations/RLS policies were changed, and no secrets or credentials were read.
+
+**Updated implementation direction:** replace the temporary demo login in the active Vite portal with Supabase Auth against this existing project; resolve the signed-in user's role/profile from trusted database records; then compose canonical repositories against the existing schema. Keep `service_role` out of browser code. Continue read-only schema/RLS inspection before any writes. Any production data mutation, schema migration, or policy change still requires its own explicit scope and safety review.
