@@ -1,0 +1,35 @@
+name: Bits2Bytes Preview Build
+
+on:
+  push:
+    branches:
+      - preview
+    paths:
+      - "vite-app/**"
+      - "css/**"
+      - "js/**"
+      - "logo-b2b-*.svg"
+      - ".github/workflows/preview-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: TypeScript and Vite production build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vite-app
+    steps:
+      - name: Checkout preview
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Run production build
+        run: npm run build
