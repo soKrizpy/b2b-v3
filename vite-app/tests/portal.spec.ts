@@ -10,9 +10,9 @@ const workspaceRepositoryImports = [
   "../js/admin/admin-workspace.js",
   "../js/teacher-workspace.js",
   "../js/lesson-workspace.js",
-  "../js/student/parent-hub.js",
-  "src/StudentExperience.tsx"
+  "../js/student/parent-hub.js"
 ].map((path) => readFileSync(resolve(process.cwd(), path), "utf8"));
+const studentExperienceSource = readFileSync(resolve(process.cwd(), "src/StudentExperience.tsx"), "utf8");
 
 
 test.describe("Bits2Bytes demo portal", () => {
@@ -41,11 +41,14 @@ test.describe("Bits2Bytes demo portal", () => {
     });
   });
 
-  test("active workspace controllers import domain repositories through one gateway", () => {
+  test("legacy workspace controllers use the repository gateway and Supabase student experience injects its production bridge", () => {
     for (const source of workspaceRepositoryImports) {
       expect(source).toContain("workspace-repositories.js");
       expect(source).not.toMatch(/services\/(?:identity|learning-state|class-session|learning-record|billing)-repository\.js/);
     }
+    expect(studentExperienceSource).toContain("createSupabaseLegacyLearningBridge()");
+    expect(studentExperienceSource).toContain("{ learning: createSupabaseLegacyLearningBridge() }");
+    expect(studentExperienceSource).not.toContain("workspace-repositories.js");
   });
 
   test.beforeEach(async ({ page }) => {
