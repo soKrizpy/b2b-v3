@@ -51,13 +51,9 @@ export class AdminWorkspace {
 
   async refreshData({ render = true } = {}) {
     const request = ++this.refreshSequence;
-    const [users, assignments] = await Promise.all([
-      this.repositories.identity.getAllUsers(),
-      this.repositories.identity.getAllAssignments()
-    ]);
+    const users = await this.repositories.identity.getAllUsers();
     if (this.destroyed || request !== this.refreshSequence) return;
     this.users = users;
-    this.assignments = assignments;
     this.usersById = new Map(users.map(user => [user.id, user]));
     this.ratesByStudent = new Map();
     if (render && this.container) this.render();
@@ -89,7 +85,6 @@ export class AdminWorkspace {
     const allUsers = this.users;
     const totalCount = allUsers.length;
     const activeCount = allUsers.filter(u => u.status === 'active').length;
-    const assignments = this.assignments;
 
     this.container.innerHTML = `
       <div class="admin-workspace-wrap" style="display: flex; flex-direction: column; gap: var(--space-6);">
@@ -105,7 +100,7 @@ export class AdminWorkspace {
               Manajemen Identitas &amp; Hak Akses Pengguna
             </h2>
             <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0;">
-              Kelola akun Admin, Tutor, dan Siswa, status aktif/nonaktif, serta penugasan tutor-siswa.
+              Data akun Admin, Tutor, dan Siswa yang dibaca langsung dari Supabase.
             </p>
           </div>
 
