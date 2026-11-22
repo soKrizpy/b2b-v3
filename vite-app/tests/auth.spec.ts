@@ -1,0 +1,119 @@
+import { expect, test, type Page } from "@playwright/test";
+
+const supabaseHost = "b2b-e2e.supabase.test";
+const supabaseOrigin = `https://${supabaseHost}`;
+
+async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student") {
+  const userId = `e2e-${role}-user`;
+  const email = `${role}@bits2bytes.test`;
+  const createdAt = "2026-01-01T00:00:00.000Z";
+  const corsHeaders = {
+    "access-control-allow-origin": "http://127.0.0.1:4173",
+    "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
+    "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+    "access-control-max-age": "86400"
+  };
+
+  await page.route(`https://${supabaseHost}/**`, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const jsonHeaders = { ...corsHeaders, "content-type": "application/json" };
+
+    if (request.method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
+
+    if (url.pathname === "/auth/v1/token" && request.method() === "POST") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          access_token: "e2e-access-token",
+          token_type: "bearer",
+          expires_in: 3600,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+          refresh_token: "e2e-refresh-token",
+          user: {
+            id: userId,
+            aud: "authenticated",
+            role: "authenticated",
+            email,
+            app_metadata: { provider: "email", providers: ["email"] },
+            user_metadata: {},
+            created_at: createdAt,
+            updated_at: createdAt,
+            is_anonymous: false
+          }
+        })
+      });
+      return;
+    }
+
+    if (url.pathname === "/auth/v1/logout" && request.method() === "POST") {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/profiles" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          id: userId,
+          full_name: `E2E ${role}`,
+          role,
+          email,
+          created_at: createdAt
+        })
+      });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/students" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({ grade: "4" })
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 404,
+      headers: jsonHeaders,
+      body: JSON.stringify({ message: `Unexpected Supabase request: ${request.method()} ${url.pathname}` })
+    });
+  });
+}
+
+test.describe("Supabase Auth portal", () => {
+  test("shows email/password login and does not expose demo-account selection", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Selamat datang di Bits2Bytes!" })).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
+    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.locator("#demo-account")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Pilih ruang/ })).toHaveCount(0);
+  });
+
+  for (const role of ["admin", "teacher", "student"] as const) {
+    test(`authenticates a real ${role} profile and resolves its trusted database role`, async ({ page }) => {
+      await mockSupabaseAuth(page, role);
+      await page.goto("/");
+      await page.getByLabel("Email").fill(`${role}@bits2bytes.test`);
+      await page.getByLabel("Password").fill("valid-e2e-password");
+      await page.getByRole("button", { name: "Masuk" }).click();
+
+      const expectedTitle = role === "teacher"
+        ? "Ruang Tutor"
+        : role === "student"
+          ? "Ruang Belajarku"
+          : "Ruang Admin";
+
+      await expect(page.getByRole("heading", { name: expectedTitle })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
+      await expect(page.locator("#demo-account")).toHaveCount(0);
+    });
+  }
+});
