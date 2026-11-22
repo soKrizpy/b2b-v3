@@ -83,6 +83,14 @@ Deno.serve(async (req: Request) => {
   if (topicError) return json({ error: "Unable to load quiz" }, 500);
   if (!topic || topic.status !== "published") return json({ error: "Quiz unavailable" }, 404);
 
+  const { data: moduleRow, error: moduleError } = await admin
+    .from("modules")
+    .select("is_active")
+    .eq("id", topic.module_id)
+    .maybeSingle();
+  if (moduleError) return json({ error: "Unable to verify module" }, 500);
+  if (!moduleRow || moduleRow.is_active !== true) return json({ error: "Module unavailable" }, 404);
+
   const { data: enrollment, error: enrollmentError } = await admin
     .from("student_modules")
     .select("id")
@@ -117,7 +125,7 @@ Deno.serve(async (req: Request) => {
       return json({ error: "Selected option is invalid" }, 400);
     }
     seen.add(Number(questionIndex));
-    if (Number(selectedIndex) === question.answer_index) correct += 1;
+    if (Number(selectedIndex) === Number(question.answer_index)) correct += 1;
     normalizedAnswers.push({
       question_index: Number(questionIndex),
       selected_index: Number(selectedIndex),
