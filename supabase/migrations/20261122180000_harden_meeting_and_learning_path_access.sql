@@ -27,14 +27,14 @@ language sql
 stable
 security definer
 set search_path = pg_catalog
-as $
+as $$
   select exists (
     select 1
     from public.profiles p
     where p.id = auth.uid()
       and p.role = 'student'
   );
-$;
+$$;
 
 create or replace function private.is_teacher_actor()
 returns boolean
@@ -42,14 +42,14 @@ language sql
 stable
 security definer
 set search_path = pg_catalog
-as $
+as $$
   select exists (
     select 1
     from public.profiles p
     where p.id = auth.uid()
       and p.role = 'teacher'
   );
-$;
+$$;
 
 create or replace function private.can_manage_meeting(p_meeting_id bigint)
 returns boolean
