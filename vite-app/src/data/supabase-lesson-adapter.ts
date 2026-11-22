@@ -81,7 +81,10 @@ export function adaptSupabaseTopicToLegacyLesson(
         type: "interactive-quiz",
         quizType: "mcq",
         question: asText(item.instructions, title),
-        options: makeQuizOptions(item.options, item.options.indexOf(item.correctOption as JsonValue))
+        options: makeQuizOptions(
+          item.options,
+          typeof item.correctOption === "string" ? item.options.indexOf(item.correctOption) : -1
+        )
       });
     }
     return { id: asText(item.id, `slide-${index + 1}`), title, type: "concept", content: blocks };
