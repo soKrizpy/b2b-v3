@@ -45,29 +45,21 @@ export class AdminWorkspace {
     if (this.destroyed) return;
     if (!this._unsub) {
       this._unsub = this.repositories.identity.subscribe(() => { void this.refreshData(); });
-      this._unsubBilling = this.repositories.billing.subscribe(() => { void this.refreshData(); });
-      this._unsubSessions = this.repositories.classSessions.subscribe(() => { void this.refreshData(); });
     }
     this.render();
   }
 
   async refreshData({ render = true } = {}) {
     const request = ++this.refreshSequence;
-    const [users, assignments, sessions, invoices] = await Promise.all([
+    const [users, assignments] = await Promise.all([
       this.repositories.identity.getAllUsers(),
-      this.repositories.identity.getAllAssignments(),
-      this.repositories.classSessions.getAllSessions(),
-      this.repositories.billing.getInvoices()
+      this.repositories.identity.getAllAssignments()
     ]);
-    const students = users.filter(user => user.role === 'student' && user.status === 'active');
-    const rateEntries = await Promise.all(students.map(async student => [student.id, await this.repositories.billing.getRate(student.id)]));
     if (this.destroyed || request !== this.refreshSequence) return;
     this.users = users;
     this.assignments = assignments;
-    this.sessions = sessions;
-    this.invoices = invoices;
     this.usersById = new Map(users.map(user => [user.id, user]));
-    this.ratesByStudent = new Map(rateEntries);
+    this.ratesByStudent = new Map();
     if (render && this.container) this.render();
   }
 
@@ -87,19 +79,10 @@ export class AdminWorkspace {
           <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 500px; margin: 0 auto var(--space-4) auto;">
             Halaman ini khusus untuk peran <strong>Administrator</strong>. Akun Anda saat ini (<strong>${escapeHtml(currentUser?.displayName || 'Tamu')}</strong> - role: <em>${escapeHtml(currentUser?.role || 'none')}</em>) tidak memiliki hak akses manajemen pengguna.
           </p>
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-admin-switch-account">
-            Buka Demo Switcher &rarr;
-          </button>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0;">Silakan masuk menggunakan akun Admin Supabase.</p>
         </div>
       `;
 
-      const switchBtn = this.container.querySelector('#btn-admin-switch-account');
-      if (switchBtn) {
-        switchBtn.addEventListener('click', () => {
-          const switcherBtn = document.getElementById('btn-open-demo-switcher');
-          if (switcherBtn) switcherBtn.click();
-        });
-      }
       return;
     }
 
@@ -139,15 +122,6 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'users' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="users">
             👥 Daftar Pengguna (${totalCount})
           </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations">
-            👩‍🏫 Relasi Tutor &amp; Siswa (${assignments.length})
-          </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'schedule' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="schedule">
-            🗓️ Jadwal Sesi
-          </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
-            💳 Tarif &amp; Tagihan
-          </button>
         </nav>
 
         <!-- ACTIVE TAB BODY -->
@@ -162,17 +136,8 @@ export class AdminWorkspace {
   }
 
   renderActiveTabContent() {
-    switch (this.activeTab) {
-      case 'tutor-relations':
-        return this.renderTutorRelationsView();
-      case 'schedule':
-        return this.renderScheduleView();
-      case 'billing':
-        return this.renderBillingView();
-      case 'users':
-      default:
-        return this.renderUsersView();
-    }
+    // Only production-backed admin views are exposed here.
+    return this.renderUsersView();
   }
 
   /* --------------------------------------------------------------------------
