@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { localDemoRepositories } from "./data/local-demo-repositories";
+import { supabaseAuthRepository } from "./data/supabase-auth-repository";
 // @ts-ignore - Legacy tutor controller is reused while its UI is migrated incrementally.
 import { TeacherWorkspace } from "../../js/teacher-workspace.js";
 
@@ -19,7 +19,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
     void (async () => {
       try {
         // Re-read the active session through the portal auth repository before mounting.
-        const session = await localDemoRepositories.auth.getSession();
+        const session = await supabaseAuthRepository.getSession();
         if (!active) return;
         if (user.role !== "tutor" ||
             session?.user?.id !== user.id ||
