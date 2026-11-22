@@ -1296,6 +1296,10 @@ export class LessonWorkspace {
         submitBtn.disabled = true;
         try {
           const submittedAt = new Date().toISOString();
+          const practiceStage = this.stages.find(stage => stage.id === 'practice');
+          const practiceCheckpoints = practiceStage?.content?.checkpoints || [];
+          const checkpointsTotal = practiceCheckpoints.length;
+          const checkpointsPassed = practiceCheckpoints.filter(checkpoint => this.checkpointStates[checkpoint.id] === true).length;
           const subRecord = await this.repositories.learning.saveSubmission({
             studentId: this.currentUser.id,
             studentName: this.currentUser.name,
@@ -1305,9 +1309,10 @@ export class LessonWorkspace {
             projectUrl: link,
             studentNotes: notes,
             status: 'submitted',
-            checkpointsPassed: 4,
-            checkpointsTotal: 4,
-            quizScore: '3/3 (100%)',
+            checkpointsPassed,
+            checkpointsTotal,
+            // Quiz attempts are not persisted yet; do not report a fabricated score.
+            quizScore: null,
             submittedAt
           });
           if (!subRecord) throw new Error('Data proyek belum berhasil disimpan.');
