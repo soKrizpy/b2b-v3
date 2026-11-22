@@ -57,7 +57,7 @@ export default function App() {
     event.preventDefault();
     setLoginError("");
 
-    if (loginMode === "student" && (!phone.trim() || !/^\\d{6}$/.test(mpin))) {
+    if (loginMode === "student" && (!phone.trim() || !/^\d{6}$/.test(mpin))) {
       setLoginError("Masukkan nomor WhatsApp dan MPIN 6 digit.");
       return;
     }
@@ -143,7 +143,7 @@ export default function App() {
                 <label className="form-label" htmlFor="login-phone">Nomor WhatsApp</label>
                 <input id="login-phone" className="form-control" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="Contoh: 08xxxxxxxxxx" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
                 <label className="form-label" htmlFor="login-mpin">MPIN (6 digit)</label>
-                <input id="login-mpin" className="form-control" type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={mpin} onChange={(event) => setMpin(event.target.value.replace(/\\D/g, "").slice(0, 6))} placeholder="Masukkan MPIN" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <input id="login-mpin" className="form-control" type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={mpin} onChange={(event) => setMpin(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Masukkan MPIN" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
               </> : <>
                 <label className="form-label" htmlFor="login-email">Email</label>
                 <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
