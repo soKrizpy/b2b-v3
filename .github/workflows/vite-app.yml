@@ -5,6 +5,7 @@ on:
     branches: [preview]
     paths:
       - "vite-app/**"
+      - "vercel.json"
       - "js/**"
       - "css/**"
       - "data/mock/**"
