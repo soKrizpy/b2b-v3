@@ -53,6 +53,9 @@ export class LessonWorkspace {
     this.visitedSlides = new Set([0, this.currentSlideIndex]);
 
     this.activeStoreSubmission = null;
+    this.quizAnswers = {};
+    this.quizSubmitted = false;
+    this.quizSubmissionPromise = null;
   }
 
   async init() {
@@ -897,6 +900,8 @@ export class LessonWorkspace {
       attachInteractions(bodyEl, (cpId, isChecked) => {
         this.checkpointStates[cpId] = isChecked;
         this.evaluateCheckpointsProgress();
+      }, (questionIndex, selectedIndex) => {
+        void this.handleQuizAnswer(questionIndex, selectedIndex);
       });
     }
 
@@ -1056,11 +1061,51 @@ export class LessonWorkspace {
 
     return questions.map(q => renderQuiz({
       id: q.id,
+      questionIndex: q.questionIndex,
       quizType: q.type || 'mcq',
       question: q.prompt,
       options: q.options,
       hint: null
     })).join('<div style="margin: var(--space-5) 0; border-top: 1px solid var(--color-border-subtle);"></div>');
+  }
+
+  async handleQuizAnswer(questionIndex, selectedIndex) {
+    if (this.quizSubmitted || !Number.isInteger(this.lesson.topicId)) return;
+    this.quizAnswers[questionIndex] = selectedIndex;
+    const questions = this.stages.find(stage => stage.id === 'check')?.questions || [];
+    if (questions.length === 0 || Object.keys(this.quizAnswers).length !== questions.length) return;
+
+    const submitAttempt = this.repositories.learning.submitTopicQuizAttempt;
+    if (typeof submitAttempt !== 'function') {
+      showToast({ title: 'Kuis belum tersambung', message: 'Penyimpanan hasil kuis belum tersedia.', type: 'warning' });
+      return;
+    }
+
+    if (this.quizSubmissionPromise) return;
+    this.quizSubmissionPromise = submitAttempt.call(
+      this.repositories.learning,
+      this.lesson.topicId,
+      questions.map((_, index) => ({ questionIndex: index, selectedIndex: this.quizAnswers[index] }))
+    ).then(result => {
+      this.quizSubmitted = true;
+      showToast({
+        title: 'Hasil kuis tersimpan',
+        message: `Nilai kamu ${result.score}/100 (percobaan ${result.attemptNumber} dari 2).`,
+        type: 'success',
+        duration: 4500
+      });
+    }).catch(error => {
+      console.error('Quiz result could not be saved:', error);
+      showToast({
+        title: 'Hasil kuis belum tersimpan',
+        message: error instanceof Error ? error.message : 'Silakan coba lagi.',
+        type: 'error',
+        duration: 4500
+      });
+    }).finally(() => {
+      this.quizSubmissionPromise = null;
+    });
+    await this.quizSubmissionPromise;
   }
 
   renderChallenge(stage) {
