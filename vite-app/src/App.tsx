@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import logoLight from "../../logo-b2b-light.svg";
 import logoDark from "../../logo-b2b-dark.svg";
 import StudentExperience from "./StudentExperience";
@@ -50,7 +50,7 @@ export default function App() {
     };
   }, []);
 
-  async function signIn(event: React.FormEvent<HTMLFormElement>) {
+  async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError("");
 
@@ -125,7 +125,7 @@ export default function App() {
               <h2 id="login-title">Selamat datang di Bits2Bytes!</h2>
               <p>Masuk menggunakan akun Bits2Bytes yang sudah terdaftar.</p>
             </div>
-            {!supabaseAuthRepository.isConfigured && <p className="b2b-login-error" role="alert">Konfigurasi Supabase belum lengkap. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY pada environment aplikasi.</p>}
+            {!supabaseAuthRepository.isConfigured && <p className="b2b-login-error" role="alert">Konfigurasi Supabase belum lengkap. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY pada environment aplikasi.</p>}
             <form onSubmit={signIn}>
               <label className="form-label" htmlFor="login-email">Email</label>
               <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
