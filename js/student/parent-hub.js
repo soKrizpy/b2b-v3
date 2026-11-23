@@ -214,11 +214,13 @@ export class ParentHubView {
               ${invoice.adjustmentNote ? `<p class="session-narrative-text">Catatan penyesuaian: ${escapeHtml(invoice.adjustmentNote)}</p>` : ''}
               <div class="session-meta-row"><strong>Total tagihan</strong><strong>${formatRupiah(invoice.totalAmount)}</strong></div>
               <span class="session-box-title" style="display:block;margin-top:var(--space-3);">Rincian pertemuan</span>
-              <ul>
-                ${(invoice.items || []).map(item => `
-                  <li>Sesi ke-${Number(item.sessionNumber) || '-'} · ${escapeHtml(formatDate(item.sessionDate))} · ${formatRupiah(item.amount)}</li>
-                `).join('')}
-              </ul>
+              ${(invoice.items || []).length ? `
+                <ul>
+                  ${invoice.items.map(item => `
+                    <li>Sesi ke-${Number(item.sessionNumber) || '-'} · ${escapeHtml(formatDate(item.sessionDate))} · ${formatRupiah(item.amount)}</li>
+                  `).join('')}
+                </ul>
+              ` : `<p class="session-narrative-text">Rincian sesi untuk tagihan historis ini belum dapat diverifikasi dari jadwal dan presensi yang tersimpan. Total tagihan lama tetap dipertahankan.</p>`}
             </div>
           </article>
         `).join('')}
