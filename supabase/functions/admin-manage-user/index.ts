@@ -241,6 +241,29 @@ Deno.serve(async (req: Request) => {
     }
 
     const requestedStatus = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
+    if (requestedStatus === "inactive" && currentRole === "admin") {
+      if (userId === actor.id) {
+        return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
+      }
+      const { data: admins, error: adminsError } = await adminClient
+        .from("profiles").select("id").eq("role", "admin");
+      if (adminsError) {
+        return json({ error: "Daftar admin aktif tidak dapat diverifikasi" }, 500);
+      }
+      let activeAdminCount = 0;
+      for (const admin of admins ?? []) {
+        const { data: adminAuth, error: adminAuthError } = await adminClient.auth.admin.getUserById(admin.id);
+        if (adminAuthError || !adminAuth.user) {
+          return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
+        }
+        const bannedUntil = adminAuth.user.banned_until;
+        if (!bannedUntil || new Date(bannedUntil).getTime() <= Date.now()) activeAdminCount += 1;
+      }
+      if (activeAdminCount <= 1) {
+        return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
+      }
+    }
+
     const authUpdates: Record<string, unknown> = {
       email,
       user_metadata: { ...(authBefore.user_metadata ?? {}), full_name: displayName },
