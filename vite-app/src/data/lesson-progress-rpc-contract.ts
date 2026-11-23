@@ -56,7 +56,7 @@ export function mapStudentLessonProgressRow(value: unknown): StudentLessonProgre
     || !checkpointsValid
     || !draftValid
     || !Number.isSafeInteger(row.slide_index) || row.slide_index < 0 || row.slide_index > 200
-    || !Number.isSafeInteger(row.version) || row.version < 0
+    || !Number.isSafeInteger(row.version) || row.version <= 0
     || typeof row.updated_at !== "string" || !row.updated_at
   ) {
     throw new Error("Respons penyimpanan progres belajar tidak valid.");
