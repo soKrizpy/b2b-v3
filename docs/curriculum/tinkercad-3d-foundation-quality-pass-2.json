@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "module_id": 30,
+  "module_title": "Tinkercad 3D Beginner",
+  "revision": "quality-pass-2-existing-topics",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "topics": [
+    {
+      "topic_id": 158,
+      "challenge_id": 25,
+      "topic": "Berkenalan dengan Tinkercad 3D",
+      "added_nodes": [
+        {
+          "id": "t158-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Membuat Objek Dua Bentuk",
+          "content": "Seret satu Box ke Workplane, lalu tambahkan satu Cylinder di sampingnya. Ubah ukuran kedua bentuk dan putar tampilan agar kamu dapat membedakan panjang, lebar, serta tinggi. Perhatikan bahwa dua bentuk masih merupakan objek terpisah sebelum digabung."
+        },
+        {
+          "id": "t158-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Objek Sederhana",
+          "content": "Buat objek sederhana dari minimal dua bentuk dasar. Atur posisi dan ukuran masing-masing, lalu simpan dengan nama yang menjelaskan hasil desain. Pastikan kamu dapat memilih setiap bentuk secara terpisah."
+        },
+        {
+          "id": "t158-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Objek Tidak Terlihat",
+          "content": "Jika bentuk tidak terlihat, gunakan Zoom to Fit atau geser tampilan kembali ke area objek. Jika objek tidak terpilih, klik bagian tengah bentuk. Jika objek tampak pipih, periksa dari sudut miring untuk melihat tinggi sebenarnya."
+        }
+      ],
+      "challenge_title": "Challenge: Desain 3D Pertamaku",
+      "challenge_instructions": "Buat satu objek sederhana dari minimal dua bentuk dasar di Tinkercad. Ubah ukuran dan posisi setiap bentuk, periksa dari tampak atas, samping, dan perspektif, lalu simpan desain dengan nama yang jelas. Bagikan tautan desain kepada guru."
+    },
+    {
+      "topic_id": 159,
+      "challenge_id": 26,
+      "topic": "Mengenal Grid, Workplane, dan Sudut Pandang",
+      "added_nodes": [
+        {
+          "id": "t159-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Menempatkan Dua Objek",
+          "content": "Letakkan dua Box pada Workplane dengan jarak yang terlihat jelas. Gunakan grid sebagai panduan, lalu ubah tampilan dari atas ke samping. Perhatikan bahwa menggeser kamera tidak memindahkan kedua objek."
+        },
+        {
+          "id": "t159-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Susunan di Atas Grid",
+          "content": "Buat tiga objek pada Workplane dengan jarak berbeda. Atur tampilan atas untuk memeriksa susunan, lalu gunakan tampilan miring untuk memastikan tidak ada objek yang melayang."
+        },
+        {
+          "id": "t159-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Objek Tampak Melayang",
+          "content": "Jika objek terlihat melayang, periksa ketinggian Z dan bidang tempat objek diletakkan. Jika objek hilang dari layar, gunakan Zoom to Fit. Jika hanya kamera yang berubah, pilih kembali objek untuk memastikan posisinya tidak ikut bergeser."
+        }
+      ],
+      "challenge_title": "Challenge: Susunan Bentuk pada Workplane",
+      "challenge_instructions": "Buat susunan tiga bentuk pada Workplane dengan jarak yang disengaja. Tunjukkan tampak atas dan tampak miring. Jelaskan perbedaan memindahkan objek dengan menggeser sudut pandang kamera, lalu bagikan tautan desain."
+    },
+    {
+      "topic_id": 160,
+      "challenge_id": 27,
+      "topic": "Mengenal Bentuk Dasar dan Warna",
+      "added_nodes": [
+        {
+          "id": "t160-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Rumah dari Bentuk Dasar",
+          "content": "Gunakan Box sebagai badan rumah, Roof atau bentuk atap yang sesuai sebagai atap, dan Cylinder sebagai tiang sederhana. Pilih warna untuk membedakan bagian, tetapi pastikan bentuk dan posisinya benar sebelum mempercantik warna."
+        },
+        {
+          "id": "t160-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Bangun Benda dari Tiga Bentuk",
+          "content": "Pilih benda sederhana selain rumah, misalnya robot atau lampu meja. Tentukan bentuk dasar untuk setiap bagian dan jelaskan alasan pemilihannya sebelum menyusun objek."
+        },
+        {
+          "id": "t160-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Bentuk Tidak Sesuai",
+          "content": "Jika atap atau komponen tidak cocok, periksa jenis bentuk dan rotasinya. Jika warna membuat bagian sulit dibedakan, pilih warna yang lebih kontras. Jika objek saling menutupi, ubah posisi sebelum menggunakan Group."
+        }
+      ],
+      "challenge_title": "Challenge: Bangun Benda dari Bentuk Dasar",
+      "challenge_instructions": "Buat satu benda sederhana menggunakan minimal tiga bentuk dasar. Setiap bentuk harus memiliki fungsi yang dapat dijelaskan. Gunakan warna untuk membedakan bagian, lalu periksa model dari dua sudut dan bagikan tautan desain."
+    },
+    {
+      "topic_id": 161,
+      "challenge_id": 28,
+      "topic": "Memindahkan, Memutar, dan Mengubah Ukuran",
+      "added_nodes": [
+        {
+          "id": "t161-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Menyusun Robot Geometris",
+          "content": "Buat badan robot dari Box, kepala dari bentuk lain, dan lengan dari Cylinder. Gunakan Move untuk menempatkan bagian, Rotate untuk mengubah arah, dan Resize untuk mengatur proporsi. Periksa sumbu Z agar bagian tidak melayang."
+        },
+        {
+          "id": "t161-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Ubah Satu Dimensi",
+          "content": "Pilih satu bentuk dan ubah hanya panjangnya tanpa mengubah lebar serta tinggi. Setelah itu putar bentuk 90 derajat dan bandingkan hasilnya. Catat alat mana yang digunakan untuk setiap perubahan."
+        },
+        {
+          "id": "t161-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Transformasi Salah Arah",
+          "content": "Jika objek bergerak ke atas padahal ingin digeser mendatar, periksa pegangan sumbu yang dipilih. Jika bentuk menjadi terlalu pipih, batalkan perubahan dan atur dimensi yang benar. Jika rotasi tidak sesuai, pilih pegangan rotasi pada sumbu yang tepat."
+        }
+      ],
+      "challenge_title": "Challenge: Robot dengan Transformasi Dasar",
+      "challenge_instructions": "Buat robot sederhana dari minimal empat bentuk. Gunakan Move, Rotate, dan Resize untuk menempatkan kepala, badan, lengan, dan kaki. Periksa dari depan dan samping agar tidak ada bagian yang melayang. Bagikan tautan desain."
+    },
+    {
+      "topic_id": 162,
+      "challenge_id": 29,
+      "topic": "Pengukuran dengan Ruler",
+      "added_nodes": [
+        {
+          "id": "t162-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Kotak Ukuran Tertentu",
+          "content": "Letakkan Ruler dekat Box, lalu atur panjang, lebar, dan tinggi sesuai target yang ditentukan. Catat ketiga dimensi tersebut dan ubah hanya satu nilai untuk melihat pengaruhnya terhadap bentuk."
+        },
+        {
+          "id": "t162-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Buat Balok Berdimensi Target",
+          "content": "Buat balok dengan tiga ukuran yang kamu tentukan sendiri. Masukkan ukuran melalui kontrol numerik, lalu periksa kembali semua dimensi sebelum menyimpan desain."
+        },
+        {
+          "id": "t162-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Ukuran Tidak Sesuai",
+          "content": "Jika ukuran berubah terlalu jauh, periksa nilai dimensi dan satuan yang aktif. Jika gerakan objek melompat terlalu besar, atur Snap Grid ke langkah yang lebih kecil. Jangan mengubah semua dimensi sekaligus ketika hanya satu sisi yang perlu diperbaiki."
+        }
+      ],
+      "challenge_title": "Challenge: Objek dengan Ukuran yang Ditentukan",
+      "challenge_instructions": "Buat satu objek dengan panjang, lebar, dan tinggi yang kamu tentukan sendiri. Gunakan Ruler untuk memeriksa ketiga dimensi, catat satuannya, dan bagikan tautan desain beserta daftar ukuran."
+    },
+    {
+      "topic_id": 163,
+      "challenge_id": 30,
+      "topic": "Align dan Mirror",
+      "added_nodes": [
+        {
+          "id": "t163-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Robot dengan Dua Lengan Simetris",
+          "content": "Buat satu lengan di sisi kiri badan robot. Duplikasi atau gunakan Mirror untuk membuat pasangan di sisi berlawanan, lalu gunakan Align untuk menyamakan tinggi dan posisi relatif kedua lengan."
+        },
+        {
+          "id": "t163-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Buat Pasangan Komponen",
+          "content": "Buat dua komponen yang seharusnya simetris, misalnya roda kiri-kanan atau sayap. Atur posisi dan periksa dari tampak depan serta atas untuk memastikan jarak seimbang."
+        },
+        {
+          "id": "t163-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Objek Berpindah Tidak Sesuai",
+          "content": "Jika Align menggeser objek ke posisi yang salah, batalkan dan pilih hanya objek yang perlu diselaraskan. Jika Mirror membalik pada arah yang keliru, periksa sumbu pembalikan dan tinjau hasil dari tampak atas."
+        }
+      ],
+      "challenge_title": "Challenge: Model dengan Komponen Simetris",
+      "challenge_instructions": "Buat model sederhana yang memiliki dua bagian simetris, misalnya robot atau kendaraan. Gunakan Align untuk menyamakan posisi dan Mirror untuk membalik orientasi jika diperlukan. Tunjukkan tampak depan dan bagikan tautan desain."
+    },
+    {
+      "topic_id": 164,
+      "challenge_id": 31,
+      "topic": "Group dan Ungroup",
+      "added_nodes": [
+        {
+          "id": "t164-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Menggabungkan Badan dan Detail",
+          "content": "Susun badan dan detail kecil sebuah objek. Setelah posisi benar, pilih bagian yang harus menjadi satu bentuk dan gunakan Group. Periksa siluet hasilnya sebelum melanjutkan ke bagian lain."
+        },
+        {
+          "id": "t164-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Uji Group dan Ungroup",
+          "content": "Buat satu objek dari tiga bentuk. Group bagian yang memang harus menjadi satu unit, lalu gunakan Ungroup untuk mengedit satu bagian. Susun kembali dan pastikan bentuk akhir tetap sesuai rancangan."
+        },
+        {
+          "id": "t164-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Bentuk Hilang Setelah Group",
+          "content": "Jika bentuk hilang atau terpotong, periksa apakah objek Hole ikut terpilih. Gunakan Undo atau Ungroup untuk memeriksa komponen. Pastikan bentuk yang ingin digabung berada pada posisi yang benar sebelum Group."
+        }
+      ],
+      "challenge_title": "Challenge: Benda dari Beberapa Bentuk",
+      "challenge_instructions": "Buat satu benda dari minimal tiga bentuk dasar. Group bagian yang memang harus menyatu, lalu tunjukkan satu bagian yang dapat diedit kembali dengan Ungroup. Bagikan tautan desain dan jelaskan alasan pengelompokannya."
+    },
+    {
+      "topic_id": 165,
+      "challenge_id": 32,
+      "topic": "Menggunakan Hole untuk Membuat Rongga",
+      "added_nodes": [
+        {
+          "id": "t165-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Membuat Lubang pada Balok",
+          "content": "Letakkan bentuk Cylinder dan ubah menjadi Hole. Posisikan agar menembus seluruh ketebalan Box, pilih keduanya, lalu Group. Periksa dari atas dan samping untuk memastikan lubang benar-benar terbuka."
+        },
+        {
+          "id": "t165-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Wadah Berongga",
+          "content": "Buat wadah sederhana dengan bentuk luar dan pemotong Hole di bagian tengah. Atur posisi serta ukuran pemotong agar dinding masih memiliki ketebalan yang cukup."
+        },
+        {
+          "id": "t165-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Lubang Tidak Terbentuk",
+          "content": "Jika lubang tidak terlihat, pastikan bentuk pemotong diatur sebagai Hole dan benar-benar beririsan dengan solid. Jika rongga terlalu besar, kecilkan pemotong. Jika dinding terlalu tipis, ubah ukuran pemotong sebelum Group ulang."
+        }
+      ],
+      "challenge_title": "Challenge: Wadah Berongga",
+      "challenge_instructions": "Buat wadah sederhana dengan minimal satu rongga menggunakan bentuk Hole. Pastikan pemotong menembus bagian yang tepat dan dinding tetap terlihat. Periksa hasil dari atas dan samping, lalu bagikan tautan desain."
+    },
+    {
+      "topic_id": 166,
+      "challenge_id": 33,
+      "topic": "Duplicate dan Pola Berulang",
+      "added_nodes": [
+        {
+          "id": "t166-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Membuat Pagar Berulang",
+          "content": "Buat satu tiang pagar dengan ukuran yang benar. Duplicate satu kali, pindahkan salinan ke jarak yang diinginkan, lalu gunakan Duplicate lagi untuk mengulang transformasi yang sama."
+        },
+        {
+          "id": "t166-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Pola Delapan Bagian",
+          "content": "Buat pola dari minimal delapan objek yang sama. Atur jarak secara konsisten dan periksa dari tampak atas agar baris tidak bergeser."
+        },
+        {
+          "id": "t166-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Jarak Pola Berubah",
+          "content": "Jika jarak antarobjek tidak konsisten, batalkan salinan terakhir dan ulangi dari objek yang posisinya benar. Pastikan transformasi pertama tepat sebelum mengulang Duplicate."
+        }
+      ],
+      "challenge_title": "Challenge: Pagar atau Menara Berpola",
+      "challenge_instructions": "Buat pagar, menara, atau ornamen dari minimal delapan objek berulang. Gunakan Duplicate dan atur jarak secara konsisten. Periksa tampak atas serta perspektif dan bagikan tautan desain."
+    },
+    {
+      "topic_id": 167,
+      "challenge_id": 34,
+      "topic": "Merakit Objek dari Banyak Bentuk",
+      "added_nodes": [
+        {
+          "id": "t167-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Merakit Mobil Mini",
+          "content": "Buat badan mobil sebagai komponen utama, lalu tambahkan empat roda dan detail sederhana. Gunakan badan sebagai acuan posisi roda dan periksa dari depan, samping, serta atas."
+        },
+        {
+          "id": "t167-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Rancang Robot atau Kendaraan",
+          "content": "Pilih robot atau kendaraan mini. Buat daftar komponen utama, susun bagian terbesar lebih dulu, lalu tambahkan komponen kecil setelah proporsi keseluruhan terlihat benar."
+        },
+        {
+          "id": "t167-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Komponen Tidak Proporsional",
+          "content": "Jika roda atau lengan tampak terlalu besar, bandingkan ukurannya dengan badan utama. Jika bagian melayang, periksa posisi Z. Jika komponen menembus badan, atur ulang jarak dan Align."
+        }
+      ],
+      "challenge_title": "Challenge: Mobil Mini atau Robot",
+      "challenge_instructions": "Buat model mobil mini atau robot dari minimal lima bentuk dasar. Susun bagian utama lebih dulu, tambahkan detail secukupnya, lalu periksa proporsi dari tiga sudut. Bagikan tautan desain dan jelaskan fungsi komponen."
+    },
+    {
+      "topic_id": 168,
+      "challenge_id": 35,
+      "topic": "Menyempurnakan Desain dan Memeriksa Ukuran",
+      "added_nodes": [
+        {
+          "id": "t168-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Audit Model Sebelum Selesai",
+          "content": "Periksa satu model dari atas, depan, dan samping. Catat bagian yang tidak sejajar, terlalu tipis, atau terlalu besar. Pilih satu masalah yang paling memengaruhi fungsi untuk diperbaiki lebih dulu."
+        },
+        {
+          "id": "t168-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Revisi Satu Masalah",
+          "content": "Ubah satu ukuran atau posisi yang bermasalah. Catat nilai sebelum dan sesudah, lalu periksa apakah perubahan memperbaiki model tanpa merusak komponen lain."
+        },
+        {
+          "id": "t168-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting: Revisi Menimbulkan Masalah Baru",
+          "content": "Jika revisi membuat komponen lain tidak pas, gunakan Undo atau kembalikan nilai sebelumnya. Periksa hubungan antarbagian dan lakukan perubahan satu per satu agar penyebabnya jelas."
+        }
+      ],
+      "challenge_title": "Challenge: Audit dan Perbaikan Model",
+      "challenge_instructions": "Pilih satu model yang pernah kamu buat. Temukan minimal dua hal yang perlu disempurnakan, lakukan satu revisi, dan catat ukuran atau posisi sebelum-sesudah. Bagikan tautan desain dan jelaskan alasan perbaikan."
+    },
+    {
+      "topic_id": 169,
+      "challenge_id": 36,
+      "topic": "Proyek Akhir: Produk 3D Buatan Sendiri",
+      "added_nodes": [
+        {
+          "id": "t169-example",
+          "xp": 10,
+          "type": "lesson",
+          "order": 8,
+          "title": "Contoh Terapan: Dari Ide ke Produk",
+          "content": "Pilih kebutuhan sederhana seperti tempat alat tulis atau dudukan ponsel. Pecah menjadi komponen, tentukan ukuran utama, susun bentuk, lalu periksa apakah produk benar-benar menjalankan fungsi yang direncanakan."
+        },
+        {
+          "id": "t169-practice",
+          "xp": 15,
+          "type": "practice",
+          "order": 9,
+          "title": "Praktik Mandiri: Rencana Produk Final",
+          "content": "Buat sketsa sederhana dan daftar komponen sebelum membuka Tinkercad. Tentukan ukuran target, fitur utama, serta cara memeriksa apakah produk sudah berhasil."
+        },
+        {
+          "id": "t169-debug",
+          "xp": 15,
+          "type": "lesson",
+          "order": 10,
+          "title": "Troubleshooting Proyek Akhir",
+          "content": "Jika model terlalu rumit, sederhanakan fitur dan selesaikan bentuk utama lebih dulu. Jika ukuran tidak cocok, gunakan Ruler. Jika bagian saling menembus atau melayang, periksa dari beberapa sudut sebelum presentasi."
+        }
+      ],
+      "challenge_title": "Challenge: Produk 3D Buatan Sendiri",
+      "challenge_instructions": "Rancang satu produk 3D orisinal di Tinkercad untuk menyelesaikan kebutuhan sederhana. Sertakan sketsa atau rencana komponen, minimal tiga fitur, ukuran utama, dan tampilan dari beberapa sudut. Bagikan tautan desain dan jelaskan proses pembuatannya."
+    }
+  ]
+}
