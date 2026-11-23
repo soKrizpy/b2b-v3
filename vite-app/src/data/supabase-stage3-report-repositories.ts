@@ -132,8 +132,7 @@ export function createSupabaseSessionReportRepository(): SessionReportRepository
           parent_recommendations: input.parentRecommendations,
           competencies: input.competencies,
           status: input.status,
-          submitted_at: input.status === "submitted" ? (input.submittedAt ?? now) : null,
-          updated_at: now,
+
         };
         let query;
         if (input.id) {
@@ -142,7 +141,7 @@ export function createSupabaseSessionReportRepository(): SessionReportRepository
           }
           query = supabase!
             .from("session_reports")
-            .update({ ...values, version: input.expectedVersion + 1 })
+            .update(values)
             .eq("id", input.id)
             .eq("version", input.expectedVersion)
             .select("*")
@@ -150,7 +149,7 @@ export function createSupabaseSessionReportRepository(): SessionReportRepository
         } else {
           query = supabase!
             .from("session_reports")
-            .insert({ ...values, version: 1 })
+            .insert(values)
             .select("*")
             .single();
         }
@@ -236,8 +235,7 @@ export function createSupabaseMonthlyEvaluationRepository(): MonthlyEvaluationRe
           strengths: input.strengths,
           next_goals: input.nextGoals,
           status: input.status,
-          published_at: input.status === "published" ? (input.publishedAt ?? now) : null,
-          updated_at: now,
+
         };
         let query;
         if (input.id) {
