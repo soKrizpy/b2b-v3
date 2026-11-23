@@ -296,3 +296,48 @@ This checkpoint supersedes older runtime statements above wherever they describe
 - Preview Build / TypeScript and Vite production build completed successfully for that commit.
 - Vite App CI completed dependency installation, typecheck/build, Playwright setup, and Chromium installation; Browser QA was still running at the time of this checkpoint. Do not mark the latest browser test green until the workflow reports completion.
 - No production Supabase schema, rows, Auth users, grants, or RLS policies were modified. `main` remains untouched.
+
+
+## Root-level continuation checkpoint — 2026-11-23
+
+Current branch: `preview`. Current implementation checkpoint: `f99323cc617060e37c6950f565a9e389288a4435`. No new branch was created; `main` was not changed.
+
+### Verified code changes since the prior audit
+
+- Progress RPC response validation now rejects version `0`; the production table constraint requires `version > 0`. A regression test covers this impossible row state.
+- Curriculum assignment parsing no longer coerces string IDs into numbers. Only positive safe-integer numeric IDs with exact `active` status are accepted.
+- `supabaseCurriculumRepository` is now created through an injectable factory. Browser QA exercises the repository query contract: student identity filter, active assignment filter, active module filter, published topic filter, and rejection of a topic from an unassigned module.
+- Added `supabaseTutorScheduleRepository`. It verifies the requested tutor ID against `auth.getUser()`, filters meetings by the authenticated `teacher_id`, reads linked meeting IDs, deduplicates student links, and returns a typed schedule snapshot. The Tutor UI no longer contains direct Supabase queries.
+- Added `supabaseProductionCapabilities` as a deliberately partial composition root for Auth, read-only Admin identity, student learning, and tutor schedule. It does not pretend to implement the full `DomainRepositories` contract.
+- Auth browser tests now deliberately include a conflicting user-editable `user_metadata.role` value and verify session restoration after reload and sign-out. The trusted role still comes from `profiles.role`.
+
+### Read-only production schema facts relevant to the remaining work
+
+- The active project remains `enfqoofluceqrlcjemfu` and was reported `ACTIVE_HEALTHY`; no production rows, schema, grants, policies, Auth users, or Edge Functions were changed in this checkpoint.
+- The database has 532 meeting rows; 531 have a teacher ID, but only 14 have both module and topic references. There are 542 student-meeting links across 9 students. Therefore the confirmed product rule that topic availability follows the student's next scheduled class cannot be applied safely to all legacy meetings yet. A rule for legacy rows and a controlled data-mapping/backfill plan are needed before enforcing that gate.
+- There is no dedicated monthly-evaluation table and no dedicated session-report table. `meetings.progress_report` is a text field, not the full canonical `SessionReport` DTO.
+- The existing `invoices` table is a legacy summary (month, meeting counts, rate, total, bank account, status); it does not represent canonical invoice line items, draft/issue/paid lifecycle, or immutable per-session snapshots.
+- No persistent tutor-student assignment table was found. Existing `meeting_students` links prove access only in the context of meetings.
+- `challenge_submissions` exists, but authenticated users have a student-only SELECT policy; INSERT/UPDATE are service-role-only. Submission and tutor review require a verified server-side authorization path. Do not write directly from the browser or widen RLS casually.
+- The active React Student workspace still does not mount the legacy Parent Hub. The legacy Parent Hub explicitly uses local-demo repositories.
+
+### Seven remaining workstreams — root causes and exit gates
+
+| Workstream | Current verified state | Root cause / exit gate |
+|---|---|---|
+| 3.2 Auth & Identity | Supabase staff password login and student WhatsApp/MPIN login exist; profile role mapping is trusted; Admin list is read-only. | Complete real-account browser verification on Preview; decide and implement secure account CRUD/status/assignment flows only with approved server-side operations. |
+| 3.3 Repository composition | Partial typed production capability root exists. | Full `DomainRepositories` remains incomplete because several domains have no production data model or adapter. Do not add no-op or demo fallbacks to satisfy the interface. |
+| 3.4 Student runtime | Assigned curriculum, six-stage lesson adapter, versioned progress RPC, and formative quiz Edge Function exist. | Project submission/review is not wired; topic schedule gating lacks sufficient meeting-topic coverage; final-assessment/certificate runtime still needs its own end-to-end verification. |
+| 3.5 Tutor runtime | Typed, actor-checked read-only schedule capability is wired. | Attendance mutations, report authoring, submission review, and full session lifecycle are not implemented against verified production contracts. |
+| 3.6 Admin & Parent Hub | Admin account list reads production Supabase; Parent Hub remains legacy local-demo code. | Admin account CRUD and tutor assignment persistence are unavailable; monthly evaluation storage is absent; Parent Hub has no production-scoped integration. |
+| 3.7 Legacy cleanup & contract tests | Production capability boundaries and additional adapter tests have been added. | Legacy controllers and demo stores remain in active or legacy page paths. Remove/migrate only after replacement consumers and regression coverage are proven. |
+| 3.8 Regression & closing audit | Earlier Preview Build and CI checkpoints passed; latest run for `f99323c` was queued at this checkpoint. | Wait for current TypeScript/build/browser QA results, review skipped tests, and perform real Preview account smoke tests. A mocked browser test is not a live Supabase sign-in. |
+
+### Verification status at this checkpoint
+
+- Preview Build for `0ebe8cfd` and `5e45473b` completed successfully.
+- Preview Build for `f6276ed8` completed successfully; its Vite App CI was still running at the time of the last poll.
+- CI and Preview Build for current HEAD `f99323c` were queued; do not mark them green until completed.
+- No production deployment, real-account browser login, production row mutation, schema migration, RLS change, or `main` branch update is claimed.
+
+Stage 3 remains open. The next work should continue with secure student submission/review design and the production-backed tutor/admin capabilities, while keeping schema and production mutations behind a separate explicit approval.
