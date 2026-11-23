@@ -403,3 +403,32 @@ The explicit approval to apply production schema changes was received. The activ
 - Production Vercel deployment was not independently verified in this checkpoint; do not claim a deployment URL or production browser sign-in.
 
 This checkpoint supersedes earlier notes in this document that described Parent Hub/submissions as disabled or the Admin workspace as read-only. The active production paths are now wired to the newly applied schema; their real data will remain empty until actual tutor/admin actions create records.
+
+
+## Final hardening pass — 2026-11-23
+
+Additional root-level controls applied after the production schema checkpoint:
+
+- Invoice writes are now RPC-only for authenticated clients. Direct INSERT/UPDATE/DELETE on `invoices`, `invoice_items`, and `invoice_payments` are revoked; the four admin-checked invoice RPCs run as SECURITY DEFINER with a fixed empty search path. Admin authorization remains checked inside each RPC.
+- Session report and monthly evaluation versions, update timestamps, submitted/published timestamps are now database-owned. Triggers increment versions atomically and stamp lifecycle times. Authenticated clients receive only the content/status column grants needed by the repositories; the app no longer sends audit/version fields.
+- Challenge review audit fields are trigger-owned. Tutors/admins can update only status and review note; the trigger derives `reviewed_by` from `auth.uid()` and stamps `reviewed_at`.
+- Production billing rate adapter now returns the `StudentTariff` object shape expected by the existing Admin workspace, avoiding a runtime `.amountPerSession` mismatch.
+- Tutor completion status mapping is extracted and tested against database values `selesai`, `terlewat`, `cancelled`, and `soft_deleted`.
+
+### Transactional verification
+
+Using transaction-scoped authenticated role and JWT subject simulation, followed by rollback:
+
+- Student challenge submission → assigned tutor pending list → tutor approval; review actor/time were trigger-stamped.
+- Tutor report draft → submitted; version advanced 1 → 2 and submitted time was trigger-stamped.
+- Monthly evaluation draft → published; version advanced 1 → 2 and published time was trigger-stamped.
+- Student visibility of submitted report and published evaluation was confirmed through RLS.
+- Admin tariff → invoice draft → draft update → issue → payment; invoice status transitioned draft → sent → paid and exactly one payment row carried the authenticated admin actor. The entire QA transaction was rolled back.
+- After revoking attendance audit-column update privileges, an authenticated tutor could still record attendance while the trigger stamped actor/time. Direct update privileges for those audit columns are false.
+- Authenticated direct write privileges for invoice tables and challenge submission insert/update are false; the corresponding audited RPC paths remain available.
+
+### Latest CI boundary
+
+- Commit `3278650f3093492dba57e6d70a1425e6813c47d2` completed TypeScript and Vite production build successfully.
+- Playwright browser QA and the preview build workflow were still running at the time of this note. The previous failed runs were traced to test-only issues (localized Rupiah assertion, Playwright importing a Vite module directly, and unused locals); fixes are on `preview`.
+- No claim of complete Stage 3 or production deployment is made until the latest browser QA completes green and Vercel deployment is independently verified.
