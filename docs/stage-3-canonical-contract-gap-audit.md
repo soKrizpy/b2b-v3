@@ -264,3 +264,35 @@ This checkpoint supersedes older runtime statements above wherever they describe
 3. Migrate consumers only behind tested adapters; retain current legacy UI/controller boundaries where functionality is not yet covered.
 4. Specify secure production contracts for project submission/review, session lifecycle, reports, evaluations, and billing before implementation.
 5. Recalculate Stage 3 completion only from explicit acceptance criteria and verified test evidence; do not infer completion from CI success alone.
+
+
+## Student progress validation and access audit — 2026-11-23
+
+### Progress write contract
+
+- Added `lesson-progress-validation.ts` to validate the UI payload before the Supabase RPC: supported state values, boolean-only checkpoint maps, nullable object drafts with text-only fields, and a safe integer slide index in the database-supported range 0–200.
+- `supabase-legacy-learning-bridge.ts` now rejects malformed progress instead of silently replacing an invalid slide index with zero.
+- Browser test coverage includes valid payloads and invalid checkpoint values, negative/fractional/out-of-range slide indexes, malformed drafts, and unsupported states.
+- The production RPC independently validates the authenticated student role, published topic, active parent module, active `student_modules` assignment, state, slide index, JSONB types/sizes, and optimistic version. It derives `student_id` from `auth.uid()`; callers cannot choose another student's identity.
+- `student_lesson_progress` has a self-only SELECT policy. Authenticated users have no direct INSERT/UPDATE/DELETE table privileges; writes go through the guarded versioned RPC. The RPC's `SECURITY DEFINER` status is intentional for this write path and is compensated by explicit actor, role, topic, assignment, and payload checks. The Supabase advisor warning about authenticated execution should not be “fixed” by revoking the app's required RPC permission without designing a replacement.
+
+### Assignment and curriculum access interpretation
+
+- Read-only audit of `student_modules` found 15 active assignment rows across 12 students and 4 modules, plus 3 paused rows across 2 students. No rows referenced missing modules or inactive modules.
+- RLS on `student_modules` permits students to read their own assignments and admins to read/manage assignments. Student UI uses those rows to filter its module selector.
+- The broad authenticated SELECT policy on active modules and published topics is explicitly documented in migration `20261122120000_allow_authenticated_curriculum_read.sql` as shared curriculum content. Treat this as an intentional product decision, not an accidental RLS regression. Student progress writes remain separately restricted to active assignments by the RPC.
+- If curriculum content later becomes confidential by enrollment, replace the shared-read policy with an assignment-aware policy and test teacher/admin access before deploying. No such policy change was made in this checkpoint.
+
+### Advisor review
+
+- Security advisor reports leaked-password protection disabled; this is an Auth configuration follow-up, not changed automatically.
+- The no-policy finding for `private.student_login_attempts` is expected for a private server-only table; do not add broad client policies merely to silence the advisor.
+- The advisor warns that authenticated users can execute the `SECURITY DEFINER` progress RPC. This is required by the current student app and guarded internally as described above.
+- Performance advisor reports 18 unindexed foreign keys, two duplicate-index pairs, and an RLS initplan warning on `engine_progress`. These are separate database-performance tasks; no indexes or policies were changed during this read-only audit.
+
+### Latest verification
+
+- Branch: `preview`; latest code commit at this checkpoint: `00061e926bc8f79fd6d35c22b3c48821e22a72ee`.
+- Preview Build / TypeScript and Vite production build completed successfully for that commit.
+- Vite App CI completed dependency installation, typecheck/build, Playwright setup, and Chromium installation; Browser QA was still running at the time of this checkpoint. Do not mark the latest browser test green until the workflow reports completion.
+- No production Supabase schema, rows, Auth users, grants, or RLS policies were modified. `main` remains untouched.
