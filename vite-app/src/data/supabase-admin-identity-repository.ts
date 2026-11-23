@@ -82,18 +82,11 @@ export const supabaseAdminIdentityRepository = {
     gradeLevel?: string;
   }) {
     if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
-    const { status, ...profileChanges } = changes;
     const { data, error } = await supabase.functions.invoke("admin-manage-user", {
-      body: { action: "update", userId, ...profileChanges },
+      body: { action: "update", userId, ...changes },
     });
     if (error || !data?.user) return { error: "UPDATE_FAILED", message: data?.error ?? error?.message ?? "Akun gagal diperbarui." };
-    let user = data.user as AdminAccount;
-    if (status) {
-      const statusResult = await this.setAccountStatus(userId, status);
-      if (statusResult.error) return statusResult;
-      user = statusResult.user as AdminAccount;
-    }
-    return { user };
+    return { user: data.user as AdminAccount };
   },
   async setAccountStatus(userId: string, status: "active" | "inactive") {
     if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
