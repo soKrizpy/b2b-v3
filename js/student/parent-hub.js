@@ -1,7 +1,7 @@
 /**
  * Parent Hub embedded in the Student Workspace.
  * Loads submitted reports, published monthly evaluations, and issued invoices
- * through asynchronous repositories. Local demo stores remain the persistence layer.
+ * through asynchronous repositories. Production repositories provide student-scoped, read-only data.
  */
 
 import { createWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
@@ -62,7 +62,7 @@ export class ParentHubView {
 
   render() {
     if (!this.container) return;
-    const studentName = this.studentUser.name || 'Siswa';
+    const studentName = this.studentUser.displayName || this.studentUser.name || 'Siswa';
     const tabs = TABS.map(tab => `
       <button type="button" class="parent-tab-btn ${this.activeTab === tab.id ? 'is-active' : ''}"
         data-parent-tab="${tab.id}" aria-pressed="${this.activeTab === tab.id}">
@@ -84,7 +84,7 @@ export class ParentHubView {
         </header>
 
         <div class="parent-demo-notice-banner" role="note">
-          Ruang ini masih menggunakan penyimpanan demo lokal. Laporan dan tagihan yang tampil hanya milik akun siswa ini.
+          Data dibaca langsung dari Supabase. Hanya laporan yang diterbitkan, evaluasi yang dipublikasikan, dan tagihan yang sudah diterbitkan yang ditampilkan.
         </div>
 
         <div class="parent-hub-toolbar">
