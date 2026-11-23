@@ -152,11 +152,14 @@ Deno.serve(async (req: Request) => {
       return json({ error: "Nama atau email tidak valid" }, 400);
     }
 
-    const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, {
+    const requestedStatus = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
+    const authUpdates: Record<string, unknown> = {
       email,
-      email_confirm: email === profile.email ? undefined : false,
       user_metadata: { full_name: displayName },
-    });
+    };
+    if (email !== profile.email) authUpdates.email_confirm = false;
+    if (requestedStatus) authUpdates.ban_duration = requestedStatus === "inactive" ? "876000h" : "none";
+    const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, authUpdates);
     if (authUpdateError) return json({ error: "Data Auth gagal diperbarui" }, 400);
 
     const { data: updated, error: updateError } = await adminClient
@@ -175,7 +178,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: authUser } = await adminClient.auth.admin.getUserById(userId);
     const bannedUntil = authUser.user?.banned_until ?? null;
-    const status = bannedUntil && Date.parse(bannedUntil) > Date.now() ? "inactive" : "active";
+    const status = requestedStatus ?? (bannedUntil && Date.parse(bannedUntil) > Date.now() ? "inactive" : "active");
     return json({ user: accountView({ ...updated, grade }, status), source: "supabase" });
   }
 
