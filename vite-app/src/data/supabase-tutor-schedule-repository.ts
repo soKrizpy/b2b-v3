@@ -130,21 +130,26 @@ export function createSupabaseTutorScheduleRepository(
         studentCounts[meetingId] = students.size;
       }
 
-      return {
-        meetings,
-        studentCounts,
-        meetingStudents: (links ?? [])
-          .filter((link: MeetingStudentRow) =>
-            Number.isSafeInteger(link.meeting_id) && link.meeting_id > 0 &&
-            typeof link.student_id === "string" && link.student_id.length > 0
-          )
-          .map((link: MeetingStudentRow) => ({
-            meetingId: link.meeting_id,
-            studentId: link.student_id,
-            attendanceStatus: link.attendance_status,
-            attendanceRecordedAt: link.attendance_recorded_at
-          }))
-      };
+      const seenLinks = new Set<string>();
+      const meetingStudentLinks = (links ?? [])
+        .filter((link: MeetingStudentRow) =>
+          Number.isSafeInteger(link.meeting_id) && link.meeting_id > 0 &&
+          typeof link.student_id === "string" && link.student_id.length > 0
+        )
+        .filter((link: MeetingStudentRow) => {
+          const key = `${link.meeting_id}:${link.student_id}`;
+          if (seenLinks.has(key)) return false;
+          seenLinks.add(key);
+          return true;
+        })
+        .map((link: MeetingStudentRow) => ({
+          meetingId: link.meeting_id,
+          studentId: link.student_id,
+          attendanceStatus: link.attendance_status,
+          attendanceRecordedAt: link.attendance_recorded_at
+        }));
+
+      return { meetings, studentCounts, meetingStudents: meetingStudentLinks };
     },
 
     async recordAttendance(
