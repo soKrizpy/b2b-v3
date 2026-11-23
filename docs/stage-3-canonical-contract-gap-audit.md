@@ -456,3 +456,12 @@ Using transaction-scoped authenticated role and JWT subject simulation, followed
 - The invoice SECURITY DEFINER bodies now live in the non-exposed `private` schema. Public RPC names used by the app remain available as SECURITY INVOKER wrappers. A transactional admin invoice lifecycle test passed after this move and rolled back all QA rows.
 - All Nov 22–23 migration versions now have exact filename matches in the repository and the active Supabase migration history; no missing or extra versions remain for that period.
 - Current branch HEAD after documentation update: `4a2221f31e178320325a7f30defc25bbd95e51ee` (`preview`). No new branch was created and `main` was not changed.
+
+
+## Admin curriculum assignment closure — 2026-11-23
+
+- Added a dedicated Admin capability/repository for `student_modules`. Every list/upsert/status change verifies the authenticated profile role is `admin`; database RLS remains the enforcement boundary.
+- Admin now has an **Akses Kurikulum** tab to activate, pause, and reactivate a student's module access. This closes the previous gap where a newly created student account could authenticate but had no Admin UI to grant curriculum access.
+- Student module assignments remain historical rows: pausing access does not delete the assignment. Reactivation uses the unique `(student_id,module_id)` key.
+- Transactional SQL verification confirmed Admin can assign a module and the student can read only their own assignment through RLS; QA changes were rolled back.
+- Browser coverage now includes the Admin assignment flow plus repository authorization tests.
