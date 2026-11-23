@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "module_id": 31,
+  "module_title": "BASIC VISUAL WEB — CSS & JavaScript",
+  "revision": "quality-pass-1",
+  "note": "Preserve all topic IDs and quiz-attempt history; rewrite generic lesson node content and keep Responsive Design before the Mini Website and Portfolio projects.",
+  "topics": [
+    {
+      "topic_id": 49,
+      "order_index": 1,
+      "title": "CSS Dasar: Selector, Property, dan Value",
+      "description": "Mengenali aturan CSS, selector, property, value, serta cara menghubungkan stylesheet eksternal ke dokumen HTML.",
+      "challenge_title": "Challenge: Halaman dengan CSS Eksternal",
+      "challenge_instructions": "Buat halaman sederhana dengan stylesheet eksternal. Atur gaya body, h1, paragraf, dan satu tombol menggunakan minimal empat property CSS.",
+      "fields": {
+        "objective": "Menerapkan beberapa aturan CSS pada elemen HTML melalui selector yang tepat dan stylesheet terhubung.",
+        "concept": "Aturan CSS terdiri dari selector dan deklarasi property:value. Selector memilih elemen yang akan diberi gaya. CSS dapat ditulis inline, internal, atau eksternal; file eksternal lebih mudah dirawat untuk banyak halaman.",
+        "example": "Selector h1 memilih semua heading tingkat satu. Property color mengatur warna teks dan background-color mengatur warna latar.",
+        "setup": "Siapkan index.html dan style.css dalam folder yang sama. Hubungkan CSS melalui link rel=stylesheet di dalam head sebelum menulis aturan.",
+        "practice": "Buat selector untuk body, h1, dan p. Atur warna, jenis font, serta jarak sederhana. Ubah satu nilai dan amati elemen yang terkena aturan.",
+        "test": "Buka halaman dan periksa apakah CSS eksternal diterapkan. Gunakan Developer Tools untuk melihat aturan yang aktif dan file stylesheet yang dimuat.",
+        "debug": "Jika gaya tidak muncul, periksa href pada link stylesheet, nama file, kurung kurawal, titik koma, dan kecocokan selector dengan elemen HTML.",
+        "check": "File CSS terhubung, selector memilih elemen yang tepat, property dan value valid, serta perubahan terlihat di browser."
+      }
+    },
+    {
+      "topic_id": 50,
+      "order_index": 2,
+      "title": "Tipografi Web: Font, Ukuran, dan Keterbacaan",
+      "description": "Mengatur font-family, font-size, font-weight, line-height, dan text-align untuk membangun hierarki tipografi yang mudah dibaca.",
+      "challenge_title": "Challenge: Artikel dengan Tipografi Rapi",
+      "challenge_instructions": "Buat halaman artikel dengan satu h1, dua h2, dan tiga paragraf. Terapkan hierarki tipografi dengan font-family, font-size, font-weight, dan line-height.",
+      "fields": {
+        "objective": "Membuat judul, subjudul, dan paragraf memiliki hierarki visual yang konsisten serta nyaman dibaca.",
+        "concept": "Tipografi mengatur cara teks ditampilkan. Font-family memilih jenis huruf, font-size menentukan ukuran, font-weight mengatur ketebalan, dan line-height memberi ruang vertikal antarbaris.",
+        "example": "Judul utama dapat lebih besar dan tebal, sedangkan paragraf memakai ukuran yang nyaman serta line-height sekitar 1.5 agar baris tidak terlalu rapat.",
+        "setup": "Siapkan halaman berisi h1, h2, dan beberapa paragraf. Hubungkan stylesheet eksternal dan pilih satu keluarga font yang mudah dibaca.",
+        "practice": "Atur ukuran dan ketebalan heading, font paragraf, line-height, serta text-align. Hindari terlalu banyak jenis font dalam satu halaman.",
+        "test": "Baca halaman pada layar desktop dan ponsel. Periksa apakah judul mudah dibedakan dan paragraf tidak terlalu rapat atau terlalu lebar.",
+        "debug": "Jika teks sulit dibaca, periksa kontras, ukuran font, dan line-height. Jika font tidak berubah, periksa ejaan font-family dan apakah font tersedia.",
+        "check": "Judul memiliki hierarki jelas, paragraf nyaman dibaca, line-height cukup, dan jumlah jenis font tetap terkendali."
+      }
+    },
+    {
+      "topic_id": 51,
+      "order_index": 3,
+      "title": "CSS Box Model: Content, Padding, Border, Margin",
+      "description": "Memahami hubungan content, padding, border, dan margin serta mengatur ukuran elemen menggunakan box-sizing.",
+      "challenge_title": "Challenge: Kartu dengan Box Model",
+      "challenge_instructions": "Buat dua kartu informasi dengan lebar yang sama, padding nyaman, border tipis, dan margin konsisten. Jelaskan perbedaan padding dan margin.",
+      "fields": {
+        "objective": "Membuat kartu informasi dengan ruang dalam, border, dan jarak luar yang konsisten.",
+        "concept": "Setiap elemen berbentuk kotak. Content adalah isi, padding ruang di dalam border, border garis tepi, dan margin ruang di luar elemen. box-sizing:border-box membuat lebar mencakup padding dan border.",
+        "example": "Kartu dapat memakai width:300px, padding:16px, border 1px, dan margin 12px. Dengan border-box, lebar total lebih mudah diprediksi.",
+        "setup": "Buat satu section berisi dua kartu dengan class yang sama. Siapkan stylesheet dan aktifkan box-sizing:border-box secara konsisten.",
+        "practice": "Atur width, padding, border, dan margin. Ubah padding tanpa mengubah margin, lalu bandingkan jarak dalam dan luar kartu.",
+        "test": "Gunakan Developer Tools untuk melihat diagram box model. Periksa ukuran total kartu dan jarak antarkartu.",
+        "debug": "Jika kartu lebih lebar dari perkiraan, periksa box-sizing. Jika teks menempel pada tepi, tambah padding. Jika jarak antarkartu terlalu besar, periksa margin.",
+        "check": "Content, padding, border, dan margin dibedakan dengan benar; lebar kartu terkendali; dan jarak antarkartu konsisten."
+      }
+    },
+    {
+      "topic_id": 52,
+      "order_index": 4,
+      "title": "Flexbox: Menyusun Elemen dalam Satu Dimensi",
+      "description": "Menggunakan display:flex, flex-direction, justify-content, align-items, gap, dan flex-wrap untuk menyusun komponen.",
+      "challenge_title": "Challenge: Layout Kartu dengan Flexbox",
+      "challenge_instructions": "Buat tiga kartu dengan Flexbox. Atur jarak menggunakan gap, perataan menggunakan align-items, dan uji perubahan arah susunan pada layar sempit.",
+      "fields": {
+        "objective": "Menyusun menu atau kartu secara fleksibel dan mengatur perataan serta jarak tanpa margin manual berulang.",
+        "concept": "Flexbox mengatur anak elemen dalam satu sumbu utama. flex-direction menentukan arah, justify-content mengatur distribusi pada sumbu utama, align-items pada sumbu silang, dan gap memberi jarak antaritem.",
+        "example": "Bar navigasi dapat memakai display:flex, align-items:center, justify-content:space-between, dan gap untuk menjaga logo serta tautan tetap sejajar.",
+        "setup": "Buat container dengan tiga anak elemen. Beri class pada container dan setiap item agar aturan Flexbox mudah diuji.",
+        "practice": "Aktifkan display:flex, ubah flex-direction, justify-content, align-items, dan gap. Tambahkan flex-wrap jika item perlu turun ke baris berikutnya.",
+        "test": "Ubah lebar container dan periksa apakah susunan tetap sesuai. Coba arah row dan column untuk memahami sumbu utama.",
+        "debug": "Jika align-items tidak bekerja seperti dugaan, periksa flex-direction karena sumbu utama dan silang berubah. Jika item meluber, periksa flex-wrap dan lebar anak.",
+        "check": "Arah susunan, perataan, dan jarak sesuai tujuan; layout dapat menyesuaikan container; dan tidak ada item yang meluber tanpa alasan."
+      }
+    },
+    {
+      "topic_id": 53,
+      "order_index": 5,
+      "title": "Navigasi dan Section: Menghubungkan Bagian Halaman",
+      "description": "Menggabungkan elemen nav, anchor link, id, dan struktur section untuk membangun navigasi satu halaman.",
+      "challenge_title": "Challenge: Navigasi One-Page Website",
+      "challenge_instructions": "Buat halaman satu halaman dengan nav berisi Profil, Layanan, dan Kontak. Setiap tautan harus menuju section yang sesuai dan dapat diuji.",
+      "fields": {
+        "objective": "Membuat menu yang mengarah ke section yang benar dan tetap mudah digunakan.",
+        "concept": "Anchor link memakai href dengan tanda # untuk menuju elemen yang memiliki id sama. nav menandai kelompok tautan navigasi dan section mengelompokkan konten terkait.",
+        "example": "Tautan href=#layanan akan menuju section id=layanan. Pastikan nilai id unik dan ejaan sama persis dengan href.",
+        "setup": "Buat halaman dengan tiga section: Profil, Layanan, dan Kontak. Beri setiap section id yang unik sebelum menyusun menu.",
+        "practice": "Tambahkan nav di bagian atas. Buat tiga anchor yang mengarah ke id section dan beri label yang singkat serta jelas.",
+        "test": "Klik setiap menu dan pastikan browser menuju section yang benar. Uji dari bagian bawah halaman dan gunakan tautan kembali ke atas bila diperlukan.",
+        "debug": "Jika tautan tidak bergerak, cocokkan href dan id, periksa tanda #, dan pastikan id tidak digunakan dua kali. Periksa juga apakah ada elemen yang menutupi menu.",
+        "check": "Setiap menu memiliki tujuan valid, id unik, nav berisi tautan yang relevan, dan pengguna dapat menemukan bagian halaman dengan mudah."
+      }
+    },
+    {
+      "topic_id": 54,
+      "order_index": 6,
+      "title": "Hero Section, Cards, dan Call-to-Action",
+      "description": "Membangun bagian pembuka halaman dengan headline, deskripsi, tombol CTA, dan kartu informasi menggunakan HTML serta CSS.",
+      "challenge_title": "Challenge: Landing Page dengan Hero dan CTA",
+      "challenge_instructions": "Buat landing page dengan hero, deskripsi, satu CTA, dan tiga kartu manfaat. Pastikan CTA menuju section atau halaman yang benar.",
+      "fields": {
+        "objective": "Membuat landing page sederhana yang menjelaskan manfaat utama dan memberi satu tindakan jelas kepada pengunjung.",
+        "concept": "Hero section menyampaikan pesan utama. Headline menjelaskan nilai, deskripsi memberi konteks, CTA mengarahkan tindakan, dan kartu merangkum fitur atau layanan.",
+        "example": "Hero dapat berisi judul, satu kalimat manfaat, dan tombol Lihat Karya yang menuju section portofolio. Tiga kartu di bawahnya menjelaskan fitur utama.",
+        "setup": "Tentukan tujuan landing page dan satu tindakan yang ingin dilakukan pengunjung. Siapkan headline, deskripsi singkat, dan tiga manfaat.",
+        "practice": "Buat hero dengan heading, paragraf, dan anchor CTA. Tambahkan tiga kartu dengan judul serta deskripsi yang berbeda.",
+        "test": "Minta orang lain membaca halaman selama beberapa detik. Periksa apakah mereka memahami tujuan halaman dan mengetahui tombol yang harus ditekan.",
+        "debug": "Jika CTA tidak terlihat, periksa kontras dan jarak. Jika kartu tidak sejajar, periksa Flexbox atau Grid. Jika headline terlalu panjang, ringkas pesan utamanya.",
+        "check": "Hero menjelaskan tujuan, CTA memiliki tujuan valid, kartu menyampaikan manfaat berbeda, dan hierarki visual mudah dipahami."
+      }
+    },
+    {
+      "topic_id": 55,
+      "order_index": 7,
+      "title": "Mini Project: Landing Page dengan HTML dan CSS",
+      "description": "Mengintegrasikan struktur halaman, tipografi, box model, Flexbox, navigasi, hero, kartu, dan CTA menjadi landing page statis.",
+      "challenge_title": "Challenge: Landing Page HTML dan CSS",
+      "challenge_instructions": "Buat landing page statis untuk kelas atau produk imajiner. Sertakan nav, hero, CTA, tiga kartu, dan footer. Bagikan tautan project.",
+      "fields": {
+        "objective": "Membangun landing page statis yang memiliki struktur jelas, tampilan konsisten, dan navigasi berfungsi.",
+        "concept": "Landing page menyatukan konten dan tampilan untuk satu tujuan. Susun struktur HTML lebih dulu, lalu gunakan CSS untuk hierarki, layout, spacing, dan penekanan CTA.",
+        "example": "Halaman kursus dapat memiliki nav, hero dengan tombol Daftar, tiga kartu materi, dan footer kontak. Setiap bagian mendukung tujuan pendaftaran.",
+        "setup": "Buat file index.html dan style.css. Tentukan tujuan halaman, target pembaca, headline, CTA, serta tiga informasi utama sebelum coding.",
+        "practice": "Bangun nav, hero, kartu, dan footer. Terapkan tipografi, box model, dan Flexbox agar setiap bagian memiliki jarak dan hierarki yang konsisten.",
+        "test": "Klik navigasi dan CTA. Periksa apakah halaman menjelaskan tujuan dengan jelas dan semua kartu memiliki isi yang berbeda.",
+        "debug": "Jika layout tidak sejajar, periksa container Flexbox. Jika CTA tidak menuju tujuan, periksa href. Jika halaman terlalu padat, atur ulang spacing dan ringkas teks.",
+        "check": "Landing page memiliki nav, hero, CTA, kartu, footer, stylesheet terhubung, dan setiap tautan berfungsi."
+      }
+    },
+    {
+      "topic_id": 56,
+      "order_index": 8,
+      "title": "JavaScript Dasar: Menghubungkan Script ke HTML",
+      "description": "Mengenali peran JavaScript di browser, menghubungkan file script, menggunakan console.log, dan membaca pesan error dasar.",
+      "challenge_title": "Challenge: Script Pertamaku",
+      "challenge_instructions": "Hubungkan app.js ke halaman HTML. Tampilkan tiga pesan berbeda di Console dan satu nilai variabel. Bagikan project serta bukti hasil uji.",
+      "fields": {
+        "objective": "Menjalankan JavaScript dari file eksternal dan memeriksa hasilnya melalui browser console.",
+        "concept": "JavaScript menambahkan perilaku pada halaman. File eksternal dapat dihubungkan dengan script src. Menempatkan script sebelum penutup body atau memakai defer membantu memastikan elemen HTML telah diproses.",
+        "example": "console.log menampilkan nilai ke Developer Tools. Pesan ini membantu memeriksa apakah file JavaScript berhasil dimuat.",
+        "setup": "Buat index.html dan app.js. Hubungkan app.js menggunakan script src sebelum penutup body atau tambahkan defer pada script di head.",
+        "practice": "Tulis console.log dengan pesan sederhana. Tambahkan satu variabel dan tampilkan nilainya melalui console.",
+        "test": "Buka Developer Tools dan pilih Console. Muat ulang halaman dan pastikan pesan muncul tanpa error file tidak ditemukan.",
+        "debug": "Jika pesan tidak muncul, periksa nama file, path src, ejaan console.log, dan error pada Console. Pastikan file JavaScript benar-benar tersimpan.",
+        "check": "File JavaScript terhubung, pesan muncul di Console, dan tidak ada error pemuatan script."
+      }
+    },
+    {
+      "topic_id": 57,
+      "order_index": 9,
+      "title": "Variabel JavaScript: let, const, dan Tipe Data",
+      "description": "Menyimpan nilai menggunakan let dan const, mengenali string, number, boolean, serta menampilkan nilai untuk diperiksa.",
+      "challenge_title": "Challenge: Data Karakter dengan Variabel",
+      "challenge_instructions": "Buat variabel untuk nama karakter, skor, dan status game. Gunakan let atau const secara tepat dan tampilkan semua nilai di Console.",
+      "fields": {
+        "objective": "Membuat variabel dengan deklarasi yang tepat dan menggunakan nilainya dalam ekspresi sederhana.",
+        "concept": "const digunakan ketika binding tidak perlu diubah, sedangkan let digunakan untuk nilai yang dapat ditugaskan ulang. Tipe dasar yang sering dipakai adalah string, number, dan boolean.",
+        "example": "const studentName menyimpan teks, let score menyimpan angka yang berubah, dan const isActive menyimpan nilai true atau false.",
+        "setup": "Pastikan file JavaScript sudah terhubung. Siapkan contoh data yang tidak sensitif, seperti nama karakter, skor, dan status permainan.",
+        "practice": "Buat satu const string, satu let number, dan satu const boolean. Tampilkan nilainya dan ubah nilai let untuk melihat perbedaannya.",
+        "test": "Periksa hasil di Console. Coba ubah nilai const dan amati error, lalu ubah nilai let dan pastikan nilai baru tampil.",
+        "debug": "Jika muncul assignment to constant variable, periksa apakah nilai const sedang diubah. Jika angka diperlakukan sebagai teks, periksa tanda kutip pada nilai.",
+        "check": "Deklarasi let dan const digunakan sesuai kebutuhan, tipe data dapat dikenali, dan nilai tampil sesuai yang diharapkan."
+      }
+    },
+    {
+      "topic_id": 58,
+      "order_index": 10,
+      "title": "Event JavaScript: Merespons Klik Pengguna",
+      "description": "Menggunakan addEventListener untuk menangani event klik dan menjalankan fungsi ketika pengguna berinteraksi dengan elemen.",
+      "challenge_title": "Challenge: Dua Tombol Interaktif",
+      "challenge_instructions": "Buat tombol yang saat diklik mengubah pesan pada halaman dan tombol kedua yang mengembalikan pesan awal. Uji kedua aksi.",
+      "fields": {
+        "objective": "Membuat tombol yang menjalankan aksi saat diklik tanpa menulis JavaScript langsung pada atribut HTML.",
+        "concept": "Event adalah kejadian seperti click, input, dan submit. addEventListener menghubungkan elemen dengan fungsi yang dijalankan ketika event terjadi.",
+        "example": "Tombol dengan id show-message dapat memasang listener click untuk mengubah pesan pada elemen lain.",
+        "setup": "Buat tombol dan elemen p dengan id yang jelas. Pastikan script dimuat setelah elemen tersedia atau gunakan DOMContentLoaded.",
+        "practice": "Pilih tombol dengan querySelector, pasang addEventListener('click', ...), lalu ubah teks pesan ketika tombol ditekan.",
+        "test": "Klik tombol beberapa kali dan periksa apakah respons muncul setiap kali. Pastikan tidak ada error selector null di Console.",
+        "debug": "Jika tombol tidak bereaksi, cocokkan id selector, periksa lokasi script, dan pastikan listener dipasang satu kali pada elemen yang benar.",
+        "check": "Tombol terpilih dengan benar, event listener berjalan, dan aksi menghasilkan perubahan yang terlihat."
+      }
+    },
+    {
+      "topic_id": 59,
+      "order_index": 11,
+      "title": "DOM: Memilih dan Mengubah Elemen HTML",
+      "description": "Menggunakan querySelector, textContent, classList, dan properti elemen untuk memperbarui halaman melalui JavaScript.",
+      "challenge_title": "Challenge: Ubah Konten dengan DOM",
+      "challenge_instructions": "Buat tombol untuk mengubah teks dan menyalakan/mematikan highlight pada satu kartu. Gunakan querySelector, textContent, dan classList.",
+      "fields": {
+        "objective": "Memilih elemen HTML dan mengubah teks atau class berdasarkan aksi pengguna.",
+        "concept": "DOM merepresentasikan dokumen HTML sebagai objek yang dapat diakses JavaScript. querySelector memilih elemen, textContent mengubah teks, dan classList mengelola class CSS.",
+        "example": "Setelah tombol diklik, JavaScript dapat mengubah textContent sebuah paragraf atau menambahkan class highlight untuk memberi penekanan.",
+        "setup": "Buat heading, paragraf, dan tombol dengan id yang unik. Siapkan satu class CSS seperti highlight untuk menunjukkan perubahan visual.",
+        "practice": "Pilih paragraf dengan querySelector. Ubah textContent saat tombol diklik, lalu gunakan classList.toggle untuk menambah atau menghapus class.",
+        "test": "Klik tombol beberapa kali. Pastikan teks berubah dan class dapat ditambah serta dihapus tanpa merusak struktur halaman.",
+        "debug": "Jika querySelector menghasilkan null, cocokkan selector dengan id atau class dan periksa kapan script dijalankan. Jika class tidak berubah, periksa nama class.",
+        "check": "Elemen dipilih dengan selector tepat, textContent berubah, classList bekerja, dan perubahan terlihat pada halaman."
+      }
+    },
+    {
+      "topic_id": 60,
+      "order_index": 12,
+      "title": "Kondisi JavaScript: if, else, dan Validasi Input",
+      "description": "Menggunakan if/else dan operator perbandingan untuk menentukan respons berdasarkan nilai atau input pengguna.",
+      "challenge_title": "Challenge: Validasi Nama dengan if/else",
+      "challenge_instructions": "Buat form nama sederhana. Saat tombol ditekan, tampilkan pesan berbeda untuk input kosong dan nama terisi. Uji tiga skenario.",
+      "fields": {
+        "objective": "Membuat validasi sederhana yang memberikan pesan berbeda untuk input kosong dan input yang memenuhi syarat.",
+        "concept": "if menjalankan blok ketika kondisi bernilai true, sedangkan else menangani kondisi lainnya. Operator === membandingkan nilai dan tipe secara ketat.",
+        "example": "Jika input nama kosong, tampilkan pesan agar pengguna mengisi nama. Jika terisi, tampilkan sapaan menggunakan nilai input tersebut.",
+        "setup": "Buat input teks, tombol, dan elemen pesan. Tentukan kondisi yang akan diperiksa sebelum menulis if/else.",
+        "practice": "Ambil nilai input, gunakan trim untuk menghapus spasi tepi, lalu periksa apakah nilainya kosong. Tampilkan pesan yang sesuai pada elemen hasil.",
+        "test": "Uji input kosong, hanya spasi, dan nama terisi. Pastikan setiap kondisi menghasilkan pesan yang berbeda dan tepat.",
+        "debug": "Jika kondisi selalu salah, periksa nilai input dan operator pembanding. Jika spasi dianggap isi, gunakan trim. Jika pesan lama tertinggal, perbarui textContent pada setiap cabang.",
+        "check": "Kondisi mencakup input kosong dan terisi, operator tepat, serta pesan sesuai hasil pemeriksaan."
+      }
+    },
+    {
+      "topic_id": 61,
+      "order_index": 13,
+      "title": "Function JavaScript: Membuat Kode yang Dapat Digunakan Ulang",
+      "description": "Membuat function, parameter, return value, dan memanggil fungsi dari event untuk menghindari pengulangan kode.",
+      "challenge_title": "Challenge: Function Sapaan",
+      "challenge_instructions": "Buat function yang menerima nama dan mengembalikan sapaan. Panggil dengan dua nama berbeda dan tampilkan hasil pada halaman.",
+      "fields": {
+        "objective": "Membuat fungsi sederhana yang menerima input, menghasilkan nilai, dan dapat dipanggil lebih dari sekali.",
+        "concept": "Function mengelompokkan instruksi menjadi satu tugas. Parameter menerima nilai, return mengembalikan hasil, dan pemanggilan fungsi menjalankan tugas tersebut.",
+        "example": "Fungsi greet menerima nama lalu mengembalikan sapaan. Fungsi yang sama dapat dipanggil dengan nama berbeda tanpa menyalin isi kode.",
+        "setup": "Tentukan satu tugas yang dapat dipisahkan, misalnya menghitung total atau membuat pesan sapaan. Pilih nama fungsi yang menjelaskan tugasnya.",
+        "practice": "Buat function dengan satu parameter dan return value. Panggil dua kali dengan input berbeda lalu tampilkan hasilnya.",
+        "test": "Periksa hasil untuk kedua input. Pastikan fungsi menghasilkan nilai yang benar dan tidak bergantung pada variabel global yang tidak perlu.",
+        "debug": "Jika hasil undefined, periksa apakah fungsi memiliki return. Jika parameter tidak digunakan, periksa nama variabel dan urutan argumen saat fungsi dipanggil.",
+        "check": "Fungsi memiliki nama jelas, parameter digunakan, return sesuai kebutuhan, dan fungsi dapat dipanggil dengan beberapa input."
+      }
+    },
+    {
+      "topic_id": 62,
+      "order_index": 15,
+      "title": "Mini Project: Website Interaktif dengan DOM",
+      "description": "Mengintegrasikan HTML semantik, CSS, JavaScript, event, dan DOM untuk membuat mini website dengan interaksi yang berfungsi.",
+      "challenge_title": "Challenge: Mini Website Interaktif",
+      "challenge_instructions": "Buat mini website dengan struktur semantik, CSS, dan minimal satu interaksi DOM. Uji tombol atau input di browser dan bagikan tautan project.",
+      "fields": {
+        "objective": "Membuat mini website yang memiliki struktur jelas, tampilan konsisten, dan minimal satu interaksi yang dapat diuji.",
+        "concept": "Mini project menggabungkan struktur HTML, tampilan CSS, dan perilaku JavaScript. Pisahkan file sesuai tanggung jawab agar proyek mudah dibaca dan diperbaiki.",
+        "example": "Halaman daftar kegiatan dapat menampilkan kartu, tombol Tandai Selesai, dan pesan status yang berubah ketika tombol diklik.",
+        "setup": "Siapkan index.html, style.css, dan app.js. Tentukan satu tujuan halaman serta satu interaksi utama sebelum mulai membangun.",
+        "practice": "Buat struktur HTML semantik, styling kartu, dan event listener yang mengubah DOM. Pastikan interaksi memiliki hasil yang terlihat.",
+        "test": "Uji halaman dari awal, klik semua tombol, periksa input bila ada, dan lihat Console untuk memastikan tidak ada error.",
+        "debug": "Jika tombol tidak bereaksi, periksa selector dan event. Jika layout rusak, periksa class dan box model. Jika perubahan DOM tidak terlihat, periksa elemen target.",
+        "check": "HTML, CSS, dan JavaScript terhubung, interaksi bekerja, tampilan konsisten, dan halaman dapat digunakan tanpa error."
+      }
+    }
+  ]
+}
