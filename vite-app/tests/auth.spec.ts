@@ -381,10 +381,30 @@ test.describe("Supabase Auth portal", () => {
             .filter((item) => item.width > 0 && item.right > window.innerWidth + 1)
             .sort((a, b) => b.right - a.right)
             .slice(0, 15);
+          const layoutSelectors = [".app-shell", ".app-sidebar", ".app-container", ".app-header", ".app-main", ".header-left", ".header-right"];
+          const layout = layoutSelectors.map((selector) => {
+            const element = document.querySelector<HTMLElement>(selector);
+            if (!element) return { selector, missing: true };
+            const rect = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            return {
+              selector,
+              left: Math.round(rect.left),
+              right: Math.round(rect.right),
+              width: Math.round(rect.width),
+              flex: style.flex,
+              flexShrink: style.flexShrink,
+              widthStyle: style.width,
+              minWidth: style.minWidth,
+              position: style.position
+            };
+          });
           return {
             viewport: window.innerWidth,
+            scrollX: window.scrollX,
             document: document.documentElement.scrollWidth,
             body: document.body.scrollWidth,
+            layout,
             offenders
           };
         });
