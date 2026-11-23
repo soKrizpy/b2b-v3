@@ -168,7 +168,7 @@ export class ParentHubView {
             <div class="session-title-group">
               <span class="badge badge-approved">Evaluasi tutor terkirim</span>
               <h3>Perkembangan ${escapeHtml(periodLabel)}</h3>
-              <div class="session-meta-row">Tutor: <strong>${escapeHtml(item.tutorName)}</strong></div>
+              <div class="session-meta-row">Tutor: <strong>${escapeHtml(item.tutorName || "Tutor")}</strong></div>
             </div>
             <strong>${escapeHtml(item.rating)}</strong>
           </div>
