@@ -27,8 +27,10 @@ function mapInvoice(row: Row) {
     currency: row.currency ?? "IDR",
     rateSnapshot: Number(row.price_per_meeting ?? 0),
     items,
-    totalSessions: Number(row.total_meetings ?? items.length),
-    subtotalAmount: items.reduce((sum: number, item: { amount: number }) => sum + item.amount, 0),
+    totalSessions: Number(row.attended_meetings ?? items.length),
+    subtotalAmount: items.length
+      ? items.reduce((sum: number, item: { amount: number }) => sum + item.amount, 0)
+      : Number(row.attended_meetings ?? 0) * Number(row.price_per_meeting ?? 0),
     discountAmount: Number(row.discount_amount ?? 0),
     additionalCharges: Number(row.additional_charges ?? 0),
     totalAmount: Number(row.total_amount ?? 0),
