@@ -1,0 +1,723 @@
+{
+  "schema_version": 1,
+  "module_id": 28,
+  "module_title": "ScratchJr — Petualangan Pemrograman Visual",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "sequence_note": "Move original topic 12 capstone to topic 16. New topic 16 is renamed as a testing/presentation skill lesson, not a duplicate capstone.",
+  "topics": [
+    {
+      "topic_id": 186,
+      "title": "Cerita Bercabang: Memberi Pilihan kepada Pembaca",
+      "description": "Membuat satu titik pilihan dalam cerita ScratchJr sehingga sentuhan pengguna mengirim pesan dan mengarahkan cerita ke halaman yang berbeda.",
+      "challenge_id": 117,
+      "challenge_title": "Challenge: Cerita dengan Dua Pilihan",
+      "challenge_instructions": "Buat cerita ScratchJr yang memiliki satu titik pilihan dan dua kelanjutan berbeda. Gunakan dua objek yang dapat disentuh, dua pesan dengan warna berbeda, dan halaman tujuan yang sesuai. Tunjukkan peta alur dan demonstrasikan kedua pilihan kepada guru saat sesi.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa ciri utama cerita bercabang?",
+            "options": [
+              "Pilihan pembaca menghasilkan kelanjutan cerita yang berbeda",
+              "Semua halaman selalu menampilkan adegan yang sama",
+              "Karakter hanya bergerak ke kanan",
+              "Cerita tidak memiliki akhir"
+            ],
+            "answer_index": 0,
+            "explanation": "Cerita bercabang memberi hasil berbeda berdasarkan pilihan pembaca."
+          },
+          {
+            "question": "Apa yang sebaiknya dibuat sebelum menyusun blok pilihan?",
+            "options": [
+              "Efek suara terlebih dahulu",
+              "Peta pilihan dan halaman tujuan untuk setiap pilihan",
+              "Semua kostum karakter",
+              "Judul akhir saja"
+            ],
+            "answer_index": 1,
+            "explanation": "Peta alur membantu memastikan setiap pilihan memiliki kelanjutan yang jelas."
+          },
+          {
+            "question": "Apa fungsi send message pada ScratchJr?",
+            "options": [
+              "Mengubah ukuran karakter",
+              "Menghapus halaman",
+              "Mengirim pesan yang dapat memulai skrip penerima",
+              "Mengganti nama project"
+            ],
+            "answer_index": 2,
+            "explanation": "Pesan dapat memicu skrip lain yang menunggu pesan dengan warna yang sesuai."
+          },
+          {
+            "question": "Mengapa warna pesan pengirim dan penerima harus cocok?",
+            "options": [
+              "Agar semua karakter memiliki warna sama",
+              "Agar halaman otomatis bertambah",
+              "Agar suara menjadi lebih keras",
+              "Agar skrip penerima mengenali pesan yang dikirim"
+            ],
+            "answer_index": 3,
+            "explanation": "Pemicu start on message harus menggunakan warna pesan yang sama."
+          },
+          {
+            "question": "Jika pilihan pertama dan kedua selalu menuju adegan yang sama, apa yang perlu diperiksa?",
+            "options": [
+              "Pesan dan tujuan halaman pada masing-masing pilihan",
+              "Ukuran layar tablet",
+              "Nama aplikasi",
+              "Jumlah karakter di halaman awal"
+            ],
+            "answer_index": 0,
+            "explanation": "Setiap pilihan perlu memiliki pesan atau tujuan yang membedakan hasilnya."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Cerita dengan Dua Pilihan",
+            "instructions": "Buat cerita ScratchJr yang memiliki satu titik pilihan dan dua kelanjutan berbeda. Gunakan dua objek yang dapat disentuh, dua pesan dengan warna berbeda, dan halaman tujuan yang sesuai. Tunjukkan peta alur dan demonstrasikan kedua pilihan kepada guru saat sesi.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Pembaca Ikut Memilih",
+            "content": "Cerita interaktif memberi kesempatan kepada pembaca untuk menentukan kelanjutan cerita. Kamu akan membuat satu pilihan dengan dua hasil yang berbeda."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Cerita Bercabang?",
+            "content": "Cerita bercabang memiliki satu titik pilihan dan lebih dari satu kemungkinan kelanjutan. Setiap pilihan harus memiliki hasil yang jelas, bukan hanya mengganti warna atau kostum tanpa mengubah cerita."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Rancang Peta Pilihan",
+            "content": "Tentukan adegan sebelum pilihan, dua pilihan yang tersedia, dan halaman tujuan untuk masing-masing pilihan. Buat peta sederhana dengan panah agar alur tidak membingungkan."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Gunakan Pemicu Sentuhan",
+            "content": "Pada ScratchJr, karakter atau objek dapat menjadi tombol pilihan. Gunakan pemicu saat karakter disentuh untuk menjalankan blok yang mengirim pesan dengan warna tertentu."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Pesan Menghubungkan Pilihan",
+            "content": "Blok send message mengirim pesan berwarna. Halaman atau karakter tujuan memakai pemicu start on message dengan warna yang sama untuk memulai kelanjutan cerita."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Halaman Pilihan",
+            "content": "Buat halaman yang menampilkan situasi dan dua karakter atau objek pilihan. Beri petunjuk singkat agar pembaca tahu bagian mana yang dapat disentuh."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Buat Pilihan Pertama",
+            "content": "Atur pemicu sentuhan pada objek pertama. Tambahkan blok send message dengan warna pesan pertama dan tentukan halaman atau aksi yang harus berjalan setelah pesan diterima."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Buat Pilihan Kedua",
+            "content": "Atur objek kedua mengirim pesan dengan warna berbeda. Pastikan hasil pilihan kedua tidak sama persis dengan pilihan pertama."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Hubungkan ke Kelanjutan Cerita",
+            "content": "Pada halaman atau karakter penerima, gunakan start on message dengan warna yang sesuai. Tampilkan dialog atau gerakan yang menjelaskan akibat pilihan tersebut."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Tambahkan Jalan Kembali atau Penutup",
+            "content": "Beri pembaca cara menuju halaman penutup atau kembali ke halaman pilihan bila sesuai rancangan. Jangan biarkan salah satu cabang berhenti tanpa akhir yang jelas."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Cerita Bercabang",
+            "content": "Jika pilihan tidak merespons, periksa pemicu sentuhan, warna pesan pengirim dan penerima, serta halaman tempat skrip berada. Uji satu pilihan lebih dulu sebelum menguji pilihan lainnya."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat satu cerita dengan dua pilihan dan dua kelanjutan berbeda. Tunjukkan peta alur serta demonstrasikan kedua pilihan kepada guru."
+          }
+        ],
+        "activeChallengeIds": [
+          117
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 187,
+      "title": "Timing dan Urutan Adegan: Mengatur Jeda Gerakan",
+      "description": "Mengatur urutan blok, Wait, dan Repeat agar gerakan serta dialog berjalan pada tempo yang mudah diikuti.",
+      "challenge_id": 118,
+      "challenge_title": "Challenge: Animasi dengan Timing Tepat",
+      "challenge_instructions": "Buat animasi ScratchJr dengan minimal tiga aksi berurutan, satu blok Wait, dan satu blok Repeat. Atur jeda agar dialog dapat dibaca dan gerakan mudah diikuti. Demonstrasikan hasilnya dan jelaskan fungsi Wait serta Repeat.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Bagaimana ScratchJr menjalankan blok dalam satu rangkaian?",
+            "options": [
+              "Dari kiri ke kanan sesuai urutan blok",
+              "Secara acak",
+              "Dari blok paling bawah ke atas",
+              "Semua blok selalu berjalan bersamaan"
+            ],
+            "answer_index": 0,
+            "explanation": "Urutan blok menentukan urutan aksi yang dijalankan."
+          },
+          {
+            "question": "Apa fungsi Wait?",
+            "options": [
+              "Menghapus karakter",
+              "Memberi jeda sebelum blok berikutnya berjalan",
+              "Mengganti halaman otomatis",
+              "Mengulang semua blok tanpa batas"
+            ],
+            "answer_index": 1,
+            "explanation": "Wait memberi waktu sebelum aksi selanjutnya dilakukan."
+          },
+          {
+            "question": "Kapan Repeat digunakan?",
+            "options": [
+              "Saat ingin menghapus halaman",
+              "Saat ingin mengganti nama karakter",
+              "Saat rangkaian gerakan perlu diulang beberapa kali",
+              "Saat ingin menghentikan semua suara"
+            ],
+            "answer_index": 2,
+            "explanation": "Repeat mengulang rangkaian blok sesuai jumlah pengulangan."
+          },
+          {
+            "question": "Jika dialog tidak sempat dibaca karena karakter langsung bergerak, apa perbaikannya?",
+            "options": [
+              "Menghapus dialog",
+              "Menambah jumlah karakter",
+              "Mengubah warna halaman",
+              "Menambahkan Wait setelah dialog sebelum gerakan"
+            ],
+            "answer_index": 3,
+            "explanation": "Wait memberi waktu agar dialog dapat dibaca sebelum aksi berikutnya."
+          },
+          {
+            "question": "Jika gerakan melompat terjadi terlalu banyak kali, apa yang perlu diperiksa?",
+            "options": [
+              "Jumlah pengulangan pada blok Repeat",
+              "Nama project",
+              "Warna karakter",
+              "Jumlah halaman kosong"
+            ],
+            "answer_index": 0,
+            "explanation": "Jumlah Repeat menentukan berapa kali rangkaian gerakan dijalankan."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Animasi dengan Timing Tepat",
+            "instructions": "Buat animasi ScratchJr dengan minimal tiga aksi berurutan, satu blok Wait, dan satu blok Repeat. Atur jeda agar dialog dapat dibaca dan gerakan mudah diikuti. Demonstrasikan hasilnya dan jelaskan fungsi Wait serta Repeat.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Cerita Tidak Perlu Terburu-buru",
+            "content": "Gerakan dan dialog yang muncul terlalu cepat sulit diikuti. Kamu akan mengatur urutan dan jeda agar setiap adegan terasa jelas."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Urutan Blok Menentukan Aksi",
+            "content": "ScratchJr menjalankan blok dari kiri ke kanan dalam satu rangkaian. Jika blok gerak diletakkan sebelum dialog, karakter akan bergerak lebih dulu."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Apa Fungsi Wait?",
+            "content": "Wait memberi jeda sebelum blok berikutnya berjalan. Jeda dapat digunakan agar pembaca sempat membaca dialog atau melihat gerakan selesai."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Apa Fungsi Repeat?",
+            "content": "Repeat mengulang rangkaian blok beberapa kali. Gunakan untuk gerakan seperti melompat atau berjalan berulang, bukan untuk mengulang seluruh cerita tanpa tujuan."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "practice",
+            "order": 4,
+            "title": "Contoh Urutan Dialog dan Gerak",
+            "content": "Susun dialog, jeda, lalu gerakan. Dengan begitu karakter menyampaikan pesan terlebih dahulu sebelum berjalan menuju tempat berikutnya."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Rencanakan Tempo Adegan",
+            "content": "Tentukan aksi mana yang harus terjadi lebih dulu dan bagian mana yang membutuhkan jeda. Tandai dialog yang perlu waktu dibaca."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Susun Rangkaian Pertama",
+            "content": "Tambahkan blok gerak atau dialog sesuai urutan. Jalankan project untuk melihat apakah aksi berjalan sesuai rencana."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Tambahkan Wait",
+            "content": "Letakkan Wait setelah dialog atau gerakan yang perlu diberi jeda. Uji beberapa nilai jeda sampai pembaca memiliki waktu yang cukup."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Gunakan Repeat Secukupnya",
+            "content": "Pilih rangkaian gerakan pendek dan ulangi beberapa kali. Periksa apakah karakter kembali ke posisi yang masuk akal setelah pengulangan."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Gabungkan dengan Pergantian Halaman",
+            "content": "Pastikan aksi pada satu halaman selesai sebelum pembaca berpindah ke halaman berikutnya. Gunakan pemicu halaman atau pesan sesuai kebutuhan cerita."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Timing",
+            "content": "Jika aksi terlalu cepat, tambahkan Wait pada bagian yang tepat. Jika aksi berulang terlalu banyak, periksa jumlah Repeat. Jika dialog tertutup gerakan lain, pisahkan urutan skripnya."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat animasi dengan minimal tiga aksi berurutan, satu Wait, dan satu Repeat. Tunjukkan perbedaan tempo sebelum dan sesudah jeda ditambahkan."
+          }
+        ],
+        "activeChallengeIds": [
+          118
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 188,
+      "title": "Debugging ScratchJr: Memeriksa Pemicu dan Pesan",
+      "description": "Menemukan kesalahan pada pemicu Green Flag, tap, bump, message, urutan blok, dan perpindahan halaman melalui pengujian bertahap.",
+      "challenge_id": 119,
+      "challenge_title": "Challenge: Temukan dan Perbaiki Bug ScratchJr",
+      "challenge_instructions": "Pilih satu masalah pada project ScratchJr atau buat masalah latihan. Catat gejala, langkah untuk mengulanginya, penyebab, dan perbaikan. Uji ulang dari awal dan demonstrasikan hasilnya kepada guru.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa langkah pertama saat menemukan bug?",
+            "options": [
+              "Mengulangi langkah yang menyebabkan masalah dan mengamati hasilnya",
+              "Menghapus semua halaman",
+              "Mengganti semua karakter",
+              "Membuat project baru"
+            ],
+            "answer_index": 0,
+            "explanation": "Mengulangi masalah membantu menemukan bagian yang tidak berjalan sesuai rencana."
+          },
+          {
+            "question": "Mengapa pemicu harus dipilih sesuai kejadian?",
+            "options": [
+              "Agar semua blok berjalan otomatis",
+              "Karena tap, bump, Green Flag, dan message memiliki fungsi berbeda",
+              "Agar warna halaman berubah",
+              "Agar jumlah karakter bertambah"
+            ],
+            "answer_index": 1,
+            "explanation": "Setiap pemicu merespons kejadian yang berbeda."
+          },
+          {
+            "question": "Apa yang harus diperiksa jika skrip penerima pesan tidak berjalan?",
+            "options": [
+              "Ukuran karakter",
+              "Jumlah halaman",
+              "Kecocokan warna send message dan start on message",
+              "Warna latar tablet"
+            ],
+            "answer_index": 2,
+            "explanation": "Pesan berwarna pada pengirim dan penerima harus cocok."
+          },
+          {
+            "question": "Jika karakter tidak merespons sentuhan, hal pertama yang perlu diperiksa adalah…",
+            "options": [
+              "Nama aplikasi",
+              "Jumlah suara",
+              "Ukuran halaman",
+              "Pemicu tap dan apakah skrip berada pada karakter yang disentuh"
+            ],
+            "answer_index": 3,
+            "explanation": "Pemicu tap harus berada pada karakter yang benar dan memiliki aksi setelahnya."
+          },
+          {
+            "question": "Mengapa project perlu diuji ulang dari awal setelah perbaikan?",
+            "options": [
+              "Untuk memastikan perbaikan bekerja pada alur lengkap dan tidak menimbulkan masalah baru",
+              "Agar jumlah halaman bertambah",
+              "Agar semua suara terhapus",
+              "Agar karakter berubah nama"
+            ],
+            "answer_index": 0,
+            "explanation": "Pengujian ulang memastikan perubahan benar-benar memperbaiki alur project."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Temukan dan Perbaiki Bug ScratchJr",
+            "instructions": "Pilih satu masalah pada project ScratchJr atau buat masalah latihan. Catat gejala, langkah untuk mengulanginya, penyebab, dan perbaikan. Uji ulang dari awal dan demonstrasikan hasilnya kepada guru.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Mengapa Cerita Tidak Berjalan?",
+            "content": "Kadang karakter tidak bergerak, pesan tidak diterima, atau halaman tidak berpindah. Kamu akan memeriksa penyebabnya satu per satu, bukan menebak."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Bug?",
+            "content": "Bug adalah kesalahan yang membuat project berbeda dari rencana. Contohnya karakter tidak merespons sentuhan atau dialog muncul pada halaman yang salah."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Uji Satu Pemicu Dahulu",
+            "content": "Jalankan satu halaman dan periksa pemicu yang digunakan. Green Flag, tap, bump, dan message memiliki fungsi berbeda sehingga harus dipilih sesuai kejadian."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Periksa Urutan Blok",
+            "content": "Pastikan blok berada dalam urutan yang diinginkan. Jika gerakan harus terjadi setelah dialog, letakkan blok gerak setelah blok dialog dan jeda."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Periksa Pesan Berwarna",
+            "content": "Jika memakai send message, periksa warna pesan pengirim dan start on message pada penerima. Warna yang berbeda membuat skrip penerima tidak berjalan."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Catat Aksi yang Gagal",
+            "content": "Tulis langkah yang dilakukan dan hasil yang muncul. Contohnya: menyentuh karakter A seharusnya membuka halaman dua, tetapi halaman tidak berubah."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Periksa Pemicu pada Karakter",
+            "content": "Pilih karakter yang seharusnya merespons. Pastikan blok pemicu berada pada karakter yang benar, bukan pada karakter lain atau halaman yang berbeda."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Periksa Blok Setelah Pemicu",
+            "content": "Lihat apakah ada blok gerak, dialog, atau perpindahan halaman setelah pemicu. Pemicu tanpa aksi lanjutan tidak akan menghasilkan perubahan yang terlihat."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Uji Pesan Pengirim dan Penerima",
+            "content": "Jika memakai pesan, cocokkan warna pada kedua sisi. Jalankan pengirim terlebih dahulu dan perhatikan apakah skrip penerima aktif."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Kembali dari Awal",
+            "content": "Setelah memperbaiki satu bagian, mulai ulang project dan ulangi langkah yang sama. Pastikan perbaikan bekerja lebih dari sekali."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Umum",
+            "content": "Jika tap tidak bekerja, periksa karakter yang disentuh. Jika bump tidak terjadi, pastikan dua karakter benar-benar bersentuhan. Jika pesan gagal, cocokkan warna dan lokasi skrip penerima."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Perbaiki satu masalah pada project ScratchJr. Catat gejala, penyebab, perubahan yang dilakukan, dan hasil pengujian setelah perbaikan."
+          }
+        ],
+        "activeChallengeIds": [
+          119
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 189,
+      "title": "Uji Cerita dan Presentasi: Memastikan Semua Halaman Berfungsi",
+      "description": "Menguji alur cerita ScratchJr dari halaman pertama sampai terakhir, memeriksa semua pemicu, dialog, gerakan, dan pilihan sebelum dipresentasikan.",
+      "challenge_id": 120,
+      "challenge_title": "Challenge: Uji dan Presentasikan Cerita",
+      "challenge_instructions": "Uji project ScratchJr dari halaman pertama sampai terakhir. Periksa semua dialog, gerakan, pesan, dan pilihan. Buat checklist singkat, perbaiki minimal satu hal bila ditemukan masalah, lalu demonstrasikan cerita kepada guru saat sesi.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Mengapa cerita perlu diuji dari halaman pertama sampai terakhir?",
+            "options": [
+              "Agar urutan dan semua interaksi dapat dipastikan berjalan",
+              "Agar semua karakter berubah warna",
+              "Agar jumlah halaman berkurang",
+              "Agar dialog dihapus"
+            ],
+            "answer_index": 0,
+            "explanation": "Pengujian menyeluruh memastikan alur cerita tidak terputus."
+          },
+          {
+            "question": "Apa yang harus dilakukan jika pembaca tidak tahu objek mana yang dapat disentuh?",
+            "options": [
+              "Menghapus semua karakter",
+              "Menambahkan petunjuk visual atau teks yang singkat",
+              "Mengganti nama project",
+              "Menyembunyikan halaman pilihan"
+            ],
+            "answer_index": 1,
+            "explanation": "Petunjuk membantu pengguna memahami cara berinteraksi."
+          },
+          {
+            "question": "Apa isi checklist pengujian cerita?",
+            "options": [
+              "Hanya nama karakter",
+              "Jumlah kostum saja",
+              "Halaman, dialog, gerakan, pemicu, pesan, dan pilihan",
+              "Warna perangkat"
+            ],
+            "answer_index": 2,
+            "explanation": "Checklist mencakup bagian yang memengaruhi jalannya cerita."
+          },
+          {
+            "question": "Jika pilihan kedua tidak pernah diuji, apa risikonya?",
+            "options": [
+              "Cerita pasti lebih pendek",
+              "Semua suara berhenti",
+              "Halaman pertama otomatis hilang",
+              "Ada cabang cerita yang mungkin rusak atau tidak memiliki akhir"
+            ],
+            "answer_index": 3,
+            "explanation": "Setiap jalur pilihan harus diuji, bukan hanya jalur yang paling sering dipilih."
+          },
+          {
+            "question": "Apa yang baik dijelaskan saat presentasi project?",
+            "options": [
+              "Tokoh, tujuan cerita, interaksi, dan satu keputusan desain",
+              "Hanya nama aplikasi",
+              "Jumlah klik mouse",
+              "Warna layar tablet"
+            ],
+            "answer_index": 0,
+            "explanation": "Presentasi menjelaskan isi cerita dan cara kerja interaksi."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Uji dan Presentasikan Cerita",
+            "instructions": "Uji project ScratchJr dari halaman pertama sampai terakhir. Periksa semua dialog, gerakan, pesan, dan pilihan. Buat checklist singkat, perbaiki minimal satu hal bila ditemukan masalah, lalu demonstrasikan cerita kepada guru saat sesi.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Cerita Siap Ditonton",
+            "content": "Sebelum cerita ditunjukkan kepada orang lain, pastikan semua halaman dan interaksi berjalan. Kamu akan membuat daftar pemeriksaan dan memperbaiki bagian yang membingungkan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa yang Perlu Diuji?",
+            "content": "Periksa urutan halaman, karakter, dialog, gerakan, suara, pemicu sentuhan, dan pesan. Setiap bagian harus mendukung alur cerita."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Periksa Halaman Pertama",
+            "content": "Pastikan cerita dimulai dari halaman yang benar. Periksa apakah karakter berada di posisi awal dan dialog pembuka terlihat dengan jelas."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "practice",
+            "order": 3,
+            "title": "Periksa Halaman Tengah",
+            "content": "Jalankan setiap halaman tengah. Pastikan karakter tidak muncul tiba-tiba, dialog tidak tertutup, dan pemicu membawa cerita ke halaman yang sesuai."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "practice",
+            "order": 4,
+            "title": "Periksa Halaman Terakhir",
+            "content": "Pastikan cerita memiliki penutup yang jelas. Jika ada pilihan, uji semua cabang dan pastikan setiap jalur memiliki akhir yang dapat dipahami."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Checklist Pengujian",
+            "content": "Tulis daftar halaman dan interaksi yang perlu diuji. Beri tanda setelah setiap bagian berhasil agar tidak ada halaman yang terlewat."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Uji Semua Pemicu",
+            "content": "Sentuh setiap karakter atau objek yang dapat ditekan. Uji pesan dan pemicu bump sesuai alur yang dirancang."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Periksa Dialog dan Tempo",
+            "content": "Baca dialog saat project berjalan. Tambahkan Wait jika dialog terlalu cepat atau gerakan menutupi pesan penting."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Perbaiki Bagian yang Membingungkan",
+            "content": "Jika pembaca tidak tahu harus menyentuh bagian mana, tambahkan petunjuk singkat. Jika halaman terlalu ramai, kurangi objek yang tidak membantu cerita."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Latihan Menjelaskan Cerita",
+            "content": "Siapkan penjelasan singkat tentang tokoh, tujuan cerita, pilihan yang tersedia, dan bagaimana project dibuat."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Sebelum Presentasi",
+            "content": "Jika halaman tertentu tidak terbuka, periksa blok perpindahan halaman. Jika pilihan tidak merespons, periksa pemicu tap dan pesan. Uji kembali jalur yang diperbaiki."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Gunakan checklist untuk menguji seluruh halaman dan pilihan. Presentasikan cerita kepada guru dan jelaskan satu perbaikan yang kamu lakukan setelah pengujian."
+          }
+        ],
+        "activeChallengeIds": [
+          120
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    }
+  ]
+}
