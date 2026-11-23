@@ -1,0 +1,723 @@
+{
+  "schema_version": 1,
+  "module_id": 27,
+  "module_title": "3D Design Beginner",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "sequence_note": "Move original Project 12: Mobil Balap Mini Siap Cetak to topic 16 as the final capstone. New topic 16 becomes design documentation/presentation.",
+  "topics": [
+    {
+      "topic_id": 182,
+      "title": "Desain Produk Modular: Merancang Bagian dan Sambungan",
+      "description": "Memecah produk 3D menjadi komponen terpisah, menentukan fungsi tiap bagian, lalu menyelaraskan ukuran dan posisi sebelum digabung.",
+      "challenge_id": 113,
+      "challenge_title": "Challenge: Produk 3D Modular",
+      "challenge_instructions": "Buat satu produk sederhana seperti dudukan ponsel atau tempat alat tulis dari minimal tiga komponen. Beri nama dan jelaskan fungsi setiap komponen. Gunakan Align untuk merapikan posisi, periksa sambungan dari tiga sudut, lalu bagikan tautan desain Tinkercad.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa tujuan desain modular?",
+            "options": [
+              "Membagi produk menjadi komponen dengan fungsi yang jelas",
+              "Membuat semua bagian menjadi satu bentuk sejak awal",
+              "Menghapus ukuran dari model",
+              "Mengubah warna semua objek"
+            ],
+            "answer_index": 0,
+            "explanation": "Desain modular memecah produk agar setiap bagian dapat dirancang dan diperiksa."
+          },
+          {
+            "question": "Mengapa fungsi tiap komponen perlu ditentukan sebelum membuat model?",
+            "options": [
+              "Agar semua objek memiliki warna sama",
+              "Agar bentuk dan ukuran tiap bagian mendukung fungsi produk",
+              "Agar model tidak perlu diuji",
+              "Agar jumlah objek selalu tiga"
+            ],
+            "answer_index": 1,
+            "explanation": "Fungsi komponen menentukan bentuk, ukuran, dan posisi yang diperlukan."
+          },
+          {
+            "question": "Fitur apa yang membantu menyelaraskan beberapa objek?",
+            "options": [
+              "Hole",
+              "Duplicate",
+              "Align",
+              "Import"
+            ],
+            "answer_index": 2,
+            "explanation": "Align membantu menempatkan objek berdasarkan sumbu atau titik tengah."
+          },
+          {
+            "question": "Kapan sebaiknya beberapa bentuk di-Group?",
+            "options": [
+              "Sebelum ukuran dan posisi diperiksa",
+              "Saat objek masih saling bertabrakan tanpa tujuan",
+              "Sebelum menentukan fungsi produk",
+              "Setelah posisi dan sambungan komponen sudah benar"
+            ],
+            "answer_index": 3,
+            "explanation": "Periksa posisi lebih dulu agar hasil Group sesuai rancangan."
+          },
+          {
+            "question": "Jika sandaran dan alas saling menembus terlalu jauh, tindakan tepat adalah…",
+            "options": [
+              "Mengubah posisi atau ukuran komponen lalu memeriksa dari beberapa sudut",
+              "Menghapus seluruh model",
+              "Mengganti nama desain",
+              "Mengubah warna latar"
+            ],
+            "answer_index": 0,
+            "explanation": "Perubahan posisi dan ukuran memperbaiki hubungan antarbagian."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Produk 3D Modular",
+            "instructions": "Buat satu produk sederhana seperti dudukan ponsel atau tempat alat tulis dari minimal tiga komponen. Beri nama dan jelaskan fungsi setiap komponen. Gunakan Align untuk merapikan posisi, periksa sambungan dari tiga sudut, lalu bagikan tautan desain Tinkercad.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Produk Terdiri dari Bagian",
+            "content": "Banyak benda dibuat dari beberapa bagian yang saling mendukung. Kamu akan merancang produk sederhana dengan komponen dasar, penopang, dan bagian tambahan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Desain Modular?",
+            "content": "Desain modular membagi produk menjadi bagian yang memiliki fungsi masing-masing. Setiap komponen dirancang dan diperiksa lebih dulu sebelum dirakit menjadi satu model."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Buat Daftar Komponen",
+            "content": "Pilih produk seperti dudukan ponsel. Pisahkan menjadi alas, sandaran, dan penahan bawah. Tuliskan fungsi dan ukuran perkiraan setiap bagian sebelum membuat bentuk."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Contoh: Alas dan Sandaran",
+            "content": "Mulai dari alas berbentuk balok. Tambahkan sandaran miring dan penahan kecil di bagian depan. Periksa apakah ketiga komponen saling bertemu dan tidak saling menembus."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Posisi dan Penyelarasan",
+            "content": "Gunakan Workplane untuk menempatkan objek pada permukaan yang tepat. Gunakan Align untuk merapikan posisi kiri-kanan atau tengah, bukan menggeser objek hanya dengan perkiraan mouse."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Bangun Komponen Pertama",
+            "content": "Buat alas dengan ukuran yang cukup lebar. Gunakan ukuran numerik agar dimensi mudah diubah dan dapat dibandingkan dengan komponen lain."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Bangun Komponen Pendukung",
+            "content": "Tambahkan sandaran dan penahan. Perhatikan arah kemiringan, tinggi, dan jarak antarbagian agar benda yang akan ditopang tidak mudah tergelincir."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Rakit dan Periksa Sambungan",
+            "content": "Pilih komponen lalu gunakan Align. Periksa dari tampak atas, samping, dan depan. Pastikan tidak ada celah yang tidak disengaja atau bagian yang saling menembus."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "lesson",
+            "order": 8,
+            "title": "Gunakan Group dengan Tepat",
+            "content": "Group menyatukan beberapa bentuk menjadi satu objek gabungan. Sebelum Group, pastikan semua komponen sudah berada pada posisi yang benar karena penggabungan membuat pengeditan bagian lebih sulit."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Fungsi Model",
+            "content": "Periksa apakah produk dapat menjalankan fungsi yang direncanakan. Untuk dudukan ponsel, periksa lebar alas, kemiringan sandaran, dan tinggi penahan depan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Sambungan",
+            "content": "Jika bagian tidak sejajar, pilih objek yang tepat sebelum Align. Jika komponen tertanam terlalu dalam, ubah posisi atau ukuran sedikit. Jika bentuk hilang setelah Group, periksa apakah objek Hole ikut terpilih."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Rancang produk dari minimal tiga komponen. Jelaskan fungsi setiap komponen dan tunjukkan bagaimana kamu menyelaraskan serta menggabungkannya."
+          }
+        ],
+        "activeChallengeIds": [
+          113
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 183,
+      "title": "Pengukuran Presisi dan Toleransi Sederhana",
+      "description": "Menggunakan Ruler dan ukuran numerik untuk mengontrol panjang, lebar, tinggi, jarak, serta kecocokan antarbagian model.",
+      "challenge_id": 114,
+      "challenge_title": "Challenge: Model dengan Ukuran Target",
+      "challenge_instructions": "Buat model produk sederhana dengan minimal tiga dimensi target yang kamu tentukan sendiri. Gunakan Ruler dan ukuran numerik. Tambahkan satu pasangan bagian yang perlu pas (misalnya tutup dan kotak), catat dimensinya, dan bagikan tautan desain beserta daftar ukuran.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa manfaat memasukkan ukuran numerik pada model 3D?",
+            "options": [
+              "Membuat dimensi lebih konsisten dan dapat diperiksa",
+              "Mengubah objek menjadi gambar 2D",
+              "Menghapus kebutuhan Workplane",
+              "Membuat model otomatis tercetak"
+            ],
+            "answer_index": 0,
+            "explanation": "Ukuran numerik membuat dimensi dapat diukur dan diulang."
+          },
+          {
+            "question": "Fitur apa yang membantu melihat dan mengatur dimensi objek?",
+            "options": [
+              "Group",
+              "Ruler",
+              "Mirror",
+              "Text"
+            ],
+            "answer_index": 1,
+            "explanation": "Ruler membantu memeriksa posisi dan dimensi objek."
+          },
+          {
+            "question": "Apa arti toleransi dalam desain produk?",
+            "options": [
+              "Warna tambahan pada model",
+              "Jumlah objek dalam satu Group",
+              "Selisih ukuran kecil yang diperhitungkan agar komponen dapat dipasang",
+              "Ukuran layar komputer"
+            ],
+            "answer_index": 2,
+            "explanation": "Toleransi memperhitungkan kecocokan antarbagian, terutama saat dirakit."
+          },
+          {
+            "question": "Jika tutup kotak tidak dapat masuk ke badan kotak, apa yang harus diperiksa?",
+            "options": [
+              "Warna objek",
+              "Nama file",
+              "Jumlah tab browser",
+              "Dimensi kedua bagian dan celah yang dirancang"
+            ],
+            "answer_index": 3,
+            "explanation": "Periksa ukuran bagian pasangan dan ruang yang tersedia."
+          },
+          {
+            "question": "Mengapa model perlu diperiksa dari beberapa sudut?",
+            "options": [
+              "Untuk menemukan masalah dimensi, posisi, atau bagian yang saling menembus",
+              "Agar warna berubah otomatis",
+              "Agar ukuran tidak perlu dicatat",
+              "Agar file menjadi lebih kecil"
+            ],
+            "answer_index": 0,
+            "explanation": "Tampilan dari beberapa sudut membantu menemukan masalah yang tidak terlihat dari satu arah."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Model dengan Ukuran Target",
+            "instructions": "Buat model produk sederhana dengan minimal tiga dimensi target yang kamu tentukan sendiri. Gunakan Ruler dan ukuran numerik. Tambahkan satu pasangan bagian yang perlu pas (misalnya tutup dan kotak), catat dimensinya, dan bagikan tautan desain beserta daftar ukuran.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Ukuran Harus Terukur",
+            "content": "Model yang terlihat bagus belum tentu memiliki ukuran yang tepat. Kamu akan memakai Ruler dan ukuran numerik agar bagian-bagian produk cocok ketika dirakit."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Panjang, Lebar, dan Tinggi",
+            "content": "Setiap bentuk memiliki dimensi utama. Tentukan satuan dan catat ukuran target sebelum mengubah nilai objek agar tidak bergantung pada perkiraan visual."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Gunakan Ruler",
+            "content": "Letakkan Ruler pada Workplane untuk melihat posisi dan dimensi objek. Gunakan nilai angka untuk mengubah ukuran dengan lebih konsisten."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Contoh: Kotak dengan Tutup",
+            "content": "Jika kotak memiliki lebar 40 mm, tutup perlu dirancang berdasarkan ukuran itu. Beri sedikit ruang sesuai kebutuhan agar tutup tidak terlalu rapat atau terlalu longgar."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Apa Itu Toleransi?",
+            "content": "Toleransi adalah selisih kecil yang diperhitungkan agar dua bagian dapat dipasang. Untuk model latihan, buat celah kecil yang terukur dan uji apakah kedua bagian dapat bertemu sesuai tujuan."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Tentukan Ukuran Target",
+            "content": "Pilih benda seperti kotak penyimpanan mini. Catat panjang, lebar, tinggi, dan ketebalan dinding yang ingin dibuat."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Atur Dimensi dengan Ruler",
+            "content": "Letakkan Ruler pada bidang kerja. Pilih bentuk dasar dan masukkan ukuran numerik sesuai rancangan, bukan hanya menarik handle secara bebas."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Ukur Jarak Antarbagian",
+            "content": "Periksa jarak antarobjek dan pastikan bagian yang harus menempel benar-benar bertemu. Bagian yang perlu bergerak atau masuk ke dalam komponen lain memerlukan celah yang sesuai."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Bandingkan Komponen Pasangan",
+            "content": "Jika membuat alas dan tutup, ukur keduanya. Pastikan dimensi pasangan sesuai dengan ruang yang tersedia dan catat selisih yang digunakan."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Periksa dari Beberapa Sudut",
+            "content": "Lihat model dari atas, samping, dan depan. Pastikan tidak ada bagian yang terlalu tipis, menonjol, atau memiliki jarak yang tidak sesuai rancangan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Ukuran",
+            "content": "Jika objek berubah terlalu besar, periksa satuan dan nilai dimensi. Jika komponen tidak pas, ukur kembali objek induk dan pasangan. Jangan mengubah banyak ukuran sekaligus."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat model dengan minimal tiga ukuran target dan satu pasangan komponen yang harus pas. Sertakan daftar dimensi dan jelaskan bagaimana kamu memeriksa kecocokannya."
+          }
+        ],
+        "activeChallengeIds": [
+          114
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 184,
+      "title": "Iterasi Desain dan Uji Kelayakan Model",
+      "description": "Mengevaluasi bentuk 3D berdasarkan fungsi, proporsi, kestabilan, ketebalan, dan masukan pengguna lalu memperbaikinya secara terukur.",
+      "challenge_id": 115,
+      "challenge_title": "Challenge: Iterasi Versi 1 ke Versi 2",
+      "challenge_instructions": "Pilih satu model 3D yang pernah kamu buat. Tulis tiga kriteria uji sesuai fungsi model, catat satu masalah, lalu buat minimal satu revisi. Sertakan perbandingan versi awal dan revisi, ukuran yang diubah, serta alasan perbaikan. Bagikan tautan desain.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa yang dimaksud iterasi desain?",
+            "options": [
+              "Membuat, menguji, lalu memperbaiki desain berdasarkan hasil pemeriksaan",
+              "Mengubah warna tanpa tujuan",
+              "Menyimpan file tanpa menguji",
+              "Menghapus semua komponen"
+            ],
+            "answer_index": 0,
+            "explanation": "Iterasi menggunakan hasil uji untuk menentukan perbaikan berikutnya."
+          },
+          {
+            "question": "Mengapa kriteria uji perlu ditentukan sebelum revisi?",
+            "options": [
+              "Agar semua bagian diubah sekaligus",
+              "Agar keberhasilan model dapat dinilai berdasarkan tujuan produk",
+              "Agar model tidak perlu disimpan",
+              "Agar jumlah objek bertambah"
+            ],
+            "answer_index": 1,
+            "explanation": "Kriteria membuat pemeriksaan sesuai fungsi produk."
+          },
+          {
+            "question": "Apa contoh kriteria uji untuk dudukan ponsel?",
+            "options": [
+              "Jumlah warna pada layar",
+              "Nama file desain",
+              "Kestabilan alas dan sudut sandaran",
+              "Jumlah tab browser"
+            ],
+            "answer_index": 2,
+            "explanation": "Kriteria harus berhubungan dengan fungsi dudukan."
+          },
+          {
+            "question": "Mengapa sebaiknya satu masalah utama diperbaiki lebih dulu?",
+            "options": [
+              "Agar desain berubah secara acak",
+              "Agar semua ukuran hilang",
+              "Agar model tidak dapat dibandingkan",
+              "Agar dampak revisi dapat diamati dengan jelas"
+            ],
+            "answer_index": 3,
+            "explanation": "Mengubah satu hal membantu mengetahui apakah revisi memperbaiki masalah."
+          },
+          {
+            "question": "Jika revisi membuat bagian lain menjadi tidak pas, apa tindakan yang tepat?",
+            "options": [
+              "Periksa hubungan antarbagian dan kembalikan atau sesuaikan perubahan terakhir",
+              "Menghapus seluruh project",
+              "Mengganti nama akun",
+              "Mengabaikan masalah tersebut"
+            ],
+            "answer_index": 0,
+            "explanation": "Revisi perlu diperiksa terhadap seluruh komponen yang saling berhubungan."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Iterasi Versi 1 ke Versi 2",
+            "instructions": "Pilih satu model 3D yang pernah kamu buat. Tulis tiga kriteria uji sesuai fungsi model, catat satu masalah, lalu buat minimal satu revisi. Sertakan perbandingan versi awal dan revisi, ukuran yang diubah, serta alasan perbaikan. Bagikan tautan desain.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Desain Pertama Belum Tentu Final",
+            "content": "Desain yang baik biasanya melalui beberapa percobaan. Kamu akan menguji model, menemukan kekurangan, dan memperbaikinya berdasarkan alasan yang jelas."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Iterasi?",
+            "content": "Iterasi adalah siklus membuat versi, menguji, menerima masukan, lalu memperbaiki. Setiap revisi sebaiknya menjawab masalah yang ditemukan saat pengujian."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Tentukan Kriteria Uji",
+            "content": "Pilih kriteria sesuai fungsi produk. Contoh dudukan ponsel: stabil, sudut nyaman, ponsel tidak mudah tergelincir, dan alas cukup lebar."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Contoh: Menguji Stabilitas",
+            "content": "Periksa apakah alas terlalu sempit atau sandaran terlalu tegak. Ubah satu dimensi lalu bandingkan hasilnya agar kamu tahu perubahan mana yang membuat model lebih stabil."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Periksa Ketebalan dan Sudut",
+            "content": "Bagian yang terlalu tipis dapat rapuh, sedangkan sudut yang tidak sesuai dapat mengganggu fungsi. Periksa bentuk dari tampak samping dan gunakan ukuran numerik untuk revisi."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Versi Pertama",
+            "content": "Selesaikan model awal dan simpan. Catat ukuran serta fungsi yang ingin dicapai sebelum melakukan revisi."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Lakukan Pemeriksaan Fungsi",
+            "content": "Periksa model berdasarkan daftar kriteria. Beri tanda pada bagian yang sudah sesuai dan bagian yang perlu diperbaiki."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Pilih Satu Masalah Utama",
+            "content": "Pilih satu kekurangan paling penting, misalnya alas kurang lebar. Hindari mengubah semua bagian sekaligus agar dampak revisi dapat dipahami."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Buat Versi Kedua",
+            "content": "Ubah ukuran atau posisi yang berkaitan dengan masalah. Simpan versi baru atau catat nilai sebelum dan sesudah agar perbedaan terlihat."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Bandingkan Hasil Revisi",
+            "content": "Bandingkan kedua versi menggunakan kriteria yang sama. Jelaskan apakah perubahan membantu fungsi produk atau justru menimbulkan masalah baru."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Revisi",
+            "content": "Jika revisi merusak bagian lain, batalkan perubahan terakhir atau kembalikan ukuran sebelumnya. Periksa hubungan antarbagian sebelum membuat perubahan berikutnya."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Pilih satu model lama, tulis tiga kriteria uji, lakukan minimal satu revisi, lalu jelaskan bukti bahwa versi baru lebih sesuai fungsi."
+          }
+        ],
+        "activeChallengeIds": [
+          115
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 185,
+      "title": "Dokumentasi dan Presentasi Desain 3D",
+      "description": "Menyiapkan dokumentasi model 3D melalui tampilan multi-sudut, catatan dimensi, fungsi komponen, dan ringkasan proses desain.",
+      "challenge_id": 116,
+      "challenge_title": "Challenge: Presentasi Desain 3D",
+      "challenge_instructions": "Buat dokumentasi satu halaman untuk salah satu model 3D. Sertakan nama dan fungsi produk, tampilan depan/samping/atas, daftar komponen, minimal tiga dimensi utama beserta satuannya, dan satu keputusan desain atau revisi yang kamu lakukan. Bagikan tautan model dan dokumentasi.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa tujuan dokumentasi desain 3D?",
+            "options": [
+              "Membantu orang lain memahami fungsi, komponen, dan ukuran model",
+              "Mengubah model menjadi game",
+              "Menghapus komponen yang tidak dipakai",
+              "Mengganti warna semua objek"
+            ],
+            "answer_index": 0,
+            "explanation": "Dokumentasi menjelaskan rancangan agar dapat dipahami dan diperiksa."
+          },
+          {
+            "question": "Mengapa tampilan depan, samping, dan atas berguna?",
+            "options": [
+              "Agar file lebih besar",
+              "Agar bentuk dan posisi bagian terlihat dari beberapa arah",
+              "Agar model otomatis tercetak",
+              "Agar ukuran tidak perlu dicatat"
+            ],
+            "answer_index": 1,
+            "explanation": "Tampilan multi-sudut menunjukkan bentuk yang tidak terlihat dari satu arah."
+          },
+          {
+            "question": "Informasi ukuran yang baik seharusnya…",
+            "options": [
+              "Berisi angka sebanyak mungkin tanpa penjelasan",
+              "Hanya menyebut warna objek",
+              "Mencantumkan dimensi penting dengan satuan dan konteks fungsi",
+              "Menggunakan satuan berbeda tanpa keterangan"
+            ],
+            "answer_index": 2,
+            "explanation": "Dimensi perlu relevan dan memiliki satuan yang jelas."
+          },
+          {
+            "question": "Apa yang perlu dijelaskan saat menyampaikan proses revisi?",
+            "options": [
+              "Hanya nama aplikasi",
+              "Jumlah klik mouse",
+              "Warna latar browser",
+              "Masalah awal, perubahan yang dilakukan, dan hasil setelah revisi"
+            ],
+            "answer_index": 3,
+            "explanation": "Penjelasan revisi menunjukkan alasan dan dampak keputusan desain."
+          },
+          {
+            "question": "Jika orang lain tidak memahami bentuk model dari satu gambar, apa yang sebaiknya dilakukan?",
+            "options": [
+              "Tambahkan tampilan dari sudut lain dan label komponen penting",
+              "Menghapus semua catatan",
+              "Mengganti nama file menjadi angka",
+              "Menyembunyikan dimensi"
+            ],
+            "answer_index": 0,
+            "explanation": "Tampilan tambahan dan label membantu menjelaskan struktur model."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Presentasi Desain 3D",
+            "instructions": "Buat dokumentasi satu halaman untuk salah satu model 3D. Sertakan nama dan fungsi produk, tampilan depan/samping/atas, daftar komponen, minimal tiga dimensi utama beserta satuannya, dan satu keputusan desain atau revisi yang kamu lakukan. Bagikan tautan model dan dokumentasi.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Tunjukkan Cara Kerja Desainmu",
+            "content": "Model 3D tidak cukup hanya terlihat menarik. Kamu perlu menjelaskan masalah yang diselesaikan, cara kerja produk, ukuran, dan alasan memilih bentuk tertentu."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Isi Dokumentasi Desain?",
+            "content": "Dokumentasi berisi nama produk, tujuan, fungsi, komponen, ukuran utama, dan perubahan yang dilakukan selama proses desain."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Pilih Tampilan yang Informatif",
+            "content": "Gunakan tampak depan, samping, dan atas. Setiap tampilan membantu menjelaskan bagian yang mungkin tersembunyi jika hanya dilihat dari satu sudut."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Catat Dimensi Utama",
+            "content": "Pilih dimensi yang penting untuk fungsi produk. Jangan mencantumkan semua angka tanpa konteks; jelaskan mengapa ukuran tersebut diperlukan."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Jelaskan Keputusan Desain",
+            "content": "Tuliskan alasan memilih bentuk, ukuran, dan susunan komponen. Jika ada revisi, jelaskan masalah awal dan perubahan yang dilakukan."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Nama dan Tujuan Produk",
+            "content": "Beri nama yang mudah dipahami. Tulis satu atau dua kalimat tentang kebutuhan yang ingin diselesaikan oleh produk."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Ambil Tampilan dari Beberapa Sudut",
+            "content": "Atur kamera dan ambil tampilan depan, samping, dan atas. Pastikan objek tidak terpotong dan bagian penting terlihat."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Buat Daftar Komponen",
+            "content": "Tuliskan komponen utama dan fungsi masing-masing. Jika model modular, jelaskan bagian mana yang menjadi alas, penopang, atau penghubung."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Susun Data Ukuran",
+            "content": "Catat panjang, lebar, tinggi, dan dimensi penting lain. Gunakan satuan yang konsisten dan cocokkan dengan model akhir."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Tulis Ringkasan Proses",
+            "content": "Jelaskan langkah utama dari sketsa, pembuatan bentuk, penyusunan komponen, pengujian, sampai revisi."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Presentasi",
+            "content": "Jika model sulit dipahami, tambahkan tampilan dari sudut lain dan beri label pada komponen. Jika ukuran membingungkan, sertakan satuan dan tunjukkan bagian yang diukur."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Siapkan satu halaman presentasi desain berisi nama, fungsi, tampilan multi-sudut, komponen, ukuran, dan satu keputusan desain yang paling penting."
+          }
+        ],
+        "activeChallengeIds": [
+          116
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    }
+  ]
+}
