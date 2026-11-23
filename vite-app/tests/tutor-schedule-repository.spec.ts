@@ -11,6 +11,7 @@ test.describe("Production tutor schedule repository", () => {
       const meetingRows = [
         {
           id: 22,
+          teacher_id: "tutor-1",
           title: "Kelas kedua",
           meeting_date: "2026-11-25T09:00:00.000Z",
           link_url: null,
@@ -22,6 +23,7 @@ test.describe("Production tutor schedule repository", () => {
         },
         {
           id: 11,
+          teacher_id: "tutor-1",
           title: "Kelas pertama",
           meeting_date: "2026-11-20T09:00:00.000Z",
           link_url: "https://meet.example.test/1",
@@ -46,15 +48,35 @@ test.describe("Production tutor schedule repository", () => {
         },
         from: (table: string) => {
           const rows = table === "meetings" ? meetingRows : linkRows;
+          const filters: Array<{ method: string; args: unknown[] }> = [];
           const builder: Record<string, unknown> = {};
           for (const method of ["select", "eq", "gte", "lt", "order", "limit", "in"]) {
             builder[method] = (...args: unknown[]) => {
               calls.push({ table, method, args });
+              if (["eq", "gte", "lt", "in", "order", "limit"].includes(method)) filters.push({ method, args });
               return builder;
             };
           }
-          builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) =>
-            Promise.resolve({ data: rows, error: null }).then(resolve, reject);
+          builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) => {
+            let filtered = rows.filter((row: Record<string, unknown>) => filters.every(({ method, args }) => {
+              const key = String(args[0] ?? "");
+              const value = args[1];
+              if (method === "eq") return row[key] === value;
+              if (method === "gte") return String(row[key] ?? "") >= String(value);
+              if (method === "lt") return String(row[key] ?? "") < String(value);
+              if (method === "in") return (value as unknown[]).includes(row[key]);
+              return true;
+            }));
+            for (const filter of filters) {
+              if (filter.method === "order") {
+                const key = String(filter.args[0]);
+                const ascending = (filter.args[1] as { ascending?: boolean })?.ascending !== false;
+                filtered = [...filtered].sort((a, b) => String(a[key] ?? "").localeCompare(String(b[key] ?? "")) * (ascending ? 1 : -1));
+              }
+              if (filter.method === "limit") filtered = filtered.slice(0, Number(filter.args[0]));
+            }
+            return Promise.resolve({ data: filtered, error: null }).then(resolve, reject);
+          };
           return builder;
         }
       };
@@ -188,6 +210,6 @@ test.describe("Production tutor schedule repository", () => {
     });
 
     expect(result.snapshot).toEqual({ meetings: [], studentCounts: {}, meetingStudents: [] });
-    expect(result.queriedTables).toEqual(["meetings"]);
+    expect(result.queriedTables).toEqual(["meetings", "meetings"]);
   });
 });
