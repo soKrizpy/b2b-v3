@@ -48,7 +48,7 @@ function mapChallengeSubmission(row: ChallengeSubmissionRow) {
     status: row.status === "pending" ? "submitted" : row.status === "needs_revision" ? "revision-required" : "approved",
     teacherFeedback: row.review_note ?? "",
     submittedAt: row.submitted_at,
-    version: row.submitted_at,
+    version: 1,
   };
 }
 
