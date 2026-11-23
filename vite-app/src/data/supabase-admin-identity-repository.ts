@@ -60,17 +60,54 @@ export const supabaseAdminIdentityRepository = {
     return () => undefined;
   },
 
-  async createUser() {
-    return unavailableMutation();
+  async createUser(input: {
+    displayName: string;
+    email: string;
+    role: "admin" | "tutor" | "student";
+    status: "active" | "inactive";
+    gradeLevel?: string;
+  }) {
+    if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
+    const { data, error } = await supabase.functions.invoke("admin-manage-user", {
+      body: { action: "create", ...input },
+    });
+    if (error || !data?.user) return { error: "CREATE_FAILED", message: data?.error ?? error?.message ?? "Akun gagal dibuat." };
+    return { user: data.user as AdminAccount };
   },
-  async updateUser() {
-    return unavailableMutation();
+  async updateUser(userId: string, changes: {
+    displayName?: string;
+    email?: string;
+    role?: "admin" | "tutor" | "student";
+    status?: "active" | "inactive";
+    gradeLevel?: string;
+  }) {
+    if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
+    const { status, ...profileChanges } = changes;
+    const { data, error } = await supabase.functions.invoke("admin-manage-user", {
+      body: { action: "update", userId, ...profileChanges },
+    });
+    if (error || !data?.user) return { error: "UPDATE_FAILED", message: data?.error ?? error?.message ?? "Akun gagal diperbarui." };
+    let user = data.user as AdminAccount;
+    if (status) {
+      const statusResult = await this.setAccountStatus(userId, status);
+      if (statusResult.error) return statusResult;
+      user = statusResult.user as AdminAccount;
+    }
+    return { user };
   },
-  async activateUser() {
-    return unavailableMutation();
+  async setAccountStatus(userId: string, status: "active" | "inactive") {
+    if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
+    const { data, error } = await supabase.functions.invoke("admin-manage-user", {
+      body: { action: "status", userId, status },
+    });
+    if (error || !data?.user) return { error: "STATUS_FAILED", message: data?.error ?? error?.message ?? "Status akun gagal diperbarui." };
+    return { user: data.user as AdminAccount };
   },
-  async deactivateUser() {
-    return unavailableMutation();
+  async activateUser(userId: string) {
+    return this.setAccountStatus(userId, "active");
+  },
+  async deactivateUser(userId: string) {
+    return this.setAccountStatus(userId, "inactive");
   },
   async assignStudentToTutor(tutorId: string, studentId: string) {
     if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
