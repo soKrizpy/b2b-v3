@@ -150,8 +150,6 @@ export function createSupabaseClassSessionRepository(
           soft_deleted: "soft_deleted",
         };
         query = query.eq("completion_status", statusValue[filters.status]);
-      } else {
-        query = query.is("deleted_at", null);
       }
 
       let meetingRows: MeetingRow[] = [];
@@ -225,6 +223,10 @@ export function createSupabaseClassSessionRepository(
       }
     },
 
+    async createRecurringSessionSeries(input: RecurringSessionSeriesInput): Promise<RepositoryResult<ClassSession[]>> {
+      return this.createRecurringSeries(input);
+    },
+
     async recordAttendance(sessionId: UUID, status: Exclude<AttendanceStatus, "not_recorded">): Promise<RepositoryResult<ClassSession>> {
       const parsed = parseSessionId(sessionId);
       if (!parsed?.studentId) return { success: false, error: { code: "INVALID_SESSION", message: "Sesi siswa tidak valid." } };
@@ -244,7 +246,8 @@ export function createSupabaseClassSessionRepository(
       return { success: true, data: mapClassSession(selected) };
     },
 
-    async cancelSession(sessionId: UUID, reason = ""): Promise<RepositoryResult<ClassSession>> {
+    async cancelSession(sessionId: UUID, reasonOrActor: string | unknown = ""): Promise<RepositoryResult<ClassSession>> {
+      const reason = typeof reasonOrActor === "string" ? reasonOrActor : "";
       const parsed = parseSessionId(sessionId);
       if (!parsed) return { success: false, error: { code: "INVALID_SESSION", message: "Sesi tidak valid." } };
       const db = requireClient(client);
@@ -283,6 +286,11 @@ export function createSupabaseClassSessionRepository(
       const parsed = parseSessionId(originalSessionId);
       if (!parsed?.studentId) return { success: false, error: { code: "INVALID_SESSION", message: "Sesi asal tidak valid." } };
       const db = requireClient(client);
+      const originalBeforeReplacement = await this.getSession(originalSessionId);
+      if (!originalBeforeReplacement) return { success: false, error: { code: "NOT_FOUND", message: "Sesi asal tidak ditemukan." } };
+      if (input.tutorId && input.tutorId !== originalBeforeReplacement.tutorId) {
+        return { success: false, error: { code: "TUTOR_CHANGE_UNSUPPORTED", message: "Penggantian harus menggunakan tutor yang sama dengan sesi asal." } };
+      }
       const { data, error } = await db.rpc("create_replacement_meeting", {
         p_original_meeting_id: parsed.meetingId,
         p_scheduled_start_at: input.scheduledStartAt,
@@ -296,6 +304,14 @@ export function createSupabaseClassSessionRepository(
       const replacement = replacementRecords.find((record) => record.link.student_id === parsed.studentId);
       if (!original || !replacement) return { success: false, error: { code: "REPLACEMENT_READ_FAILED", message: "Sesi pengganti tersimpan tetapi gagal dimuat ulang." } };
       return { success: true, data: { original, replacement: mapClassSession(replacement) } };
+    },
+
+    async createReplacementSession(
+      originalSessionId: UUID,
+      input: CreateReplacementSessionInput,
+      _actor?: unknown
+    ): Promise<RepositoryResult<{ original: ClassSession; replacement: ClassSession }>> {
+      return this.createReplacement(originalSessionId, input);
     },
 
     async listBillableSessions(studentId: UUID, period: YearMonth) {
