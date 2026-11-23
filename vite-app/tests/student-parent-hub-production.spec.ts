@@ -187,7 +187,7 @@ test("production student dashboard never opens the local-demo Parent Hub", async
   await page.getByRole("button", { name: "Masuk" }).click();
 
   await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
-  await expect(page.getByText("Belum tersedia", { exact: true })).toBeVisible();
+  await expect(page.locator(".parent-hub-entry-card").getByText("Belum tersedia", { exact: true })).toBeVisible();
   await expect(page.getByText(/tidak menampilkan data contoh pada akun asli/i)).toBeVisible();
   await expect(page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ })).toHaveCount(0);
 });
