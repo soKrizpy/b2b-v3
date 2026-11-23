@@ -65,14 +65,14 @@ test.describe("Bits2Bytes demo portal", () => {
       expect(source).toContain("workspace-repositories.js");
       expect(source).not.toMatch(/services\/(?:identity|learning-state|class-session|learning-record|billing)-repository\.js/);
     }
-    expect(studentExperienceSource).toContain("supabaseStudentLearningCapabilities.createLessonBridge()");
-    expect(studentExperienceSource).toContain("{ learning: supabaseStudentLearningCapabilities.createLessonBridge() }");
+    expect(studentExperienceSource).toContain("supabaseProductionCapabilities.studentLearning.createLessonBridge()");
+    expect(studentExperienceSource).toContain("{ learning: supabaseProductionCapabilities.studentLearning.createLessonBridge() }");
     expect(studentLearningCapabilitiesSource).toContain("createLessonBridge: createSupabaseLegacyLearningBridge");
     expect(studentExperienceSource).not.toContain("workspace-repositories.js");
   });
 
   test("active Admin workspace is Supabase-backed, read-only, and does not expose legacy demo controls", () => {
-    expect(adminExperienceSource).toContain("new AdminWorkspace(host, session.user, { identity: supabaseAdminIdentityRepository })");
+    expect(adminExperienceSource).toContain("new AdminWorkspace(host, session.user, { identity: supabaseProductionCapabilities.adminIdentity }, { productionMode: true })");
     expect(adminIdentityRepositorySource).toContain('supabase.functions.invoke("admin-list-users"');
     expect(adminIdentityRepositorySource).toContain("Compatibility no-op: production must never initialize local demo data.");
     expect(adminIdentityRepositorySource).toContain('error: "READ_ONLY"');
