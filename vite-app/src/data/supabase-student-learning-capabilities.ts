@@ -17,9 +17,11 @@ export interface StudentLearningCapabilityDependencies {
 }
 
 /**
- * Compose only the student-learning capabilities that have production-backed
- * implementations. This is intentionally not a DomainRepositories factory:
- * submission persistence/review and other domains remain unavailable.
+ * Compose the student lesson capabilities that have production-backed
+ * implementations. Student project submission is persisted through the
+ * actor-derived private RPC exposed by the lesson bridge. Tutor review remains
+ * a separate capability in supabaseChallengeSubmissionRepository, so this
+ * factory is intentionally not a full DomainRepositories factory.
  */
 export function createSupabaseStudentLearningCapabilities(
   dependencies: StudentLearningCapabilityDependencies = {
