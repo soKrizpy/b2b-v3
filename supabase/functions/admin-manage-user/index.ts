@@ -41,6 +41,7 @@ function accountView(profile: Record<string, unknown>, status: "active" | "inact
     status,
     avatar: fullName.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase(),
     gradeLevel: profile.grade ?? undefined,
+    whatsapp: profile.whatsapp ?? undefined,
     createdAt: profile.created_at ?? new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
