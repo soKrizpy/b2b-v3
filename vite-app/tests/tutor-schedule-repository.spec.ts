@@ -152,6 +152,44 @@ test.describe("Production tutor schedule repository", () => {
     expect(result.writes).toBe(0);
   });
 
+  test("requires explicit attendance for every student before completing a tutor session", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { createSupabaseTutorScheduleRepository } = await import("/src/data/supabase-tutor-schedule-repository.ts");
+      const calls: Array<{ table: string; method: string; args: unknown[] }> = [];
+      const client = {
+        auth: { getUser: async () => ({ data: { user: { id: "tutor-1" } }, error: null }) },
+        from: (table: string) => {
+          const builder: Record<string, unknown> = {};
+          for (const method of ["select", "eq", "not", "is"]) {
+            builder[method] = (...args: unknown[]) => {
+              calls.push({ table, method, args });
+              return builder;
+            };
+          }
+          builder.update = (...args: unknown[]) => {
+            calls.push({ table, method: "update", args });
+            return builder;
+          };
+          builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) => {
+            const data = table === "meeting_students"
+              ? [{ student_id: "student-1", attendance_status: "absen", attendance_recorded_at: null }]
+              : null;
+            return Promise.resolve({ data, error: null }).then(resolve, reject);
+          };
+          builder.maybeSingle = async () => ({ data: { id: 11 }, error: null });
+          return builder;
+        }
+      };
+      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const result = await repository.completeSession("tutor-1", 11);
+      return { result, calls };
+    });
+    expect(result.result.success).toBe(false);
+    expect(result.result.message).toContain("Lengkapi presensi");
+    expect(result.calls.some((call) => call.table === "meetings" && call.method === "update")).toBe(false);
+  });
+
   test("rejects a caller whose ID does not match the authenticated tutor before querying data", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
