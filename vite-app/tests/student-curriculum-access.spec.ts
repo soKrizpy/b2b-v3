@@ -57,9 +57,9 @@ test.describe("Student curriculum access contract", () => {
         { id: 148, module_id: 29, title: "Draft", description: null, order_index: 2, lesson_content: {}, status: "draft" }
       ];
       const assignments = [
-        { module_id: 29, status: "active" },
-        { module_id: 29, status: "active" },
-        { module_id: 30, status: "paused" }
+        { student_id: "student-1", module_id: 29, status: "active" },
+        { student_id: "student-1", module_id: 29, status: "active" },
+        { student_id: "student-1", module_id: 30, status: "paused" }
       ];
 
       function makeBuilder(table: string) {
