@@ -38,7 +38,8 @@ function requireClient(client: SupabaseClient | null): SupabaseClient {
  * never authorization credentials. RLS remains the database enforcement layer.
  */
 export function createSupabaseTutorScheduleRepository(
-  client: SupabaseClient | null = supabase
+  client: SupabaseClient | null = supabase,
+  clock: () => Date = () => new Date()
 ): TutorScheduleRepository {
   return {
     async listForCurrentTutor(expectedTutorId: string): Promise<TutorScheduleSnapshot> {
@@ -50,16 +51,33 @@ export function createSupabaseTutorScheduleRepository(
         throw new Error("Sesi tutor tidak cocok. Silakan masuk kembali.");
       }
 
-      const { data, error } = await db
-        .from("meetings")
-        .select("id,title,meeting_date,link_url,notes,session_count,session_number,completion_status,is_completed")
-        .eq("teacher_id", authData.user.id)
-        .order("meeting_date", { ascending: false })
-        .limit(100);
+      const now = clock().toISOString();
+      const columns = "id,title,meeting_date,link_url,notes,session_count,session_number,completion_status,is_completed";
+      const [upcomingResult, historyResult] = await Promise.all([
+        db
+          .from("meetings")
+          .select(columns)
+          .eq("teacher_id", authData.user.id)
+          .gte("meeting_date", now)
+          .order("meeting_date", { ascending: true })
+          .limit(100),
+        db
+          .from("meetings")
+          .select(columns)
+          .eq("teacher_id", authData.user.id)
+          .lt("meeting_date", now)
+          .order("meeting_date", { ascending: false })
+          .limit(20)
+      ]);
 
-      if (error) throw new Error("Jadwal Supabase tidak dapat dibaca. Periksa kebijakan akses akun guru.");
+      if (upcomingResult.error || historyResult.error) {
+        throw new Error("Jadwal Supabase tidak dapat dibaca. Periksa kebijakan akses akun guru.");
+      }
 
-      const meetings = ((data ?? []) as TutorMeetingSummary[]).slice().sort((a, b) => {
+      const meetings = [
+        ...((historyResult.data ?? []) as TutorMeetingSummary[]),
+        ...((upcomingResult.data ?? []) as TutorMeetingSummary[])
+      ].sort((a, b) => {
         if (!a.meeting_date) return 1;
         if (!b.meeting_date) return -1;
         return new Date(a.meeting_date).getTime() - new Date(b.meeting_date).getTime();
