@@ -190,4 +190,11 @@ test("production student dashboard never opens the local-demo Parent Hub", async
   await expect(page.locator(".parent-hub-entry-card").getByText("Belum tersedia", { exact: true })).toBeVisible();
   await expect(page.getByText(/tidak menampilkan data contoh pada akun asli/i)).toBeVisible();
   await expect(page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ })).toHaveCount(0);
+
+  await page.getByRole("button", { name: /Lanjutkan Misi/ }).click();
+  for (let stage = 0; stage < 5; stage += 1) {
+    await page.locator("#btn-stage-next").click();
+  }
+  await expect(page.getByText("Pengumpulan belum tersedia", { exact: true })).toBeVisible();
+  await expect(page.locator("#btn-submit-project")).toHaveCount(0);
 });
