@@ -8,6 +8,7 @@ type AdminAccount = {
   status: "active" | "inactive";
   avatar?: string;
   gradeLevel?: string;
+  whatsapp?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -66,6 +67,8 @@ export const supabaseAdminIdentityRepository = {
     role: "admin" | "tutor" | "student";
     status: "active" | "inactive";
     gradeLevel?: string;
+    whatsapp?: string;
+    mpin?: string;
   }) {
     if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
     const { data, error } = await supabase.functions.invoke("admin-manage-user", {
@@ -80,6 +83,8 @@ export const supabaseAdminIdentityRepository = {
     role?: "admin" | "tutor" | "student";
     status?: "active" | "inactive";
     gradeLevel?: string;
+    whatsapp?: string;
+    mpin?: string;
   }) {
     if (!supabase) return { error: "CONFIGURATION", message: "Koneksi Supabase belum dikonfigurasi." };
     const { data, error } = await supabase.functions.invoke("admin-manage-user", {
