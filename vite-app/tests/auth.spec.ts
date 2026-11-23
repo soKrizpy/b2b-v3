@@ -16,7 +16,17 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
     avatar: "EA",
     createdAt,
     updatedAt: createdAt
+  }, {
+    id: "e2e-student-user",
+    email: "student@bits2bytes.test",
+    displayName: "E2E Student",
+    role: "student",
+    status: "active",
+    avatar: "ES",
+    createdAt,
+    updatedAt: createdAt
   }];
+  const studentModuleRows: Array<Record<string, unknown>> = [];
   const corsHeaders = {
     "access-control-allow-origin": "http://127.0.0.1:4173",
     "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
@@ -65,6 +75,42 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
       await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
       return;
     }
+    if (url.pathname === "/rest/v1/modules" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify([{ id: 17, title: "Scratch Beginner", description: "Kurikulum awal", is_active: true }])
+      });
+      return;
+    }
+    if (url.pathname === "/rest/v1/student_modules" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: JSON.stringify(studentModuleRows) });
+      return;
+    }
+    if (url.pathname === "/rest/v1/student_modules" && request.method() === "POST") {
+      const payload = request.postDataJSON() as { student_id: string; module_id: number; status: string };
+      const existing = studentModuleRows.find(row => row.student_id === payload.student_id && row.module_id === payload.module_id);
+      const row = existing ?? {
+        id: studentModuleRows.length + 1,
+        student_id: payload.student_id,
+        module_id: payload.module_id,
+        created_at: createdAt
+      };
+      row.status = payload.status;
+      if (!existing) studentModuleRows.push(row);
+      await route.fulfill({ status: 201, headers: jsonHeaders, body: JSON.stringify(row) });
+      return;
+    }
+    if (url.pathname === "/rest/v1/student_modules" && request.method() === "PATCH") {
+      const studentId = url.searchParams.get("student_id")?.replace(/^eq\\./, "");
+      const moduleId = Number(url.searchParams.get("module_id")?.replace(/^eq\\./, ""));
+      const payload = request.postDataJSON() as { status: string };
+      const row = studentModuleRows.find(item => item.student_id === studentId && item.module_id === moduleId);
+      if (row) row.status = payload.status;
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: JSON.stringify(row ? [row] : []) });
+      return;
+    }
+
     if (url.pathname === "/rest/v1/meeting_students" && request.method() === "GET") {
       await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
       return;
@@ -230,6 +276,26 @@ test.describe("Supabase Auth portal", () => {
 
     await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
+  });
+
+  test("admin production workspace assigns curriculum modules to a student", async ({ page }) => {
+    await mockSupabaseAuth(page, "admin");
+    await page.goto("/");
+    await page.getByRole("button", { name: "Guru / Admin" }).click();
+    await page.getByLabel("Email").fill("admin@bits2bytes.test");
+    await page.getByLabel("Password").fill("valid-e2e-password");
+    await page.getByRole("button", { name: "Masuk" }).click();
+
+    await expect(page.getByRole("heading", { name: "Ruang Admin" })).toBeVisible();
+    await page.getByRole("button", { name: /Akses Kurikulum/ }).click();
+    await expect(page.getByRole("heading", { name: "Akses Kurikulum Siswa" })).toBeVisible();
+    await page.getByLabel("Siswa").selectOption("e2e-student-user");
+    await page.getByLabel("Modul").selectOption("17");
+    await page.getByRole("button", { name: "Aktifkan Modul" }).click();
+
+    await expect(page.getByText("E2E Student", { exact: true })).toBeVisible();
+    await expect(page.getByText("Scratch Beginner", { exact: true })).toBeVisible();
+    await expect(page.getByText("Aktif", { exact: true })).toBeVisible();
   });
 
   test("admin production workspace creates a real student account with WhatsApp and MPIN fields", async ({ page }) => {
