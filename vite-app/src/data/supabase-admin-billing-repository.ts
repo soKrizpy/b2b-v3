@@ -125,6 +125,7 @@ export const supabaseAdminBillingRepository = {
         p_additional_charges: Number(changes.additionalCharges ?? 0),
         p_adjustment_note: String(changes.adjustmentNote ?? ""),
         p_meeting_ids: ids,
+        p_manual_total: changes.totalAmount == null ? null : Number(changes.totalAmount),
       });
       if (error || !data) return { success: false, message: error?.message ?? "Draft tagihan gagal diperbarui." };
       const invoices = await fetchInvoices((data as Row).student_id);
