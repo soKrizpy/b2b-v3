@@ -84,7 +84,7 @@ export const supabaseAdminBillingRepository = {
     if (!supabase) return null;
     const { data, error } = await supabase.from("student_tariffs").select("amount_per_session").eq("student_id", studentId).maybeSingle();
     if (error) throw new Error("Tarif siswa gagal dimuat.");
-    return data ? Number(data.amount_per_session) : null;
+    return data ? { amountPerSession: Number(data.amount_per_session) } : null;
   },
 
   async setRate(studentId: string, amountPerSession: number) {
