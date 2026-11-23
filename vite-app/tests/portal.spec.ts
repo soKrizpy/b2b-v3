@@ -31,6 +31,10 @@ const adminListUsersFunctionSource = readFileSync(resolve(process.cwd(), "../sup
     expect(adminListUsersFunctionSource).toContain('return json({ accounts, source: "supabase" })');
     expect(adminListUsersFunctionSource).not.toMatch(/mpin_hash|password_hash|phone_number/);
     expect(adminListUsersFunctionSource).toContain('.select("id, grade, whatsapp")');
+    const adminManageUserFunctionSource = readFileSync(resolve(process.cwd(), "../supabase/functions/admin-manage-user/index.ts"), "utf8");
+    expect(adminManageUserFunctionSource).toContain("Admin tidak dapat menonaktifkan akunnya sendiri");
+    expect(adminManageUserFunctionSource).toContain("Admin aktif terakhir tidak dapat dinonaktifkan");
+    expect(adminManageUserFunctionSource).toContain('adminClient.rpc("admin_set_student_mpin"');
     expect(adminListUsersFunctionSource).toContain('Deno.env.get("SUPABASE_SECRET_KEYS")');
   });
 
