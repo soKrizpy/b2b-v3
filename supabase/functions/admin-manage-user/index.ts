@@ -182,12 +182,12 @@ Deno.serve(async (req: Request) => {
     const grade = String(body.gradeLevel ?? "").trim();
     const whatsappInput = body.whatsapp == null ? null : String(body.whatsapp).trim();
     const mpin = String(body.mpin ?? "").trim();
-    if (!displayName || displayName.length > 120 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    if (!displayName || displayName.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: "Nama atau email tidak valid" }, 400);
     }
     if (currentRole === "student" &&
-        ((whatsappInput !== null && !/^[0-9+()\\s.-]{10,24}$/.test(whatsappInput)) ||
-         (mpin && !/^\\d{6}$/.test(mpin)))) {
+        ((whatsappInput !== null && !/^[0-9+()\s.-]{10,24}$/.test(whatsappInput)) ||
+         (mpin && !/^\d{6}$/.test(mpin)))) {
       return json({ error: "Nomor WhatsApp atau MPIN siswa tidak valid" }, 400);
     }
 
