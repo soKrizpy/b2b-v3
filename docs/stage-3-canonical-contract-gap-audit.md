@@ -472,3 +472,38 @@ Using transaction-scoped authenticated role and JWT subject simulation, followed
 - Latest application commit `9c006953c723902cfc9c6b07530dcc5130680de4` passed TypeScript, Vite production build, and browser QA: **70 passed, 21 skipped, 0 failed**.
 - Browser QA now exercises Admin sign-in, module assignment activation, and the resulting student-module assignment card. Repository tests verify non-admin rejection.
 - The GitHub Preview Build for the same commit completed successfully.
+
+
+## Admin Identity mutation consistency audit — 2026-11-23
+
+A follow-up source audit of `vite-app/src/data/supabase-admin-identity-repository.ts` and `supabase/functions/admin-manage-user/index.ts` confirms that the active Admin UI is wired to real Supabase account operations; this supersedes older read-only Admin notes.
+
+### Verified behavior
+
+- `admin-list-users` and `admin-manage-user` independently validate the bearer token and require the caller's `profiles.role = 'admin'`.
+- Student creation requires a valid email identity, WhatsApp number, and six-digit MPIN. The student login flow verifies WhatsApp + MPIN, then exchanges a server-generated magic-link token for a Supabase Auth session; the email remains the underlying Auth identity.
+- Role changes are deliberately rejected rather than silently rewriting profile relationships.
+- Deactivation protects the current admin from self-deactivation and prevents deactivation of the last active admin.
+- Tutor/student assignment writes use the authenticated client and database RLS; duplicate active assignment errors are surfaced.
+
+### Remaining consistency risk — not yet fixed
+
+The `update` action in `admin-manage-user` performs multiple independent writes across Supabase Auth, `profiles`, `students`, and the MPIN RPC. These operations are not one transaction. For example, Auth/email and `profiles` can be updated before a later student-row read/update or MPIN update fails. In that case the function can return an error while earlier changes remain committed. The inverse risk also exists if a later compensation attempt fails during account creation cleanup.
+
+This is a source-level consistency risk, not a claim that a production account is currently inconsistent. No account was modified during this audit.
+
+### Required closure
+
+1. Read and validate all current student profile state and all requested fields before the first write.
+2. Move the related `profiles` + `students` + MPIN changes into one admin-authorized database transaction/RPC with explicit row-count checks.
+3. Treat the Auth email update as a separate external step: define a safe ordering and compensating action, and return a distinct partial-failure code if compensation cannot be confirmed.
+4. Add tests for failures at every boundary (Auth update, profile transaction, student row missing, MPIN RPC, compensation), asserting that no false success is returned and that the final state is either fully applied or explicitly reported as requiring repair.
+5. Keep secrets and MPIN values out of logs and responses.
+
+Do not attempt a superficial client-side retry: it cannot make the cross-service operation atomic. This finding remains open for Stage 3 and does not authorize production data changes.
+
+### Verification boundary
+
+- Branch: `preview`; no new branch and no `main` changes.
+- The latest application CI checkpoint `9c006953c723902cfc9c6b07530dcc5130680de4` passed TypeScript, production build, and Playwright browser QA (**70 passed, 21 skipped, 0 failed**). The Preview Build for that checkpoint also passed.
+- The current branch tip has a subsequent documentation-only commit `8c94c0c9e0d5d8675ced2fec94c64966b9335d31`; the application workflows were not rerun for that documentation-only commit.
