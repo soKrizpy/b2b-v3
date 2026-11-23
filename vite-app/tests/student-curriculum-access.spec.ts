@@ -69,7 +69,7 @@ test.describe("Student curriculum access contract", () => {
         const builder: Record<string, unknown> = {};
         const rows = () => {
           let data: any[] = table === "profiles"
-            ? [{ role: "student" }]
+            ? [{ id: "student-1", role: "student" }]
             : table === "student_modules"
               ? assignments
               : table === "modules"
