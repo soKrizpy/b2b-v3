@@ -122,7 +122,7 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
     );
     setSaving(false);
     if (!result.success) {
-      setError(result.message);
+      setError(result.message ?? "Review proyek gagal disimpan.");
       return;
     }
     setMessage(status === "approved" ? "Proyek berhasil disetujui." : "Catatan revisi berhasil dikirim ke siswa.");
