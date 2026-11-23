@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  supabaseTutorScheduleRepository,
-  type TutorMeetingSummary
-} from "./data/supabase-tutor-schedule-repository";
+import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
+import type { TutorMeetingSummary } from "./data/supabase-tutor-schedule-repository";
 
 type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
 
@@ -36,7 +34,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
       setLoading(true);
       setError("");
       try {
-        const snapshot = await supabaseTutorScheduleRepository.listForCurrentTutor(user.id);
+        const snapshot = await supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id);
         if (!active) return;
         setMeetings(snapshot.meetings);
         setStudentCounts(snapshot.studentCounts);
