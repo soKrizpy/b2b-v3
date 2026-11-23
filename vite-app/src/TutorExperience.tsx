@@ -85,6 +85,27 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
     }
   }
 
+  async function completeMeeting(meetingId: number) {
+    setAttendanceSaving(true);
+    setError("");
+    const result = await supabaseProductionCapabilities.tutorSchedule.completeSession(user.id, meetingId);
+    if (!result.success) {
+      setError(result.message ?? "Sesi belum dapat diselesaikan.");
+      setAttendanceSaving(false);
+      return;
+    }
+    try {
+      const snapshot = await supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id);
+      setMeetings(snapshot.meetings);
+      setStudentCounts(snapshot.studentCounts);
+      setMeetingStudents(snapshot.meetingStudents);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Jadwal gagal dimuat ulang.");
+    } finally {
+      setAttendanceSaving(false);
+    }
+  }
+
   const totalStudentLinks = useMemo(
     () => Object.values(studentCounts).reduce((sum, count) => sum + count, 0),
     [studentCounts]
@@ -153,6 +174,16 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
                               </div>
                             );
                           })}
+                          {meeting.completion_status !== "selesai" && meeting.completion_status !== "cancelled" && meeting.completion_status !== "soft_deleted" && (
+                            <button
+                              type="button"
+                              className="tutor-complete-session-button"
+                              disabled={attendanceSaving || !meetingStudents.filter((link) => link.meetingId === meeting.id).every((link) => link.attendanceStatus !== "absen" || Boolean(link.attendanceRecordedAt))}
+                              onClick={() => void completeMeeting(meeting.id)}
+                            >
+                              Tandai Sesi Selesai
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
