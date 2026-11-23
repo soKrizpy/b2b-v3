@@ -13,16 +13,10 @@ type AdminAccount = {
   updatedAt: string;
 };
 
-function unavailableMutation() {
-  return {
-    error: "READ_ONLY",
-    message: "Perubahan akun belum diaktifkan. Data akun dibaca langsung dari Supabase.",
-  };
-}
-
 /**
- * Read-only production identity adapter for the legacy AdminWorkspace UI.
- * It deliberately never seeds localStorage or writes account data.
+ * Production identity adapter for the legacy AdminWorkspace UI.
+ * Auth account mutations are delegated to an admin-authorized Edge Function;
+ * tutor assignments are protected by database RLS and validation triggers.
  */
 export const supabaseAdminIdentityRepository = {
   async initializeDemo() {
