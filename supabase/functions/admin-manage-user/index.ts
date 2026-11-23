@@ -176,55 +176,168 @@ Deno.serve(async (req: Request) => {
     if (!requestedRole || requestedRole !== currentRole) {
       return json({ error: "Perubahan role ditolak. Buat akun baru dengan role yang benar agar relasi dan histori tetap konsisten." }, 409);
     }
+
     const displayName = String(body.displayName ?? profile.full_name ?? "").trim();
     const email = String(body.email ?? profile.email ?? "").trim().toLowerCase();
     const grade = String(body.gradeLevel ?? "").trim();
-    if (!displayName || displayName.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const whatsappInput = body.whatsapp == null ? null : String(body.whatsapp).trim();
+    const mpin = String(body.mpin ?? "").trim();
+    if (!displayName || displayName.length > 120 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
       return json({ error: "Nama atau email tidak valid" }, 400);
+    }
+    if (currentRole === "student" &&
+        ((whatsappInput !== null && !/^[0-9+()\\s.-]{10,24}$/.test(whatsappInput)) ||
+         (mpin && !/^\\d{6}$/.test(mpin)))) {
+      return json({ error: "Nomor WhatsApp atau MPIN siswa tidak valid" }, 400);
+    }
+
+    // Complete all reads/validation before the first mutation. Never include MPIN
+    // hashes or submitted MPIN values in logs, responses, or compensation data.
+    const { data: authBeforeData, error: authBeforeError } = await adminClient.auth.admin.getUserById(userId);
+    const authBefore = authBeforeData?.user;
+    if (authBeforeError || !authBefore) return json({ error: "Identitas Auth akun tidak dapat diverifikasi" }, 500);
+
+    let studentBefore: { full_name: string | null; grade: string | null; whatsapp: string | null } | null = null;
+    if (currentRole === "student") {
+      const { data, error } = await adminClient
+        .from("students")
+        .select("full_name,grade,whatsapp")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error || !data) return json({ error: "Profil siswa tidak dapat dibaca; tidak ada perubahan yang dilakukan" }, 500);
+      studentBefore = data;
+      if (whatsappInput !== null && !whatsappInput) return json({ error: "Nomor WhatsApp siswa wajib diisi" }, 400);
     }
 
     const requestedStatus = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
     const authUpdates: Record<string, unknown> = {
       email,
-      user_metadata: { full_name: displayName },
+      user_metadata: { ...(authBefore.user_metadata ?? {}), full_name: displayName },
     };
-    if (email !== profile.email) authUpdates.email_confirm = false;
+    if (email !== (authBefore.email ?? profile.email)) authUpdates.email_confirm = false;
     if (requestedStatus) authUpdates.ban_duration = requestedStatus === "inactive" ? "876000h" : "none";
-    const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, authUpdates);
-    if (authUpdateError) return json({ error: "Data Auth gagal diperbarui" }, 400);
 
-    const { data: updated, error: updateError } = await adminClient
+    const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, authUpdates);
+    if (authUpdateError) return json({ error: "Data Auth gagal diperbarui; data profil belum diubah" }, 400);
+
+    let profileChanged = false;
+    let studentChanged = false;
+    let failureMessage: string | null = null;
+
+    const { error: profileWriteError } = await adminClient
       .from("profiles")
       .update({ full_name: displayName, email })
       .eq("id", userId)
-      .select("id,full_name,email,role,created_at")
+      .select("id")
       .single();
-    if (updateError || !updated) return json({ error: "Profil akun gagal diperbarui" }, 500);
+    if (profileWriteError) {
+      failureMessage = "Profil akun gagal diperbarui";
+    } else {
+      profileChanged = true;
+    }
 
-    let whatsapp: string | null = null;
-    if (currentRole === "student") {
-      const { data: student, error: studentReadError } = await adminClient
-        .from("students").select("whatsapp").eq("id", userId).maybeSingle();
-      if (studentReadError || !student) return json({ error: "Profil siswa tidak dapat dibaca" }, 500);
-      whatsapp = String(body.whatsapp ?? student.whatsapp ?? "").trim();
-      const mpin = String(body.mpin ?? "").trim();
-      const { error: studentError } = await adminClient
-        .from("students").update({ full_name: displayName, grade: grade || null }).eq("id", userId);
-      if (studentError) return json({ error: "Profil siswa gagal diperbarui" }, 500);
-      if (body.whatsapp != null || mpin) {
-        const { error: mpinError } = await adminClient.rpc("admin_set_student_mpin", {
-          p_student_id: userId,
-          p_phone: whatsapp,
-          p_mpin: mpin || null,
-        });
-        if (mpinError) return json({ error: "Nomor WhatsApp atau MPIN gagal diperbarui" }, 400);
+    if (!failureMessage && currentRole === "student" && studentBefore) {
+      const { error } = await adminClient
+        .from("students")
+        .update({ full_name: displayName, grade: grade || null })
+        .eq("id", userId)
+        .select("id")
+        .single();
+      if (error) {
+        failureMessage = "Profil siswa gagal diperbarui";
+      } else {
+        studentChanged = true;
       }
     }
 
-    const { data: authUser } = await adminClient.auth.admin.getUserById(userId);
-    const bannedUntil = authUser.user?.banned_until ?? null;
-    const status = requestedStatus ?? (bannedUntil && Date.parse(bannedUntil) > Date.now() ? "inactive" : "active");
-    return json({ user: accountView({ ...updated, grade, whatsapp }, status), source: "supabase" });
+    // This RPC is transactional for WhatsApp + MPIN. It is deliberately last:
+    // if it fails, its own changes roll back and the earlier writes can be compensated.
+    if (!failureMessage && currentRole === "student" && studentBefore &&
+        (whatsappInput !== null || mpin)) {
+      const { error } = await adminClient.rpc("admin_set_student_mpin", {
+        p_student_id: userId,
+        p_phone: whatsappInput ?? studentBefore.whatsapp ?? "",
+        p_mpin: mpin || null,
+      });
+      if (error) failureMessage = "Nomor WhatsApp atau MPIN gagal diperbarui";
+    }
+
+    if (failureMessage) {
+      let compensationFailed = false;
+
+      if (studentChanged && studentBefore) {
+        const { error } = await adminClient.from("students")
+          .update({
+            full_name: studentBefore.full_name,
+            grade: studentBefore.grade,
+            whatsapp: studentBefore.whatsapp,
+          })
+          .eq("id", userId)
+          .select("id")
+          .single();
+        if (error) compensationFailed = true;
+      }
+
+      if (profileChanged) {
+        const { error } = await adminClient.from("profiles")
+          .update({ full_name: profile.full_name, email: profile.email })
+          .eq("id", userId)
+          .select("id")
+          .single();
+        if (error) compensationFailed = true;
+      }
+
+      const authRollback: Record<string, unknown> = {
+        email: authBefore.email,
+        user_metadata: authBefore.user_metadata ?? {},
+        ban_duration: authBefore.banned_until && Date.parse(authBefore.banned_until) > Date.now()
+          ? "876000h"
+          : "none",
+      };
+      const { error: authRollbackError } = await adminClient.auth.admin.updateUserById(userId, authRollback);
+      if (authRollbackError) compensationFailed = true;
+
+      if (compensationFailed) {
+        console.error("Admin identity update compensation requires repair", {
+          userId,
+          profileChanged,
+          studentChanged,
+          authRollbackFailed: Boolean(authRollbackError),
+        });
+        return json({
+          error: "Perubahan akun tidak selesai dan pemulihan otomatis tidak dapat dipastikan. Admin perlu memeriksa akun ini sebelum mengulang perubahan.",
+          code: "IDENTITY_UPDATE_REPAIR_REQUIRED",
+        }, 502);
+      }
+
+      return json({
+        error: `${failureMessage}; perubahan sebelumnya berhasil dipulihkan`,
+        code: "IDENTITY_UPDATE_ROLLED_BACK",
+      }, 500);
+    }
+
+    const { data: updated, error: updatedReadError } = await adminClient
+      .from("profiles").select("id,full_name,email,role,created_at").eq("id", userId).single();
+    if (updatedReadError || !updated) {
+      // The writes have completed; a read failure must not be misreported as a
+      // rolled-back mutation. Return an explicit reconciliation response.
+      return json({
+        error: "Perubahan akun tersimpan, tetapi data hasil tidak dapat dibaca. Muat ulang daftar akun sebelum melakukan perubahan berikutnya.",
+        code: "IDENTITY_UPDATE_SAVED_REFRESH_REQUIRED",
+      }, 200);
+    }
+
+    const status = requestedStatus ?? (
+      authBefore.banned_until && Date.parse(authBefore.banned_until) > Date.now() ? "inactive" : "active"
+    );
+    return json({
+      user: accountView({
+        ...updated,
+        grade: currentRole === "student" ? (grade || null) : undefined,
+        whatsapp: currentRole === "student" ? (whatsappInput ?? studentBefore?.whatsapp) : undefined,
+      }, status),
+      source: "supabase",
+    });
   }
 
   return json({ error: "Unsupported action" }, 400);
