@@ -2,7 +2,7 @@ import { supabase } from "./supabase-client";
 
 type FunctionFailure = { code: string; message: string };
 
-async function readFunctionFailure(
+export async function readFunctionFailure(
   data: unknown,
   error: unknown,
   fallbackCode: string,
