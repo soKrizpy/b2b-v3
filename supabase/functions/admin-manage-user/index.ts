@@ -98,6 +98,37 @@ Deno.serve(async (req: Request) => {
     }
 
     const userId = invited.user.id;
+    const rollbackCreatedAccount = async (): Promise<boolean> => {
+      // Remove dependent records before Auth, then verify absence. Do not assume
+      // FK cascades or silently report cleanup success when a delete failed.
+      if (role === "student") {
+        await adminClient.from("students").delete().eq("id", userId);
+      }
+      await adminClient.from("profiles").delete().eq("id", userId);
+      await adminClient.auth.admin.deleteUser(userId);
+
+      const [authCheck, profileCheck, studentCheck] = await Promise.all([
+        adminClient.auth.admin.getUserById(userId),
+        adminClient.from("profiles").select("id").eq("id", userId).maybeSingle(),
+        role === "student"
+          ? adminClient.from("students").select("id").eq("id", userId).maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
+      ]);
+      return !authCheck.data?.user &&
+        !authCheck.error &&
+        !profileCheck.error && !profileCheck.data &&
+        !studentCheck.error && !studentCheck.data;
+    };
+    const rollbackCreateFailure = async (message: string, status: number) => {
+      const restored = await rollbackCreatedAccount();
+      if (!restored) {
+        return json({
+          error: `${message}. Pembersihan otomatis tidak dapat dipastikan; periksa akun ini sebelum mencoba lagi.`,
+          code: "CREATE_ROLLBACK_REPAIR_REQUIRED",
+        }, 502);
+      }
+      return json({ error: message, code: "CREATE_ROLLED_BACK" }, status);
+    };
     const { data: profile, error: profileError } = await adminClient
       .from("profiles")
       .upsert({ id: userId, full_name: displayName, email, role }, { onConflict: "id" })
@@ -105,8 +136,7 @@ Deno.serve(async (req: Request) => {
       .single();
 
     if (profileError || !profile) {
-      await adminClient.auth.admin.deleteUser(userId);
-      return json({ error: "Profil akun gagal dibuat; akun undangan dibatalkan" }, 500);
+      return await rollbackCreateFailure("Profil akun gagal dibuat", 500);
     }
 
     if (role === "student") {
@@ -114,8 +144,7 @@ Deno.serve(async (req: Request) => {
         .from("students")
         .upsert({ id: userId, full_name: displayName, grade: grade || null }, { onConflict: "id" });
       if (studentError) {
-        await adminClient.auth.admin.deleteUser(userId);
-        return json({ error: "Profil siswa gagal dibuat; akun undangan dibatalkan" }, 500);
+        return await rollbackCreateFailure("Profil siswa gagal dibuat", 500);
       }
       const { error: mpinError } = await adminClient.rpc("admin_set_student_mpin", {
         p_student_id: userId,
@@ -123,18 +152,14 @@ Deno.serve(async (req: Request) => {
         p_mpin: mpin,
       });
       if (mpinError) {
-        await adminClient.from("students").delete().eq("id", userId);
-        await adminClient.auth.admin.deleteUser(userId);
-        return json({ error: "Nomor WhatsApp atau MPIN siswa gagal disimpan; akun undangan dibatalkan" }, 400);
+        return await rollbackCreateFailure("Nomor WhatsApp atau MPIN siswa gagal disimpan", 400);
       }
     }
 
     if (status === "inactive") {
       const { error: banError } = await adminClient.auth.admin.updateUserById(userId, { ban_duration: "876000h" });
       if (banError) {
-        if (role === "student") await adminClient.from("students").delete().eq("id", userId);
-        await adminClient.auth.admin.deleteUser(userId);
-        return json({ error: "Status nonaktif gagal diterapkan; akun undangan dibatalkan" }, 500);
+        return await rollbackCreateFailure("Status nonaktif gagal diterapkan", 500);
       }
     }
     return json({ user: accountView({ ...profile, grade }, status), source: "supabase" }, 201);
