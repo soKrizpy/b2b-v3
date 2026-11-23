@@ -139,10 +139,9 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
                           <strong>Presensi siswa</strong>
                           {meetingStudents.filter((link) => link.meetingId === meeting.id).map((link) => {
                             const student = assignedStudents.find((item) => item.id === link.studentId);
-                            const label = !link.attendanceRecordedAt
-                              ? "Belum dicatat"
-                              : link.attendanceStatus === "hadir" ? "Hadir"
-                              : link.attendanceStatus === "telat" ? "Terlambat" : "Tidak hadir";
+                            const label = link.attendanceStatus === "hadir" ? "Hadir"
+                              : link.attendanceStatus === "telat" ? "Terlambat"
+                              : link.attendanceRecordedAt ? "Tidak hadir" : "Belum dicatat";
                             return (
                               <div className="tutor-attendance-row" key={link.studentId}>
                                 <span>{student?.fullName ?? "Siswa terhubung"} · <small>{label}</small></span>
