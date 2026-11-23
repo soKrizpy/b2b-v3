@@ -79,7 +79,7 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
       await route.fulfill({
         status: 200,
         headers: jsonHeaders,
-        body: JSON.stringify([{ id: 17, title: "Scratch Beginner", description: "Kurikulum awal", is_active: true }])
+        body: JSON.stringify([{ id: 29, title: "Scratch Beginner", description: "Kurikulum awal", is_active: true }])
       });
       return;
     }
@@ -290,7 +290,7 @@ test.describe("Supabase Auth portal", () => {
     await page.getByRole("button", { name: /Akses Kurikulum/ }).click();
     await expect(page.getByRole("heading", { name: "Akses Kurikulum Siswa" })).toBeVisible();
     await page.getByLabel("Siswa").selectOption("e2e-student-user");
-    await page.getByLabel("Modul").selectOption("17");
+    await page.getByLabel("Modul").selectOption("29");
     await page.getByRole("button", { name: "Aktifkan Modul" }).click();
 
     const assignmentCard = page.locator("#admin-tab-body .card").filter({ hasText: "Scratch Beginner" });
