@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabaseAuthRepository } from "./data/supabase-auth-repository";
-import { supabaseCurriculumRepository } from "./data/supabase-curriculum-repository";
 import { adaptSupabaseTopicToLegacyLesson } from "./data/supabase-lesson-adapter";
-import { createSupabaseLegacyLearningBridge } from "./data/supabase-legacy-learning-bridge";
+import { supabaseStudentLearningCapabilities } from "./data/supabase-student-learning-capabilities";
 import type { CurriculumModule, CurriculumTopic } from "./data/domain-contracts";
 // @ts-ignore - Existing JavaScript lesson renderer is reused during migration.
 import { LessonWorkspace } from "../../js/lesson-workspace.js";
@@ -42,7 +41,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           throw new Error("Sesi siswa tidak valid. Silakan masuk kembali.");
         }
 
-        const modules = await supabaseCurriculumRepository.listModules();
+        const modules = await supabaseStudentLearningCapabilities.curriculum.listModules();
         if (!active) return;
         if (modules.length === 0) {
           throw new Error("Belum ada modul aktif yang ditugaskan ke akun siswa ini.");
@@ -50,7 +49,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
 
         const entries: CurriculumEntry[] = [];
         for (const module of modules) {
-          const topics = await supabaseCurriculumRepository.listTopics(module.id);
+          const topics = await supabaseStudentLearningCapabilities.curriculum.listTopics(module.id);
           if (!active) return;
           for (const topic of topics) entries.push({ module, topic });
         }
@@ -107,7 +106,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
           role: "student",
           gradeLevel: user.gradeLevel || "Siswa"
-        }, { learning: createSupabaseLegacyLearningBridge() }) as WorkspaceController;
+        }, { learning: supabaseStudentLearningCapabilities.createLessonBridge() }) as WorkspaceController;
 
         await controller.init();
         if (active) setReady(true);
