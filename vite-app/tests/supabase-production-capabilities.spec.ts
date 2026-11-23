@@ -23,28 +23,30 @@ test.describe("Production capability composition", () => {
       return {
         keys: Object.keys(supabaseProductionCapabilities).sort(),
         authIsProductionAdapter: supabaseProductionCapabilities.auth === supabaseAuthRepository,
-        adminIdentityIsReadOnlyAdapter: supabaseProductionCapabilities.adminIdentity === supabaseAdminIdentityRepository,
+        adminIdentityIsProductionAdapter: supabaseProductionCapabilities.adminIdentity === supabaseAdminIdentityRepository,
         studentLearningIsScoped: supabaseProductionCapabilities.studentLearning === supabaseStudentLearningCapabilities,
         tutorScheduleIsScoped: supabaseProductionCapabilities.tutorSchedule === supabaseTutorScheduleRepository,
         frozen: Object.isFrozen(supabaseProductionCapabilities),
-        hasBilling: "billing" in supabaseProductionCapabilities,
+        hasBilling: "adminBilling" in supabaseProductionCapabilities,
         hasReports: "sessionReports" in supabaseProductionCapabilities,
         hasEvaluations: "monthlyEvaluations" in supabaseProductionCapabilities,
-        hasFullClassSessions: "classSessions" in supabaseProductionCapabilities
+        hasFullClassSessions: "classSessions" in supabaseProductionCapabilities,
+        hasChallengeSubmissions: "challengeSubmissions" in supabaseProductionCapabilities
       };
     });
 
     expect(result).toEqual({
-      keys: ["adminIdentity", "auth", "studentLearning", "tutorSchedule"],
+      keys: ["adminBilling", "adminIdentity", "auth", "challengeSubmissions", "classSessions", "monthlyEvaluations", "sessionReports", "studentLearning", "tutorSchedule"],
       authIsProductionAdapter: true,
-      adminIdentityIsReadOnlyAdapter: true,
+      adminIdentityIsProductionAdapter: true,
       studentLearningIsScoped: true,
       tutorScheduleIsScoped: true,
       frozen: true,
-      hasBilling: false,
-      hasReports: false,
-      hasEvaluations: false,
-      hasFullClassSessions: false
+      hasBilling: true,
+      hasReports: true,
+      hasEvaluations: true,
+      hasFullClassSessions: true,
+      hasChallengeSubmissions: true
     });
   });
 });
