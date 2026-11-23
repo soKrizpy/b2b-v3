@@ -167,6 +167,7 @@ test.describe("Production quiz and lesson-progress contracts", () => {
         invalidDraft: rejects({ ...base, submission_draft: { link: 42 } }),
         invalidSlide: rejects({ ...base, slide_index: 201 }),
         invalidVersion: rejects({ ...base, version: -1 }),
+        zeroVersion: rejects({ ...base, version: 0 }),
         conflictMessage
       };
     });
@@ -176,6 +177,7 @@ test.describe("Production quiz and lesson-progress contracts", () => {
     expect(result.invalidDraft).toBe(true);
     expect(result.invalidSlide).toBe(true);
     expect(result.invalidVersion).toBe(true);
+    expect(result.zeroVersion).toBe(true);
     expect(result.conflictMessage).toContain("perangkat lain");
   });
 });
