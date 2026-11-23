@@ -10,16 +10,21 @@
 
 import { AccessControl } from '../services/access-control.js';
 import { showToast } from '../components/toast.js';
-import { createWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
+import { createScopedWorkspaceRepositories, createWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
 
 export class AdminWorkspace {
   /**
    * @param {HTMLElement} container
    */
-  constructor(container, currentUser = null, repositories = WorkspaceRepositories) {
+  constructor(container, currentUser = null, repositories = null, options = {}) {
     this.container = container;
     this.currentUser = currentUser;
-    this.repositories = createWorkspaceRepositories(repositories);
+    if (options.productionMode === true) {
+      if (!repositories) throw new Error('Repository Admin produksi wajib diberikan secara eksplisit.');
+      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity']);
+    } else {
+      this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
+    }
     this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'billing'
     this.roleFilter = 'all';
     this.statusFilter = 'all';
