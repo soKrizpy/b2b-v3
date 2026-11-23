@@ -1,4 +1,11 @@
-import type { TopicQuizAnswer, TopicQuizAttemptResult } from "./supabase-quiz-repository";
+export type TopicQuizAnswer = { questionIndex: number; selectedIndex: number };
+
+export type TopicQuizAttemptResult = {
+  attemptNumber: number;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
