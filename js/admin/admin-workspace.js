@@ -120,7 +120,7 @@ export class AdminWorkspace {
             </p>
             ${this.productionMode ? `
               <p class="admin-readonly-notice" role="status" style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: var(--space-2) 0 0;">
-                Daftar akun dibaca dari Supabase. Penugasan tutor-siswa kini tersimpan di Supabase; pembuatan akun dan perubahan status masih menunggu jalur Auth Admin yang aman.
+                Akun dikelola melalui Supabase Auth. Pembuatan siswa juga menyiapkan WhatsApp dan MPIN terenkripsi; role akun dikunci setelah dibuat untuk menjaga relasi dan histori.
               </p>
             ` : ''}
           </div>
@@ -297,9 +297,11 @@ export class AdminWorkspace {
                   </div>
                 </div>
 
-                <button type="button" class="btn btn-ghost btn-sm" style="color: var(--color-danger);" data-action="delete-tutor-rel" data-tutor-id="${a.tutorId}" data-student-id="${a.studentId}">
-                  🗑️ Lepas Relasi
-                </button>
+                ${a.status === 'active' ? `
+                  <button type="button" class="btn btn-ghost btn-sm" style="color: var(--color-danger);" data-action="delete-tutor-rel" data-tutor-id="${a.tutorId}" data-student-id="${a.studentId}">
+                    🗑️ Lepas Relasi
+                  </button>
+                ` : '<span class="badge badge-muted">Riwayat</span>'}
               </div>
             `;
           }).join('')}
@@ -807,9 +809,13 @@ export class AdminWorkspace {
       btn.addEventListener('click', async () => {
         const tid = btn.getAttribute('data-tutor-id');
         const sid = btn.getAttribute('data-student-id');
-        await this.repositories.identity.removeTutorStudentAssignment(tid, sid);
-        showToast({ title: 'Penugasan Dihapus', message: 'Relasi tutor dan siswa telah dilepas.', type: 'info' });
-        this.render();
+        const removed = await this.repositories.identity.removeTutorStudentAssignment(tid, sid);
+        if (!removed) {
+          showToast({ title: 'Penugasan Tidak Berubah', message: 'Relasi aktif tidak ditemukan atau akses ditolak.', type: 'warning' });
+          return;
+        }
+        showToast({ title: 'Penugasan Diakhiri', message: 'Riwayat relasi disimpan di Supabase.', type: 'info' });
+        await this.refreshData();
       });
     });
 
