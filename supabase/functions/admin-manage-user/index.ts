@@ -150,6 +150,19 @@ Deno.serve(async (req: Request) => {
   if (action === "status") {
     const status = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
     if (!status) return json({ error: "Status akun tidak valid" }, 400);
+    if (status === "inactive" && profile.role === "admin") {
+      if (userId === actor.id) return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
+      const { data: admins, error: adminsError } = await adminClient
+        .from("profiles").select("id").eq("role", "admin");
+      if (adminsError) return json({ error: "Daftar admin aktif tidak dapat diverifikasi" }, 500);
+      let activeAdminCount = 0;
+      for (const admin of admins ?? []) {
+        const { data: adminAuth } = await adminClient.auth.admin.getUserById(admin.id);
+        const bannedUntil = adminAuth.user?.banned_until;
+        if (!bannedUntil || new Date(bannedUntil).getTime() <= Date.now()) activeAdminCount += 1;
+      }
+      if (activeAdminCount <= 1) return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
+    }
     const { error } = await adminClient.auth.admin.updateUserById(userId, {
       ban_duration: status === "inactive" ? "876000h" : "none",
     });
