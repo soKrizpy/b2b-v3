@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "module_id": 31,
+  "module_title": "Basic Visual Web — CSS & JavaScript",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "sequence_note": "Responsive Design is placed before the final portfolio. The existing Mini Website project is a practice milestone at topic 15.",
+  "topics": [
+    {
+      "topic_id": 170,
+      "title": "Responsive Design: Layout yang Menyesuaikan Layar",
+      "description": "Menerapkan viewport, ukuran fleksibel, layout adaptif, dan media query agar halaman tetap terbaca pada ponsel, tablet, dan desktop.",
+      "challenge_id": 101,
+      "challenge_title": "Challenge: Landing Page Responsif",
+      "challenge_instructions": "Buat landing page dengan header, hero, dan tiga kartu. Pada desktop tampilkan tiga kartu berdampingan; pada ponsel tampilkan satu kolom. Gunakan meta viewport, ukuran fleksibel, dan media query. Uji minimal tiga lebar layar dan bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi meta viewport?",
+            "options": [
+              "Memberi tahu browser cara menyesuaikan lebar layout dengan lebar perangkat",
+              "Mengubah semua gambar menjadi responsif otomatis",
+              "Membuat halaman tersimpan di server",
+              "Mengganti warna browser"
+            ],
+            "answer_index": 0,
+            "explanation": "Meta viewport membantu browser ponsel menggunakan lebar perangkat sebagai acuan layout."
+          },
+          {
+            "question": "Mengapa width: 100% dan max-width dapat digunakan bersama?",
+            "options": [
+              "Agar elemen selalu selebar 2000 px",
+              "Agar elemen fleksibel tetapi tetap memiliki batas lebar maksimum",
+              "Agar elemen tidak dapat mengecil",
+              "Agar semua konten tersembunyi"
+            ],
+            "answer_index": 1,
+            "explanation": "width:100% mengikuti container, sedangkan max-width membatasi lebar maksimum."
+          },
+          {
+            "question": "Apa fungsi media query?",
+            "options": [
+              "Mengubah isi HTML",
+              "Mengirim formulir ke server",
+              "Menerapkan CSS berdasarkan kondisi seperti lebar viewport",
+              "Mengganti nama class secara otomatis"
+            ],
+            "answer_index": 2,
+            "explanation": "Media query menerapkan aturan CSS saat kondisi yang ditentukan terpenuhi."
+          },
+          {
+            "question": "Jika halaman memiliki scroll horizontal pada ponsel, apa yang perlu diperiksa?",
+            "options": [
+              "Warna teks",
+              "Jumlah gambar",
+              "Judul website",
+              "Elemen yang lebarnya melebihi viewport"
+            ],
+            "answer_index": 3,
+            "explanation": "Elemen dengan lebar tetap atau konten yang meluber sering menjadi penyebab scroll horizontal."
+          },
+          {
+            "question": "Mengapa layout perlu diuji pada beberapa lebar layar?",
+            "options": [
+              "Masalah dapat muncul pada ukuran antara ponsel dan desktop",
+              "Agar semua ukuran memiliki warna berbeda",
+              "Agar CSS tidak perlu ditulis",
+              "Agar jumlah halaman bertambah"
+            ],
+            "answer_index": 0,
+            "explanation": "Pengujian beberapa lebar membantu menemukan titik ketika layout mulai rusak."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 40,
+            "title": "Challenge: Landing Page Responsif",
+            "instructions": "Buat landing page dengan header, hero, dan tiga kartu. Pada desktop tampilkan tiga kartu berdampingan; pada ponsel tampilkan satu kolom. Gunakan meta viewport, ukuran fleksibel, dan media query. Uji minimal tiga lebar layar dan bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Satu Website, Banyak Ukuran Layar",
+            "content": "Pengguna membuka website dari ponsel, tablet, dan laptop. Responsive design membuat susunan konten menyesuaikan ruang layar tanpa menghilangkan informasi penting."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "code",
+            "order": 1,
+            "title": "Mulai dari Meta Viewport",
+            "content": "Tambahkan meta viewport pada bagian head agar browser ponsel menggunakan lebar perangkat sebagai acuan layout. Tanpa pengaturan ini, halaman dapat terlihat seperti versi desktop yang diperkecil.",
+            "code": {
+              "language": "HTML/CSS",
+              "content": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+            }
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Gunakan Ukuran yang Fleksibel",
+            "content": "Hindari menetapkan lebar tetap yang terlalu besar. Gunakan max-width, width: 100%, persentase, atau satuan relatif agar elemen dapat mengikuti lebar container."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh: Container Responsif",
+            "content": "Container dapat memenuhi layar kecil tetapi memiliki batas lebar pada desktop. Padding memberi ruang agar teks tidak menempel ke tepi layar.",
+            "code": {
+              "language": "HTML/CSS",
+              "content": ".container {\n  width: 100%;\n  max-width: 1100px;\n  margin: 0 auto;\n  padding: 16px;\n}"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Media Query Mengubah Layout",
+            "content": "Media query menerapkan aturan CSS ketika kondisi layar terpenuhi. Gunakan breakpoint berdasarkan saat layout mulai terasa sempit, bukan sekadar mengikuti tipe perangkat tertentu.",
+            "code": {
+              "language": "HTML/CSS",
+              "content": "@media (max-width: 600px) {\n  .cards {\n    grid-template-columns: 1fr;\n  }\n}"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Audit Halaman Desktop",
+            "content": "Buka halaman pada lebar desktop. Catat elemen yang berjajar, ukuran gambar, panjang baris teks, dan ruang kosong sebelum mengubah CSS."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Uji Layout pada Ponsel",
+            "content": "Periksa halaman pada lebar sekitar 360 px. Temukan bagian yang terlalu lebar, kartu yang bertumpuk, dan tombol yang sulit disentuh."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Buat Grid atau Flex yang Adaptif",
+            "content": "Gunakan CSS Grid atau Flexbox untuk menyusun komponen. Atur kolom menjadi beberapa bagian pada layar lebar dan satu kolom pada layar sempit."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Perbaiki Gambar dan Teks",
+            "content": "Pastikan gambar tidak melebihi container dengan max-width: 100%. Periksa ukuran font dan jarak antarbagian agar teks tetap mudah dibaca."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Beberapa Lebar",
+            "content": "Uji setidaknya tiga lebar layar: ponsel, tablet, dan desktop. Jangan hanya menguji satu ukuran karena masalah dapat muncul di titik tengah."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Responsive",
+            "content": "Jika muncul scroll horizontal, cari elemen yang lebarnya melebihi viewport. Jika kartu terlalu rapat, ubah gap atau jumlah kolom. Jika teks terpotong, periksa width, overflow, dan ukuran font."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat landing page yang menampilkan tiga kartu pada desktop dan satu kolom pada ponsel. Sertakan meta viewport dan media query, lalu jelaskan masalah responsif yang kamu perbaiki."
+          }
+        ],
+        "activeChallengeIds": [
+          101
+        ],
+        "estimatedDurationMinutes": 75
+      }
+    },
+    {
+      "topic_id": 171,
+      "title": "Final Project: Portfolio Web Interaktif",
+      "description": "Mengintegrasikan HTML semantik, CSS responsif, JavaScript, DOM, event, kondisi, dan fungsi ke dalam portfolio pribadi yang dapat diuji.",
+      "challenge_id": 102,
+      "challenge_title": "Challenge: Portfolio Web Interaktif",
+      "challenge_instructions": "Bangun portfolio satu halaman berisi profil, minimal dua karya, navigasi, dan satu interaksi JavaScript. Gunakan HTML semantik dan CSS responsif. Uji tautan, tombol, formulir demo bila ada, serta tampilan ponsel dan desktop. Bagikan tautan project dan demo singkat.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi HTML semantik pada portfolio?",
+            "options": [
+              "Memberi struktur dan makna pada bagian halaman",
+              "Mengatur animasi semua elemen",
+              "Menyimpan data formulir ke server",
+              "Mengubah ukuran layar"
+            ],
+            "answer_index": 0,
+            "explanation": "HTML semantik membantu menjelaskan fungsi setiap bagian halaman."
+          },
+          {
+            "question": "Mengapa portfolio perlu memiliki navigasi?",
+            "options": [
+              "Agar file HTML menjadi lebih panjang",
+              "Agar pengunjung dapat menuju bagian penting dengan mudah",
+              "Agar semua gambar tersembunyi",
+              "Agar JavaScript tidak diperlukan"
+            ],
+            "answer_index": 1,
+            "explanation": "Navigasi membantu pengunjung menemukan profil, karya, dan kontak."
+          },
+          {
+            "question": "Apa fungsi querySelector dalam JavaScript?",
+            "options": [
+              "Mengubah ukuran layar",
+              "Menyimpan password",
+              "Memilih elemen HTML agar dapat diakses melalui JavaScript",
+              "Membuat file CSS baru"
+            ],
+            "answer_index": 2,
+            "explanation": "querySelector memilih elemen berdasarkan selector CSS."
+          },
+          {
+            "question": "Mengapa formulir demo perlu memberi keterangan bahwa data belum dikirim ke server?",
+            "options": [
+              "Agar tombol tidak perlu bekerja",
+              "Agar halaman terlihat kosong",
+              "Agar pengunjung mengira data tersimpan",
+              "Agar pengguna tidak salah mengira pesan lokal sebagai pengiriman data"
+            ],
+            "answer_index": 3,
+            "explanation": "Umpan balik lokal tidak berarti data telah dikirim atau disimpan di server."
+          },
+          {
+            "question": "Apa yang perlu diuji sebelum portfolio dipresentasikan?",
+            "options": [
+              "Navigasi, tautan karya, interaksi, validasi, dan tampilan responsif",
+              "Hanya warna judul",
+              "Hanya jumlah file",
+              "Hanya nama folder"
+            ],
+            "answer_index": 0,
+            "explanation": "Pengujian menyeluruh memastikan portfolio dapat digunakan oleh pengunjung."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 40,
+            "title": "Challenge: Portfolio Web Interaktif",
+            "instructions": "Bangun portfolio satu halaman berisi profil, minimal dua karya, navigasi, dan satu interaksi JavaScript. Gunakan HTML semantik dan CSS responsif. Uji tautan, tombol, formulir demo bila ada, serta tampilan ponsel dan desktop. Bagikan tautan project dan demo singkat.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Portfolio sebagai Karya Akhir",
+            "content": "Portfolio menampilkan siapa pembuatnya, apa yang pernah dibuat, dan bagaimana orang dapat melihat karya tersebut. Kamu akan menggabungkan struktur, tampilan, dan interaksi web."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "practice",
+            "order": 1,
+            "title": "Rancang Bagian Portfolio",
+            "content": "Tentukan bagian header, navigasi, profil, daftar karya, dan kontak. Buat urutan yang membantu pengunjung memahami isi halaman dari atas ke bawah."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "code",
+            "order": 2,
+            "title": "Bangun Struktur HTML Semantik",
+            "content": "Gunakan header, nav, main, section, article, dan footer sesuai fungsi. Beri heading yang menjelaskan isi setiap bagian agar halaman mudah dibaca.",
+            "code": {
+              "language": "HTML/CSS",
+              "content": "<header><h1>Portfolio Saya</h1></header>\n<nav><a href=\"#profil\">Profil</a> <a href=\"#karya\">Karya</a></nav>\n<main>\n  <section id=\"profil\"><h2>Profil</h2></section>\n  <section id=\"karya\"><h2>Karya</h2></section>\n</main>\n<footer>Kontak</footer>"
+            }
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "practice",
+            "order": 3,
+            "title": "Buat Tampilan dengan CSS",
+            "content": "Atur tipografi, warna, jarak, kartu karya, dan tombol. Gunakan container dengan max-width agar konten tidak terlalu melebar pada layar besar."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Jadikan Layout Responsif",
+            "content": "Pastikan navigasi dan kartu tetap terbaca pada ponsel. Gunakan media query untuk mengubah susunan kolom dan ukuran jarak ketika layar menyempit."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Tambahkan Daftar Karya",
+            "content": "Tampilkan minimal dua karya. Setiap kartu berisi judul, deskripsi singkat, dan tautan atau gambar yang relevan. Jangan menampilkan tautan yang belum berfungsi."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "lesson",
+            "order": 6,
+            "title": "Pilih Interaksi yang Berguna",
+            "content": "Tambahkan satu interaksi sederhana, misalnya tombol untuk menampilkan pesan, filter kategori karya, atau validasi formulir kontak demo."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "code",
+            "order": 7,
+            "title": "Hubungkan Event dan DOM",
+            "content": "Pilih elemen menggunakan querySelector, lalu pasang event listener. Saat pengguna menekan tombol, ubah textContent atau classList agar perubahan terlihat.",
+            "code": {
+              "language": "JavaScript",
+              "content": "const button = document.querySelector('#show-message');\nconst message = document.querySelector('#message');\nbutton.addEventListener('click', () => {\n  message.textContent = 'Terima kasih sudah berkunjung!';\n});"
+            }
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Validasi Form Demo",
+            "content": "Jika membuat formulir kontak demo, periksa input kosong sebelum menampilkan pesan. Jelaskan bahwa formulir hanya memberi umpan balik di halaman dan belum mengirim data ke server."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Navigasi dan Interaksi",
+            "content": "Klik setiap tautan navigasi, tombol, dan aksi formulir. Uji input kosong serta input terisi agar hasil yang ditampilkan sesuai aturan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Portfolio",
+            "content": "Jika tautan navigasi tidak menuju bagian yang benar, cocokkan href dengan id. Jika tombol tidak bereaksi, periksa selector dan event listener. Jika layout meluber, audit width, gambar, dan media query."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Selesaikan portfolio dengan minimal dua karya, navigasi, layout responsif, dan satu interaksi JavaScript. Uji dari ponsel dan desktop lalu siapkan demo singkat."
+          }
+        ],
+        "activeChallengeIds": [
+          102
+        ],
+        "estimatedDurationMinutes": 75
+      }
+    }
+  ]
+}
