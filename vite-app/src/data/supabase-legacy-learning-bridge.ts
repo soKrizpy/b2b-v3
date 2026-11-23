@@ -26,6 +26,32 @@ function parseTopicId(lessonKey: string): number {
   return topicId;
 }
 
+
+type ChallengeSubmissionRow = {
+  id: number;
+  student_id: string;
+  challenge_id: number;
+  submission_url: string | null;
+  submission_note: string | null;
+  status: "pending" | "approved" | "needs_revision";
+  review_note: string | null;
+  reviewed_by: string | null;
+  submitted_at: string;
+};
+
+function mapChallengeSubmission(row: ChallengeSubmissionRow) {
+  return {
+    id: String(row.id),
+    studentId: row.student_id,
+    projectUrl: row.submission_url ?? "",
+    studentNotes: row.submission_note ?? "",
+    status: row.status === "pending" ? "submitted" : row.status === "needs_revision" ? "revision-required" : "approved",
+    teacherFeedback: row.review_note ?? "",
+    submittedAt: row.submitted_at,
+    version: row.submitted_at,
+  };
+}
+
 function mapLegacyProgress(row: StudentLessonProgress): LegacyProgress {
   return {
     state: row.state,
@@ -61,16 +87,19 @@ export function createSupabaseLegacyLearningBridge() {
       return row ? mapLegacyProgress(row) : null;
     },
 
-    async getStudentLessonSubmission(studentId: string) {
+    async getStudentLessonSubmission(studentId: string, lessonKey: string) {
       const client = supabase;
       if (!client) throw new Error("Konfigurasi Supabase belum tersedia.");
       const { data, error } = await client.auth.getUser();
       if (error || !data.user || data.user.id !== studentId) {
         throw new Error("Identitas siswa tidak cocok dengan sesi aktif.");
       }
-      // Submission persistence is deliberately disabled until the secure
-      // teacher-review write path is implemented against challenge_submissions.
-      return null;
+      const { data: rows, error: submissionError } = await client.rpc("get_student_challenge_submission", {
+        p_topic_id: parseTopicId(lessonKey)
+      });
+      if (submissionError) throw new Error("Status pengumpulan proyek gagal dimuat.");
+      const row = Array.isArray(rows) ? rows[0] : rows;
+      return row ? mapChallengeSubmission(row as ChallengeSubmissionRow) : null;
     },
 
     saveLessonProgress(studentId: string, lessonKey: string, updates: Record<string, unknown>) {
@@ -110,8 +139,25 @@ export function createSupabaseLegacyLearningBridge() {
       return submitStudentTopicQuiz(topicId, answers);
     },
 
-    async saveSubmission() {
-      throw new Error("Pengumpulan proyek belum diaktifkan. Jalur review guru di Supabase harus diselesaikan terlebih dahulu.");
+    async saveSubmission(input: {
+      studentId: string;
+      lessonId: string;
+      projectUrl: string;
+      studentNotes?: string;
+    }) {
+      const client = supabase;
+      if (!client) throw new Error("Konfigurasi Supabase belum tersedia.");
+      const { data: authData, error: authError } = await client.auth.getUser();
+      if (authError || !authData.user || authData.user.id !== input.studentId) {
+        throw new Error("Identitas siswa tidak cocok dengan sesi aktif.");
+      }
+      const { data, error } = await client.rpc("submit_student_challenge", {
+        p_topic_id: parseTopicId(input.lessonId),
+        p_submission_url: input.projectUrl,
+        p_submission_note: input.studentNotes ?? null,
+      });
+      if (error || !data) throw new Error(error?.message || "Pengumpulan proyek gagal disimpan.");
+      return mapChallengeSubmission(data as ChallengeSubmissionRow);
     },
 
     subscribe() {
