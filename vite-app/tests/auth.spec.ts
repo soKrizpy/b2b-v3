@@ -293,7 +293,7 @@ test.describe("Supabase Auth portal", () => {
     await page.getByLabel("Modul").selectOption("29");
     await page.getByRole("button", { name: "Aktifkan Modul" }).click();
 
-    const assignmentCard = page.locator("#admin-tab-body .card").filter({ hasText: "Scratch Beginner" });
+    const assignmentCard = page.locator("[data-student-module-card]").filter({ hasText: "Scratch Beginner" });
     await expect(assignmentCard).toContainText("E2E Student");
     await expect(assignmentCard).toContainText("Aktif");
   });
