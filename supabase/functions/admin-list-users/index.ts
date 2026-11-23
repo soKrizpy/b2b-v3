@@ -75,25 +75,35 @@ Deno.serve(async (req: Request) => {
   if (studentsError) return json({ error: "Unable to load student details" }, 500);
 
   const studentsById = new Map((students ?? []).map((student) => [student.id, student]));
-  const accounts = await Promise.all((profiles ?? []).map(async (profile) => {
-    const { data: authResult } = await adminClient.auth.admin.getUserById(profile.id);
-    const bannedUntil = authResult?.user?.banned_until ?? null;
+  const authResults = await Promise.all((profiles ?? []).map(async (profile) => {
+    const { data, error } = await adminClient.auth.admin.getUserById(profile.id);
+    return { profile, authUser: data?.user ?? null, error };
+  }));
+
+  // Auth status is authoritative for active/inactive. Never silently turn an
+  // Auth lookup failure into an apparently active account in the admin UI.
+  if (authResults.some(({ authUser, error }) => error || !authUser)) {
+    return json({ error: "Status satu atau lebih akun tidak dapat diverifikasi; daftar akun tidak ditampilkan agar status tidak keliru." }, 503);
+  }
+
+  const accounts = authResults.map(({ profile, authUser }) => {
+    const bannedUntil = authUser!.banned_until ?? null;
     const isBanned = Boolean(bannedUntil && Date.parse(bannedUntil) > Date.now());
     const student = studentsById.get(profile.id);
 
     return {
       id: profile.id,
-      email: profile.email ?? authResult?.user?.email ?? "",
+      email: profile.email ?? authUser!.email ?? "",
       displayName: profile.full_name?.trim() || "Pengguna Bits2Bytes",
       role: profile.role === "teacher" ? "tutor" : profile.role,
       status: isBanned ? "inactive" : "active",
-      avatar: (profile.full_name ?? "U").trim().split(/\s+/).map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
+      avatar: (profile.full_name ?? "U").trim().split(/\\s+/).map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
       gradeLevel: student?.grade ?? undefined,
       whatsapp: student?.whatsapp ?? undefined,
-      createdAt: profile.created_at ?? authResult?.user?.created_at ?? new Date(0).toISOString(),
-      updatedAt: profile.created_at ?? authResult?.user?.created_at ?? new Date(0).toISOString(),
+      createdAt: profile.created_at ?? authUser!.created_at ?? new Date(0).toISOString(),
+      updatedAt: profile.created_at ?? authUser!.created_at ?? new Date(0).toISOString(),
     };
-  }));
+  });
 
   return json({ accounts, source: "supabase" });
 });
