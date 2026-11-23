@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 import type { TutorMeetingSummary } from "./data/supabase-tutor-schedule-repository";
+import { TutorLearningRecords } from "./TutorLearningRecords";
 
 type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
 
@@ -24,6 +25,7 @@ function statusLabel(meeting: TutorMeetingSummary) {
 export default function TutorExperience({ user }: { user: TutorUser }) {
   const [meetings, setMeetings] = useState<TutorMeetingSummary[]>([]);
   const [studentCounts, setStudentCounts] = useState<Record<number, number>>({});
+  const [meetingStudents, setMeetingStudents] = useState<Array<{ meetingId: number; studentId: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -38,11 +40,13 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
         if (!active) return;
         setMeetings(snapshot.meetings);
         setStudentCounts(snapshot.studentCounts);
+        setMeetingStudents(snapshot.meetingStudents);
       } catch (cause) {
         console.error("Jadwal tutor gagal dimuat:", cause);
         if (active) {
           setMeetings([]);
           setStudentCounts({});
+          setMeetingStudents([]);
           setError(cause instanceof Error ? cause.message : "Jadwal Supabase tidak dapat dimuat.");
         }
       } finally {
@@ -109,7 +113,8 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
               </div>
             )}
           </div>
-          <p className="tutor-live-footnote">*Jumlah relasi siswa dihitung dari pertemuan yang dapat diakses akun ini; nama dan detail profil siswa tidak ditampilkan karena pembatasan RLS yang berlaku.</p>
+          <p className="tutor-live-footnote">*Jumlah relasi siswa dihitung dari pertemuan yang dapat diakses akun ini.</p>
+          <TutorLearningRecords tutorId={user.id} meetings={meetings} meetingStudents={meetingStudents} />
         </>
       )}
     </section>
