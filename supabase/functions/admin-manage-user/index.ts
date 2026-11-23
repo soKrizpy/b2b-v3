@@ -82,7 +82,10 @@ Deno.serve(async (req: Request) => {
     const role = normalizeRole(body.role);
     const status = body.status === "inactive" ? "inactive" : "active";
     const grade = String(body.gradeLevel ?? "").trim();
-    if (!displayName || displayName.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !role) {
+    const whatsapp = String(body.whatsapp ?? "").trim();
+    const mpin = String(body.mpin ?? "").trim();
+    if (!displayName || displayName.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !role ||
+        (role === "student" && (!whatsapp || !/^\d{6}$/.test(mpin)))) {
       return json({ error: "Nama, email, atau role tidak valid" }, 400);
     }
 
@@ -112,6 +115,16 @@ Deno.serve(async (req: Request) => {
       if (studentError) {
         await adminClient.auth.admin.deleteUser(userId);
         return json({ error: "Profil siswa gagal dibuat; akun undangan dibatalkan" }, 500);
+      }
+      const { error: mpinError } = await adminClient.rpc("admin_set_student_mpin", {
+        p_student_id: userId,
+        p_phone: whatsapp,
+        p_mpin: mpin,
+      });
+      if (mpinError) {
+        await adminClient.from("students").delete().eq("id", userId);
+        await adminClient.auth.admin.deleteUser(userId);
+        return json({ error: "Nomor WhatsApp atau MPIN siswa gagal disimpan; akun undangan dibatalkan" }, 400);
       }
     }
 
@@ -170,16 +183,30 @@ Deno.serve(async (req: Request) => {
       .single();
     if (updateError || !updated) return json({ error: "Profil akun gagal diperbarui" }, 500);
 
+    let whatsapp: string | null = null;
     if (currentRole === "student") {
+      const { data: student, error: studentReadError } = await adminClient
+        .from("students").select("whatsapp").eq("id", userId).maybeSingle();
+      if (studentReadError || !student) return json({ error: "Profil siswa tidak dapat dibaca" }, 500);
+      whatsapp = String(body.whatsapp ?? student.whatsapp ?? "").trim();
+      const mpin = String(body.mpin ?? "").trim();
       const { error: studentError } = await adminClient
         .from("students").update({ full_name: displayName, grade: grade || null }).eq("id", userId);
       if (studentError) return json({ error: "Profil siswa gagal diperbarui" }, 500);
+      if (body.whatsapp != null || mpin) {
+        const { error: mpinError } = await adminClient.rpc("admin_set_student_mpin", {
+          p_student_id: userId,
+          p_phone: whatsapp,
+          p_mpin: mpin || null,
+        });
+        if (mpinError) return json({ error: "Nomor WhatsApp atau MPIN gagal diperbarui" }, 400);
+      }
     }
 
     const { data: authUser } = await adminClient.auth.admin.getUserById(userId);
     const bannedUntil = authUser.user?.banned_until ?? null;
     const status = requestedStatus ?? (bannedUntil && Date.parse(bannedUntil) > Date.now() ? "inactive" : "active");
-    return json({ user: accountView({ ...updated, grade }, status), source: "supabase" });
+    return json({ user: accountView({ ...updated, grade, whatsapp }, status), source: "supabase" });
   }
 
   return json({ error: "Unsupported action" }, 400);
