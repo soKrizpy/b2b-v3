@@ -200,7 +200,7 @@ export function createSupabaseTutorScheduleRepository(
       if (!allRecorded) return { success: false, message: "Lengkapi presensi setiap siswa sebelum menyelesaikan sesi." };
       const { data, error } = await db
         .from("meetings")
-        .update({ completion_status: "selesai", is_completed: true })
+        .update({ completion_status: "selesai" })
         .eq("id", meetingId)
         .eq("teacher_id", expectedTutorId)
         .not("completion_status", "in", '("cancelled","soft_deleted")')
