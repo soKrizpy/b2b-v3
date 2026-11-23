@@ -3,6 +3,7 @@ import { supabaseProductionCapabilities } from "./data/supabase-production-capab
 import type { MonthlyEvaluation, SessionReport, YearMonth } from "./data/domain-contracts";
 import type { TutorAssignedStudent } from "./data/supabase-tutor-schedule-repository";
 import type { TutorMeetingSummary } from "./data/supabase-tutor-schedule-repository";
+import type { TutorPendingSubmission } from "./data/supabase-challenge-submission-repository";
 
 type MeetingStudentLink = { meetingId: number; studentId: string };
 
@@ -34,6 +35,8 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
   const [students, setStudents] = useState<TutorAssignedStudent[]>([]);
   const [reports, setReports] = useState<SessionReport[]>([]);
   const [evaluations, setEvaluations] = useState<MonthlyEvaluation[]>([]);
+  const [pendingSubmissions, setPendingSubmissions] = useState<TutorPendingSubmission[]>([]);
+  const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
   const [studentId, setStudentId] = useState("");
   const [meetingId, setMeetingId] = useState("");
   const [reportTopic, setReportTopic] = useState("");
@@ -60,14 +63,16 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
   );
 
   async function refresh() {
-    const [assigned, tutorReports, tutorEvaluations] = await Promise.all([
+    const [assigned, tutorReports, tutorEvaluations, submissions] = await Promise.all([
       supabaseProductionCapabilities.tutorSchedule.listAssignedStudents(tutorId),
       supabaseProductionCapabilities.sessionReports.listTutorReports(tutorId),
       supabaseProductionCapabilities.monthlyEvaluations.listTutorEvaluations(tutorId),
+      supabaseProductionCapabilities.challengeSubmissions.listPendingForCurrentTutor(tutorId),
     ]);
     setStudents(assigned);
     setReports(tutorReports);
     setEvaluations(tutorEvaluations);
+    setPendingSubmissions(submissions);
     setStudentId((current) => current || assigned[0]?.id || "");
   }
 
@@ -77,15 +82,17 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
       setLoading(true);
       setError("");
       try {
-        const [assigned, tutorReports, tutorEvaluations] = await Promise.all([
+        const [assigned, tutorReports, tutorEvaluations, submissions] = await Promise.all([
           supabaseProductionCapabilities.tutorSchedule.listAssignedStudents(tutorId),
           supabaseProductionCapabilities.sessionReports.listTutorReports(tutorId),
           supabaseProductionCapabilities.monthlyEvaluations.listTutorEvaluations(tutorId),
+          supabaseProductionCapabilities.challengeSubmissions.listPendingForCurrentTutor(tutorId),
         ]);
         if (!active) return;
         setStudents(assigned);
         setReports(tutorReports);
         setEvaluations(tutorEvaluations);
+        setPendingSubmissions(submissions);
         setStudentId(assigned[0]?.id ?? "");
       } catch (cause) {
         if (active) setError(cause instanceof Error ? cause.message : "Catatan belajar gagal dimuat.");
@@ -102,6 +109,25 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
     else if (availableMeetings.length) setMeetingId(String(availableMeetings[0].id));
     else setMeetingId("");
   }, [studentId, availableMeetings, meetingId]);
+
+  async function reviewSubmission(submissionId: number, status: "approved" | "needs_revision") {
+    setSaving(true);
+    setError("");
+    setMessage("");
+    const result = await supabaseProductionCapabilities.challengeSubmissions.reviewSubmission(
+      tutorId,
+      submissionId,
+      status,
+      reviewNotes[submissionId] ?? ""
+    );
+    setSaving(false);
+    if (!result.success) {
+      setError(result.message);
+      return;
+    }
+    setMessage(status === "approved" ? "Proyek berhasil disetujui." : "Catatan revisi berhasil dikirim ke siswa.");
+    await refresh();
+  }
 
   async function saveReport(event: FormEvent<HTMLFormElement>, status: "draft" | "submitted") {
     event.preventDefault();
@@ -266,6 +292,33 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
                 }}>Publikasikan</button>
               </div>
             </form>
+          </div>
+
+          <div className="tutor-record-history">
+            <h4>Proyek menunggu review ({pendingSubmissions.length})</h4>
+            {pendingSubmissions.length === 0 && <p className="tutor-live-empty">Tidak ada proyek yang menunggu review dari siswa yang ditugaskan.</p>}
+            {pendingSubmissions.map((submission) => (
+              <article className="tutor-pending-submission" key={submission.id}>
+                <div>
+                  <strong>{submission.challengeTitle}</strong>
+                  <span>{submission.studentName}{submission.studentGrade ? " · " + submission.studentGrade : ""} · {submission.topicTitle}</span>
+                  <a href={submission.projectUrl} target="_blank" rel="noreferrer">Buka proyek siswa</a>
+                  {submission.studentNotes && <p>{submission.studentNotes}</p>}
+                </div>
+                <label>Catatan review
+                  <textarea
+                    rows={2}
+                    value={reviewNotes[submission.id] ?? ""}
+                    onChange={(event) => setReviewNotes((current) => ({ ...current, [submission.id]: event.target.value }))}
+                    placeholder="Catatan untuk siswa; wajib jika meminta revisi"
+                  />
+                </label>
+                <div className="tutor-record-actions">
+                  <button type="button" disabled={saving} onClick={() => void reviewSubmission(submission.id, "approved")}>Setujui</button>
+                  <button type="button" disabled={saving} onClick={() => void reviewSubmission(submission.id, "needs_revision")}>Minta Revisi</button>
+                </div>
+              </article>
+            ))}
           </div>
 
           <div className="tutor-record-history">
