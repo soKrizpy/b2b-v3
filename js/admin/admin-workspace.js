@@ -1030,7 +1030,7 @@ export class AdminWorkspace {
       } else {
         showToast({ title: 'Penugasan Berhasil! 🎉', message: 'Siswa berhasil ditugaskan ke tutor.', type: 'success' });
         closeModal();
-        this.render();
+        await this.refreshData();
       }
     });
   }
