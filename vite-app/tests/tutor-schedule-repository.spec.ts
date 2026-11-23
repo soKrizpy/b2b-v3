@@ -33,12 +33,12 @@ test.describe("Production tutor schedule repository", () => {
         }
       ];
       const linkRows = [
-        { meeting_id: 11, student_id: "student-a" },
-        { meeting_id: 11, student_id: "student-a" },
-        { meeting_id: 11, student_id: "student-b" },
-        { meeting_id: 22, student_id: "student-c" },
-        { meeting_id: 22, student_id: "" },
-        { meeting_id: -1, student_id: "student-x" }
+        { meeting_id: 11, student_id: "student-a", attendance_status: "hadir", attendance_recorded_at: "2026-11-20T10:00:00.000Z" },
+        { meeting_id: 11, student_id: "student-a", attendance_status: "hadir", attendance_recorded_at: "2026-11-20T10:00:00.000Z" },
+        { meeting_id: 11, student_id: "student-b", attendance_status: "absen", attendance_recorded_at: null },
+        { meeting_id: 22, student_id: "student-c", attendance_status: "telat", attendance_recorded_at: "2026-11-23T11:00:00.000Z" },
+        { meeting_id: 22, student_id: "", attendance_status: "absen", attendance_recorded_at: null },
+        { meeting_id: -1, student_id: "student-x", attendance_status: "absen", attendance_recorded_at: null }
       ];
       const client = {
         auth: {
@@ -66,12 +66,18 @@ test.describe("Production tutor schedule repository", () => {
 
     expect(result.snapshot.meetings.map((meeting) => meeting.id)).toEqual([11, 22]);
     expect(result.snapshot.studentCounts).toEqual({ 11: 2, 22: 1 });
+    expect(result.snapshot.meetingStudents).toEqual([
+      { meetingId: 11, studentId: "student-a", attendanceStatus: "hadir", attendanceRecordedAt: "2026-11-20T10:00:00.000Z" },
+      { meetingId: 11, studentId: "student-b", attendanceStatus: "absen", attendanceRecordedAt: null },
+      { meetingId: 22, studentId: "student-c", attendanceStatus: "telat", attendanceRecordedAt: "2026-11-23T11:00:00.000Z" }
+    ]);
     expect(result.calls).toContainEqual({ table: "meetings", method: "eq", args: ["teacher_id", "tutor-1"] });
     expect(result.calls).toContainEqual({ table: "meetings", method: "limit", args: [100] });
     expect(result.calls).toContainEqual({ table: "meetings", method: "gte", args: ["meeting_date", "2026-11-23T00:00:00.000Z"] });
     expect(result.calls).toContainEqual({ table: "meetings", method: "lt", args: ["meeting_date", "2026-11-23T00:00:00.000Z"] });
     expect(result.calls).toContainEqual({ table: "meetings", method: "limit", args: [20] });
 
+    expect(result.calls).toContainEqual({ table: "meeting_students", method: "select", args: ["meeting_id,student_id,attendance_status,attendance_recorded_at"] });
     expect(result.calls).toContainEqual({ table: "meeting_students", method: "in", args: ["meeting_id", [11, 22]] });
   });
 
