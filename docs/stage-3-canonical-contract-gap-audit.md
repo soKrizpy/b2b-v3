@@ -465,3 +465,10 @@ Using transaction-scoped authenticated role and JWT subject simulation, followed
 - Student module assignments remain historical rows: pausing access does not delete the assignment. Reactivation uses the unique `(student_id,module_id)` key.
 - Transactional SQL verification confirmed Admin can assign a module and the student can read only their own assignment through RLS; QA changes were rolled back.
 - Browser coverage now includes the Admin assignment flow plus repository authorization tests.
+
+
+## Admin module assignment QA result — 2026-11-23
+
+- Latest application commit `9c006953c723902cfc9c6b07530dcc5130680de4` passed TypeScript, Vite production build, and browser QA: **70 passed, 21 skipped, 0 failed**.
+- Browser QA now exercises Admin sign-in, module assignment activation, and the resulting student-module assignment card. Repository tests verify non-admin rejection.
+- The GitHub Preview Build for the same commit completed successfully.
