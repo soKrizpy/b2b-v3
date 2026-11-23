@@ -147,7 +147,8 @@ The live database is functioning, but a clean environment cannot reproduce the f
 ## 5. Verification boundaries
 
 - Browser E2E uses mocked Supabase Auth and fixtures. It validates UI/contracts, not successful sign-in against a real dummy account.
-- Latest completed full CI before audit commit: 80 passed, 21 skipped, 0 failed; TypeScript, production build, Deno Edge Function typecheck, and admin deactivation security invariants passed.
-- Preview Build passed on the same application-code commit. A CI run for the audit-document/migration-file-only commit is tracked separately.
+- Latest completed full CI at `0fa841fed8b62401bf7efb75ecbb51b6ccf960de`: 80 passed, 21 skipped, 0 failed; TypeScript, production build, Deno Edge Function typecheck, and admin deactivation security invariants passed.
+- Preview Build passed at `ed77dc26e5caf8f0bcb20e4245c74fd01ea71708`; application source was unchanged in the subsequent migration-file commit.
+- The audit document commit is documentation-only; no additional build was triggered for it.
 - No Vercel production deployment or Edge Function deployment was performed.
-- Branch remains `preview`; `main` remains untouched.
+- GitHub currently exposes only the `preview` branch for this repository. No `main` branch exists there, and none was created.
