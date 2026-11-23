@@ -1588,6 +1588,12 @@ test.describe("Local demo domain repository adapters", () => {
           submissionDraft: null,
           slideIndex: -1
         }),
+        rejectsSlideBeyondRpcLimit: rejected({
+          state: "in-progress",
+          checkpoints: {},
+          submissionDraft: null,
+          slideIndex: 201
+        }),
         rejectsFractionalSlide: rejected({
           state: "in-progress",
           checkpoints: {},
@@ -1615,6 +1621,7 @@ test.describe("Local demo domain repository adapters", () => {
       validCheckpointCount: 2,
       rejectsNonBooleanCheckpoint: true,
       rejectsNegativeSlide: true,
+      rejectsSlideBeyondRpcLimit: true,
       rejectsFractionalSlide: true,
       rejectsMalformedDraft: true,
       rejectsUnsupportedState: true
