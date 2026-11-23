@@ -1103,7 +1103,15 @@ export class AdminWorkspace {
         });
       }
 
-      if (res.error) {
+      if (res.error === 'IDENTITY_UPDATE_SAVED_REFRESH_REQUIRED') {
+        closeModal();
+        await this.refreshData();
+        showToast({
+          title: 'Perubahan Tersimpan',
+          message: 'Akun sudah diperbarui di Supabase. Daftar akun telah dimuat ulang; periksa kembali datanya sebelum melakukan perubahan berikutnya.',
+          type: 'warning'
+        });
+      } else if (res.error) {
         showToast({ title: 'Gagal Menyimpan', message: res.message, type: 'error' });
       } else {
         showToast({
