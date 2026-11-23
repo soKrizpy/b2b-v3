@@ -62,3 +62,47 @@ Deno.test("reports an unconfirmed release while preserving mutation result", asy
     throw new Error("Expected successful mutation with lease expiry fallback");
   }
 });
+
+Deno.test("serializes two overlapping deactivation requests", async () => {
+  let held = false;
+  let markStarted!: () => void;
+  let finishFirst!: () => void;
+  const started = new Promise<void>((resolve) => { markStarted = resolve; });
+  const firstMayFinish = new Promise<void>((resolve) => { finishFirst = resolve; });
+
+  const makeInput = (run: () => Promise<string>) => ({
+    acquire: async () => {
+      if (held) return { data: false, error: null };
+      held = true;
+      return { data: true, error: null };
+    },
+    run,
+    release: async () => {
+      held = false;
+      return { error: null };
+    },
+  });
+
+  const first = withAdminDeactivationLock(makeInput(async () => {
+    markStarted();
+    await firstMayFinish;
+    return "first";
+  }));
+  await started;
+
+  let secondRan = false;
+  const second = await withAdminDeactivationLock(makeInput(async () => {
+    secondRan = true;
+    return "second";
+  }));
+  if (second.acquired || second.reason !== "busy" || secondRan) {
+    finishFirst();
+    throw new Error("The second overlapping request must not enter its mutation");
+  }
+
+  finishFirst();
+  const firstResult = await first;
+  if (!firstResult.acquired || firstResult.value !== "first" || held) {
+    throw new Error("The first request must finish and release the shared lock");
+  }
+});
