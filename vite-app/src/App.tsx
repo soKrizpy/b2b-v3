@@ -4,7 +4,7 @@ import logoDark from "../../logo-b2b-dark.svg";
 import StudentExperience from "./StudentExperience";
 import TutorExperience from "./TutorExperience";
 import AdminExperience from "./AdminExperience";
-import { supabaseAuthRepository } from "./data/supabase-auth-repository";
+import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 import type { AuthSession } from "./data/domain-contracts";
 
 const workspaceTitles = {
@@ -31,11 +31,11 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
-    const unsubscribe = supabaseAuthRepository.subscribe((next) => {
+    const unsubscribe = supabaseProductionCapabilities.auth.subscribe((next) => {
       if (active) setSession(next);
     });
 
-    void supabaseAuthRepository.getSession()
+    void supabaseProductionCapabilities.auth.getSession()
       .then((current) => {
         if (active) setSession(current);
       })
@@ -69,8 +69,8 @@ export default function App() {
     setSubmitting(true);
     try {
       const result = loginMode === "student"
-        ? await supabaseAuthRepository.signInStudent({ phone: phone.trim(), mpin })
-        : await supabaseAuthRepository.signIn({ email: email.trim(), password });
+        ? await supabaseProductionCapabilities.auth.signInStudent({ phone: phone.trim(), mpin })
+        : await supabaseProductionCapabilities.auth.signIn({ email: email.trim(), password });
 
       if (!result.success) {
         setLoginError(result.error.message);
@@ -90,7 +90,7 @@ export default function App() {
   async function signOut() {
     setLoginError("");
     try {
-      await supabaseAuthRepository.signOut();
+      await supabaseProductionCapabilities.auth.signOut();
       setSession(null);
       setPassword("");
     } catch (error) {
@@ -133,7 +133,7 @@ export default function App() {
               <h2 id="login-title">Selamat datang di Bits2Bytes!</h2>
               <p>Masuk menggunakan akun Bits2Bytes yang sudah terdaftar.</p>
             </div>
-            {!supabaseAuthRepository.isConfigured && <p className="b2b-login-error" role="alert">Konfigurasi Supabase belum lengkap. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY pada environment aplikasi.</p>}
+            {!supabaseProductionCapabilities.auth.isConfigured && <p className="b2b-login-error" role="alert">Konfigurasi Supabase belum lengkap. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY pada environment aplikasi.</p>}
             <form onSubmit={signIn}>
               <div className="b2b-login-mode" role="group" aria-label="Jenis akun">
                 <button type="button" className={loginMode === "student" ? "btn btn-primary" : "btn btn-secondary"} aria-pressed={loginMode === "student"} onClick={() => { setLoginMode("student"); setLoginError(""); }}>Siswa</button>
@@ -141,17 +141,17 @@ export default function App() {
               </div>
               {loginMode === "student" ? <>
                 <label className="form-label" htmlFor="login-phone">Nomor WhatsApp</label>
-                <input id="login-phone" className="form-control" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="Contoh: 08xxxxxxxxxx" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <input id="login-phone" className="form-control" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="Contoh: 08xxxxxxxxxx" required disabled={!supabaseProductionCapabilities.auth.isConfigured || submitting} />
                 <label className="form-label" htmlFor="login-mpin">MPIN (6 digit)</label>
-                <input id="login-mpin" className="form-control" type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={mpin} onChange={(event) => setMpin(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Masukkan MPIN" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <input id="login-mpin" className="form-control" type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={mpin} onChange={(event) => setMpin(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Masukkan MPIN" required disabled={!supabaseProductionCapabilities.auth.isConfigured || submitting} />
               </> : <>
                 <label className="form-label" htmlFor="login-email">Email</label>
-                <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <input id="login-email" className="form-control" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required disabled={!supabaseProductionCapabilities.auth.isConfigured || submitting} />
                 <label className="form-label" htmlFor="login-password">Password</label>
-                <input id="login-password" className="form-control" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Masukkan password" required disabled={!supabaseAuthRepository.isConfigured || submitting} />
+                <input id="login-password" className="form-control" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Masukkan password" required disabled={!supabaseProductionCapabilities.auth.isConfigured || submitting} />
               </>}
               {loginError && <p className="b2b-login-error" role="alert">{loginError}</p>}
-              <button type="submit" className="btn btn-primary" disabled={!supabaseAuthRepository.isConfigured || submitting}>{submitting ? "Memeriksa akun…" : "Masuk"}</button>
+              <button type="submit" className="btn btn-primary" disabled={!supabaseProductionCapabilities.auth.isConfigured || submitting}>{submitting ? "Memeriksa akun…" : "Masuk"}</button>
             </form>
           </section>}
 
