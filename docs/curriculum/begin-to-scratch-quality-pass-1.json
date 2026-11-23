@@ -1,0 +1,1120 @@
+{
+  "schema_version": 1,
+  "module_id": 11,
+  "module_title": "Begin to Scratch",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "topics": [
+    {
+      "topic_id": 172,
+      "title": "Broadcast: Mengatur Pergantian Adegan",
+      "description": "Menggunakan pesan broadcast untuk menyelaraskan aksi beberapa sprite dan mengganti backdrop ketika satu adegan cerita selesai.",
+      "challenge_id": 103,
+      "challenge_title": "Challenge: Cerita Tiga Adegan dengan Broadcast",
+      "challenge_instructions": "Buat cerita Scratch tiga adegan. Gunakan minimal dua sprite dan tiga backdrop. Kirim minimal dua pesan broadcast untuk memindahkan cerita dari adegan pertama ke kedua dan ketiga. Setiap adegan harus memiliki dialog atau aksi. Uji dari Green Flag minimal tiga kali dan bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi utama broadcast di Scratch?",
+            "options": [
+              "Mengirim pesan agar skrip lain dapat merespons",
+              "Mengganti ukuran Stage secara otomatis",
+              "Menyimpan project ke komputer",
+              "Menghapus semua sprite"
+            ],
+            "answer_index": 0,
+            "explanation": "Broadcast mengirim pesan yang dapat diterima oleh skrip lain melalui blok when I receive."
+          },
+          {
+            "question": "Blok apa yang digunakan skrip penerima pesan?",
+            "options": [
+              "when green flag clicked",
+              "when I receive [nama pesan]",
+              "move 10 steps",
+              "switch costume"
+            ],
+            "answer_index": 1,
+            "explanation": "Skrip penerima menunggu nama pesan tertentu melalui when I receive."
+          },
+          {
+            "question": "Mengapa nama pesan pada pengirim dan penerima harus sama?",
+            "options": [
+              "Agar sprite memiliki ukuran sama",
+              "Agar backdrop tersimpan",
+              "Agar skrip penerima mengenali pesan yang dikirim",
+              "Agar project berjalan lebih cepat"
+            ],
+            "answer_index": 2,
+            "explanation": "Nama pesan yang sama menghubungkan broadcast dengan skrip penerima yang sesuai."
+          },
+          {
+            "question": "Kapan pesan ADEGAN_2 sebaiknya dikirim pada cerita ini?",
+            "options": [
+              "Sebelum project dimulai",
+              "Saat karakter pertama dipilih di Sprite List",
+              "Setiap kali mouse bergerak",
+              "Setelah aksi adegan pertama selesai"
+            ],
+            "answer_index": 3,
+            "explanation": "Mengirim pesan setelah adegan pertama selesai menjaga urutan cerita."
+          },
+          {
+            "question": "Jika backdrop tidak berubah setelah broadcast, apa yang perlu diperiksa lebih dulu?",
+            "options": [
+              "Nama pesan dan skrip when I receive pada Stage",
+              "Warna kostum karakter",
+              "Nama file gambar di komputer",
+              "Ukuran jendela browser"
+            ],
+            "answer_index": 0,
+            "explanation": "Periksa kecocokan nama pesan dan pastikan Stage memiliki skrip penerima yang aktif."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Cerita Tiga Adegan dengan Broadcast",
+            "instructions": "Buat cerita Scratch tiga adegan. Gunakan minimal dua sprite dan tiga backdrop. Kirim minimal dua pesan broadcast untuk memindahkan cerita dari adegan pertama ke kedua dan ketiga. Setiap adegan harus memiliki dialog atau aksi. Uji dari Green Flag minimal tiga kali dan bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Cerita yang Terkoordinasi",
+            "content": "Kamu akan membuat cerita tiga adegan. Satu aksi mengirim pesan, lalu sprite lain dan Stage merespons pesan itu. Hasil akhirnya adalah cerita yang berpindah adegan tanpa semua skrip harus dijalankan dari awal."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Event dan Broadcast Itu Berbeda",
+            "content": "Event seperti when green flag clicked memulai skrip karena tindakan tertentu. Broadcast mengirim nama pesan ke skrip lain yang memakai when I receive. Pengirim dan penerima tidak harus sprite yang sama."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Pilih Nama Pesan yang Jelas",
+            "content": "Gunakan nama pesan yang menjelaskan kejadian, misalnya ADEGAN_2 atau CERITA_SELESAI. Nama pesan pada blok pengirim dan penerima harus sama persis agar komunikasi berhasil."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh: Mengirim Pesan Setelah Dialog",
+            "content": "Karakter pertama menyampaikan dialog, menunggu dialog selesai, lalu mengirim pesan ADEGAN_2. Pesan ini menjadi tanda bagi Stage untuk mengganti backdrop dan bagi karakter kedua untuk mulai berbicara.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\nsay [Selamat datang!] for (2) seconds\nbroadcast [ADEGAN_2]"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Contoh: Skrip Penerima Pesan",
+            "content": "Stage tidak perlu menebak kapan dialog selesai. Stage menunggu pesan ADEGAN_2, lalu mengganti backdrop. Karakter kedua juga dapat memakai pesan yang sama untuk memulai aksinya.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when I receive [ADEGAN_2]\n switch backdrop to [Taman]"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Tiga Adegan",
+            "content": "Buat tiga backdrop dan minimal dua sprite. Tulis urutan cerita di kertas: adegan pembuka, adegan tengah, dan penutup. Tentukan pesan yang menandai setiap perpindahan."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Bangun Pengirim Pesan",
+            "content": "Pada sprite pembuka, susun skrip Green Flag, dialog, lalu broadcast ADEGAN_2. Pastikan pesan dikirim setelah aksi pembuka selesai, bukan sebelum dialog tampil."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Bangun Penerima Pesan",
+            "content": "Pada Stage, buat skrip when I receive ADEGAN_2 untuk mengganti backdrop. Pada sprite kedua, buat skrip penerima yang menampilkan dialog atau gerakan di adegan kedua."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Perpindahan Ketiga",
+            "content": "Setelah adegan kedua selesai, kirim ADEGAN_3. Atur Stage dan sprite penerima agar menampilkan penutup. Jangan mengirim ADEGAN_3 sebelum aksi adegan kedua selesai."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Semua Jalur Pesan",
+            "content": "Jalankan dari Green Flag beberapa kali. Pastikan backdrop berubah dalam urutan yang benar, dialog tidak tumpang tindih, dan setiap pesan memiliki skrip penerima yang aktif."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Broadcast",
+            "content": "Jika tidak ada respons, cocokkan nama pesan pada pengirim dan penerima, pastikan blok when I receive berada pada sprite yang benar, dan pastikan pengirim benar-benar mencapai blok broadcast. Tambahkan wait hanya bila diperlukan."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat cerita tiga adegan dengan dua sprite, tiga backdrop, dan minimal dua pesan broadcast. Jelaskan pesan apa yang dikirim, siapa yang menerimanya, dan bagaimana kamu memastikan urutan adegan tidak bertabrakan."
+          }
+        ],
+        "activeChallengeIds": [
+          103
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 173,
+      "title": "Game Hindari Rintangan: Kontrol dan Tabrakan",
+      "description": "Membangun game menghindari rintangan dengan kontrol keyboard, gerakan rintangan berulang, deteksi sentuhan, dan kondisi game over.",
+      "challenge_id": 104,
+      "challenge_title": "Challenge: Dodge the Obstacles",
+      "challenge_instructions": "Buat game Scratch menghindari rintangan. Pemain dikendalikan tombol kiri dan kanan, minimal dua rintangan bergerak dengan kecepatan berbeda, dan sentuhan memicu Game Over. Tambahkan tombol atau pesan untuk memulai ulang. Bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Event apa yang dapat digunakan untuk menggerakkan pemain ke kanan?",
+            "options": [
+              "when backdrop switches",
+              "when right arrow key pressed",
+              "when I receive GAME_OVER",
+              "when green flag clicked saja"
+            ],
+            "answer_index": 1,
+            "explanation": "Event tombol kanan menjalankan skrip ketika pemain menekan panah kanan."
+          },
+          {
+            "question": "Mengapa gerakan rintangan diletakkan di dalam forever?",
+            "options": [
+              "Agar rintangan bergerak berulang selama game berlangsung",
+              "Agar sprite otomatis berubah nama",
+              "Agar Stage selalu berganti backdrop",
+              "Agar pemain tidak bisa bergerak"
+            ],
+            "answer_index": 0,
+            "explanation": "Forever mengulang gerakan rintangan selama permainan aktif."
+          },
+          {
+            "question": "Blok apa yang mendeteksi rintangan menyentuh pemain?",
+            "options": [
+              "change x by",
+              "next costume",
+              "touching [Pemain]?",
+              "say [Game Over]"
+            ],
+            "answer_index": 2,
+            "explanation": "Sensing touching memeriksa apakah dua objek saling bersentuhan."
+          },
+          {
+            "question": "Apa fungsi pesan GAME_OVER pada rancangan ini?",
+            "options": [
+              "Memindahkan pemain ke posisi acak",
+              "Menambah kecepatan rintangan",
+              "Mengganti nama sprite",
+              "Memberi sinyal kepada Stage bahwa permainan harus diakhiri"
+            ],
+            "answer_index": 3,
+            "explanation": "Broadcast GAME_OVER memungkinkan Stage dan sprite lain merespons kondisi kalah."
+          },
+          {
+            "question": "Jika pemain terus bergerak keluar panggung, perbaikan yang tepat adalah…",
+            "options": [
+              "Membatasi posisi X pemain pada rentang panggung",
+              "Menghapus semua event keyboard",
+              "Mempercepat rintangan tanpa batas",
+              "Mengganti backdrop setiap detik"
+            ],
+            "answer_index": 0,
+            "explanation": "Batas posisi menjaga pemain tetap berada di area permainan."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Dodge the Obstacles",
+            "instructions": "Buat game Scratch menghindari rintangan. Pemain dikendalikan tombol kiri dan kanan, minimal dua rintangan bergerak dengan kecepatan berbeda, dan sentuhan memicu Game Over. Tambahkan tombol atau pesan untuk memulai ulang. Bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Hindari Rintangan",
+            "content": "Kamu akan membuat game singkat: pemain bergerak di panggung, rintangan melintas, dan pemain harus menghindarinya. Game berakhir ketika pemain menyentuh rintangan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Tentukan Aturan Bermain",
+            "content": "Pilih kontrol pemain, area gerak, arah rintangan, dan kondisi kalah. Aturan sederhana membantu kamu menguji game dengan jelas sebelum menambah efek atau skor."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "code",
+            "order": 2,
+            "title": "Gerakan Pemain dengan Keyboard",
+            "content": "Gunakan event when right arrow key pressed dan when left arrow key pressed. Ubah posisi X sedikit demi sedikit agar pemain dapat menghindar tanpa melompat terlalu jauh.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when [right arrow] key pressed\nchange x by (10)\n\nwhen [left arrow] key pressed\nchange x by (-10)"
+            }
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Gerakkan Rintangan dengan Loop",
+            "content": "Atur rintangan mulai dari sisi panggung, bergerak melewati area pemain, lalu kembali ke posisi awal. Letakkan gerakan di dalam forever agar rintangan terus datang.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\ngo to x: (180) y: (0)\nforever\n change x by (-5)\n if <(x position) < (-180)> then\n  go to x: (180) y: (0)\n end"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Deteksi Tabrakan",
+            "content": "Gunakan blok if touching [Pemain] untuk memeriksa apakah rintangan menyentuh karakter. Letakkan pemeriksaan di dalam loop gerak rintangan agar tabrakan dapat diketahui selama game berlangsung."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Sprite dan Panggung",
+            "content": "Pilih satu sprite pemain dan satu sprite rintangan. Atur posisi awal agar keduanya terlihat dan memiliki ruang gerak. Buat backdrop sederhana yang tidak mengganggu pengamatan."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Buat Kontrol Kiri dan Kanan",
+            "content": "Tambahkan event tombol kiri dan kanan pada sprite pemain. Uji setiap tombol dan pastikan pemain tidak bergerak keluar dari batas panggung."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Buat Rintangan Melintas",
+            "content": "Pada sprite rintangan, atur posisi awal dan gerak berulang. Mulai dengan kecepatan rendah. Pastikan rintangan kembali ke titik awal setelah mencapai sisi kiri."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Kondisi Game Over",
+            "content": "Saat rintangan menyentuh pemain, kirim pesan GAME_OVER. Stage menerima pesan tersebut dan menampilkan backdrop atau teks Game Over. Hentikan gerak rintangan setelah game selesai."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Kontrol dan Tabrakan",
+            "content": "Coba menghindar beberapa kali, lalu sengaja menyentuh rintangan. Periksa apakah gerakan terasa responsif dan kondisi Game Over hanya muncul saat terjadi tabrakan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Tabrakan",
+            "content": "Jika tabrakan tidak terdeteksi, periksa sprite yang dipilih pada blok touching. Jika game over muncul terus, periksa posisi awal rintangan dan apakah skrip dimulai ulang dengan benar."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat game dengan satu pemain dan minimal dua rintangan yang memiliki kecepatan berbeda. Jelaskan kontrol pemain dan tunjukkan bahwa tabrakan menghentikan permainan."
+          }
+        ],
+        "activeChallengeIds": [
+          104
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 174,
+      "title": "Skor, Nyawa, dan Timer: Mengelola Status Game",
+      "description": "Menggunakan variabel untuk menyimpan skor, jumlah nyawa, dan sisa waktu serta menghubungkannya dengan aturan menang dan kalah.",
+      "challenge_id": 105,
+      "challenge_title": "Challenge: Game dengan Score, Lives, dan Time",
+      "challenge_instructions": "Buat game Scratch dengan variabel Score, Lives, dan Time. Atur nilai awal Score=0, Lives=3, Time=30. Tentukan satu aksi yang menambah skor dan satu bahaya yang mengurangi nyawa. Game berakhir ketika waktu atau nyawa mencapai nol. Uji kedua kondisi dan bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi variabel Score?",
+            "options": [
+              "Menyimpan jumlah poin yang diperoleh pemain",
+              "Mengatur ukuran Stage",
+              "Mengganti backdrop otomatis",
+              "Menghapus sprite"
+            ],
+            "answer_index": 0,
+            "explanation": "Score menyimpan jumlah poin yang diperoleh dari aksi berhasil."
+          },
+          {
+            "question": "Mengapa nilai Lives harus diatur ulang saat Green Flag?",
+            "options": [
+              "Agar sprite selalu berganti kostum",
+              "Agar setiap permainan dimulai dengan jumlah nyawa yang sama",
+              "Agar skor otomatis bertambah",
+              "Agar timer tidak pernah berhenti"
+            ],
+            "answer_index": 1,
+            "explanation": "Nilai awal yang konsisten membuat setiap percobaan dimulai dari kondisi yang sama."
+          },
+          {
+            "question": "Blok apa yang mengurangi nyawa satu angka?",
+            "options": [
+              "set Lives to 3",
+              "change Score by 1",
+              "change Lives by -1",
+              "show variable"
+            ],
+            "answer_index": 2,
+            "explanation": "Change Lives by -1 mengurangi nilai nyawa satu angka."
+          },
+          {
+            "question": "Jika satu tabrakan membuat Lives berkurang tiga kali, kemungkinan masalahnya adalah…",
+            "options": [
+              "Nama variabel terlalu pendek",
+              "Backdrop terlalu besar",
+              "Sprite tidak memiliki kostum",
+              "Skrip tabrakan terus berjalan tanpa jeda atau perlindungan"
+            ],
+            "answer_index": 3,
+            "explanation": "Pemeriksaan tabrakan yang terus aktif dapat mengurangi nyawa berkali-kali selama sprite masih bersentuhan."
+          },
+          {
+            "question": "Kondisi akhir yang tepat untuk game ini adalah…",
+            "options": [
+              "Time mencapai nol atau Lives mencapai nol",
+              "Pemain mengganti kostum",
+              "Backdrop berubah warna",
+              "Sprite dipilih di Sprite List"
+            ],
+            "answer_index": 0,
+            "explanation": "Permainan dapat berakhir saat waktu habis atau nyawa pemain mencapai nol."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Game dengan Score, Lives, dan Time",
+            "instructions": "Buat game Scratch dengan variabel Score, Lives, dan Time. Atur nilai awal Score=0, Lives=3, Time=30. Tentukan satu aksi yang menambah skor dan satu bahaya yang mengurangi nyawa. Game berakhir ketika waktu atau nyawa mencapai nol. Uji kedua kondisi dan bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Tiga Informasi Penting",
+            "content": "Game bukan hanya gerakan. Pemain juga perlu mengetahui skor, nyawa, dan waktu. Kamu akan memakai tiga variabel untuk menyimpan informasi tersebut selama permainan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Variabel?",
+            "content": "Variabel adalah tempat menyimpan nilai yang dapat berubah. Score menyimpan poin, Lives menyimpan kesempatan pemain, dan Time menyimpan batas waktu permainan."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "code",
+            "order": 2,
+            "title": "Tentukan Nilai Awal",
+            "content": "Saat Green Flag diklik, atur Score menjadi 0, Lives menjadi 3, dan Time menjadi 30. Nilai awal harus diatur setiap permainan dimulai agar hasil percobaan tidak terbawa dari permainan sebelumnya.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\nset [Score] to (0)\nset [Lives] to (3)\nset [Time] to (30)"
+            }
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Ubah Skor Saat Berhasil",
+            "content": "Ketika pemain menangkap objek, gunakan change Score by 1. Pastikan skor bertambah hanya satu kali untuk setiap objek yang berhasil ditangkap, bukan terus bertambah selama objek masih menyentuh pemain."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Kurangi Nyawa Saat Gagal",
+            "content": "Ketika pemain terkena rintangan, gunakan change Lives by -1. Setelah nyawa berkurang, pindahkan pemain ke posisi aman atau periksa apakah nyawa sudah mencapai nol.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "if <touching [Rintangan]?> then\n change [Lives] by (-1)\n go to x: (0) y: (-120)\n wait (1) seconds"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Variabel dan Monitor",
+            "content": "Buat variabel Score, Lives, dan Time untuk semua sprite. Tampilkan monitor variabel pada Stage agar pemain dapat melihat nilainya saat game berjalan."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Atur Nilai Awal Permainan",
+            "content": "Pada skrip Green Flag, atur ketiga nilai. Jalankan project dua kali untuk memastikan skor, nyawa, dan waktu selalu kembali ke nilai awal."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Hubungkan Skor dengan Aksi",
+            "content": "Pilih satu aksi yang menghasilkan poin. Tambahkan perubahan skor pada saat aksi itu berhasil. Uji apakah satu kejadian hanya menghasilkan satu poin."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Hubungkan Nyawa dengan Bahaya",
+            "content": "Tambahkan deteksi tabrakan dan kurangi Lives saat pemain terkena rintangan. Beri jeda singkat atau pindahkan pemain agar satu tabrakan tidak mengurangi banyak nyawa sekaligus."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Buat Timer dan Akhir Permainan",
+            "content": "Gunakan reset timer atau variabel Time yang berkurang setiap detik. Jika Time mencapai nol atau Lives mencapai nol, kirim pesan GAME_OVER dan hentikan permainan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Variabel",
+            "content": "Jika skor bertambah terus, pastikan perubahan hanya terjadi sekali per kejadian. Jika nyawa turun berkali-kali, tambahkan jeda atau status kebal singkat. Jika timer tidak reset, atur nilai awal di Green Flag."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat game dengan Score, Lives, dan Time. Tentukan nilai awal, aksi penambah skor, penyebab nyawa berkurang, serta kondisi akhir. Uji skenario menang dan kalah."
+          }
+        ],
+        "activeChallengeIds": [
+          105
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 175,
+      "title": "Level dan Tingkat Kesulitan: Membuat Progres Game",
+      "description": "Menggunakan variabel level dan kondisi untuk membuka tahap permainan berikutnya serta meningkatkan tantangan secara terukur.",
+      "challenge_id": 106,
+      "challenge_title": "Challenge: Game Dua Level",
+      "challenge_instructions": "Kembangkan game Scratch menjadi dua level. Level 1 harus memiliki target skor 5. Saat target tercapai, Level berubah menjadi 2 dan kecepatan atau jumlah rintangan meningkat. Tentukan target akhir dan tampilkan pesan menang. Bagikan tautan project serta jelaskan perbedaan dua level.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa yang disimpan oleh variabel Level?",
+            "options": [
+              "Tahap permainan yang sedang aktif",
+              "Nama sprite utama",
+              "Jumlah backdrop di project",
+              "Warna rintangan"
+            ],
+            "answer_index": 0,
+            "explanation": "Variabel Level menyimpan tahap permainan yang sedang dimainkan."
+          },
+          {
+            "question": "Mengapa syarat naik level harus jelas?",
+            "options": [
+              "Agar semua sprite otomatis terhapus",
+              "Agar perpindahan tahap terjadi karena pencapaian yang dapat diuji",
+              "Agar skor tidak terlihat",
+              "Agar pemain tidak bisa mengulang game"
+            ],
+            "answer_index": 1,
+            "explanation": "Syarat yang jelas membuat perpindahan level adil dan dapat diprediksi."
+          },
+          {
+            "question": "Kondisi mana yang tepat untuk naik dari Level 1 ke Level 2 setelah skor mencapai 5?",
+            "options": [
+              "if Score = 0",
+              "if Level = 2",
+              "if Level = 1 and Score >= 5",
+              "if touching edge"
+            ],
+            "answer_index": 2,
+            "explanation": "Kondisi memeriksa level saat ini dan target skor sebelum menaikkan level."
+          },
+          {
+            "question": "Apa cara sederhana meningkatkan kesulitan pada Level 2?",
+            "options": [
+              "Menghapus kontrol pemain",
+              "Menyembunyikan semua variabel",
+              "Mengganti nama project",
+              "Meningkatkan kecepatan rintangan atau menambah satu rintangan"
+            ],
+            "answer_index": 3,
+            "explanation": "Perubahan kecepatan atau jumlah rintangan membuat level berikutnya lebih menantang."
+          },
+          {
+            "question": "Jika level naik berkali-kali setelah skor mencapai 5, apa yang harus diperiksa?",
+            "options": [
+              "Apakah kondisi membatasi kenaikan hanya saat Level masih 1",
+              "Apakah backdrop memiliki nama panjang",
+              "Apakah sprite punya dua kostum",
+              "Apakah musik sedang diputar"
+            ],
+            "answer_index": 0,
+            "explanation": "Pemeriksaan Level=1 mencegah kondisi naik level dijalankan berulang setelah Level menjadi 2."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Game Dua Level",
+            "instructions": "Kembangkan game Scratch menjadi dua level. Level 1 harus memiliki target skor 5. Saat target tercapai, Level berubah menjadi 2 dan kecepatan atau jumlah rintangan meningkat. Tentukan target akhir dan tampilkan pesan menang. Bagikan tautan project serta jelaskan perbedaan dua level.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Tantangan Bertahap",
+            "content": "Kamu akan menambahkan level agar game berkembang. Level berikutnya tidak boleh terbuka secara acak; pemain harus memenuhi syarat yang sudah ditentukan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Level?",
+            "content": "Level adalah tahap permainan. Setiap level dapat memiliki target, kecepatan, atau jumlah rintangan yang berbeda. Variabel Level menyimpan tahap yang sedang dimainkan."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Tentukan Syarat Naik Level",
+            "content": "Contoh: pemain mulai pada Level 1. Setelah Score mencapai 5, Level berubah menjadi 2. Gunakan kondisi agar perubahan terjadi satu kali dan tidak terus mengulang."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh Kondisi Naik Level",
+            "content": "Periksa apakah Level masih 1 dan Score sudah minimal 5. Jika benar, ubah Level menjadi 2 dan kirim pesan LEVEL_UP agar sprite lain menyesuaikan tantangan.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "if <<(Level) = (1)> and <(Score) >= (5)>> then\n set [Level] to (2)\n broadcast [LEVEL_UP]"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Ubah Tantangan pada Level 2",
+            "content": "Saat menerima LEVEL_UP, rintangan dapat bergerak lebih cepat atau jumlahnya bertambah. Ubah satu hal terlebih dahulu agar perubahan tingkat kesulitan mudah diamati."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Variabel Level",
+            "content": "Buat variabel Level dan atur nilai awal menjadi 1 saat Green Flag. Tampilkan monitor variabel agar pemain mengetahui tahap yang sedang berlangsung."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Buat Target Level 1",
+            "content": "Tentukan target yang dapat dicapai, misalnya Score 5. Pastikan pemain memahami apa yang harus dilakukan untuk mencapai target tersebut."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Bangun Perpindahan Level",
+            "content": "Tambahkan kondisi Level=1 dan Score>=5. Ketika syarat terpenuhi, atur Level menjadi 2 dan kirim pesan LEVEL_UP."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Atur Perbedaan Level 2",
+            "content": "Buat skrip penerima LEVEL_UP. Tingkatkan kecepatan rintangan sedikit atau tambahkan satu rintangan. Jangan mengubah terlalu banyak hal sekaligus."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Tentukan Kondisi Selesai",
+            "content": "Tentukan target akhir, misalnya Score 10 pada Level 2. Saat target tercapai, tampilkan pesan menang. Uji agar pemain tidak langsung naik level berkali-kali."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Level",
+            "content": "Jika level terus bertambah, pastikan kondisi hanya berlaku saat Level=1. Jika rintangan tidak berubah, periksa nama broadcast LEVEL_UP dan skrip penerimanya."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat game dua level. Level 1 memiliki target skor, Level 2 memiliki tantangan yang meningkat, dan game menampilkan pesan menang saat target akhir tercapai."
+          }
+        ],
+        "activeChallengeIds": [
+          106
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 176,
+      "title": "Efek Suara dan Umpan Balik Game",
+      "description": "Memakai suara, pesan, dan perubahan visual sebagai umpan balik yang membantu pemain memahami hasil dari setiap aksi.",
+      "challenge_id": 107,
+      "challenge_title": "Challenge: Game dengan Umpan Balik",
+      "challenge_instructions": "Tambahkan tiga respons berbeda pada game Scratch: suara atau animasi saat mendapat poin, respons saat terkena bahaya, dan respons saat menang. Pastikan efek muncul pada kejadian yang tepat, tidak bertumpuk, dan tidak menghalangi permainan. Bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa contoh umpan balik dalam game?",
+            "options": [
+              "Suara muncul saat pemain mendapat poin",
+              "Mengganti nama file project",
+              "Menghapus semua variabel",
+              "Menutup editor Scratch"
+            ],
+            "answer_index": 0,
+            "explanation": "Suara saat mendapat poin memberi tahu pemain bahwa aksinya berhasil."
+          },
+          {
+            "question": "Mengapa suara poin dan suara kalah sebaiknya berbeda?",
+            "options": [
+              "Agar file project lebih besar",
+              "Agar pemain dapat membedakan kejadian yang terjadi",
+              "Agar sprite bergerak lebih cepat",
+              "Agar skor selalu bertambah"
+            ],
+            "answer_index": 1,
+            "explanation": "Suara yang berbeda membantu pemain memahami hasil aksi."
+          },
+          {
+            "question": "Apa risiko meletakkan suara berulang di dalam forever tanpa kontrol?",
+            "options": [
+              "Backdrop berubah otomatis",
+              "Variabel terhapus",
+              "Suara dapat bertumpuk dan mengganggu permainan",
+              "Project tidak dapat disimpan"
+            ],
+            "answer_index": 2,
+            "explanation": "Loop tanpa jeda atau pengaturan dapat memicu suara berkali-kali."
+          },
+          {
+            "question": "Blok apa yang dapat menghentikan semua suara saat game berakhir?",
+            "options": [
+              "change volume by",
+              "play sound until done",
+              "next costume",
+              "stop all sounds"
+            ],
+            "answer_index": 3,
+            "explanation": "Stop all sounds menghentikan audio yang masih diputar."
+          },
+          {
+            "question": "Apa yang perlu diuji setelah menambahkan efek suara?",
+            "options": [
+              "Apakah suara muncul pada kejadian yang tepat dan tidak bertumpuk",
+              "Apakah nama akun berubah",
+              "Apakah jumlah backdrop bertambah",
+              "Apakah ukuran layar berubah"
+            ],
+            "answer_index": 0,
+            "explanation": "Uji hubungan antara kejadian dan suara serta pastikan audio tidak mengganggu."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Game dengan Umpan Balik",
+            "instructions": "Tambahkan tiga respons berbeda pada game Scratch: suara atau animasi saat mendapat poin, respons saat terkena bahaya, dan respons saat menang. Pastikan efek muncul pada kejadian yang tepat, tidak bertumpuk, dan tidak menghalangi permainan. Bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Game yang Merespons",
+            "content": "Game terasa lebih jelas ketika pemain mendapat respons. Kamu akan menambahkan suara dan perubahan tampilan untuk kejadian penting, bukan memutar efek secara acak."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Umpan Balik?",
+            "content": "Umpan balik adalah respons game terhadap aksi pemain. Contohnya suara saat mendapat poin, perubahan kostum saat terluka, atau pesan saat menang."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Pilih Suara Sesuai Kejadian",
+            "content": "Gunakan suara singkat untuk kejadian singkat. Suara poin berbeda dari suara kalah agar pemain dapat membedakan hasil aksinya."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh Efek Saat Mendapat Poin",
+            "content": "Setelah skor bertambah, mainkan suara pendek satu kali. Jangan meletakkan play sound di dalam loop tanpa jeda karena suara dapat bertumpuk.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "if <touching [Apel]?> then\n change [Score] by (1)\n start sound [Collect]"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Contoh Efek Saat Game Over",
+            "content": "Saat menerima GAME_OVER, hentikan suara permainan yang masih berjalan, mainkan suara akhir, lalu tampilkan pesan. Pisahkan skrip akhir dari loop gerakan utama.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when I receive [GAME_OVER]\n stop all sounds\n play sound [Lose] until done\n say [Game Over!]"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Pilih Tiga Kejadian Penting",
+            "content": "Tentukan kejadian yang membutuhkan respons: mendapat poin, terkena bahaya, dan menang. Pilih suara atau tampilan yang paling mudah dipahami untuk setiap kejadian."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Tambahkan Suara Poin",
+            "content": "Tambahkan suara pada aksi yang menambah Score. Uji apakah suara hanya muncul sekali untuk satu objek yang tertangkap."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Tambahkan Respons Saat Terluka",
+            "content": "Saat Lives berkurang, tampilkan efek visual singkat seperti perubahan kostum atau pesan. Pastikan efek tidak menutupi kontrol pemain terlalu lama."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Respons Saat Menang",
+            "content": "Saat target tercapai, tampilkan backdrop atau pesan kemenangan dan mainkan suara penutup. Hentikan loop rintangan agar permainan benar-benar selesai."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Atur Volume dan Durasi",
+            "content": "Pilih suara yang tidak terlalu panjang dan atur volume agar dialog tetap terdengar. Uji suara bersama gerakan dan pastikan tidak saling menutupi."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Audio",
+            "content": "Jika suara bertumpuk, gunakan start sound hanya pada satu kejadian atau stop all sounds saat game berakhir. Jika suara tidak muncul, periksa nama sound dan sprite pemilik skrip."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Tambahkan minimal tiga umpan balik berbeda untuk poin, bahaya, dan kemenangan. Uji setiap kejadian dan jelaskan bagaimana suara atau tampilan membantu pemain memahami game."
+          }
+        ],
+        "activeChallengeIds": [
+          107
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 177,
+      "title": "Final Project: Game Scratch dengan Aturan Lengkap",
+      "description": "Mengintegrasikan kontrol keyboard, sensing, loop, variabel, level, broadcast, suara, dan debugging ke dalam satu game yang dapat dimainkan dari awal hingga akhir.",
+      "challenge_id": 108,
+      "challenge_title": "Challenge: Rilis Game Scratch Buatan Sendiri",
+      "challenge_instructions": "Buat game Scratch orisinal yang memiliki tujuan dan aturan tertulis, kontrol pemain, minimal satu tantangan, minimal satu variabel, serta kondisi menang dan kalah. Tambahkan umpan balik untuk kejadian penting. Uji alur dari awal sampai akhir, perbaiki bug, lalu bagikan tautan project dan ringkasan cara bermain.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa yang perlu ditentukan sebelum mulai membuat game?",
+            "options": [
+              "Tujuan, aturan, kontrol, tantangan, dan kondisi akhir",
+              "Warna semua sprite saja",
+              "Jumlah file gambar",
+              "Nama akun Scratch"
+            ],
+            "answer_index": 0,
+            "explanation": "Rancangan aturan membuat fitur game memiliki tujuan yang jelas."
+          },
+          {
+            "question": "Mengapa variabel perlu diatur ke nilai awal saat Green Flag?",
+            "options": [
+              "Agar backdrop selalu sama",
+              "Agar setiap permainan dimulai dari kondisi yang konsisten",
+              "Agar semua suara berhenti",
+              "Agar sprite tidak bisa bergerak"
+            ],
+            "answer_index": 1,
+            "explanation": "Nilai awal mencegah sisa skor atau nyawa dari permainan sebelumnya."
+          },
+          {
+            "question": "Apa manfaat memisahkan skrip pemain, rintangan, dan Stage?",
+            "options": [
+              "Agar semua kode berada dalam satu blok panjang",
+              "Agar game tidak perlu diuji",
+              "Agar setiap bagian memiliki tugas yang lebih mudah diperiksa",
+              "Agar jumlah sprite selalu satu"
+            ],
+            "answer_index": 2,
+            "explanation": "Pemisahan tugas membantu membaca, menguji, dan memperbaiki skrip."
+          },
+          {
+            "question": "Langkah debugging yang baik adalah…",
+            "options": [
+              "Menghapus semua skrip sekaligus",
+              "Mengubah banyak hal tanpa menguji",
+              "Mengabaikan bug yang jarang muncul",
+              "Mengulang masalah, memeriksa penyebab, mengubah satu bagian, lalu menguji kembali"
+            ],
+            "answer_index": 3,
+            "explanation": "Mengubah satu bagian dalam satu waktu membantu menemukan penyebab masalah."
+          },
+          {
+            "question": "Kapan game dapat dianggap siap dipresentasikan?",
+            "options": [
+              "Alur utama dapat dimainkan, aturan jelas, dan kondisi akhir sudah diuji",
+              "Hanya setelah judul dan backdrop dibuat",
+              "Saat belum pernah dicoba",
+              "Ketika pemain tidak bisa bergerak"
+            ],
+            "answer_index": 0,
+            "explanation": "Game siap dipresentasikan jika alur utama, kontrol, dan kondisi akhirnya berjalan."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 30,
+            "title": "Challenge: Rilis Game Scratch Buatan Sendiri",
+            "instructions": "Buat game Scratch orisinal yang memiliki tujuan dan aturan tertulis, kontrol pemain, minimal satu tantangan, minimal satu variabel, serta kondisi menang dan kalah. Tambahkan umpan balik untuk kejadian penting. Uji alur dari awal sampai akhir, perbaiki bug, lalu bagikan tautan project dan ringkasan cara bermain.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Rancang Game-mu",
+            "content": "Pilih ide game sederhana yang dapat diselesaikan dalam satu project. Kamu akan merencanakan aturan, membangun fitur inti, menguji, lalu memperbaiki hasilnya."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Tentukan Tujuan dan Aturan",
+            "content": "Tuliskan apa tujuan pemain, tombol yang digunakan, tantangan yang dihadapi, cara mendapat poin, dan kondisi menang atau kalah. Aturan harus dapat dijelaskan sebelum game dibuat."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Rancang Alur Game",
+            "content": "Buat urutan mulai, bermain, naik level bila ada, dan akhir permainan. Tentukan pesan broadcast yang diperlukan untuk memulai atau mengakhiri bagian tertentu."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh Struktur Skrip Awal",
+            "content": "Saat Green Flag ditekan, atur semua variabel ke nilai awal, tempatkan sprite di posisi awal, lalu mulai loop permainan. Pisahkan skrip pemain, rintangan, dan Stage.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\nset [Score] to (0)\nset [Lives] to (3)\nset [Level] to (1)\nbroadcast [START_GAME]"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Contoh Kondisi Menang dan Kalah",
+            "content": "Game harus memiliki kondisi akhir yang dapat diuji. Contohnya, menang ketika Score mencapai target dan kalah ketika Lives menjadi nol atau timer habis.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "if <(Score) >= (10)> then\n broadcast [WIN]\nend\nif <(Lives) <= (0)> then\n broadcast [GAME_OVER]\nend"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Prototipe yang Dapat Dimainkan",
+            "content": "Mulai dari pemain dan satu tantangan. Pastikan kontrol dan tujuan utama sudah berjalan sebelum menambahkan level, suara, atau dekorasi."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Tambahkan Aturan dan Variabel",
+            "content": "Atur nilai awal Score, Lives, dan Time jika digunakan. Hubungkan perubahan variabel dengan kejadian yang sesuai, lalu tampilkan monitor yang diperlukan."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Tambahkan Tantangan dan Deteksi",
+            "content": "Buat rintangan bergerak dan deteksi tabrakan. Pastikan kondisi tabrakan memengaruhi nyawa atau status game sesuai aturan yang sudah ditulis."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Level atau Umpan Balik",
+            "content": "Jika game memiliki level, buat syarat perpindahan yang jelas. Tambahkan suara atau pesan untuk keberhasilan, kegagalan, dan kejadian penting."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji dari Awal Sampai Akhir",
+            "content": "Mainkan game dari Green Flag sampai menang atau kalah. Uji juga tombol, tabrakan, skor, timer, dan kemungkinan memulai ulang."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Debugging dan Penyempurnaan",
+            "content": "Catat bug yang ditemukan, ulangi agar dapat direproduksi, periksa event/loop/kondisi/variabel, lalu ubah satu bagian dan uji kembali. Hapus skrip atau clone yang tidak lagi diperlukan."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Selesaikan game orisinal yang dapat dimainkan dari awal hingga akhir. Siapkan penjelasan singkat tentang aturan, blok penting, bug yang diperbaiki, dan satu peningkatan yang akan kamu lakukan berikutnya."
+          }
+        ],
+        "activeChallengeIds": [
+          108
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    }
+  ]
+}
