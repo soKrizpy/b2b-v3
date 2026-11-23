@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 import type { TutorMeetingSummary } from "./data/supabase-tutor-schedule-repository";
-import { TutorLearningRecords } from "./TutorLearningRecords";
+import TutorLearningRecords from "./TutorLearningRecords";
 
 type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
 
