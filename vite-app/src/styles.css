@@ -141,3 +141,9 @@
 .tutor-record-history article { display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--space-2); padding:var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); }
 .tutor-record-history article span { color:var(--color-text-muted); font-size:var(--font-size-xs); }
 @media(max-width:768px) { .tutor-record-grid { grid-template-columns:1fr; } }
+
+.tutor-pending-submission { display:grid; gap:var(--space-3); }
+.tutor-pending-submission > div:first-child { display:grid; gap:var(--space-1); }
+.tutor-pending-submission > div:first-child span { color:var(--color-text-muted); font-size:var(--font-size-xs); }
+.tutor-pending-submission a { color:var(--color-link); overflow-wrap:anywhere; }
+.tutor-pending-submission p { margin:0; color:var(--color-text-secondary); }
