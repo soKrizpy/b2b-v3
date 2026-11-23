@@ -49,7 +49,7 @@ jobs:
         run: deno check supabase/functions/admin-manage-user/index.ts
       - name: Test admin deactivation security invariants
         working-directory: .
-        run: deno test supabase/functions/_shared/admin-deactivation.test.ts
+        run: deno test supabase/functions/_shared/
       - name: Install Playwright test runner
         run: npm install --no-save @playwright/test
       - name: Install Chromium
