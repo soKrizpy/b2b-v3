@@ -979,7 +979,7 @@ export class AdminWorkspace {
           title: isEdit ? 'Akun Diperbarui' : 'Akun Baru Dibuat 🎉',
           message: isEdit
             ? `Akun ${res.user.displayName} berhasil diperbarui.`
-            : `Undangan akun ${res.user.displayName} berhasil dikirim ke email. Siswa juga sudah memiliki nomor WhatsApp dan MPIN yang tersimpan dalam bentuk hash.`,
+            : `Undangan akun ${res.user.displayName} berhasil dikirim ke email.${role === 'student' ? ' Nomor WhatsApp tersimpan dan MPIN di-hash di server.' : ''}`,
           type: 'success'
         });
         closeModal();
