@@ -12,6 +12,7 @@ async function mockStudentPortalWithCurriculum(page: Page) {
     "access-control-max-age": "86400"
   };
   const jsonHeaders = { ...cors, "content-type": "application/json" };
+  let progressVersion = 0;
 
   await page.route(`https://${host}/**`, async (route) => {
     const request = route.request();
@@ -168,6 +169,32 @@ async function mockStudentPortalWithCurriculum(page: Page) {
 
     if (url.pathname === "/rest/v1/student_lesson_progress" && request.method() === "GET") {
       await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/rpc/save_student_lesson_progress" && request.method() === "POST") {
+      const payload = request.postDataJSON() as {
+        p_state: string;
+        p_checkpoints: Record<string, boolean>;
+        p_submission_draft: { link?: string; notes?: string } | null;
+        p_slide_index: number;
+      };
+      progressVersion += 1;
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          id: 12,
+          student_id: userId,
+          topic_id: 146,
+          state: payload.p_state,
+          checkpoints: payload.p_checkpoints,
+          submission_draft: payload.p_submission_draft,
+          slide_index: payload.p_slide_index,
+          version: progressVersion,
+          updated_at: new Date().toISOString()
+        })
+      });
       return;
     }
 
