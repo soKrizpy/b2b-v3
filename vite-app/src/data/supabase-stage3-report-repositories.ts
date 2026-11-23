@@ -240,7 +240,7 @@ export function createSupabaseMonthlyEvaluationRepository(): MonthlyEvaluationRe
           if (!input.expectedVersion) return { success: false, error: { code: "VERSION_REQUIRED", message: "Versi evaluasi diperlukan." } };
           query = supabase!
             .from("monthly_evaluations")
-            .update({ ...values, version: input.expectedVersion + 1 })
+            .update(values)
             .eq("id", input.id)
             .eq("version", input.expectedVersion)
             .select("*")
@@ -248,7 +248,7 @@ export function createSupabaseMonthlyEvaluationRepository(): MonthlyEvaluationRe
         } else {
           query = supabase!
             .from("monthly_evaluations")
-            .insert({ ...values, version: 1 })
+            .insert(values)
             .select("*")
             .single();
         }
