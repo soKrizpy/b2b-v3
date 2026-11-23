@@ -22,7 +22,7 @@ export class AdminWorkspace {
     this.productionMode = options.productionMode === true;
     if (options.productionMode === true) {
       if (!repositories) throw new Error('Repository Admin produksi wajib diberikan secara eksplisit.');
-      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity', 'billing']);
+      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity', 'billing', 'classSessions']);
     } else {
       this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
     }
@@ -63,6 +63,7 @@ export class AdminWorkspace {
       ? await this.repositories.identity.getAllAssignments()
       : [];
     const invoices = this.productionMode ? await this.repositories.billing.getInvoices() : [];
+    const sessions = this.productionMode ? await this.repositories.classSessions.listSessions() : [];
     const rateEntries = this.productionMode
       ? await Promise.all(users.filter(user => user.role === 'student').map(async user => [user.id, await this.repositories.billing.getRate(user.id)]))
       : [];
@@ -70,6 +71,7 @@ export class AdminWorkspace {
     this.users = users;
     this.assignments = Array.isArray(assignments) ? assignments : [];
     this.invoices = Array.isArray(invoices) ? invoices : [];
+    this.sessions = Array.isArray(sessions) ? sessions : [];
     this.usersById = new Map(users.map(user => [user.id, user]));
     this.ratesByStudent = new Map(rateEntries.filter((entry) => entry[1] != null));
     if (render && this.container) this.render();
@@ -144,6 +146,9 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
             🧾 Tarif & Tagihan (${this.invoices.length})
           </button>
+          <button type="button" class="btn btn-sm ${this.activeTab === 'schedule' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="schedule">
+            📅 Jadwal & Sesi (${this.sessions.length})
+          </button>
         </nav>
 
         <!-- ACTIVE TAB BODY -->
@@ -160,6 +165,7 @@ export class AdminWorkspace {
   renderActiveTabContent() {
     if (this.activeTab === 'tutor-relations') return this.renderTutorRelationsView();
     if (this.activeTab === 'billing') return this.renderBillingView();
+    if (this.activeTab === 'schedule') return this.renderScheduleView();
     return this.renderUsersView();
   }
 
@@ -388,7 +394,7 @@ export class AdminWorkspace {
         <div class="card" style="padding:var(--space-4);">
           <h3 style="margin-top:0;">Buat seri jadwal kelas</h3>
           <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);">
-            Pilih beberapa hari dan jumlah pertemuan. Jika tutor atau siswa bentrok, tanggal tersebut dilewati dan sistem mencari hari pilihan berikutnya sampai jumlah sesi terpenuhi. Waktu menggunakan WIB.
+            Pilih beberapa hari dan jumlah pertemuan. Sistem memeriksa bentrok tutor secara atomik; jika satu slot bentrok, seluruh seri ditolak agar tidak ada jadwal parsial. Waktu menggunakan WIB.
           </p>
           <form id="admin-create-series-form" style="display:flex;flex-direction:column;gap:var(--space-3);">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--space-3);">
@@ -411,10 +417,10 @@ export class AdminWorkspace {
                 <input name="startTime" type="time" value="16:00" required style="width:100%;">
               </label>
               <label>Jumlah pertemuan
-                <input name="targetCount" type="number" min="1" max="100" value="12" required style="width:100%;">
+                <input name="targetCount" type="number" min="1" max="52" value="12" required style="width:100%;">
               </label>
               <label>Durasi pertemuan (menit)
-                <input name="durationMinutes" type="number" min="1" max="480" value="60" required style="width:100%;">
+                <input name="durationMinutes" type="number" min="15" max="240" value="60" required style="width:100%;">
               </label>
             </div>
             <fieldset style="border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);padding:var(--space-3);">
@@ -565,15 +571,14 @@ export class AdminWorkspace {
           meetingUrl: String(formData.get('meetingUrl') || '')
         });
         if (!result.success) {
-          showToast({ title: 'Jadwal gagal dibuat', message: result.message, type: 'error' });
+          showToast({ title: 'Jadwal gagal dibuat', message: result.error.message, type: 'error' });
         } else {
-          const skipped = result.skippedSlots.filter(slot => slot.reason === 'CONFLICT').length;
           showToast({
             title: 'Seri jadwal berhasil dibuat',
-            message: `${result.sessions.length} sesi dibuat.${skipped ? ` ${skipped} slot bentrok dilewati.` : ''}`,
+            message: `${result.data.length} sesi berhasil dibuat dan ditautkan ke siswa.`,
             type: 'success'
           });
-          this.render();
+          await this.refreshData();
         }
         } catch (error) {
           showToast({ title: 'Jadwal gagal dibuat', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membuat jadwal.', type: 'error' });
@@ -591,10 +596,10 @@ export class AdminWorkspace {
             button.getAttribute('data-cancel-session'),
             this.currentUser
           );
-          if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.message, type: 'error' });
+          if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.error.message, type: 'error' });
           else {
-            showToast({ title: 'Sesi dibatalkan', message: 'Sesi tidak masuk tagihan.', type: 'success' });
-            this.render();
+            showToast({ title: 'Sesi dibatalkan', message: 'Sesi tidak masuk tagihan dan memerlukan sesi pengganti.', type: 'success' });
+            await this.refreshData();
           }
         } catch (error) {
           showToast({ title: 'Pembatalan gagal', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membatalkan sesi.', type: 'error' });
@@ -612,10 +617,10 @@ export class AdminWorkspace {
             button.getAttribute('data-soft-delete-session'),
             this.currentUser
           );
-          if (!result.success) showToast({ title: 'Penghapusan gagal', message: result.message, type: 'error' });
+          if (!result.success) showToast({ title: 'Penghapusan gagal', message: result.error.message, type: 'error' });
           else {
             showToast({ title: 'Sesi dihapus administratif', message: 'Riwayat tetap tersimpan dan sesi pengganti diperlukan.', type: 'success' });
-            this.render();
+            await this.refreshData();
           }
         } catch (error) {
           showToast({ title: 'Penghapusan gagal', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menghapus sesi.', type: 'error' });
@@ -644,10 +649,10 @@ export class AdminWorkspace {
             { scheduledStartAt: start.toISOString() },
             this.currentUser
           );
-          if (!result.success) showToast({ title: 'Sesi pengganti gagal dibuat', message: result.message, type: 'error' });
+          if (!result.success) showToast({ title: 'Sesi pengganti gagal dibuat', message: result.error.message, type: 'error' });
           else {
             showToast({ title: 'Sesi pengganti terhubung', message: 'Riwayat sesi asal tetap tersimpan.', type: 'success' });
-            this.render();
+            await this.refreshData();
           }
         } catch (error) {
           showToast({ title: 'Sesi pengganti gagal dibuat', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membuat sesi pengganti.', type: 'error' });
