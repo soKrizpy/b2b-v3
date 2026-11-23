@@ -6,17 +6,7 @@ import {
   type TopicQuizAttemptResult
 } from "./quiz-contract";
 
-export type TopicQuizAnswer = {
-  questionIndex: number;
-  selectedIndex: number;
-};
-
-export type TopicQuizAttemptResult = {
-  attemptNumber: number;
-  score: number;
-  correctCount: number;
-  totalQuestions: number;
-};
+export type { TopicQuizAnswer, TopicQuizAttemptResult } from "./quiz-contract";
 
 export async function submitStudentTopicQuiz(
   topicId: number,
