@@ -29,7 +29,8 @@ const adminListUsersFunctionSource = readFileSync(resolve(process.cwd(), "../sup
     expect(adminListUsersFunctionSource).toContain('profile.role === "teacher" ? "tutor" : profile.role');
     expect(adminListUsersFunctionSource).toContain('isBanned ? "inactive" : "active"');
     expect(adminListUsersFunctionSource).toContain('return json({ accounts, source: "supabase" })');
-    expect(adminListUsersFunctionSource).not.toMatch(/mpin_hash|password_hash|phone_number|whatsapp/);
+    expect(adminListUsersFunctionSource).not.toMatch(/mpin_hash|password_hash|phone_number/);
+    expect(adminListUsersFunctionSource).toContain('.select("id, grade, whatsapp")');
     expect(adminListUsersFunctionSource).toContain('Deno.env.get("SUPABASE_SECRET_KEYS")');
   });
 
