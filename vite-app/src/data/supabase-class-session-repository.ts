@@ -223,10 +223,6 @@ export function createSupabaseClassSessionRepository(
       }
     },
 
-    async createRecurringSessionSeries(input: RecurringSessionSeriesInput): Promise<RepositoryResult<ClassSession[]>> {
-      return this.createRecurringSeries(input);
-    },
-
     async recordAttendance(sessionId: UUID, status: Exclude<AttendanceStatus, "not_recorded">): Promise<RepositoryResult<ClassSession>> {
       const parsed = parseSessionId(sessionId);
       if (!parsed?.studentId) return { success: false, error: { code: "INVALID_SESSION", message: "Sesi siswa tidak valid." } };
@@ -304,14 +300,6 @@ export function createSupabaseClassSessionRepository(
       const replacement = replacementRecords.find((record) => record.link.student_id === parsed.studentId);
       if (!original || !replacement) return { success: false, error: { code: "REPLACEMENT_READ_FAILED", message: "Sesi pengganti tersimpan tetapi gagal dimuat ulang." } };
       return { success: true, data: { original, replacement: mapClassSession(replacement) } };
-    },
-
-    async createReplacementSession(
-      originalSessionId: UUID,
-      input: CreateReplacementSessionInput,
-      _actor?: unknown
-    ): Promise<RepositoryResult<{ original: ClassSession; replacement: ClassSession }>> {
-      return this.createReplacement(originalSessionId, input);
     },
 
     async listBillableSessions(studentId: UUID, period: YearMonth) {
