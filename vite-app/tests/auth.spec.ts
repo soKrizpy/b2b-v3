@@ -361,11 +361,34 @@ test.describe("Supabase Auth portal", () => {
       await expect(page.getByRole("heading", { name: expectedTitle })).toBeVisible();
 
       const assertNoHorizontalOverflow = async () => {
-        const metrics = await page.evaluate(() => ({
-          viewport: window.innerWidth,
-          document: document.documentElement.scrollWidth,
-          body: document.body.scrollWidth
-        }));
+        const metrics = await page.evaluate(() => {
+          const offenders = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+            .map((element) => {
+              const rect = element.getBoundingClientRect();
+              const style = getComputedStyle(element);
+              return {
+                tag: element.tagName.toLowerCase(),
+                id: element.id,
+                className: typeof element.className === "string" ? element.className : "",
+                left: Math.round(rect.left),
+                right: Math.round(rect.right),
+                width: Math.round(rect.width),
+                minWidth: style.minWidth,
+                position: style.position,
+                overflowX: style.overflowX
+              };
+            })
+            .filter((item) => item.width > 0 && item.right > window.innerWidth + 1)
+            .sort((a, b) => b.right - a.right)
+            .slice(0, 15);
+          return {
+            viewport: window.innerWidth,
+            document: document.documentElement.scrollWidth,
+            body: document.body.scrollWidth,
+            offenders
+          };
+        });
+        console.log("RESPONSIVE_OVERFLOW_DIAGNOSTIC", JSON.stringify(metrics));
         expect(metrics.document, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
         expect(metrics.body, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
       };
