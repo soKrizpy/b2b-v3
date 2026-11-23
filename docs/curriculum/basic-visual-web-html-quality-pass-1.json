@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "module_id": 10,
+  "module_title": "BASIC VISUAL WEB — HTML & Struktur Halaman",
+  "revision": "quality-pass-1",
+  "note": "Replaces generic lesson node text, reorders prerequisites, preserves existing quiz arrays and all topic IDs/history.",
+  "topics": [
+    {
+      "topic_id": 32,
+      "order_index": 1,
+      "title": "Struktur Dokumen HTML dan Tag Dasar",
+      "description": "Mengenali kerangka HTML, fungsi doctype, html, head, title, dan body, serta menempatkan konten pada bagian dokumen yang benar.",
+      "challenge_title": "Challenge: Dokumen HTML Pertamaku",
+      "challenge_instructions": "Buat halaman perkenalan dengan struktur HTML lengkap, lang=id, charset UTF-8, title, satu h1, dua paragraf, dan satu daftar. Buka di browser dan bagikan project.",
+      "fields": {
+        "objective": "Membuat dokumen HTML valid dengan metadata pada head dan konten yang terlihat di body.",
+        "concept": "doctype memberi tahu browser jenis dokumen; html membungkus halaman; head menyimpan metadata; body memuat konten yang terlihat. Jangan menaruh heading atau paragraf di dalam head.",
+        "example": "Pada halaman profil, title mengatur teks tab browser, sedangkan h1 dan p berada di body. Charset UTF-8 membantu browser menampilkan karakter dengan benar.",
+        "setup": "Buat folder proyek dan file index.html. Pastikan file disimpan dengan ekstensi .html, lalu buka melalui browser atau Live Server agar perubahan mudah diperiksa.",
+        "practice": "Tulis doctype, html lang=id, head berisi charset dan title, serta body berisi satu h1 dan dua paragraf. Ubah title dan isi konten lalu simpan.",
+        "test": "Periksa judul tab, teks yang tampil, dan struktur dokumen melalui View Source. Pastikan head tidak berisi konten halaman dan semua konten terlihat berada di body.",
+        "debug": "Jika karakter khusus rusak, periksa charset. Jika judul tab tidak berubah, pastikan title berada di head. Jika konten hilang, periksa tag body dan pasangan tag pembuka/penutup.",
+        "check": "Dokumen memiliki doctype, html, head, title, dan body; metadata berada di head; konten terlihat di body; dan halaman terbuka tanpa struktur yang tertukar."
+      }
+    },
+    {
+      "topic_id": 33,
+      "order_index": 2,
+      "title": "Heading dan Paragraf: Menyusun Konten",
+      "description": "Menggunakan heading h1–h6 dan paragraf untuk menyusun hierarki informasi yang logis, mudah dipindai, dan ramah pembaca.",
+      "challenge_title": "Challenge: Artikel dengan Hierarki Heading",
+      "challenge_instructions": "Buat artikel tentang hobi dengan satu h1, minimal dua h2, satu h3, dan empat paragraf. Susun hierarki yang menjelaskan hubungan antarbagian.",
+      "fields": {
+        "objective": "Menyusun halaman artikel pendek dengan satu judul utama, subjudul, dan paragraf yang terstruktur.",
+        "concept": "Heading menunjukkan hierarki informasi, bukan sekadar ukuran teks. Gunakan h1 untuk judul utama, h2 untuk bagian, h3 untuk subbagian, dan p untuk isi paragraf.",
+        "example": "Artikel tentang hewan dapat memakai h1 Kucing, h2 Ciri-ciri, lalu h3 Makanan. Paragraf penjelasan diletakkan setelah heading yang menjelaskan isinya.",
+        "setup": "Siapkan file HTML yang sudah memiliki kerangka head dan body. Tentukan satu topik artikel dan catat bagian utama serta subbagian sebelum menulis heading.",
+        "practice": "Buat satu h1, minimal dua h2, satu h3, dan empat paragraf. Pastikan setiap paragraf menjelaskan heading yang tepat di atasnya.",
+        "test": "Baca halaman hanya dari urutan heading. Periksa apakah topik dapat dipahami tanpa membaca seluruh paragraf dan pastikan tingkat heading tidak melompat tanpa alasan.",
+        "debug": "Jika heading dipilih hanya karena ukurannya, ubah berdasarkan tingkat informasi. Jika semua teks menjadi heading, ubah isi penjelasan menjadi p. Jangan memakai h1 hanya untuk memperbesar tulisan.",
+        "check": "Judul utama jelas, subbagian memakai tingkat heading yang logis, paragraf digunakan untuk isi, dan urutan heading membantu pembaca memahami struktur."
+      }
+    },
+    {
+      "topic_id": 34,
+      "order_index": 3,
+      "title": "Hyperlink: Tautan Internal dan Eksternal",
+      "description": "Membuat tautan menggunakan anchor dan href, membedakan tautan ke halaman lain, alamat luar, serta bagian tertentu pada halaman yang sama.",
+      "challenge_title": "Challenge: Navigasi dengan Tautan",
+      "challenge_instructions": "Buat halaman dengan menu Profil, Karya, dan Kontak menggunakan anchor link, lalu tambahkan tautan ke halaman kedua dan satu sumber eksternal yang relevan.",
+      "fields": {
+        "objective": "Membuat navigasi sederhana dengan tautan internal, eksternal, dan anchor link yang semuanya memiliki tujuan valid.",
+        "concept": "Elemen a membuat tautan dan href menentukan tujuannya. Anchor internal memakai id dengan tanda #, tautan halaman lain memakai path file, dan tautan eksternal memakai alamat web.",
+        "example": "Menu Kontak dapat memakai href=#kontak dan mengarah ke section dengan id=kontak. Tautan Referensi dapat mengarah ke situs dokumentasi yang relevan.",
+        "setup": "Siapkan dua section dengan id unik dan satu halaman HTML lain jika ingin menguji tautan antarfile. Pastikan semua tujuan sudah tersedia sebelum menulis href.",
+        "practice": "Buat menu Profil dan Kontak, satu tautan ke halaman karya.html, serta satu tautan eksternal. Beri label yang menjelaskan tujuan setiap tautan.",
+        "test": "Klik semua tautan. Anchor harus menuju section yang benar, tautan antarfile membuka halaman yang tepat, dan tautan eksternal mengarah ke alamat valid.",
+        "debug": "Jika anchor gagal, cocokkan tanda # dan nilai id. Jika file tidak ditemukan, periksa path relatif. Jika tautan eksternal salah, periksa protokol https dan ejaan domain.",
+        "check": "Setiap tautan memiliki href yang benar, semua target tersedia, label tautan mudah dipahami, dan tidak ada tautan yang menuju halaman kosong."
+      }
+    },
+    {
+      "topic_id": 17,
+      "order_index": 4,
+      "title": "Menambahkan Gambar: src dan alt",
+      "description": "Menampilkan gambar menggunakan elemen img, memahami path file, serta menulis alt text yang menjelaskan informasi gambar.",
+      "challenge_title": "Challenge: Galeri Gambar dengan Alt",
+      "challenge_instructions": "Buat galeri dua gambar lokal. Setiap gambar harus memiliki src valid, alt informatif, dan ukuran yang proporsional.",
+      "fields": {
+        "objective": "Menampilkan gambar lokal dengan path yang benar dan teks alternatif yang bermakna.",
+        "concept": "img memakai src untuk lokasi file dan alt untuk teks alternatif. Path relatif dihitung dari lokasi file HTML, bukan dari lokasi folder proyek secara umum.",
+        "example": "Jika index.html berada satu tingkat di atas folder images, gambar dapat dipanggil dengan src=images/foto.jpg. Alt sebaiknya menjelaskan isi gambar, bukan menulis 'gambar'.",
+        "setup": "Buat folder images di dalam proyek dan simpan satu gambar dengan nama sederhana. Hindari spasi dan pastikan ekstensi file sesuai.",
+        "practice": "Tambahkan dua gambar dengan path lokal. Atur width agar ukuran proporsional dan tulis alt yang menjelaskan isi setiap gambar.",
+        "test": "Buka halaman dan pastikan kedua gambar tampil. Uji sementara satu path yang salah untuk melihat kondisi gambar rusak, lalu pulihkan path yang benar.",
+        "debug": "Jika gambar rusak, periksa nama file, ekstensi, huruf besar-kecil, dan lokasi folder. Jika alt tidak informatif, ganti dengan deskripsi isi gambar.",
+        "check": "Semua gambar tampil, path sesuai struktur folder, alt menjelaskan isi visual, dan ukuran gambar tidak merusak proporsi."
+      }
+    },
+    {
+      "topic_id": 15,
+      "order_index": 5,
+      "title": "Daftar HTML: Unordered dan Ordered List",
+      "description": "Menggunakan ul, ol, dan li untuk menyusun daftar informasi atau langkah secara terstruktur.",
+      "challenge_title": "Challenge: Daftar Hobi dan Langkah",
+      "challenge_instructions": "Buat bagian Hobi dengan ul berisi empat item dan Cara Membuat Project dengan ol berisi empat langkah yang benar-benar berurutan.",
+      "fields": {
+        "objective": "Membuat daftar tidak berurutan dan daftar langkah berurutan sesuai kebutuhan informasi.",
+        "concept": "ul digunakan ketika urutan item tidak penting. ol digunakan ketika urutan langkah atau peringkat penting. Setiap item harus berada di dalam li.",
+        "example": "Daftar hobi cocok memakai ul, sedangkan langkah membuat akun cocok memakai ol karena pembaca perlu mengikuti urutannya.",
+        "setup": "Pilih satu topik yang memiliki beberapa item dan satu kegiatan yang memiliki urutan langkah. Siapkan isi daftar sebelum menulis HTML.",
+        "practice": "Buat ul berisi tiga hobi dan ol berisi empat langkah. Tambahkan satu item pada masing-masing daftar dan amati perubahan tampilannya.",
+        "test": "Pastikan browser menampilkan bullet pada ul dan nomor pada ol. Periksa bahwa setiap li berada di dalam daftar yang tepat.",
+        "debug": "Jika bullet atau nomor tidak tampil, periksa apakah ul/ol membungkus li. Jika urutan salah, susun ulang li dan jangan mengetik angka manual.",
+        "check": "Jenis daftar sesuai tujuan, setiap item berada dalam li, dan urutan langkah dapat diikuti tanpa membingungkan."
+      }
+    },
+    {
+      "topic_id": 45,
+      "order_index": 6,
+      "title": "Tabel HTML: Menyusun Data Baris dan Kolom",
+      "description": "Menggunakan table, caption, thead, tbody, tr, th, dan td untuk menyajikan data tabular dengan struktur yang jelas.",
+      "challenge_title": "Challenge: Tabel Jadwal Belajar",
+      "challenge_instructions": "Buat tabel jadwal belajar dengan tiga kolom dan empat baris data. Gunakan caption, thead, tbody, th, dan td secara tepat.",
+      "fields": {
+        "objective": "Membuat tabel jadwal atau data sederhana dengan header kolom dan isi yang konsisten.",
+        "concept": "Tabel digunakan untuk data yang memiliki hubungan baris dan kolom. th menandai header, td menampung data, tr membentuk baris, dan caption memberi judul.",
+        "example": "Tabel jadwal belajar dapat memiliki kolom Hari, Kegiatan, dan Waktu. Setiap baris berisi satu kegiatan pada hari tertentu.",
+        "setup": "Siapkan data yang memang cocok disajikan dalam tabel, misalnya jadwal atau daftar nilai. Tentukan nama kolom dan jumlah baris sebelum membuat markup.",
+        "practice": "Buat caption, thead berisi tiga th, dan tbody dengan minimal tiga baris data. Pastikan jumlah sel setiap baris sesuai dengan jumlah header.",
+        "test": "Baca setiap baris dari kiri ke kanan dan periksa apakah data berada pada kolom yang tepat. Pastikan header menjelaskan isi kolom.",
+        "debug": "Jika kolom bergeser, periksa jumlah td pada setiap tr. Jika header tidak jelas, gunakan th. Jangan memakai tabel hanya untuk mengatur layout halaman.",
+        "check": "Tabel memiliki caption, header kolom, baris data konsisten, dan setiap nilai berada pada kolom yang benar."
+      }
+    },
+    {
+      "topic_id": 46,
+      "order_index": 7,
+      "title": "Formulir HTML: Mengumpulkan Input Pengguna",
+      "description": "Membuat formulir dengan label, input, tipe data, atribut name, required, dan tombol submit untuk menerima informasi pengguna.",
+      "challenge_title": "Challenge: Formulir Pendaftaran Kelas",
+      "challenge_instructions": "Buat formulir pendaftaran kelas dengan nama, email, pilihan kelas, dan pesan. Setiap input memiliki label dan kolom wajib diberi required.",
+      "fields": {
+        "objective": "Membuat formulir sederhana dengan label yang terhubung, tipe input sesuai, dan validasi dasar browser.",
+        "concept": "form membungkus kontrol input. label menjelaskan kolom, for harus cocok dengan id input, name menjadi nama data, dan required menandai kolom wajib.",
+        "example": "Formulir pendaftaran dapat meminta nama, email, dan kelas. Email memakai type=email agar browser dapat memeriksa format dasar.",
+        "setup": "Tentukan informasi yang perlu dikumpulkan dan pilih tipe kontrol yang sesuai. Siapkan label yang jelas untuk setiap input.",
+        "practice": "Buat input nama, email, pilihan kelas, dan textarea pesan. Hubungkan setiap label ke id input dan beri name serta required pada kolom wajib.",
+        "test": "Klik submit dengan kolom kosong, email salah, dan data lengkap. Ingat bahwa formulir statis belum menyimpan data tanpa backend.",
+        "debug": "Jika label tidak fokus ke input, cocokkan for dan id. Jika validasi email tidak muncul, periksa type=email. Jika tombol tidak mengirim form, periksa type=submit.",
+        "check": "Semua kontrol memiliki label, id dan for cocok, name tersedia, tipe input sesuai, dan validasi browser dapat diuji."
+      }
+    },
+    {
+      "topic_id": 47,
+      "order_index": 8,
+      "title": "HTML Semantik: Struktur Halaman yang Bermakna",
+      "description": "Menggunakan header, nav, main, section, article, aside, dan footer sesuai peran konten agar halaman lebih mudah dipahami.",
+      "challenge_title": "Challenge: Halaman Artikel Semantik",
+      "challenge_instructions": "Buat halaman artikel dengan header, nav, main, article, section, dan footer. Jelaskan fungsi empat elemen semantik yang kamu gunakan.",
+      "fields": {
+        "objective": "Menyusun halaman dengan elemen semantik yang menggambarkan fungsi setiap bagian.",
+        "concept": "Elemen semantik memberi makna pada struktur. header berisi pengantar, nav untuk navigasi, main untuk konten utama, section untuk kelompok topik, article untuk konten mandiri, dan footer untuk penutup.",
+        "example": "Halaman artikel dapat memiliki header judul, nav menu, main berisi article, aside untuk informasi tambahan, dan footer untuk kontak.",
+        "setup": "Buat sketsa bagian halaman sebelum coding. Tentukan bagian navigasi, konten utama, artikel, dan informasi penutup.",
+        "practice": "Buat kerangka dengan header, nav, main, dua section, satu article, dan footer. Pilih elemen berdasarkan fungsi kontennya.",
+        "test": "Baca struktur HTML dan pastikan konten utama berada di main. Periksa apakah nav benar-benar berisi tautan navigasi.",
+        "debug": "Jika semua bagian memakai div, tinjau apakah ada elemen semantik yang lebih sesuai. Hindari beberapa main untuk konten utama yang sama.",
+        "check": "Elemen semantik sesuai fungsi, navigasi berada pada nav, konten utama pada main, dan struktur mudah dipahami."
+      }
+    },
+    {
+      "topic_id": 43,
+      "order_index": 9,
+      "title": "Figure dan Caption: Memberi Konteks pada Gambar",
+      "description": "Mengelola path gambar dan menggunakan figure serta figcaption untuk memberi konteks pada media visual.",
+      "challenge_title": "Challenge: Galeri dengan Figure dan Caption",
+      "challenge_instructions": "Buat galeri dua gambar proyek dengan figure, alt informatif, dan figcaption yang menjelaskan isi atau tujuan setiap gambar.",
+      "fields": {
+        "objective": "Menampilkan gambar dengan path yang benar, teks alternatif, dan caption yang menjelaskan hubungannya dengan konten.",
+        "concept": "figure mengelompokkan media yang berdiri sebagai satu unit konten, sedangkan figcaption memberi keterangan. Path relatif mengacu pada lokasi file dari dokumen HTML.",
+        "example": "Foto proyek dapat berada di dalam figure, memiliki alt yang menjelaskan isi foto, dan figcaption yang menerangkan proyek yang ditampilkan.",
+        "setup": "Pilih dua gambar yang relevan dengan konten dan simpan dalam folder images. Pastikan nama file serta path dapat diprediksi.",
+        "practice": "Bungkus setiap img dengan figure dan tambahkan figcaption. Uji path dengan memindahkan satu gambar ke subfolder lain lalu memperbarui src.",
+        "test": "Periksa apakah gambar dan caption muncul bersama. Pastikan alt tetap bermakna walaupun caption sudah menjelaskan konteks.",
+        "debug": "Jika gambar tidak muncul setelah dipindah, periksa path relatif. Jika caption tidak tampil, pastikan figcaption berada di dalam figure.",
+        "check": "Path gambar benar, alt menjelaskan visual, figure mengelompokkan media, dan figcaption memberi konteks tambahan."
+      }
+    },
+    {
+      "topic_id": 44,
+      "order_index": 10,
+      "title": "Daftar Bertingkat: Mengelompokkan Informasi",
+      "description": "Menyusun daftar bersarang untuk menunjukkan hubungan kategori dan subkategori dengan struktur ul, ol, dan li yang valid.",
+      "challenge_title": "Challenge: Rencana Belajar Bertingkat",
+      "challenge_instructions": "Buat daftar bertingkat untuk rencana belajar dengan minimal dua kategori dan dua subitem pada setiap kategori.",
+      "fields": {
+        "objective": "Membuat daftar bertingkat yang menggambarkan kategori dan subkategori tanpa merusak struktur HTML.",
+        "concept": "Daftar bersarang dibuat dengan menempatkan ul atau ol di dalam li induk. Daftar anak tidak diletakkan langsung sebagai anak ul tanpa li pembungkus.",
+        "example": "Kategori Coding dapat memiliki subitem Scratch dan Python. Kedua subitem berada dalam li Coding sebagai daftar bersarang.",
+        "setup": "Pilih informasi yang memiliki kategori dan subkategori. Gambar hubungan induk-anak agar tingkat daftar tidak tertukar.",
+        "practice": "Buat dua kategori utama dan dua subitem pada setiap kategori. Letakkan daftar anak di dalam li induk.",
+        "test": "Periksa indentasi dan struktur melalui browser serta View Source. Pastikan subitem tampil di bawah kategori yang benar.",
+        "debug": "Jika struktur berantakan, periksa pasangan li dan ul. Pastikan daftar anak berada di dalam li induk dan tag ditutup dalam urutan benar.",
+        "check": "Daftar induk dan anak tersusun valid, subitem berada di bawah kategori yang tepat, dan jenis daftar sesuai tujuan."
+      }
+    },
+    {
+      "topic_id": 18,
+      "order_index": 11,
+      "title": "Margin dan Padding: Mengatur Ruang Elemen",
+      "description": "Memahami box model CSS dan membedakan content, padding, border, serta margin untuk mengatur jarak elemen.",
+      "challenge_title": "Challenge: Tiga Kartu dengan Spacing",
+      "challenge_instructions": "Buat tiga kartu informasi dengan padding dan margin yang konsisten. Tunjukkan perbedaan ruang di dalam kartu dan jarak antar kartu.",
+      "fields": {
+        "objective": "Mengatur ruang dalam dan luar sebuah kartu menggunakan margin, padding, dan border secara terencana.",
+        "concept": "Box model terdiri dari content, padding, border, dan margin. Padding menambah ruang di dalam border, sedangkan margin memberi jarak di luar border.",
+        "example": "Kartu profil dapat memiliki padding 16px agar teks tidak menempel ke tepi dan margin 12px agar kartu terpisah dari elemen lain.",
+        "setup": "Buat satu elemen HTML dengan class card dan hubungkan stylesheet. Siapkan dua kartu agar jarak luar dapat diamati.",
+        "practice": "Atur padding, border, dan margin secara terpisah. Ubah satu nilai pada satu waktu agar dampak setiap properti mudah dibandingkan.",
+        "test": "Gunakan Developer Tools untuk melihat box model. Periksa ruang di dalam border dan jarak di luar border.",
+        "debug": "Jika teks menempel ke tepi, periksa padding. Jika kartu terlalu berjauhan, periksa margin. Jika ukuran sulit diprediksi, periksa box-sizing.",
+        "check": "Padding, border, dan margin digunakan sesuai fungsi, jarak kartu konsisten, dan teks nyaman dibaca."
+      }
+    },
+    {
+      "topic_id": 19,
+      "order_index": 12,
+      "title": "Navigasi Bar: Menyusun Menu dengan CSS",
+      "description": "Menyusun menu navigasi horizontal dengan elemen nav, anchor, Flexbox, jarak, dan state hover sederhana.",
+      "challenge_title": "Challenge: Navigation Bar dengan Flexbox",
+      "challenge_instructions": "Buat navigation bar dengan logo dan minimal tiga menu. Gunakan Flexbox, gap, dan hover. Uji semua tautan dan tampilan layar sempit.",
+      "fields": {
+        "objective": "Membuat navigation bar yang rapi, tautannya berfungsi, dan tetap mudah dibaca pada layar lebih sempit.",
+        "concept": "nav memberi makna area navigasi. Flexbox menyusun tautan, gap mengatur jarak, dan hover memberi umpan balik visual saat pointer berada di atas tautan.",
+        "example": "Menu dengan logo di kiri dan tiga tautan di kanan dapat memakai display:flex, justify-content:space-between, dan align-items:center.",
+        "setup": "Buat elemen nav berisi logo teks dan tiga anchor. Pastikan setiap anchor memiliki href yang menuju section yang tersedia.",
+        "practice": "Atur display:flex, align-items:center, gap, dan justify-content. Tambahkan hover sederhana tanpa menghilangkan kontras teks.",
+        "test": "Klik semua tautan dan ubah lebar browser. Periksa apakah menu tetap terbaca dan tidak keluar dari container.",
+        "debug": "Jika menu turun ke baris berikutnya, periksa lebar container dan gap. Jika tautan tidak berfungsi, periksa href. Jika item tidak sejajar, periksa align-items.",
+        "check": "Menu memakai nav, tautan valid, item sejajar, jarak konsisten, dan hover tetap mudah dibaca."
+      }
+    },
+    {
+      "topic_id": 24,
+      "order_index": 13,
+      "title": "Build Your First Web Page: Menggabungkan Dasar HTML",
+      "description": "Menggabungkan kerangka dokumen, heading, paragraf, gambar, daftar, dan tautan menjadi halaman web pertama yang dapat dibuka di browser.",
+      "challenge_title": "Challenge: Halaman Web Pertamaku",
+      "challenge_instructions": "Buat halaman web bertema pilihanmu dengan heading, paragraf, gambar ber-alt, daftar, dan satu tautan yang berfungsi.",
+      "fields": {
+        "objective": "Membuat satu halaman web sederhana dengan struktur HTML valid dan beberapa jenis konten.",
+        "concept": "Halaman web pertama menggabungkan elemen dasar. Mulai dari kerangka dokumen, tambahkan konten bertahap, lalu uji setiap aset dan tautan.",
+        "example": "Halaman tentang hewan peliharaan dapat berisi judul, paragraf pengantar, foto, daftar kebutuhan, dan tautan ke sumber informasi.",
+        "setup": "Siapkan folder proyek, file index.html, folder images, dan satu gambar yang relevan. Tentukan topik halaman sebelum menulis konten.",
+        "practice": "Buat struktur lengkap, lalu tambahkan h1, dua paragraf, satu gambar, satu daftar, dan satu tautan. Pastikan setiap elemen mendukung topik.",
+        "test": "Buka halaman di browser. Klik tautan, periksa gambar, baca urutan heading, dan pastikan tidak ada elemen yang hilang.",
+        "debug": "Jika gambar rusak, periksa path. Jika tautan salah, periksa href. Jika struktur kacau, periksa tag yang belum ditutup dan urutan elemen.",
+        "check": "Halaman memiliki struktur valid, konten tersusun logis, aset tampil, tautan bekerja, dan hasil telah diuji."
+      }
+    },
+    {
+      "topic_id": 11,
+      "order_index": 14,
+      "title": "Halaman Biodata dengan HTML",
+      "description": "Menerapkan heading, paragraf, daftar, dan gambar untuk membuat halaman biodata yang menyajikan informasi diri secara terstruktur.",
+      "challenge_title": "Challenge: Halaman Biodata",
+      "challenge_instructions": "Buat halaman biodata dengan judul, deskripsi singkat, minimal tiga hobi, dan foto atau ilustrasi ber-alt. Jangan sertakan data pribadi sensitif.",
+      "fields": {
+        "objective": "Membuat halaman biodata yang rapi, informatif, dan menggunakan elemen HTML sesuai fungsinya.",
+        "concept": "Halaman biodata mengelompokkan identitas dan informasi umum. Gunakan heading untuk bagian, paragraf untuk deskripsi, daftar untuk hobi, dan gambar dengan alt bila diperlukan.",
+        "example": "Bagian Tentang Saya berisi paragraf singkat, sedangkan Hobi memakai ul agar setiap hobi mudah dipindai.",
+        "setup": "Tentukan informasi umum yang aman dibagikan. Siapkan judul, deskripsi singkat, daftar hobi, dan gambar atau ilustrasi non-sensitif.",
+        "practice": "Susun bagian identitas umum, tentang saya, dan hobi. Gunakan h1, h2, p, ul, dan img sesuai fungsi.",
+        "test": "Buka halaman dan periksa apakah setiap bagian mudah ditemukan. Uji gambar, tautan, serta urutan heading.",
+        "debug": "Jika informasi bercampur, pisahkan dengan heading. Jika daftar hobi tidak terstruktur, gunakan ul dan li. Jika foto tidak tampil, periksa path.",
+        "check": "Biodata memiliki bagian jelas, heading terurut, hobi berupa daftar, dan gambar memiliki alt yang tepat."
+      }
+    },
+    {
+      "topic_id": 13,
+      "order_index": 15,
+      "title": "Halaman About: Menjelaskan Tujuan Website",
+      "description": "Menyusun halaman About dengan deskripsi, subbagian, dan tautan agar pengunjung memahami tujuan serta isi sebuah website.",
+      "challenge_title": "Challenge: Halaman About",
+      "challenge_instructions": "Buat halaman About untuk website atau klub imajiner. Sertakan tujuan, kegiatan, dan cara bergabung dalam tiga section.",
+      "fields": {
+        "objective": "Membuat halaman About yang menjelaskan identitas website, tujuan, dan informasi pendukung secara ringkas.",
+        "concept": "About menjelaskan siapa pembuat atau pemilik website, tujuan situs, dan informasi penting bagi pengunjung. Susun konten dalam paragraf serta subbagian agar mudah dipindai.",
+        "example": "Website klub coding dapat memiliki bagian Tentang Klub, Kegiatan, dan Cara Bergabung dengan paragraf singkat pada setiap bagian.",
+        "setup": "Tentukan tujuan website dan tiga hal yang perlu diketahui pengunjung. Susun outline bagian sebelum menulis paragraf.",
+        "practice": "Buat halaman About dengan tiga section. Setiap section memiliki h2 dan paragraf yang menjelaskan satu topik berbeda.",
+        "test": "Baca halaman sebagai pengunjung baru. Periksa apakah tujuan website dapat dipahami dan tautan kembali berfungsi.",
+        "debug": "Jika isi terlalu panjang, pecah menjadi subbagian. Jika heading tidak spesifik, ubah judulnya. Jika tautan kembali salah, periksa href.",
+        "check": "Halaman menjelaskan tujuan website, setiap section memiliki fokus, heading mudah dipahami, dan tautan penting berfungsi."
+      }
+    },
+    {
+      "topic_id": 48,
+      "order_index": 16,
+      "title": "Mini Project: Halaman Profil Sederhana",
+      "description": "Mengintegrasikan struktur HTML, teks, gambar, daftar, tautan, semantik, dan spacing dasar menjadi halaman profil satu halaman.",
+      "challenge_title": "Challenge: Halaman Profil Sederhana",
+      "challenge_instructions": "Buat halaman profil satu halaman dengan header, navigasi, profil, gambar ber-alt, daftar hobi atau karya, dan footer. Gunakan HTML semantik dan spacing sederhana.",
+      "fields": {
+        "objective": "Membangun halaman profil lengkap yang dapat dinavigasi, terbaca, dan diuji sebelum dibagikan.",
+        "concept": "Proyek akhir menggabungkan keterampilan yang dipelajari. Mulai dengan struktur, tentukan bagian konten, tambahkan media, lalu rapikan jarak dan navigasi.",
+        "example": "Halaman profil dapat memiliki header, nav, main, section profil, daftar hobi, figure foto, dan footer kontak.",
+        "setup": "Buat sketsa bagian halaman dan siapkan aset gambar. Tentukan id untuk setiap section yang akan dituju dari navigasi.",
+        "practice": "Bangun header, nav, main, dua section, dan footer. Tambahkan biodata singkat, gambar ber-alt, daftar hobi, dan tautan anchor.",
+        "test": "Buka halaman pada desktop dan ponsel. Periksa semua tautan, gambar, heading, daftar, serta keterbacaan teks.",
+        "debug": "Jika anchor tidak menuju section, cocokkan href dan id. Jika gambar rusak, periksa path. Jika konten rapat, atur padding; jika jarak berlebihan, periksa margin.",
+        "check": "Semua bagian halaman ada, navigasi bekerja, media tampil, konten terstruktur, jarak nyaman, dan halaman telah diuji."
+      }
+    }
+  ]
+}
