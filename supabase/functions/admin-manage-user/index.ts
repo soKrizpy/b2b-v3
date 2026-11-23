@@ -197,11 +197,11 @@ Deno.serve(async (req: Request) => {
     const authBefore = authBeforeData?.user;
     if (authBeforeError || !authBefore) return json({ error: "Identitas Auth akun tidak dapat diverifikasi" }, 500);
 
-    let studentBefore: { full_name: string | null; grade: string | null; whatsapp: string | null } | null = null;
+    let studentBefore: { full_name: string | null; grade: string | null; whatsapp: string | null; email_or_phone: string | null } | null = null;
     if (currentRole === "student") {
       const { data, error } = await adminClient
         .from("students")
-        .select("full_name,grade,whatsapp")
+        .select("full_name,grade,whatsapp,email_or_phone")
         .eq("id", userId)
         .maybeSingle();
       if (error || !data) return json({ error: "Profil siswa tidak dapat dibaca; tidak ada perubahan yang dilakukan" }, 500);
@@ -256,7 +256,7 @@ Deno.serve(async (req: Request) => {
         (whatsappInput !== null || mpin)) {
       const { error } = await adminClient.rpc("admin_set_student_mpin", {
         p_student_id: userId,
-        p_phone: whatsappInput ?? studentBefore.whatsapp ?? "",
+        p_phone: whatsappInput ?? studentBefore.whatsapp ?? studentBefore.email_or_phone ?? "",
         p_mpin: mpin || null,
       });
       if (error) failureMessage = "Nomor WhatsApp atau MPIN gagal diperbarui";
