@@ -81,6 +81,55 @@ test.describe("Production tutor schedule repository", () => {
     expect(result.calls).toContainEqual({ table: "meeting_students", method: "in", args: ["meeting_id", [11, 22]] });
   });
 
+  test("records attendance only for the authenticated tutor's linked meeting student", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { createSupabaseTutorScheduleRepository } = await import("/src/data/supabase-tutor-schedule-repository.ts");
+      const calls: Array<{ table: string; method: string; args: unknown[] }> = [];
+      const client = {
+        auth: { getUser: async () => ({ data: { user: { id: "tutor-1" } }, error: null }) },
+        from: (table: string) => {
+          const builder: Record<string, unknown> = {};
+          for (const method of ["eq", "select"]) builder[method] = (...args: unknown[]) => {
+            calls.push({ table, method, args });
+            return builder;
+          };
+          builder.update = (...args: unknown[]) => {
+            calls.push({ table, method: "update", args });
+            return builder;
+          };
+          builder.maybeSingle = async () => ({ data: { meeting_id: 11 }, error: null });
+          return builder;
+        }
+      };
+      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const saved = await repository.recordAttendance("tutor-1", 11, "student-1", "telat");
+      return { saved, calls };
+    });
+    expect(result.saved.success).toBe(true);
+    expect(result.calls).toContainEqual({ table: "meeting_students", method: "update", args: [{ attendance_status: "telat" }] });
+    expect(result.calls).toContainEqual({ table: "meeting_students", method: "eq", args: ["meeting_id", 11] });
+    expect(result.calls).toContainEqual({ table: "meeting_students", method: "eq", args: ["student_id", "student-1"] });
+  });
+
+  test("rejects a mismatched tutor before attendance writes", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { createSupabaseTutorScheduleRepository } = await import("/src/data/supabase-tutor-schedule-repository.ts");
+      let writes = 0;
+      const client = {
+        auth: { getUser: async () => ({ data: { user: { id: "tutor-real" } }, error: null }) },
+        from: () => { writes += 1; throw new Error("Must not write."); }
+      };
+      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const result = await repository.recordAttendance("tutor-spoofed", 11, "student-1", "hadir");
+      return { result, writes };
+    });
+    expect(result.result.success).toBe(false);
+    expect(result.result.message).toContain("Sesi tutor tidak cocok");
+    expect(result.writes).toBe(0);
+  });
+
   test("rejects a caller whose ID does not match the authenticated tutor before querying data", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
