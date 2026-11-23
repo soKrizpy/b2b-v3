@@ -6,6 +6,8 @@ import { supabaseAdminBillingRepository } from "./supabase-admin-billing-reposit
 import { supabaseSessionReportRepository, supabaseMonthlyEvaluationRepository } from "./supabase-stage3-report-repositories";
 import { supabaseChallengeSubmissionRepository } from "./supabase-challenge-submission-repository";
 import { supabaseClassSessionRepository } from "./supabase-class-session-repository";
+import { supabaseCurriculumRepository } from "./supabase-curriculum-repository";
+import { supabaseAdminStudentModuleRepository } from "./supabase-admin-student-module-repository";
 import type { StudentLearningCapabilities } from "./supabase-student-learning-capabilities";
 import type { TutorScheduleRepository } from "./supabase-tutor-schedule-repository";
 
@@ -25,6 +27,8 @@ import type { TutorScheduleRepository } from "./supabase-tutor-schedule-reposito
 export interface SupabaseProductionCapabilities {
   auth: typeof supabaseAuthRepository;
   adminIdentity: typeof supabaseAdminIdentityRepository;
+  curriculum: typeof supabaseCurriculumRepository;
+  adminStudentModules: typeof supabaseAdminStudentModuleRepository;
   studentLearning: StudentLearningCapabilities;
   tutorSchedule: TutorScheduleRepository;
   adminBilling: typeof supabaseAdminBillingRepository;
@@ -38,6 +42,8 @@ export const supabaseProductionCapabilities: SupabaseProductionCapabilities =
   Object.freeze({
     auth: supabaseAuthRepository,
     adminIdentity: supabaseAdminIdentityRepository,
+    curriculum: supabaseCurriculumRepository,
+    adminStudentModules: supabaseAdminStudentModuleRepository,
     studentLearning: supabaseStudentLearningCapabilities,
     tutorSchedule: supabaseTutorScheduleRepository,
     adminBilling: supabaseAdminBillingRepository,
