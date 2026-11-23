@@ -331,7 +331,7 @@ export class AdminWorkspace {
             const module = this.modulesById.get(Number(assignment.moduleId));
             const active = assignment.status === 'active';
             return `
-              <div class="card" style="padding:var(--space-4);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+              <div class="card" data-student-module-card style="padding:var(--space-4);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
                 <div>
                   <strong style="color:var(--color-text-primary);">${escapeHtml(student?.displayName || 'Siswa tidak ditemukan')}</strong>
                   <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${escapeHtml(module?.title || `Modul #${assignment.moduleId}`)}</div>
