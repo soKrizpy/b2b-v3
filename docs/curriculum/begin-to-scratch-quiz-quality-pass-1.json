@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "module_id": 11,
+  "revision": "quiz-quality-pass-1",
+  "preserve_previous_quiz_as": "legacyQuiz",
+  "topics": [
+    {
+      "topic_id": 28,
+      "q3": {
+        "question": "Blok apa yang paling langsung membuat kucing berpindah mengikuti arah hadapnya?",
+        "options": [
+          "move 10 steps",
+          "say Hello",
+          "play sound",
+          "switch backdrop"
+        ],
+        "answer_index": 0,
+        "explanation": "Move 10 steps mengubah posisi sprite mengikuti arah hadapnya."
+      },
+      "q5": {
+        "question": "Bagaimana membuktikan gerakan kucing sudah sesuai rancangan?",
+        "options": [
+          "Sprite menghilang dari Stage",
+          "Kucing bergerak dari posisi awal ke titik tujuan dengan jarak yang direncanakan",
+          "Semua backdrop berubah",
+          "Nama project berganti"
+        ],
+        "answer_index": 1,
+        "explanation": "Uji posisi awal, jumlah langkah, dan titik akhir gerak."
+      }
+    },
+    {
+      "topic_id": 29,
+      "q3": {
+        "question": "Blok Looks apa yang dapat menampilkan pesan pada kartu digital?",
+        "options": [
+          "move 10 steps",
+          "say [Selamat datang!]",
+          "create clone",
+          "change x by 10"
+        ],
+        "answer_index": 1,
+        "explanation": "Say menampilkan teks sebagai balon dialog pada sprite."
+      },
+      "q5": {
+        "question": "Apa tanda kartu digital sudah siap ditunjukkan?",
+        "options": [
+          "Pesan terbaca, karakter terlihat, dan elemen tidak saling menutupi",
+          "Semua sprite disembunyikan",
+          "Tidak ada backdrop",
+          "Project berhenti sebelum kartu muncul"
+        ],
+        "answer_index": 0,
+        "explanation": "Kartu perlu memiliki teks yang terbaca dan tata letak yang jelas."
+      }
+    },
+    {
+      "topic_id": 30,
+      "q3": {
+        "question": "Mengapa blok Wait berguna pada cerita tiga adegan?",
+        "options": [
+          "Menghapus backdrop",
+          "Memberi waktu agar dialog atau aksi selesai sebelum adegan berikutnya",
+          "Menambah skor",
+          "Menggandakan sprite"
+        ],
+        "answer_index": 1,
+        "explanation": "Wait mengatur tempo dan mencegah perpindahan adegan terlalu cepat."
+      },
+      "q5": {
+        "question": "Apa bukti cerita tiga adegan berjalan baik?",
+        "options": [
+          "Semua dialog muncul bersamaan",
+          "Adegan pertama tidak pernah selesai",
+          "Pembuka, kejadian, dan penutup berjalan berurutan serta dapat dipahami",
+          "Sprite utama tidak terlihat"
+        ],
+        "answer_index": 2,
+        "explanation": "Alur cerita harus dapat diikuti dari pembuka sampai penutup."
+      }
+    },
+    {
+      "topic_id": 35,
+      "q3": {
+        "question": "Kategori blok apa yang digunakan untuk memulai musik atau efek suara konser?",
+        "options": [
+          "Motion",
+          "Looks",
+          "Sound",
+          "Operators"
+        ],
+        "answer_index": 2,
+        "explanation": "Blok Sound mengatur pemutaran musik dan efek suara."
+      },
+      "q5": {
+        "question": "Bagaimana mengetahui mini konser sudah tersusun dengan baik?",
+        "options": [
+          "Suara dan gerakan dimulai sesuai urutan serta pertunjukan memiliki penutup",
+          "Musik diputar tanpa henti",
+          "Semua kostum dihapus",
+          "Sprite diam sepanjang project"
+        ],
+        "answer_index": 0,
+        "explanation": "Uji sinkronisasi suara, gerakan, kostum, dan akhir pertunjukan."
+      }
+    },
+    {
+      "topic_id": 36,
+      "q3": {
+        "question": "Bagaimana membuat efek kepakan sayap pada sprite kupu-kupu?",
+        "options": [
+          "Mengganti kostum secara berulang dengan jeda singkat",
+          "Menghapus salah satu sayap",
+          "Mengganti nama sprite",
+          "Mengubah ukuran Stage"
+        ],
+        "answer_index": 0,
+        "explanation": "Pergantian kostum berulang menciptakan ilusi kepakan."
+      },
+      "q5": {
+        "question": "Apa tanda animasi kupu-kupu berhasil?",
+        "options": [
+          "Kupu-kupu hanya terlihat pada satu frame",
+          "Kostum sayap berganti teratur sambil sprite bergerak tanpa keluar Stage",
+          "Backdrop hilang",
+          "Semua suara berhenti"
+        ],
+        "answer_index": 1,
+        "explanation": "Animasi harus memperlihatkan pergantian sayap dan gerak yang terkendali."
+      }
+    },
+    {
+      "topic_id": 37,
+      "q3": {
+        "question": "Blok apa yang membuat salinan bintang saat project berjalan?",
+        "options": [
+          "delete this clone",
+          "hide",
+          "create clone of myself",
+          "stop all"
+        ],
+        "answer_index": 2,
+        "explanation": "Create clone of myself membuat salinan sprite."
+      },
+      "q5": {
+        "question": "Apa tanda Star Shower berjalan dengan benar?",
+        "options": [
+          "Clone muncul di posisi X bervariasi, jatuh, lalu dihapus setelah keluar panggung",
+          "Bintang hanya muncul sekali dan diam",
+          "Clone terus menumpuk tanpa batas",
+          "Semua sprite dihapus"
+        ],
+        "answer_index": 0,
+        "explanation": "Pola hujan bintang perlu variasi posisi dan pembersihan clone."
+      }
+    },
+    {
+      "topic_id": 38,
+      "q3": {
+        "question": "Pesan apa yang dapat dikirim ketika animasi intro selesai?",
+        "options": [
+          "INTRO_SELESAI",
+          "HIDE_ALL_FOREVER",
+          "DELETE_PROJECT",
+          "CHANGE_ACCOUNT"
+        ],
+        "answer_index": 0,
+        "explanation": "Pesan INTRO_SELESAI dapat memberi sinyal agar adegan utama dimulai."
+      },
+      "q5": {
+        "question": "Apa tanda intro berhasil menjadi pembuka?",
+        "options": [
+          "Judul muncul setelah game berjalan lama",
+          "Judul tampil, animasi selesai, lalu adegan utama dimulai",
+          "Adegan utama tidak pernah muncul",
+          "Semua sprite langsung tersembunyi"
+        ],
+        "answer_index": 1,
+        "explanation": "Intro harus selesai sebelum konten utama dimulai."
+      }
+    },
+    {
+      "topic_id": 39,
+      "q3": {
+        "question": "Blok sensing apa yang dapat mendeteksi pemain menyentuh warna dinding labirin?",
+        "options": [
+          "say",
+          "touching color?",
+          "next costume",
+          "broadcast"
+        ],
+        "answer_index": 1,
+        "explanation": "Touching color dapat memeriksa apakah sprite menyentuh warna tertentu."
+      },
+      "q5": {
+        "question": "Apa bukti labirin dapat dimainkan?",
+        "options": [
+          "Pemain dapat bergerak ke tujuan dan tidak menembus dinding",
+          "Pemain selalu berada di luar Stage",
+          "Dinding dihapus",
+          "Kontrol keyboard tidak merespons"
+        ],
+        "answer_index": 0,
+        "explanation": "Uji kontrol dan deteksi dinding sepanjang jalur."
+      }
+    },
+    {
+      "topic_id": 40,
+      "q3": {
+        "question": "Blok apa yang menerima jawaban teks dari pemain setelah pertanyaan ditampilkan?",
+        "options": [
+          "Answer",
+          "Backdrop",
+          "Costume",
+          "Direction"
+        ],
+        "answer_index": 0,
+        "explanation": "Reporter Answer menyimpan jawaban terakhir dari ask and wait."
+      },
+      "q5": {
+        "question": "Apa tanda kuis tebak gambar berfungsi?",
+        "options": [
+          "Semua jawaban dianggap benar",
+          "Jawaban benar dan salah menghasilkan respons berbeda pada setiap ronde",
+          "Gambar tidak pernah berubah",
+          "Pertanyaan tidak ditampilkan"
+        ],
+        "answer_index": 1,
+        "explanation": "Uji setidaknya satu jawaban benar dan satu jawaban salah."
+      }
+    },
+    {
+      "topic_id": 41,
+      "q3": {
+        "question": "Blok apa yang menambah skor ketika apel berhasil ditangkap?",
+        "options": [
+          "change [Score] by 1",
+          "change size by 1",
+          "next backdrop",
+          "hide variable"
+        ],
+        "answer_index": 0,
+        "explanation": "Change Score by 1 menambah skor satu poin."
+      },
+      "q5": {
+        "question": "Apa tanda game Catch the Apple siap dimainkan?",
+        "options": [
+          "Apel diam di atas panggung",
+          "Pemain tidak dapat bergerak",
+          "Apel jatuh, tangkapan menambah skor satu kali, dan apel kembali sesuai aturan",
+          "Skor tidak pernah berubah"
+        ],
+        "answer_index": 2,
+        "explanation": "Game perlu memiliki kontrol, gerak apel, deteksi tangkapan, dan skor yang benar."
+      }
+    }
+  ]
+}
