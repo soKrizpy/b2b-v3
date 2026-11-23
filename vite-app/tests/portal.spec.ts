@@ -1552,6 +1552,80 @@ test.describe("Local demo domain repository adapters", () => {
   });
 
 
+  test("student quiz contract validates answers and complete server result", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { validateTopicQuizSubmission, mapTopicQuizAttemptResult } =
+        await import("/src/data/quiz-contract.ts");
+      const validSubmission = validateTopicQuizSubmission(146, [
+        { questionIndex: 0, selectedIndex: 2 },
+        { questionIndex: 1, selectedIndex: 0 }
+      ]);
+      const rejectsSubmission = (topicId: unknown, answers: unknown) => {
+        try {
+          validateTopicQuizSubmission(topicId, answers);
+          return false;
+        } catch {
+          return true;
+        }
+      };
+      const rejectsResult = (value: unknown) => {
+        try {
+          mapTopicQuizAttemptResult(value);
+          return false;
+        } catch {
+          return true;
+        }
+      };
+      const mapped = mapTopicQuizAttemptResult({
+        attemptNumber: 2,
+        score: 50,
+        correctCount: 1,
+        totalQuestions: 2
+      });
+      return {
+        normalizedTopicId: validSubmission.topicId,
+        normalizedAnswers: validSubmission.answers,
+        rejectsInvalidTopic: rejectsSubmission(0, [{ questionIndex: 0, selectedIndex: 0 }]),
+        rejectsDuplicateQuestion: rejectsSubmission(146, [
+          { questionIndex: 0, selectedIndex: 1 },
+          { questionIndex: 0, selectedIndex: 2 }
+        ]),
+        rejectsNegativeOption: rejectsSubmission(146, [{ questionIndex: 0, selectedIndex: -1 }]),
+        rejectsNonArrayAnswers: rejectsSubmission(146, null),
+        mappedResult: mapped,
+        rejectsImpossibleScore: rejectsResult({
+          attemptNumber: 1, score: 100, correctCount: 1, totalQuestions: 2
+        }),
+        rejectsThirdAttempt: rejectsResult({
+          attemptNumber: 3, score: 50, correctCount: 1, totalQuestions: 2
+        }),
+        rejectsMissingCounts: rejectsResult({ attemptNumber: 1, score: 100 })
+      };
+    });
+
+    expect(result).toEqual({
+      normalizedTopicId: 146,
+      normalizedAnswers: [
+        { questionIndex: 0, selectedIndex: 2 },
+        { questionIndex: 1, selectedIndex: 0 }
+      ],
+      rejectsInvalidTopic: true,
+      rejectsDuplicateQuestion: true,
+      rejectsNegativeOption: true,
+      rejectsNonArrayAnswers: true,
+      mappedResult: {
+        attemptNumber: 2,
+        score: 50,
+        correctCount: 1,
+        totalQuestions: 2
+      },
+      rejectsImpossibleScore: true,
+      rejectsThirdAttempt: true,
+      rejectsMissingCounts: true
+    });
+  });
+
   test("student progress RPC contract rejects stale versions and malformed server rows", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
