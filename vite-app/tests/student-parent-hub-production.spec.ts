@@ -256,6 +256,37 @@ async function mockStudentPortalWithCurriculum(page: Page) {
       return;
     }
 
+    if (url.pathname === "/rest/v1/rpc/get_student_challenge_submission" && request.method() === "POST") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/rpc/submit_student_challenge" && request.method() === "POST") {
+      const payload = request.postDataJSON() as {
+        p_topic_id: number;
+        p_submission_url: string;
+        p_submission_note: string | null;
+      };
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          id: 31,
+          challenge_id: 13,
+          student_id: userId,
+          submission_url: payload.p_submission_url,
+          submission_note: payload.p_submission_note,
+          status: "pending",
+          review_note: null,
+          reviewed_by: null,
+          reviewed_at: null,
+          submitted_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        })
+      });
+      return;
+    }
+
     if (url.pathname === "/rest/v1/rpc/save_student_lesson_progress" && request.method() === "POST") {
       const payload = request.postDataJSON() as {
         p_state: string;
@@ -314,6 +345,11 @@ test("production student Parent Hub reads only submitted Supabase records and is
   for (let stage = 0; stage < 5; stage += 1) {
     await page.locator("#btn-stage-next").click();
   }
-  await expect(page.getByText("Pengumpulan belum tersedia", { exact: true })).toBeVisible();
-  await expect(page.locator("#btn-submit-project")).toHaveCount(0);
+  await expect(page.getByLabel("Link Proyek Scratch Publik (URL)")).toBeVisible();
+  await expect(page.locator("#btn-submit-project")).toBeEnabled();
+  await page.getByLabel("Link Proyek Scratch Publik (URL)").fill("https://scratch.mit.edu/projects/123456789");
+  await page.getByLabel("Catatan Refleksi Belajar (Opsional)").fill("Saya berhasil membuat sprite bergerak.");
+  await page.locator("#btn-submit-project").click();
+  await expect(page.getByText("Proyek Berhasil Dikumpulkan!", { exact: true })).toBeVisible();
+  await expect(page.locator("#btn-submit-project")).toBeDisabled();
 });
