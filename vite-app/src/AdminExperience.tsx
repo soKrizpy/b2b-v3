@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { supabaseAdminIdentityRepository } from "./data/supabase-admin-identity-repository";
-import { supabaseAuthRepository } from "./data/supabase-auth-repository";
+import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 // @ts-ignore - Existing Admin controller is reused during incremental migration.
 import { AdminWorkspace } from "../../js/admin/admin-workspace.js";
 
@@ -20,13 +19,13 @@ export default function AdminExperience() {
     void (async () => {
       try {
         // Selecting the Admin workspace must not silently authenticate or elevate a user.
-        const session = await supabaseAuthRepository.getSession();
+        const session = await supabaseProductionCapabilities.auth.getSession();
         if (!active) return;
         if (session?.user?.role !== "admin") {
           throw new Error("Sesi Admin belum aktif. Silakan masuk menggunakan akun Admin.");
         }
 
-        controller = new AdminWorkspace(host, session.user, { identity: supabaseAdminIdentityRepository }) as AdminController;
+        controller = new AdminWorkspace(host, session.user, { identity: supabaseProductionCapabilities.adminIdentity }) as AdminController;
         await controller.init();
         if (active) setStatus("ready");
       } catch (error) {
