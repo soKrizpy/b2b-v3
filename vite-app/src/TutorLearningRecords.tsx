@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
-import type { MonthlyEvaluation, SessionReport } from "./data/domain-contracts";
+import type { MonthlyEvaluation, SessionReport, YearMonth } from "./data/domain-contracts";
 import type { TutorAssignedStudent } from "./data/supabase-tutor-schedule-repository";
 import type { TutorMeetingSummary } from "./data/supabase-tutor-schedule-repository";
 
@@ -42,7 +42,7 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
   const [difficulties, setDifficulties] = useState("");
   const [solutions, setSolutions] = useState("");
   const [recommendations, setRecommendations] = useState("");
-  const [period, setPeriod] = useState(currentPeriod());
+  const [period, setPeriod] = useState<YearMonth>(currentPeriod() as YearMonth);
   const [rating, setRating] = useState<(typeof ratings)[number]>("Berkembang sesuai proses");
   const [summary, setSummary] = useState("");
   const [strengths, setStrengths] = useState("");
@@ -243,7 +243,7 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
             <form onSubmit={(event) => void saveEvaluation(event, "draft")}>
               <h4>Evaluasi Bulanan</h4>
               <label>Periode
-                <input type="month" value={period} onChange={(event) => setPeriod(event.target.value)} required />
+                <input type="month" value={period} onChange={(event) => setPeriod(event.target.value as YearMonth)} required />
               </label>
               <label>Penilaian
                 <select value={rating} onChange={(event) => setRating(event.target.value as (typeof ratings)[number])}>
