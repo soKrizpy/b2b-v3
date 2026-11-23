@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
-import type { TutorMeetingSummary } from "./data/supabase-tutor-schedule-repository";
+import type { TutorMeetingSummary, TutorAssignedStudent } from "./data/supabase-tutor-schedule-repository";
 import TutorLearningRecords from "./TutorLearningRecords";
 
 type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
@@ -25,7 +25,9 @@ function statusLabel(meeting: TutorMeetingSummary) {
 export default function TutorExperience({ user }: { user: TutorUser }) {
   const [meetings, setMeetings] = useState<TutorMeetingSummary[]>([]);
   const [studentCounts, setStudentCounts] = useState<Record<number, number>>({});
-  const [meetingStudents, setMeetingStudents] = useState<Array<{ meetingId: number; studentId: string }>>([]);
+  const [meetingStudents, setMeetingStudents] = useState<Array<{ meetingId: number; studentId: string; attendanceStatus: "hadir" | "telat" | "absen"; attendanceRecordedAt: string | null }>>([]);
+  const [assignedStudents, setAssignedStudents] = useState<TutorAssignedStudent[]>([]);
+  const [attendanceSaving, setAttendanceSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -36,17 +38,22 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
       setLoading(true);
       setError("");
       try {
-        const snapshot = await supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id);
+        const [snapshot, assigned] = await Promise.all([
+          supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id),
+          supabaseProductionCapabilities.tutorSchedule.listAssignedStudents(user.id)
+        ]);
         if (!active) return;
         setMeetings(snapshot.meetings);
         setStudentCounts(snapshot.studentCounts);
         setMeetingStudents(snapshot.meetingStudents);
+        setAssignedStudents(assigned);
       } catch (cause) {
         console.error("Jadwal tutor gagal dimuat:", cause);
         if (active) {
           setMeetings([]);
           setStudentCounts({});
           setMeetingStudents([]);
+          setAssignedStudents([]);
           setError(cause instanceof Error ? cause.message : "Jadwal Supabase tidak dapat dimuat.");
         }
       } finally {
@@ -56,6 +63,27 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
 
     return () => { active = false; };
   }, [user.id]);
+
+  async function markAttendance(meetingId: number, studentId: string, status: "hadir" | "telat" | "absen") {
+    setAttendanceSaving(true);
+    setError("");
+    const result = await supabaseProductionCapabilities.tutorSchedule.recordAttendance(user.id, meetingId, studentId, status);
+    if (!result.success) {
+      setError(result.message ?? "Kehadiran gagal disimpan.");
+      setAttendanceSaving(false);
+      return;
+    }
+    try {
+      const snapshot = await supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id);
+      setMeetings(snapshot.meetings);
+      setStudentCounts(snapshot.studentCounts);
+      setMeetingStudents(snapshot.meetingStudents);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Jadwal gagal dimuat ulang.");
+    } finally {
+      setAttendanceSaving(false);
+    }
+  }
 
   const totalStudentLinks = useMemo(
     () => Object.values(studentCounts).reduce((sum, count) => sum + count, 0),
@@ -106,6 +134,28 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
                       <p>{formatMeetingDate(meeting.meeting_date)}</p>
                       <small>Sesi {meeting.session_number ?? "—"} dari {meeting.session_count ?? "—"} · {studentCounts[meeting.id] ?? 0} siswa terhubung</small>
                       {meeting.notes && <p className="tutor-live-notes">{meeting.notes}</p>}
+                      {meetingStudents.some((link) => link.meetingId === meeting.id) && (
+                        <div className="tutor-attendance-list" aria-label="Presensi siswa">
+                          <strong>Presensi siswa</strong>
+                          {meetingStudents.filter((link) => link.meetingId === meeting.id).map((link) => {
+                            const student = assignedStudents.find((item) => item.id === link.studentId);
+                            const label = !link.attendanceRecordedAt
+                              ? "Belum dicatat"
+                              : link.attendanceStatus === "hadir" ? "Hadir"
+                              : link.attendanceStatus === "telat" ? "Terlambat" : "Tidak hadir";
+                            return (
+                              <div className="tutor-attendance-row" key={link.studentId}>
+                                <span>{student?.fullName ?? "Siswa terhubung"} · <small>{label}</small></span>
+                                <div>
+                                  <button type="button" disabled={attendanceSaving} onClick={() => void markAttendance(meeting.id, link.studentId, "hadir")}>Hadir</button>
+                                  <button type="button" disabled={attendanceSaving} onClick={() => void markAttendance(meeting.id, link.studentId, "telat")}>Telat</button>
+                                  <button type="button" disabled={attendanceSaving} onClick={() => void markAttendance(meeting.id, link.studentId, "absen")}>Absen</button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                     {meeting.link_url && <a className="btn btn-secondary btn-sm" href={meeting.link_url} target="_blank" rel="noreferrer">Buka pertemuan</a>}
                   </article>
