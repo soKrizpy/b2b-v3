@@ -357,7 +357,7 @@ test("production student Parent Hub reads only submitted Supabase records and is
   await expect(page.getByText("Kemajuan konsisten", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
   await expect(page.getByText("Tagihan Oktober 2026", { exact: true })).toBeVisible();
-  await expect(page.getByText("50.000")).toBeVisible();
+  await expect(page.locator("[data-parent-invoice-id]").first()).toContainText("50.000");
   await page.getByRole("button", { name: /Kembali ke Ruang Belajar/ }).click();
 
   await page.getByRole("button", { name: /Lanjutkan Misi/ }).click();
