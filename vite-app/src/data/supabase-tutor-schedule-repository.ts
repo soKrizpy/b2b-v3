@@ -21,10 +21,19 @@ type MeetingStudentRow = {
 export type TutorScheduleSnapshot = {
   meetings: TutorMeetingSummary[];
   studentCounts: Record<number, number>;
+  meetingStudents: Array<{ meetingId: number; studentId: string }>;
+};
+
+export type TutorAssignedStudent = {
+  id: string;
+  fullName: string;
+  grade: string | null;
+  avatarId: string | null;
 };
 
 export interface TutorScheduleRepository {
   listForCurrentTutor(expectedTutorId: string): Promise<TutorScheduleSnapshot>;
+  listAssignedStudents(expectedTutorId: string): Promise<TutorAssignedStudent[]>;
 }
 
 function requireClient(client: SupabaseClient | null): SupabaseClient {
@@ -83,7 +92,7 @@ export function createSupabaseTutorScheduleRepository(
         return new Date(a.meeting_date).getTime() - new Date(b.meeting_date).getTime();
       });
 
-      if (meetings.length === 0) return { meetings: [], studentCounts: {} };
+      if (meetings.length === 0) return { meetings: [], studentCounts: {}, meetingStudents: [] };
 
       const { data: links, error: linksError } = await db
         .from("meeting_students")
@@ -108,7 +117,33 @@ export function createSupabaseTutorScheduleRepository(
         studentCounts[meetingId] = students.size;
       }
 
-      return { meetings, studentCounts };
+      return {
+        meetings,
+        studentCounts,
+        meetingStudents: (links ?? [])
+          .filter((link: MeetingStudentRow) =>
+            Number.isSafeInteger(link.meeting_id) && link.meeting_id > 0 &&
+            typeof link.student_id === "string" && link.student_id.length > 0
+          )
+          .map((link: MeetingStudentRow) => ({ meetingId: link.meeting_id, studentId: link.student_id }))
+      };
+    },
+
+    async listAssignedStudents(expectedTutorId: string): Promise<TutorAssignedStudent[]> {
+      if (!expectedTutorId) throw new Error("Identitas tutor tidak valid.");
+      const db = requireClient(client);
+      const { data: authData, error: authError } = await db.auth.getUser();
+      if (authError || !authData.user || authData.user.id !== expectedTutorId) {
+        throw new Error("Sesi tutor tidak cocok. Silakan masuk kembali.");
+      }
+      const { data, error } = await db.rpc("list_tutor_assigned_students");
+      if (error) throw new Error("Daftar siswa yang ditugaskan gagal dimuat.");
+      return (data ?? []).map((row: { student_id: string; full_name: string | null; grade: string | null; avatar_id: string | null }) => ({
+        id: row.student_id,
+        fullName: row.full_name ?? "Siswa",
+        grade: row.grade,
+        avatarId: row.avatar_id
+      }));
     }
   };
 }
