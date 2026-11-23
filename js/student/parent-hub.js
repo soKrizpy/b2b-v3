@@ -122,7 +122,7 @@ export class ParentHubView {
       } else if (this.activeTab === 'monthly') {
         this.monthlyEvaluations = await this.repositories.monthlyEvaluations.getStudentPublished(this.studentUser.id);
       } else {
-        this.invoices = await this.repositories.billing.getStudentInvoices(this.studentUser.id);
+        this.invoices = await this.repositories.billing.getStudentInvoiceHistory(this.studentUser.id);
       }
       if (this.destroyed || request !== this.loadRequest) return;
       this.isLoading = false;
