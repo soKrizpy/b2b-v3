@@ -139,7 +139,10 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
     setSaving(true);
     setError("");
     setMessage("");
+    const existingReport = reports.find((report) => report.studentId === studentId && report.sessionId === String(meeting.id));
     const result = await supabaseProductionCapabilities.sessionReports.saveReport({
+      id: existingReport?.id,
+      expectedVersion: existingReport?.version,
       studentId,
       tutorId,
       sessionId: String(meeting.id),
@@ -179,7 +182,10 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
     setSaving(true);
     setError("");
     setMessage("");
+    const existingEvaluation = evaluations.find((item) => item.studentId === studentId && item.period === period);
     const result = await supabaseProductionCapabilities.monthlyEvaluations.saveEvaluation({
+      id: existingEvaluation?.id,
+      expectedVersion: existingEvaluation?.version,
       studentId,
       tutorId,
       period,
