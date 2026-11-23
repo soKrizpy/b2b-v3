@@ -202,7 +202,7 @@ The earlier curriculum counts and 30/10-topic module-size findings above describ
 - 28 newly added topics have been re-authored with 5 topic-specific questions and 12 substantive learning nodes each.
 - The original 12 Tinkercad foundation topics were expanded to 12 learning nodes each.
 - Generic/empty learning nodes and duplicate quiz question text were removed from the audited curriculum snapshot.
-- Existing student progress (21 rows) and quiz attempts (55 rows) remain; 40 prior quiz banks are retained as `legacyQuiz` snapshots where question content was revised.
+- Existing student progress (21 rows) and quiz attempts (55 rows) remain; 52 prior quiz banks are retained as `legacyQuiz` snapshots where question content was revised.
 - The original capstones in Scratch Visual Games, 3D Design, ScratchJr, Scratch Beginner, and Tinkercad were moved to topic 16 without changing their topic IDs.
 - The full detail and remaining quality gates are documented in `docs/curriculum/quality-audit-2026-11-23.md`.
 
