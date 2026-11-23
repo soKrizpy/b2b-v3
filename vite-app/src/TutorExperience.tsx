@@ -157,13 +157,14 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
                             const label = link.attendanceStatus === "hadir" ? "Hadir"
                               : link.attendanceStatus === "telat" ? "Terlambat"
                               : link.attendanceRecordedAt ? "Tidak hadir" : "Belum dicatat";
+                            const attendanceLocked = ["selesai", "terlewat", "cancelled", "soft_deleted"].includes(meeting.completion_status ?? "");
                             return (
                               <div className="tutor-attendance-row" key={link.studentId}>
                                 <span>{student?.fullName ?? "Siswa terhubung"} · <small>{label}</small></span>
                                 <div>
-                                  <button type="button" disabled={attendanceSaving} onClick={() => void markAttendance(meeting.id, link.studentId, "hadir")}>Hadir</button>
-                                  <button type="button" disabled={attendanceSaving} onClick={() => void markAttendance(meeting.id, link.studentId, "telat")}>Telat</button>
-                                  <button type="button" disabled={attendanceSaving} onClick={() => void markAttendance(meeting.id, link.studentId, "absen")}>Absen</button>
+                                  <button type="button" disabled={attendanceSaving || attendanceLocked} onClick={() => void markAttendance(meeting.id, link.studentId, "hadir")}>Hadir</button>
+                                  <button type="button" disabled={attendanceSaving || attendanceLocked} onClick={() => void markAttendance(meeting.id, link.studentId, "telat")}>Telat</button>
+                                  <button type="button" disabled={attendanceSaving || attendanceLocked} onClick={() => void markAttendance(meeting.id, link.studentId, "absen")}>Absen</button>
                                 </div>
                               </div>
                             );
