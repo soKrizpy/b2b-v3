@@ -1,0 +1,739 @@
+{
+  "schema_version": 1,
+  "module_id": 20,
+  "module_title": "Scratch Visual Block Coding & Games",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "sequence_note": "Move the pre-existing Showcase Project to topic 16, after clone, custom blocks, game balancing, and debugging.",
+  "topics": [
+    {
+      "topic_id": 178,
+      "title": "Clone dan Pola Gerak: Membuat Banyak Objek",
+      "description": "Menggunakan clone untuk membuat banyak objek dari satu sprite, mengatur perilaku setiap clone, dan menghapus clone saat tidak diperlukan.",
+      "challenge_id": 109,
+      "challenge_title": "Challenge: Hujan Clone yang Terkendali",
+      "challenge_instructions": "Buat game kecil dengan minimal lima clone koin atau meteor yang aktif bergantian. Clone harus muncul dengan jeda, memiliki posisi awal bervariasi, bergerak, berinteraksi dengan pemain, dan menghapus diri saat selesai. Bagikan tautan project dan jelaskan cara mencegah clone menumpuk.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi create clone of myself?",
+            "options": [
+              "Membuat salinan sprite saat project berjalan",
+              "Mengganti backdrop",
+              "Menghapus sprite sumber",
+              "Mengubah nama project"
+            ],
+            "answer_index": 0,
+            "explanation": "Create clone of myself membuat salinan dari sprite yang sedang menjalankan skrip."
+          },
+          {
+            "question": "Skrip apa yang dijalankan oleh setiap clone saat dibuat?",
+            "options": [
+              "when green flag clicked",
+              "when I start as a clone",
+              "when space key pressed",
+              "when backdrop switches"
+            ],
+            "answer_index": 1,
+            "explanation": "when I start as a clone menjalankan perilaku khusus untuk setiap clone."
+          },
+          {
+            "question": "Mengapa clone perlu dihapus setelah keluar panggung?",
+            "options": [
+              "Agar backdrop berubah",
+              "Agar sprite sumber ikut terhapus",
+              "Agar objek yang tidak diperlukan tidak terus menumpuk",
+              "Agar skor selalu nol"
+            ],
+            "answer_index": 2,
+            "explanation": "Delete this clone membersihkan salinan yang sudah tidak dibutuhkan."
+          },
+          {
+            "question": "Apa akibat membuat clone terus-menerus tanpa jeda?",
+            "options": [
+              "Project otomatis menang",
+              "Pemain tidak bisa bergerak",
+              "Semua suara berhenti",
+              "Jumlah clone dapat bertambah terlalu cepat dan membebani project"
+            ],
+            "answer_index": 3,
+            "explanation": "Jeda mengontrol frekuensi pembuatan clone agar jumlah objek tetap terkendali."
+          },
+          {
+            "question": "Jika clone tidak terlihat setelah dibuat, hal pertama yang perlu diperiksa adalah…",
+            "options": [
+              "Apakah clone menjalankan show dan berada di dalam area Stage",
+              "Apakah nama project terlalu panjang",
+              "Apakah backdrop memiliki suara",
+              "Apakah komputer memakai wallpaper"
+            ],
+            "answer_index": 0,
+            "explanation": "Clone mungkin masih tersembunyi atau muncul di luar area Stage."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Hujan Clone yang Terkendali",
+            "instructions": "Buat game kecil dengan minimal lima clone koin atau meteor yang aktif bergantian. Clone harus muncul dengan jeda, memiliki posisi awal bervariasi, bergerak, berinteraksi dengan pemain, dan menghapus diri saat selesai. Bagikan tautan project dan jelaskan cara mencegah clone menumpuk.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Banyak Objek dari Satu Sprite",
+            "content": "Kamu akan membuat objek seperti koin atau meteor muncul berkali-kali. Clone memungkinkan satu sprite membuat salinan saat game berjalan tanpa perlu menggambar sprite baru untuk setiap objek."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Sprite Asli dan Clone",
+            "content": "Sprite asli adalah sumber clone. Saat create clone of myself dijalankan, Scratch membuat salinan yang dapat menjalankan skrip when I start as a clone. Clone dapat memiliki posisi dan waktu hidup sendiri."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Atur Kapan Clone Dibuat",
+            "content": "Buat satu loop yang menunggu sebentar lalu membuat clone. Jeda mengatur seberapa sering objek muncul. Jika clone dibuat tanpa jeda, terlalu banyak objek dapat muncul dalam waktu singkat."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh: Membuat Clone Jatuh",
+            "content": "Sprite sumber membuat clone secara berkala. Setiap clone mulai dari posisi atas, bergerak ke bawah, lalu menghapus dirinya ketika mencapai batas panggung.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\nhide\nforever\n wait (1) seconds\n create clone of [myself]\nend\n\nwhen I start as a clone\nshow\ngo to x: (pick random -200 to 200) y: (170)\nrepeat until <(y position) < (-170)>\n change y by (-5)\nend\ndelete this clone"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Mengapa Clone Harus Dihapus?",
+            "content": "Clone yang sudah keluar panggung tidak lagi dibutuhkan. Delete this clone membersihkan salinan itu. Tanpa penghapusan, jumlah objek dapat terus bertambah dan game menjadi lambat."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Sprite Sumber",
+            "content": "Pilih satu sprite objek, misalnya koin atau meteor. Atur ukuran dan kostum sprite sumber. Sembunyikan sprite asli jika hanya clone yang ingin terlihat saat game berjalan."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Buat Pengatur Kemunculan",
+            "content": "Buat skrip Green Flag yang menunggu jeda tertentu lalu membuat clone. Mulai dengan jeda satu detik agar jumlah clone mudah diamati."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Atur Perilaku Clone",
+            "content": "Pada when I start as a clone, tampilkan clone, atur posisi awal, dan gerakkan sesuai tujuan. Gunakan nilai acak pada posisi X agar pola tidak selalu sama."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Interaksi",
+            "content": "Jika clone menyentuh pemain, jalankan aksi seperti menambah skor atau mengurangi nyawa. Pastikan setiap clone hanya memicu satu respons sebelum dihapus."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Bersihkan Clone di Akhir",
+            "content": "Hapus clone saat mencapai tepi, tertangkap pemain, atau game berakhir. Jika game menggunakan broadcast GAME_OVER, buat clone menerima pesan itu dan menghapus dirinya."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Clone",
+            "content": "Jika clone tidak terlihat, periksa show dan posisi awal. Jika clone terlalu banyak, tambah wait pada pembuat clone. Jika objek menumpuk, pastikan semua jalur akhir menjalankan delete this clone."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat hujan koin atau meteor dengan minimal lima clone aktif. Atur kemunculan, posisi acak, gerakan, interaksi, dan penghapusan. Jelaskan bagaimana kamu mencegah clone menumpuk."
+          }
+        ],
+        "activeChallengeIds": [
+          109
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 179,
+      "title": "My Blocks: Membuat Perintah Sendiri",
+      "description": "Menggunakan My Blocks untuk mengelompokkan rangkaian perintah menjadi prosedur yang dapat dipanggil ulang dan menerima input sederhana.",
+      "challenge_id": 110,
+      "challenge_title": "Challenge: Buat Library My Blocks",
+      "challenge_instructions": "Rapikan satu project Scratch dengan membuat minimal dua My Blocks untuk aksi berulang, misalnya reset pemain dan efek saat mendapat poin. Panggil setiap blok dari skrip yang sesuai. Salah satu blok harus menerima input dan diuji dengan dua nilai berbeda. Bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa tujuan utama My Blocks?",
+            "options": [
+              "Mengelompokkan perintah menjadi blok yang dapat dipanggil kembali",
+              "Menghapus semua sprite",
+              "Mengganti ukuran Stage",
+              "Membuat backdrop otomatis"
+            ],
+            "answer_index": 0,
+            "explanation": "My Blocks mengelompokkan perintah agar aksi dapat digunakan kembali."
+          },
+          {
+            "question": "Kapan rangkaian perintah cocok dijadikan My Block?",
+            "options": [
+              "Saat perintah hanya digunakan sekali dan sangat sederhana",
+              "Saat aksi yang sama perlu dipanggil dari beberapa bagian skrip",
+              "Saat ingin menghapus semua variabel",
+              "Saat project belum memiliki sprite"
+            ],
+            "answer_index": 1,
+            "explanation": "Aksi berulang lebih mudah dikelola jika dikelompokkan dalam satu blok khusus."
+          },
+          {
+            "question": "Apa manfaat menambahkan input pada My Block?",
+            "options": [
+              "Membuat blok tidak bisa dipanggil",
+              "Menghapus kebutuhan variabel",
+              "Memungkinkan satu blok menjalankan aksi dengan nilai yang berbeda",
+              "Mengganti semua event"
+            ],
+            "answer_index": 2,
+            "explanation": "Input membuat blok yang sama dapat digunakan dengan parameter berbeda."
+          },
+          {
+            "question": "Jika My Block sudah dibuat tetapi tidak menghasilkan apa-apa, periksa…",
+            "options": [
+              "Warna Stage",
+              "Nama akun Scratch",
+              "Ukuran jendela browser",
+              "Apakah definisi blok berisi perintah dan pemanggilannya berjalan"
+            ],
+            "answer_index": 3,
+            "explanation": "Blok buatan harus memiliki isi dan dipanggil dari skrip aktif."
+          },
+          {
+            "question": "Nama My Block yang baik seharusnya…",
+            "options": [
+              "Menjelaskan tugas yang dilakukan blok",
+              "Selalu berupa angka acak",
+              "Sama untuk semua blok",
+              "Tidak memiliki hubungan dengan aksi"
+            ],
+            "answer_index": 0,
+            "explanation": "Nama yang jelas membuat fungsi blok mudah dipahami saat membaca skrip."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Buat Library My Blocks",
+            "instructions": "Rapikan satu project Scratch dengan membuat minimal dua My Blocks untuk aksi berulang, misalnya reset pemain dan efek saat mendapat poin. Panggil setiap blok dari skrip yang sesuai. Salah satu blok harus menerima input dan diuji dengan dua nilai berbeda. Bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Membuat Blok Sendiri",
+            "content": "Kamu akan membuat perintah sendiri untuk aksi yang sering digunakan. My Blocks membantu skrip lebih ringkas dan membuat fungsi setiap bagian program mudah dipahami."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu My Blocks?",
+            "content": "My Blocks adalah blok buatan pengguna. Kamu menentukan nama blok dan menyusun perintah yang dijalankan ketika blok itu dipanggil."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Cari Aksi yang Berulang",
+            "content": "Perhatikan project yang memiliki urutan perintah sama, misalnya efek ledakan, animasi berjalan, atau mengatur ulang posisi pemain. Aksi berulang cocok dijadikan My Block."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Contoh: Blok Efek Ledakan",
+            "content": "Buat My Block bernama efekLedakan. Letakkan pergantian kostum, suara, dan jeda di dalam definisi blok. Panggil blok itu ketika pemain terkena rintangan.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "define efekLedakan\nswitch costume to [Ledakan]\nstart sound [Pop]\nwait (0.5) seconds\nswitch costume to [Normal]"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Tambahkan Input pada Blok",
+            "content": "My Blocks dapat memiliki input angka atau teks. Contohnya blok gerakKe (jarak) dapat menerima angka berbeda sehingga satu prosedur bisa dipakai untuk gerak pendek maupun panjang."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat My Block Pertama",
+            "content": "Buka kategori My Blocks dan pilih Make a Block. Beri nama sesuai tugasnya, misalnya resetPemain atau tampilkanEfek. Hindari nama umum seperti blok1."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Pindahkan Perintah Berulang",
+            "content": "Pindahkan rangkaian perintah yang menjalankan satu tugas ke dalam definisi My Block. Pastikan urutan blok tetap sama agar perilaku project tidak berubah."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Panggil Blok dari Skrip Utama",
+            "content": "Panggil My Block dari skrip yang membutuhkan aksi tersebut. Uji minimal dua tempat pemanggilan agar terlihat bahwa blok dapat digunakan ulang."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Buat Input Sederhana",
+            "content": "Jika aksi membutuhkan nilai berbeda, tambahkan input angka atau teks. Gunakan nilai input di dalam definisi blok dan uji dengan dua nilai berbeda."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Bandingkan Sebelum dan Sesudah",
+            "content": "Periksa apakah skrip utama menjadi lebih mudah dibaca. My Block harus mengelompokkan satu tugas yang jelas, bukan hanya memindahkan banyak perintah tanpa tujuan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting My Blocks",
+            "content": "Jika blok tidak muncul, periksa apakah definisinya dibuat pada sprite yang benar. Jika aksi tidak berjalan, pastikan definisi blok memiliki perintah dan pemanggilannya berada pada jalur skrip yang aktif."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat minimal dua My Blocks untuk aksi yang berulang dalam game. Gunakan salah satunya dengan input berbeda. Jelaskan bagaimana My Blocks membuat project lebih mudah dirawat."
+          }
+        ],
+        "activeChallengeIds": [
+          110
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 180,
+      "title": "Game Balancing: Mengatur Kesulitan dengan Pengujian",
+      "description": "Menguji kecepatan, frekuensi rintangan, target skor, dan jumlah nyawa untuk menghasilkan tingkat kesulitan yang adil dan menarik.",
+      "challenge_id": 111,
+      "challenge_title": "Challenge: Uji dan Seimbangkan Game",
+      "challenge_instructions": "Lakukan minimal tiga percobaan pada game yang sama. Catat satu parameter yang diuji (misalnya kecepatan atau jeda rintangan), nilai setiap percobaan, dan hasil skor/waktu bertahan. Pilih pengaturan yang paling adil dan jelaskan alasannya. Sertakan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa tujuan game balancing?",
+            "options": [
+              "Menyesuaikan tantangan agar game adil dan menarik",
+              "Menambah jumlah sprite sebanyak mungkin",
+              "Menghapus semua kondisi game",
+              "Membuat skor selalu nol"
+            ],
+            "answer_index": 0,
+            "explanation": "Balancing menyesuaikan tantangan dengan kemampuan pemain dan tujuan game."
+          },
+          {
+            "question": "Mengapa satu parameter sebaiknya diubah dalam satu percobaan?",
+            "options": [
+              "Agar semua hasil berubah sekaligus",
+              "Agar dampak perubahan dapat diketahui dengan lebih jelas",
+              "Agar game tidak bisa selesai",
+              "Agar variabel tidak perlu digunakan"
+            ],
+            "answer_index": 1,
+            "explanation": "Mengubah satu parameter membantu mengisolasi penyebab perbedaan hasil."
+          },
+          {
+            "question": "Contoh parameter yang dapat diatur saat balancing adalah…",
+            "options": [
+              "Nama akun pemain",
+              "Warna desktop komputer",
+              "Kecepatan rintangan dan jeda kemunculannya",
+              "Ukuran jendela browser"
+            ],
+            "answer_index": 2,
+            "explanation": "Kecepatan dan frekuensi rintangan memengaruhi tingkat kesulitan game."
+          },
+          {
+            "question": "Apa yang perlu dicatat saat menguji game?",
+            "options": [
+              "Hanya warna backdrop",
+              "Jumlah tab browser",
+              "Nama file project",
+              "Nilai parameter dan hasil percobaan seperti skor atau waktu bertahan"
+            ],
+            "answer_index": 3,
+            "explanation": "Catatan hasil membuat perbandingan antarpercobaan lebih objektif."
+          },
+          {
+            "question": "Jika game terasa terlalu sulit setelah kecepatan rintangan dinaikkan, tindakan yang tepat adalah…",
+            "options": [
+              "Mencoba nilai yang lebih rendah atau nilai di antaranya lalu menguji lagi",
+              "Mengubah semua parameter sekaligus",
+              "Menghapus kondisi menang",
+              "Menambahkan rintangan tanpa pengujian"
+            ],
+            "answer_index": 0,
+            "explanation": "Penyesuaian bertahap membantu menemukan tingkat kesulitan yang lebih seimbang."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Uji dan Seimbangkan Game",
+            "instructions": "Lakukan minimal tiga percobaan pada game yang sama. Catat satu parameter yang diuji (misalnya kecepatan atau jeda rintangan), nilai setiap percobaan, dan hasil skor/waktu bertahan. Pilih pengaturan yang paling adil dan jelaskan alasannya. Sertakan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Game yang Adil dan Menantang",
+            "content": "Game terlalu mudah bisa membosankan, sedangkan game terlalu sulit membuat pemain cepat menyerah. Kamu akan menguji parameter dan memilih tingkat kesulitan berdasarkan hasil bermain."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Game Balancing?",
+            "content": "Game balancing adalah proses menyesuaikan aturan agar tantangan terasa adil. Parameter yang dapat diubah antara lain kecepatan rintangan, jeda kemunculan, target skor, dan jumlah nyawa."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Catat Kondisi Awal",
+            "content": "Sebelum mengubah game, catat nilai awal seperti kecepatan rintangan, jeda spawn, target skor, dan jumlah nyawa. Mainkan beberapa kali agar kamu memiliki pembanding."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Ubah Satu Parameter",
+            "content": "Ubah satu parameter dalam satu percobaan. Contohnya kecepatan rintangan dari 4 menjadi 5. Jika banyak parameter berubah sekaligus, kamu akan sulit mengetahui penyebab hasil berbeda."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Contoh Pengujian Kecepatan",
+            "content": "Buat variabel KecepatanRintangan dan gunakan pada gerakan rintangan. Catat berapa lama pemain bertahan pada nilai 4, lalu bandingkan dengan nilai 5.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "set [KecepatanRintangan] to (4)\nforever\n change x by (0 - KecepatanRintangan)\nend"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Tabel Percobaan",
+            "content": "Siapkan tabel sederhana berisi percobaan, nilai parameter, hasil skor, dan waktu bertahan. Gunakan format yang sama untuk setiap percobaan agar hasil dapat dibandingkan."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Uji Versi Awal",
+            "content": "Mainkan game dengan pengaturan awal minimal tiga kali. Catat skor dan waktu bertahan. Perhatikan bagian yang membuat pemain gagal atau menunggu terlalu lama."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Uji Perubahan Pertama",
+            "content": "Ubah satu parameter saja, misalnya kecepatan rintangan. Mainkan kembali dengan jumlah percobaan yang sama dan catat hasilnya."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Bandingkan Hasil",
+            "content": "Bandingkan hasil sebelum dan sesudah. Jika perubahan membuat game terlalu sulit, coba nilai di antara dua pengaturan atau kembalikan ke nilai awal."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Minta Pemain Lain Mencoba",
+            "content": "Minta teman mencoba game tanpa diberi petunjuk berlebihan. Amati apakah aturan mudah dipahami dan apakah tantangan terasa masuk akal."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Balancing",
+            "content": "Jika hasil uji berubah terlalu jauh, pastikan kondisi awal selalu sama. Jika skor tidak dapat dibandingkan, pastikan target dan durasi percobaan tidak berubah bersamaan."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Lakukan minimal tiga percobaan dengan satu parameter yang diubah. Catat nilai awal, nilai baru, skor atau waktu bertahan, lalu jelaskan pengaturan yang kamu pilih dan alasannya."
+          }
+        ],
+        "activeChallengeIds": [
+          111
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 181,
+      "title": "Debugging dan Refactoring: Merapikan Game",
+      "description": "Mendiagnosis bug pada event, loop, kondisi, variabel, dan clone, lalu merapikan skrip tanpa mengubah perilaku game yang diharapkan.",
+      "challenge_id": 112,
+      "challenge_title": "Challenge: Debug dan Rapikan Project",
+      "challenge_instructions": "Pilih satu bug pada project Scratch (atau buat bug latihan yang dapat diulang). Catat langkah reproduksi, penyebab, perubahan yang dilakukan, dan hasil pengujian setelah perbaikan. Lakukan satu refactoring kecil seperti memberi nama variabel yang jelas atau membuat My Block. Bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa langkah awal debugging yang baik?",
+            "options": [
+              "Mengulang masalah agar penyebabnya dapat diamati",
+              "Menghapus semua skrip",
+              "Mengganti semua sprite",
+              "Mengubah banyak blok sekaligus"
+            ],
+            "answer_index": 0,
+            "explanation": "Masalah perlu direproduksi agar proses pencarian penyebab terarah."
+          },
+          {
+            "question": "Mengapa monitor variabel berguna saat debugging?",
+            "options": [
+              "Agar backdrop berubah otomatis",
+              "Untuk melihat kapan nilai variabel berubah",
+              "Untuk menghapus clone",
+              "Untuk mengganti nama project"
+            ],
+            "answer_index": 1,
+            "explanation": "Monitor membantu mengetahui perubahan nilai variabel saat game berjalan."
+          },
+          {
+            "question": "Apa arti refactoring?",
+            "options": [
+              "Menambah fitur sebanyak mungkin",
+              "Menghapus semua komentar",
+              "Merapikan struktur kode tanpa mengubah perilaku yang diharapkan",
+              "Mengganti semua sprite"
+            ],
+            "answer_index": 2,
+            "explanation": "Refactoring memperbaiki keterbacaan dan struktur tanpa mengubah hasil program."
+          },
+          {
+            "question": "Jika bug muncul setelah perubahan pada broadcast, hal pertama yang perlu diperiksa adalah…",
+            "options": [
+              "Warna kostum",
+              "Ukuran Stage",
+              "Jumlah tab browser",
+              "Nama pesan dan skrip penerima pada sprite terkait"
+            ],
+            "answer_index": 3,
+            "explanation": "Kesalahan ejaan atau skrip penerima yang tidak aktif dapat membuat alur pesan gagal."
+          },
+          {
+            "question": "Bagaimana memastikan perbaikan tidak merusak fitur lain?",
+            "options": [
+              "Uji kembali alur utama dan fitur yang berkaitan setelah perubahan",
+              "Hentikan project setelah satu tes",
+              "Hapus semua variabel",
+              "Jangan jalankan project lagi"
+            ],
+            "answer_index": 0,
+            "explanation": "Pengujian ulang membantu menemukan regresi akibat perbaikan."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Debug dan Rapikan Project",
+            "instructions": "Pilih satu bug pada project Scratch (atau buat bug latihan yang dapat diulang). Catat langkah reproduksi, penyebab, perubahan yang dilakukan, dan hasil pengujian setelah perbaikan. Lakukan satu refactoring kecil seperti memberi nama variabel yang jelas atau membuat My Block. Bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Cari Penyebab, Bukan Menebak",
+            "content": "Saat game tidak berjalan sesuai aturan, jangan langsung menghapus semua blok. Kamu akan mengulang masalah, mencari bagian penyebab, memperbaiki satu hal, lalu menguji ulang."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Bug dan Debugging?",
+            "content": "Bug adalah kesalahan yang membuat program berperilaku tidak sesuai harapan. Debugging adalah proses menemukan dan memperbaiki penyebabnya dengan langkah yang dapat diulang."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Reproduksi Masalah",
+            "content": "Catat tindakan yang membuat bug muncul. Contohnya skor bertambah dua kali saat satu koin tertangkap. Ulangi kondisi yang sama agar kamu yakin masalah dapat direproduksi."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Periksa Event dan Urutan Skrip",
+            "content": "Pastikan event yang memulai skrip benar, nama broadcast sama, dan blok berada pada sprite yang tepat. Dua skrip yang dimulai bersamaan dapat saling memengaruhi."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Periksa Nilai Variabel",
+            "content": "Tampilkan monitor variabel untuk melihat kapan nilainya berubah. Jika skor bertambah terlalu cepat, cari semua blok yang mengubah Score dan periksa apakah ada yang berjalan berulang.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\nset [Score] to (0)\n\nwhen I receive [COIN_CAUGHT]\nchange [Score] by (1)"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Isolasi Bagian yang Bermasalah",
+            "content": "Nonaktifkan sementara satu bagian skrip atau gunakan pesan debug untuk mengetahui apakah masalah berasal dari gerakan, tabrakan, atau perubahan variabel. Uji satu bagian dalam satu waktu."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Perbaiki Satu Penyebab",
+            "content": "Setelah menemukan bagian yang bermasalah, ubah satu hal saja. Jalankan kembali skenario yang sama dan pastikan hasilnya berubah sesuai harapan."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Uji Fitur yang Berhubungan",
+            "content": "Setelah satu bug diperbaiki, uji kembali fitur lain yang terhubung. Perubahan pada broadcast atau variabel dapat memengaruhi skrip sprite lain."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "lesson",
+            "order": 8,
+            "title": "Apa Itu Refactoring?",
+            "content": "Refactoring adalah merapikan struktur kode tanpa mengubah hasil yang diharapkan. Contohnya memberi nama variabel yang jelas, mengelompokkan aksi berulang dalam My Blocks, dan menghapus skrip yang tidak dipakai."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Rapikan Nama dan Tugas Skrip",
+            "content": "Gunakan nama variabel dan pesan yang menjelaskan fungsinya. Pastikan setiap skrip memiliki satu tugas yang mudah dipahami, seperti mengatur skor, gerakan pemain, atau kondisi game over."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting dan Regresi",
+            "content": "Jika bug muncul lagi, bandingkan perubahan terakhir dengan kondisi sebelumnya. Uji alur utama dari Green Flag sampai akhir untuk memastikan perbaikan tidak merusak fitur lain."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Pilih satu bug nyata atau buat bug latihan pada project. Reproduksi, jelaskan penyebab, perbaiki, lalu lakukan refactoring kecil. Catat pengujian sebelum dan sesudah."
+          }
+        ],
+        "activeChallengeIds": [
+          112
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    }
+  ]
+}
