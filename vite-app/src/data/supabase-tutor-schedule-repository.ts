@@ -47,6 +47,7 @@ export interface TutorScheduleRepository {
     studentId: string,
     status: "hadir" | "telat" | "absen"
   ): Promise<{ success: boolean; message?: string }>;
+  completeSession(expectedTutorId: string, meetingId: number): Promise<{ success: boolean; message?: string }>;
 }
 
 function requireClient(client: SupabaseClient | null): SupabaseClient {
@@ -176,6 +177,37 @@ export function createSupabaseTutorScheduleRepository(
       if (error || !data) {
         return { success: false, message: "Kehadiran gagal disimpan. Pastikan tutor memiliki akses ke pertemuan ini." };
       }
+      return { success: true };
+    },
+
+    async completeSession(expectedTutorId: string, meetingId: number) {
+      if (!Number.isSafeInteger(meetingId) || meetingId <= 0) {
+        return { success: false, message: "ID pertemuan tidak valid." };
+      }
+      const db = requireClient(client);
+      const { data: authData, error: authError } = await db.auth.getUser();
+      if (authError || !authData.user || authData.user.id !== expectedTutorId) {
+        return { success: false, message: "Sesi tutor tidak cocok. Silakan masuk kembali." };
+      }
+      const { data: links, error: linksError } = await db
+        .from("meeting_students")
+        .select("student_id,attendance_status,attendance_recorded_at")
+        .eq("meeting_id", meetingId);
+      if (linksError || !links?.length) return { success: false, message: "Daftar siswa sesi tidak ditemukan." };
+      const allRecorded = links.every((link: { attendance_status: string; attendance_recorded_at: string | null }) =>
+        link.attendance_status === "hadir" || link.attendance_status === "telat" || Boolean(link.attendance_recorded_at)
+      );
+      if (!allRecorded) return { success: false, message: "Lengkapi presensi setiap siswa sebelum menyelesaikan sesi." };
+      const { data, error } = await db
+        .from("meetings")
+        .update({ completion_status: "selesai", is_completed: true })
+        .eq("id", meetingId)
+        .eq("teacher_id", expectedTutorId)
+        .not("completion_status", "in", '("cancelled","soft_deleted")')
+        .is("deleted_at", null)
+        .select("id")
+        .maybeSingle();
+      if (error || !data) return { success: false, message: "Sesi gagal diselesaikan. Pastikan jadwal masih aktif dan milik tutor ini." };
       return { success: true };
     },
 
