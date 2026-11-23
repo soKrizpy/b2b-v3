@@ -388,7 +388,6 @@ test.describe("Supabase Auth portal", () => {
             offenders
           };
         });
-        console.log("RESPONSIVE_OVERFLOW_DIAGNOSTIC", JSON.stringify(metrics));
         expect(metrics.document, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
         expect(metrics.body, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
       };
