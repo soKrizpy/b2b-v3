@@ -12,11 +12,15 @@ import type { TutorScheduleRepository } from "./supabase-tutor-schedule-reposito
 /**
  * Explicit production capability boundary for the active Vite portal.
  *
- * This is intentionally not DomainRepositories: account mutations, tutor
- * assignments, full class-session lifecycle, submissions/reviews, reports,
- * evaluations, and billing do not yet have complete production adapters.
- * Keeping the partial boundary explicit prevents demo/no-op repositories
- * from being mistaken for production implementations.
+ * The active portal now has explicit Supabase-backed adapters for account
+ * administration, tutor assignments, curriculum/progress/quiz, submissions
+ * and reviews, tutor attendance and class-session lifecycle, reports,
+ * monthly evaluations, and billing.
+ *
+ * This remains capability-scoped rather than DomainRepositories because
+ * several legacy UI contracts still differ from the canonical repository
+ * interfaces. Production entry points must pass these capabilities explicitly;
+ * they must never inherit demo/local-store fallbacks.
  */
 export interface SupabaseProductionCapabilities {
   auth: typeof supabaseAuthRepository;
