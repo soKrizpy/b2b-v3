@@ -190,6 +190,49 @@ test.describe("Production tutor schedule repository", () => {
     expect(result.calls.some((call) => call.table === "meetings" && call.method === "update")).toBe(false);
   });
 
+  test("completes a session through the database lifecycle guard without client-owned audit fields", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { createSupabaseTutorScheduleRepository } = await import("/src/data/supabase-tutor-schedule-repository.ts");
+      const writes: Array<{ table: string; payload: unknown }> = [];
+      const client = {
+        auth: { getUser: async () => ({ data: { user: { id: "tutor-1" } }, error: null }) },
+        from: (table: string) => {
+          const builder: Record<string, unknown> = {};
+          if (table === "meeting_students") {
+            for (const method of ["select", "eq"]) {
+              builder[method] = (..._args: unknown[]) => builder;
+            }
+            builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) =>
+              Promise.resolve({
+                data: [
+                  { student_id: "student-1", attendance_status: "hadir", attendance_recorded_at: "2026-11-23T10:00:00.000Z" },
+                  { student_id: "student-2", attendance_status: "absen", attendance_recorded_at: "2026-11-23T10:05:00.000Z" }
+                ],
+                error: null
+              }).then(resolve, reject);
+          } else {
+            builder.update = (payload: unknown) => {
+              writes.push({ table, payload });
+              return builder;
+            };
+            for (const method of ["eq", "not", "is", "select"]) {
+              builder[method] = (..._args: unknown[]) => builder;
+            }
+            builder.maybeSingle = async () => ({ data: { id: 11 }, error: null });
+          }
+          return builder;
+        }
+      };
+      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const saved = await repository.completeSession("tutor-1", 11);
+      return { saved, writes };
+    });
+
+    expect(result.saved.success).toBe(true);
+    expect(result.writes).toEqual([{ table: "meetings", payload: { completion_status: "selesai" } }]);
+  });
+
   test("rejects a caller whose ID does not match the authenticated tutor before querying data", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
