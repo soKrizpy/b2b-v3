@@ -138,7 +138,7 @@ export function createSupabaseClassSessionRepository(
   return {
     async listSessions(filters = {}) {
       const db = requireClient(client);
-      let query = db.from("meetings").select("*").order("meeting_date", { ascending: true }).limit(500);
+      let query = db.from("meetings").select("*").order("meeting_date", { ascending: true }).limit(1000);
       if (filters.tutorId) query = query.eq("teacher_id", filters.tutorId);
       if (filters.seriesId) query = query.eq("series_id", filters.seriesId);
       if (filters.status) {
