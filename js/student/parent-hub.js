@@ -118,9 +118,9 @@ export class ParentHubView {
     this.renderContent();
     try {
       if (this.activeTab === 'sessions') {
-        this.sessionReports = await this.repositories.sessionReports.getStudentSubmittedReports(this.studentUser.id);
+        this.sessionReports = await this.repositories.sessionReports.listStudentSubmittedReports(this.studentUser.id);
       } else if (this.activeTab === 'monthly') {
-        this.monthlyEvaluations = await this.repositories.monthlyEvaluations.getStudentPublished(this.studentUser.id);
+        this.monthlyEvaluations = await this.repositories.monthlyEvaluations.listStudentPublished(this.studentUser.id);
       } else {
         this.invoices = await this.repositories.billing.getStudentInvoiceHistory(this.studentUser.id);
       }
