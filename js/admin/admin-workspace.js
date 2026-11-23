@@ -138,6 +138,12 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'users' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="users">
             👥 Daftar Pengguna (${totalCount})
           </button>
+          <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations">
+            🧑‍🏫 Penugasan Tutor (${this.assignments.length})
+          </button>
+          <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
+            🧾 Tarif & Tagihan (${this.invoices.length})
+          </button>
         </nav>
 
         <!-- ACTIVE TAB BODY -->
@@ -152,7 +158,8 @@ export class AdminWorkspace {
   }
 
   renderActiveTabContent() {
-    // Only production-backed admin views are exposed here.
+    if (this.activeTab === 'tutor-relations') return this.renderTutorRelationsView();
+    if (this.activeTab === 'billing') return this.renderBillingView();
     return this.renderUsersView();
   }
 
@@ -172,6 +179,13 @@ export class AdminWorkspace {
 
     return `
       <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+          <div>
+            <h3 style="margin:0;color:var(--color-text-primary);">Manajemen Akun Supabase</h3>
+            <p style="margin:var(--space-1) 0 0;color:var(--color-text-muted);font-size:var(--font-size-xs);">Undang akun baru, perbarui profil, dan aktifkan/nonaktifkan akses.</p>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-admin-add-user">➕ Tambah Akun</button>
+        </div>
         <!-- FILTERS BAR -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3); background: var(--color-bg-surface-elevated); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--color-border-subtle);">
           <!-- Role Filter -->
@@ -237,8 +251,10 @@ export class AdminWorkspace {
                     </div>
                   </div>
 
-                  <div style="display: flex; gap: var(--space-2); align-items: center;">
+                  <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;">
                     <span class="badge badge-scratch">Data Supabase</span>
+                    <button type="button" class="btn btn-ghost btn-sm" data-action="edit-user" data-user-id="${escapeHtml(u.id)}">Edit</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-action="toggle-status" data-user-id="${escapeHtml(u.id)}" data-target-status="${isInactive ? 'active' : 'inactive'}">${isInactive ? 'Aktifkan' : 'Nonaktifkan'}</button>
                   </div>
                 </div>
               `;
@@ -655,7 +671,7 @@ export class AdminWorkspace {
           showToast({ title: 'Tarif gagal disimpan', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Tarif tersimpan', message: 'Tarif siswa berhasil diperbarui.', type: 'success' });
-          this.render();
+          await this.refreshData();
         }
         } catch (error) {
           showToast({ title: 'Tarif gagal disimpan', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan tarif.', type: 'error' });
@@ -680,7 +696,7 @@ export class AdminWorkspace {
           showToast({ title: 'Tagihan tidak dibuat', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Draft tagihan dibuat', message: `${result.invoice.totalSessions} pertemuan siap diperiksa sebelum diterbitkan.`, type: 'success' });
-          this.render();
+          await this.refreshData();
         }
         } catch (error) {
           showToast({ title: 'Tagihan tidak dibuat', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat membuat tagihan.', type: 'error' });
@@ -709,7 +725,7 @@ export class AdminWorkspace {
           showToast({ title: 'Koreksi draft gagal', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Draft diperbarui', message: 'Koreksi tagihan berhasil disimpan.', type: 'success' });
-          this.render();
+          await this.refreshData();
         }
         } catch (error) {
           showToast({ title: 'Koreksi draft gagal', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat memperbarui draft.', type: 'error' });
@@ -728,7 +744,7 @@ export class AdminWorkspace {
           showToast({ title: 'Tagihan belum diterbitkan', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Tagihan diterbitkan', message: 'Tagihan sekarang tampil di riwayat Parent Hub.', type: 'success' });
-          this.render();
+          await this.refreshData();
         }
         } catch (error) {
           showToast({ title: 'Tagihan belum diterbitkan', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat menerbitkan tagihan.', type: 'error' });
@@ -748,7 +764,7 @@ export class AdminWorkspace {
           showToast({ title: 'Pembayaran gagal diperbarui', message: result.message, type: 'error' });
         } else {
           showToast({ title: 'Tagihan lunas', message: 'Status tagihan berhasil diperbarui.', type: 'success' });
-          this.render();
+          await this.refreshData();
         }
         } catch (error) {
           showToast({ title: 'Pembayaran gagal diperbarui', message: error instanceof Error ? error.message : 'Terjadi kesalahan saat memperbarui pembayaran.', type: 'error' });
@@ -792,7 +808,7 @@ export class AdminWorkspace {
             message: `Status akun ${res.user.displayName} diubah menjadi ${targetStatus}.`,
             type: 'info'
           });
-          this.render();
+          await this.refreshData();
         }
       });
     });
