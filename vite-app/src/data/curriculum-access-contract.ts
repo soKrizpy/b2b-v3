@@ -5,7 +5,7 @@ export type StudentModuleAssignment = {
 
 /**
  * Resolve module IDs from assignment rows without trusting the query filter
- * alone. Only explicitly active, positive integer IDs are exposed.
+ * alone. Only explicitly active, positive safe-integer IDs are exposed.
  */
 export function resolveActiveStudentModuleIds(
   assignments: readonly StudentModuleAssignment[]
@@ -13,9 +13,9 @@ export function resolveActiveStudentModuleIds(
   const ids = new Set<number>();
 
   for (const assignment of assignments) {
-    const moduleId = Number(assignment.module_id);
+    const moduleId = assignment.module_id;
     if (assignment.status !== "active") continue;
-    if (!Number.isSafeInteger(moduleId) || moduleId <= 0) continue;
+    if (typeof moduleId !== "number" || !Number.isSafeInteger(moduleId) || moduleId <= 0) continue;
     ids.add(moduleId);
   }
 
