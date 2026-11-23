@@ -191,3 +191,19 @@ The former `BASIC VISUAL WEB` module (ID 10) covered HTML, CSS, and JavaScript a
 - The final live verification returned 8 modules, 128 published topics, 128 challenge rows, 0 invalid quiz items, 0 challenge-link mismatches, and 0 modules with a topic count other than 16.
 
 This rollout changed production curriculum data directly through the Supabase SQL connection. The JSON manifest is committed, but this data change was not added as a Supabase migration file; the repository's historical migration-source gap remains a separate reproducibility issue. No application code, Vercel deployment, or production branch was changed.
+
+
+## Curriculum quality remediation update — 23 November 2026
+
+The earlier curriculum counts and 30/10-topic module-size findings above describe the pre-correction snapshot and are superseded by the following production state:
+
+- 8 active modules, 128 published topics, exactly 16 contiguous topics per module.
+- All topics now have 5 quiz questions, 10–20 learning nodes, and a valid linked practical challenge.
+- 28 newly added topics have been re-authored with 5 topic-specific questions and 12 substantive learning nodes each.
+- The original 12 Tinkercad foundation topics were expanded to 12 learning nodes each.
+- Generic/empty learning nodes and duplicate quiz question text were removed from the audited curriculum snapshot.
+- Existing student progress (21 rows) and quiz attempts (55 rows) remain; 40 prior quiz banks are retained as `legacyQuiz` snapshots where question content was revised.
+- The original capstones in Scratch Visual Games, 3D Design, ScratchJr, Scratch Beginner, and Tinkercad were moved to topic 16 without changing their topic IDs.
+- The full detail and remaining quality gates are documented in `docs/curriculum/quality-audit-2026-11-23.md`.
+
+This establishes structural completeness and removes the previously identified filler batches. It is **not** a final pedagogical sign-off: semantic answer-key review, grade/age alignment, actual student lesson UI review, quiz-version reporting, and a real student-account smoke test remain. No Vercel deployment was performed as part of this correction.
