@@ -42,7 +42,7 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
             expires_in: 3600,
             expires_at: Math.floor(Date.now() / 1000) + 3600,
             refresh_token: "e2e-student-refresh-token",
-            user: { id: userId, email, app_metadata: { provider: "email", providers: ["email"] }, user_metadata: {}, created_at: createdAt }
+            user: { id: userId, email, app_metadata: { provider: "email", providers: ["email"] }, user_metadata: { role: "admin" }, created_at: createdAt }
           }
         })
       });
@@ -59,7 +59,7 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
           role: "authenticated",
           email,
           app_metadata: { provider: "email", providers: ["email"] },
-          user_metadata: {},
+          user_metadata: { role: "admin" },
           created_at: createdAt,
           updated_at: createdAt,
           is_anonymous: false
@@ -84,7 +84,7 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
             role: "authenticated",
             email,
             app_metadata: { provider: "email", providers: ["email"] },
-            user_metadata: {},
+            user_metadata: { role: "admin" },
             created_at: createdAt,
             updated_at: createdAt,
             is_anonymous: false
@@ -172,6 +172,22 @@ test.describe("Supabase Auth portal", () => {
 
     await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
+  });
+
+  test("restores the Supabase session after reload and clears it on sign-out", async ({ page }) => {
+    await mockSupabaseAuth(page, "teacher");
+    await page.goto("/");
+    await page.getByRole("button", { name: "Guru / Admin" }).click();
+    await page.getByLabel("Email").fill("teacher@bits2bytes.test");
+    await page.getByLabel("Password").fill("valid-e2e-password");
+    await page.getByRole("button", { name: "Masuk" }).click();
+
+    await expect(page.getByRole("heading", { name: "Ruang Tutor" })).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Ruang Tutor" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Keluar" }).click();
+    await expect(page.getByRole("heading", { name: "Selamat datang di Bits2Bytes!" })).toBeVisible();
   });
 
 });
