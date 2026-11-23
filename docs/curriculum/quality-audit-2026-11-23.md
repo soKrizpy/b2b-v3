@@ -164,7 +164,7 @@ The final aggregate SQL verification returned:
 | Challenge-to-topic/activeChallengeIds mismatches | 0 |
 | Learning nodes under 80 characters | 0 |
 | Duplicate quiz question texts | 0 |
-| Legacy quiz snapshots retained | 40 |
+| Legacy quiz snapshots retained | 52 |
 | Student progress rows | 21 (unchanged) |
 | Quiz attempt rows | 55 (unchanged) |
 
@@ -193,3 +193,8 @@ The structural and duplicate-content checks pass, but this is not equivalent to 
 5. Confirm that new quiz-version metadata is surfaced appropriately in student progress/reporting views; existing attempt rows remain untouched but do not themselves store a quiz-version field.
 
 The curriculum is now structurally complete and the previously identified filler batches have been replaced, but **do not declare it 100% quality-approved** until these remaining gates are completed.
+
+
+### Additional quiz-quality correction — 3D Design Beginner
+
+The 12 pre-existing module-27 topics had 57 of 60 correct answers placed in option position 1 (zero-based index 0), making the answer-position pattern too predictable. The original quiz arrays were saved in `legacyQuiz`; current answer options were cyclically reordered while preserving each original correct answer. The new distribution across 60 questions is balanced: 15 answers at each option index (0, 1, 2, 3). No attempt rows were deleted or recalculated.
