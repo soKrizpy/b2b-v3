@@ -337,4 +337,51 @@ test.describe("Supabase Auth portal", () => {
     await expect(page.getByRole("heading", { name: "Selamat datang di Bits2Bytes!" })).toBeVisible();
   });
 
+  for (const role of ["admin", "teacher", "student"] as const) {
+    test(`${role} authenticated workspace remains responsive in light and dark themes`, async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 800 });
+      await mockSupabaseAuth(page, role);
+      await page.goto("/");
+
+      if (role === "student") {
+        await page.getByLabel("Nomor WhatsApp").fill("081234567890");
+        await page.getByLabel("MPIN (6 digit)").fill("123456");
+      } else {
+        await page.getByRole("button", { name: "Guru / Admin" }).click();
+        await page.getByLabel("Email").fill(`${role}@bits2bytes.test`);
+        await page.getByLabel("Password").fill("valid-e2e-password");
+      }
+      await page.getByRole("button", { name: "Masuk" }).click();
+
+      const expectedTitle = role === "teacher"
+        ? "Ruang Tutor"
+        : role === "student"
+          ? "Ruang Belajarku"
+          : "Ruang Admin";
+      await expect(page.getByRole("heading", { name: expectedTitle })).toBeVisible();
+
+      const assertNoHorizontalOverflow = async () => {
+        const metrics = await page.evaluate(() => ({
+          viewport: window.innerWidth,
+          document: document.documentElement.scrollWidth,
+          body: document.body.scrollWidth
+        }));
+        expect(metrics.document, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
+        expect(metrics.body, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.viewport + 1);
+      };
+
+      for (const width of [320, 360, 390, 768, 1024]) {
+        await page.setViewportSize({ width, height: 800 });
+        await assertNoHorizontalOverflow();
+      }
+
+      await page.getByRole("button", { name: "Ganti ke tampilan gelap" }).click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      for (const width of [320, 360, 390, 768, 1024]) {
+        await page.setViewportSize({ width, height: 800 });
+        await assertNoHorizontalOverflow();
+      }
+    });
+  }
+
 });
