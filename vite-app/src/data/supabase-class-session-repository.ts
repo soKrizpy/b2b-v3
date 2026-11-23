@@ -317,7 +317,7 @@ export function createSupabaseClassSessionRepository(
     async listBillableSessions(studentId: UUID, period: YearMonth) {
       const sessions = await this.listSessions({ studentId });
       return sessions.filter((session) => {
-        if (session.attendanceStatus !== "present") return false;
+        if (session.attendanceStatus !== "present" || session.status !== "held") return false;
         const date = new Date(session.scheduledStartAt);
         const month = new Intl.DateTimeFormat("en-CA", {
           timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit"
