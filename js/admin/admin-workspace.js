@@ -19,6 +19,7 @@ export class AdminWorkspace {
   constructor(container, currentUser = null, repositories = null, options = {}) {
     this.container = container;
     this.currentUser = currentUser;
+    this.productionMode = options.productionMode === true;
     if (options.productionMode === true) {
       if (!repositories) throw new Error('Repository Admin produksi wajib diberikan secara eksplisit.');
       this.repositories = createScopedWorkspaceRepositories(repositories, ['identity']);
@@ -107,6 +108,11 @@ export class AdminWorkspace {
             <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0;">
               Data akun Admin, Tutor, dan Siswa yang dibaca langsung dari Supabase.
             </p>
+            ${this.productionMode ? `
+              <p class="admin-readonly-notice" role="status" style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: var(--space-2) 0 0;">
+                Mode produksi hanya-baca. Pembuatan akun, perubahan status, dan penugasan tutor belum diaktifkan.
+              </p>
+            ` : ''}
           </div>
 
           <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
