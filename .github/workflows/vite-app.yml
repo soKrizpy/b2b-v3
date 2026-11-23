@@ -40,6 +40,13 @@ jobs:
         run: npm install
       - name: Typecheck and production build
         run: npm run build
+      - name: Set up Deno for Supabase Edge Functions
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Typecheck admin identity Edge Function
+        working-directory: .
+        run: deno check supabase/functions/admin-manage-user/index.ts
       - name: Install Playwright test runner
         run: npm install --no-save @playwright/test
       - name: Install Chromium
