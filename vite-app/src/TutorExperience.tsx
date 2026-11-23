@@ -15,10 +15,10 @@ function formatMeetingDate(value: string | null) {
   }).format(date) + " WIB";
 }
 
-function statusLabel(meeting: TutorMeetingSummary) {
-  if (meeting.is_completed || meeting.completion_status === "completed" || meeting.completion_status === "held") return "Selesai";
-  if (meeting.completion_status === "cancelled" || meeting.completion_status === "soft_deleted") return "Dibatalkan";
-  if (meeting.completion_status === "not_held") return "Tidak terlaksana";
+export function getTutorMeetingStatusLabel(meeting: TutorMeetingSummary) {
+  if (meeting.is_completed || ["completed", "held", "selesai"].includes(meeting.completion_status ?? "")) return "Selesai";
+  if (["cancelled", "soft_deleted"].includes(meeting.completion_status ?? "")) return "Dibatalkan";
+  if (["not_held", "terlewat"].includes(meeting.completion_status ?? "")) return "Tidak terlaksana";
   return "Terjadwal";
 }
 
@@ -112,7 +112,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
   );
 
   const upcoming = meetings.filter((meeting) => {
-    if (!meeting.meeting_date || statusLabel(meeting) !== "Terjadwal") return false;
+    if (!meeting.meeting_date || getTutorMeetingStatusLabel(meeting) !== "Terjadwal") return false;
     return new Date(meeting.meeting_date).getTime() >= Date.now();
   });
 
@@ -150,7 +150,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
                     <div className="tutor-live-meeting-main">
                       <div className="tutor-live-meeting-title-row">
                         <h4>{meeting.title || "Pertemuan tanpa judul"}</h4>
-                        <span className={"tutor-live-status " + (statusLabel(meeting) === "Selesai" ? "is-done" : statusLabel(meeting) === "Dibatalkan" ? "is-cancelled" : "")}>{statusLabel(meeting)}</span>
+                        <span className={"tutor-live-status " + (getTutorMeetingStatusLabel(meeting) === "Selesai" ? "is-done" : getTutorMeetingStatusLabel(meeting) === "Dibatalkan" ? "is-cancelled" : "")}>{getTutorMeetingStatusLabel(meeting)}</span>
                       </div>
                       <p>{formatMeetingDate(meeting.meeting_date)}</p>
                       <small>Sesi {meeting.session_number ?? "—"} dari {meeting.session_count ?? "—"} · {studentCounts[meeting.id] ?? 0} siswa terhubung</small>
