@@ -1551,4 +1551,74 @@ test.describe("Local demo domain repository adapters", () => {
     });
   });
 
+
+  test("student progress payload validation rejects malformed checkpoints, drafts, and slide positions", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { validateLessonProgressUpdate } = await import("/src/data/lesson-progress-validation.ts");
+      const valid = validateLessonProgressUpdate({
+        state: "in-progress",
+        checkpoints: { "step-1": true, "step-2": false },
+        submissionDraft: { link: "https://scratch.mit.edu/projects/123", notes: "Animasi pertama" },
+        slideIndex: 2
+      });
+
+      const rejected = (input: Parameters<typeof validateLessonProgressUpdate>[0]) => {
+        try {
+          validateLessonProgressUpdate(input);
+          return false;
+        } catch {
+          return true;
+        }
+      };
+
+      return {
+        validState: valid.state,
+        validSlideIndex: valid.slideIndex,
+        validCheckpointCount: Object.keys(valid.checkpoints).length,
+        rejectsNonBooleanCheckpoint: rejected({
+          state: "in-progress",
+          checkpoints: { "step-1": "yes" },
+          submissionDraft: null,
+          slideIndex: 0
+        }),
+        rejectsNegativeSlide: rejected({
+          state: "in-progress",
+          checkpoints: {},
+          submissionDraft: null,
+          slideIndex: -1
+        }),
+        rejectsFractionalSlide: rejected({
+          state: "in-progress",
+          checkpoints: {},
+          submissionDraft: null,
+          slideIndex: 1.5
+        }),
+        rejectsMalformedDraft: rejected({
+          state: "in-progress",
+          checkpoints: {},
+          submissionDraft: { link: 123 },
+          slideIndex: 0
+        }),
+        rejectsUnsupportedState: rejected({
+          state: "submitted",
+          checkpoints: {},
+          submissionDraft: null,
+          slideIndex: 0
+        })
+      };
+    });
+
+    expect(result).toEqual({
+      validState: "in-progress",
+      validSlideIndex: 2,
+      validCheckpointCount: 2,
+      rejectsNonBooleanCheckpoint: true,
+      rejectsNegativeSlide: true,
+      rejectsFractionalSlide: true,
+      rejectsMalformedDraft: true,
+      rejectsUnsupportedState: true
+    });
+  });
+
 });
