@@ -1,4 +1,5 @@
 import { supabase } from "./supabase-client";
+import { resolveActiveStudentModuleIds } from "./curriculum-access-contract";
 import type {
   CurriculumModule,
   CurriculumRepository,
@@ -81,11 +82,11 @@ async function listAccessibleModuleIds(): Promise<number[] | null> {
 
   const { data, error } = await client
     .from("student_modules")
-    .select("module_id")
+    .select("module_id, status")
     .eq("student_id", actor.id)
     .eq("status", "active");
   if (error) throw new Error("Modul belajar siswa tidak dapat dimuat.");
-  return (data ?? []).map((row) => Number(row.module_id));
+  return resolveActiveStudentModuleIds(data ?? []);
 }
 
 export const supabaseCurriculumRepository: CurriculumRepository = {
