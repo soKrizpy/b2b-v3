@@ -7,6 +7,16 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
   const userId = `e2e-${role}-user`;
   const email = `${role}@bits2bytes.test`;
   const createdAt = "2026-01-01T00:00:00.000Z";
+  const accounts: Array<Record<string, unknown>> = [{
+    id: "e2e-admin-user",
+    email: "admin@bits2bytes.test",
+    displayName: "E2E Admin",
+    role: "admin",
+    status: "active",
+    avatar: "EA",
+    createdAt,
+    updatedAt: createdAt
+  }];
   const corsHeaders = {
     "access-control-allow-origin": "http://127.0.0.1:4173",
     "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
@@ -25,23 +35,42 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
     }
 
     if (url.pathname === "/functions/v1/admin-list-users" && request.method() === "POST") {
-      await route.fulfill({
-        status: 200,
-        headers: jsonHeaders,
-        body: JSON.stringify({
-          source: "supabase",
-          accounts: [{
-            id: "e2e-admin-user",
-            email: "admin@bits2bytes.test",
-            displayName: "E2E Admin",
-            role: "admin",
-            status: "active",
-            avatar: "EA",
-            createdAt,
-            updatedAt: createdAt
-          }]
-        })
-      });
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: JSON.stringify({ source: "supabase", accounts }) });
+      return;
+    }
+
+    if (url.pathname === "/functions/v1/admin-manage-user" && request.method() === "POST") {
+      const payload = request.postDataJSON() as {
+        action: string; displayName?: string; email?: string; role?: string; status?: string;
+        gradeLevel?: string; whatsapp?: string;
+      };
+      const account = {
+        id: "e2e-created-student",
+        email: payload.email,
+        displayName: payload.displayName,
+        role: payload.role,
+        status: payload.status ?? "active",
+        avatar: "ES",
+        gradeLevel: payload.gradeLevel,
+        whatsapp: payload.whatsapp,
+        createdAt,
+        updatedAt: createdAt
+      };
+      accounts.push(account);
+      await route.fulfill({ status: 201, headers: jsonHeaders, body: JSON.stringify({ user: account, source: "supabase" }) });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/tutor_student_assignments" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+    if (url.pathname === "/rest/v1/invoices" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+    if (url.pathname === "/rest/v1/student_tariffs" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
       return;
     }
 
@@ -195,7 +224,7 @@ test.describe("Supabase Auth portal", () => {
     await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
   });
 
-  test("admin production workspace shows Supabase accounts as explicitly read-only", async ({ page }) => {
+  test("admin production workspace creates a real student account with WhatsApp and MPIN fields", async ({ page }) => {
     await mockSupabaseAuth(page, "admin");
     await page.goto("/");
     await page.getByRole("button", { name: "Guru / Admin" }).click();
@@ -205,9 +234,18 @@ test.describe("Supabase Auth portal", () => {
 
     await expect(page.getByRole("heading", { name: "Ruang Admin" })).toBeVisible();
     await expect(page.getByText("E2E Admin", { exact: true })).toBeVisible();
-    await expect(page.getByText(/Mode produksi hanya-baca/)).toBeVisible();
-    await expect(page.getByText(/Pembuatan akun, perubahan status, dan penugasan tutor belum diaktifkan/)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Tambah Akun/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Tambah Akun" })).toBeVisible();
+    await page.getByRole("button", { name: "Tambah Akun" }).click();
+    await page.locator("#admin-input-name").fill("Siswa E2E Baru");
+    await page.locator("#admin-input-email").fill("siswa-baru@bits2bytes.test");
+    await page.locator("#admin-select-role").selectOption("student");
+    await page.locator("#admin-input-grade").fill("Grade 5");
+    await page.locator("#admin-input-whatsapp").fill("081234567890");
+    await page.locator("#admin-input-mpin").fill("654321");
+    await page.getByRole("button", { name: "Buat Akun" }).click();
+    await expect(page.getByText("Siswa E2E Baru", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Penugasan Tutor" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Tarif & Tagihan" })).toBeVisible();
   });
 
   test("restores the Supabase session after reload and clears it on sign-out", async ({ page }) => {
