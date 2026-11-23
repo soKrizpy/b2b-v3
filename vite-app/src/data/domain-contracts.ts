@@ -11,10 +11,11 @@
  * - modules + topics: curriculum; topics.lesson_content is JSONB.
  * - quiz_attempts and related tables: assessment/progress.
  * - meetings + meeting_students: schedule and attendance.
- * - invoices: billing snapshots; no dedicated tariff table currently exists.
- * - No persistent tutor assignment, monthly evaluation, or separate session
- *   report table was found in the audited production schema.
- * - Parent Hub is a read-only student-workspace view, not a separate role.
+ * - tutor_student_assignments: explicit current tutor/student relationships.
+ * - session_reports + monthly_evaluations: tutor-authored learning records.
+ * - student_tariffs + invoices + invoice_items + invoice_payments: billing snapshots and ledger.
+ * - challenge_submissions: append-only student project submissions with assigned-tutor review.
+ * - Parent Hub is a student-scoped read view over reports, evaluations, and issued invoices, not a separate role.
  */
 
 export type UUID = string;
