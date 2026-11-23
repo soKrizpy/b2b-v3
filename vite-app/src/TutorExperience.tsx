@@ -1,19 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "./data/supabase-client";
+import {
+  supabaseTutorScheduleRepository,
+  type TutorMeetingSummary
+} from "./data/supabase-tutor-schedule-repository";
 
 type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
-type MeetingRow = {
-  id: number;
-  title: string;
-  meeting_date: string | null;
-  link_url: string | null;
-  notes: string | null;
-  session_count: number | null;
-  session_number: number | null;
-  completion_status: string | null;
-  is_completed: boolean | null;
-};
-type MeetingStudentRow = { meeting_id: number; student_id: string };
 
 function formatMeetingDate(value: string | null) {
   if (!value) return "Waktu belum ditentukan";
@@ -25,7 +16,7 @@ function formatMeetingDate(value: string | null) {
   }).format(date) + " WIB";
 }
 
-function statusLabel(meeting: MeetingRow) {
+function statusLabel(meeting: TutorMeetingSummary) {
   if (meeting.is_completed || meeting.completion_status === "completed" || meeting.completion_status === "held") return "Selesai";
   if (meeting.completion_status === "cancelled" || meeting.completion_status === "soft_deleted") return "Dibatalkan";
   if (meeting.completion_status === "not_held") return "Tidak terlaksana";
@@ -33,75 +24,41 @@ function statusLabel(meeting: MeetingRow) {
 }
 
 export default function TutorExperience({ user }: { user: TutorUser }) {
-  const [meetings, setMeetings] = useState<MeetingRow[]>([]);
+  const [meetings, setMeetings] = useState<TutorMeetingSummary[]>([]);
   const [studentCounts, setStudentCounts] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
-    async function load() {
+
+    void (async () => {
       setLoading(true);
       setError("");
-      if (!supabase) {
-        setError("Konfigurasi Supabase belum tersedia pada deployment ini.");
-        setLoading(false);
-        return;
-      }
-      const { data, error: meetingError } = await supabase
-        .from("meetings")
-        .select("id,title,meeting_date,link_url,notes,session_count,session_number,completion_status,is_completed")
-        .eq("teacher_id", user.id)
-        .order("meeting_date", { ascending: false })
-        .limit(100);
-      if (!active) return;
-      if (meetingError) {
-        console.error("Jadwal tutor gagal dimuat:", meetingError);
-        setError("Jadwal Supabase tidak dapat dibaca. Periksa sesi dan kebijakan akses akun guru.");
-        setLoading(false);
-        return;
-      }
-
-      const rows = ((data ?? []) as MeetingRow[]).sort((a, b) => {
-        if (!a.meeting_date) return 1;
-        if (!b.meeting_date) return -1;
-        return new Date(a.meeting_date).getTime() - new Date(b.meeting_date).getTime();
-      });
-      setMeetings(rows);
-      if (rows.length > 0) {
-        const { data: links, error: linksError } = await supabase
-          .from("meeting_students")
-          .select("meeting_id,student_id")
-          .in("meeting_id", rows.map((meeting) => meeting.id));
+      try {
+        const snapshot = await supabaseTutorScheduleRepository.listForCurrentTutor(user.id);
         if (!active) return;
-        if (linksError) {
-          console.error("Relasi siswa-pertemuan gagal dimuat:", linksError);
-          setError("Jadwal berhasil dimuat, tetapi relasi siswa belum dapat dibaca.");
-        } else {
-          const counts: Record<number, number> = {};
-          const uniqueByMeeting: Record<number, Set<string>> = {};
-          for (const link of (links ?? []) as MeetingStudentRow[]) {
-            uniqueByMeeting[link.meeting_id] ??= new Set<string>();
-            uniqueByMeeting[link.meeting_id].add(link.student_id);
-          }
-          for (const [meetingId, ids] of Object.entries(uniqueByMeeting)) counts[Number(meetingId)] = ids.size;
-          setStudentCounts(counts);
+        setMeetings(snapshot.meetings);
+        setStudentCounts(snapshot.studentCounts);
+      } catch (cause) {
+        console.error("Jadwal tutor gagal dimuat:", cause);
+        if (active) {
+          setMeetings([]);
+          setStudentCounts({});
+          setError(cause instanceof Error ? cause.message : "Jadwal Supabase tidak dapat dimuat.");
         }
-      } else {
-        setStudentCounts({});
+      } finally {
+        if (active) setLoading(false);
       }
-      setLoading(false);
-    }
-    void load();
+    })();
+
     return () => { active = false; };
   }, [user.id]);
 
-  const totalStudentLinks = useMemo(() => {
-    // Only count linked student IDs; student profile names are intentionally not
-    // queried because the current production RLS policy does not grant tutors
-    // general access to the students table.
-    return Object.values(studentCounts).reduce((sum, count) => sum + count, 0);
-  }, [studentCounts]);
+  const totalStudentLinks = useMemo(
+    () => Object.values(studentCounts).reduce((sum, count) => sum + count, 0),
+    [studentCounts]
+  );
 
   const upcoming = meetings.filter((meeting) => {
     if (!meeting.meeting_date || statusLabel(meeting) !== "Terjadwal") return false;
