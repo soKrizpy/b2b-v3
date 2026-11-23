@@ -37,6 +37,7 @@ export class LessonWorkspace {
     this.repositories = createWorkspaceRepositories(repositories);
     // Production React portal can disable Parent Hub until its data adapters are production-backed.
     this.parentHubEnabled = options.parentHubEnabled !== false;
+    this.submissionEnabled = options.submissionEnabled !== false;
     this.stages = lessonData.stages || [];
     if (!currentUser?.id) throw new Error('Sesi siswa diperlukan untuk membuka ruang belajar.');
     this.currentUser = currentUser;
@@ -858,6 +859,17 @@ export class LessonWorkspace {
   }
 
   renderSubmission(stage) {
+    if (!this.submissionEnabled) {
+      return `
+        <div class="submission-container">
+          <div class="cb-callout cb-callout-info" role="status">
+            <div class="cb-callout-title">Pengumpulan belum tersedia</div>
+            <div class="cb-callout-text">Materi dan progres belajar sudah terhubung. Pengiriman proyek serta review guru belum memiliki jalur produksi yang aman, jadi tombol pengumpulan dinonaktifkan agar karya tidak hilang atau masuk ke penyimpanan demo.</div>
+          </div>
+        </div>
+      `;
+    }
+
     const sub = stage.submission || {};
     const methodsHtml = (sub.allowedMethods || []).map(m =>
       `<li>${escapeHtml(m)}</li>`
@@ -874,7 +886,7 @@ export class LessonWorkspace {
     const projectUrl = (storeSub && storeSub.projectUrl) || (this.submissionData && this.submissionData.link) || '';
     const studentNotes = (storeSub && storeSub.studentNotes) || (this.submissionData && this.submissionData.notes) || '';
     const teacherFeedback = (storeSub && storeSub.teacherFeedback) || '';
-    const reviewerName = (storeSub && storeSub.reviewerName) || 'Kak Sarah';
+    const reviewerName = (storeSub && storeSub.reviewerName) || 'Guru';
 
     let statusCardHtml = '';
     if (isApproved) {
