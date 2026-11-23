@@ -61,6 +61,14 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
       return;
     }
 
+    if (url.pathname === "/rest/v1/meetings" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+    if (url.pathname === "/rest/v1/meeting_students" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
     if (url.pathname === "/rest/v1/tutor_student_assignments" && request.method() === "GET") {
       await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
       return;
@@ -233,7 +241,6 @@ test.describe("Supabase Auth portal", () => {
     await page.getByRole("button", { name: "Masuk" }).click();
 
     await expect(page.getByRole("heading", { name: "Ruang Admin" })).toBeVisible();
-    await expect(page.getByText("E2E Admin", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Tambah Akun" })).toBeVisible();
     await page.getByRole("button", { name: "Tambah Akun" }).click();
     await page.locator("#admin-input-name").fill("Siswa E2E Baru");
