@@ -1,0 +1,723 @@
+{
+  "schema_version": 1,
+  "module_id": 30,
+  "module_title": "Tinkercad 3D Beginner",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "sequence_note": "Move the existing original capstone (topic ID 169) to topic 16. Topic ID 197 is a model review/documentation skill, not a duplicate final capstone.",
+  "topics": [
+    {
+      "topic_id": 194,
+      "title": "Tulisan dan Logo 3D: Mengolah Bentuk Text",
+      "description": "Mengubah objek Text menjadi bagian desain 3D, mengatur ukuran dan ketebalan, lalu menggabungkannya dengan bentuk dasar secara proporsional.",
+      "challenge_id": 125,
+      "challenge_title": "Challenge: Logo atau Label Nama 3D",
+      "challenge_instructions": "Buat logo atau label nama 3D menggunakan objek Text dan minimal satu bentuk alas/pendukung. Atur ukuran, ketebalan, dan posisi dengan Align. Periksa tampak atas dan samping, lalu bagikan tautan desain Tinkercad.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Di mana objek Text ditambahkan di Tinkercad?",
+            "options": [
+              "Dari panel Shapes ke Workplane",
+              "Dari menu suara",
+              "Dari daftar akun",
+              "Dari panel browser"
+            ],
+            "answer_index": 0,
+            "explanation": "Objek Text tersedia pada panel Shapes dan diletakkan di Workplane."
+          },
+          {
+            "question": "Mengapa ketebalan tulisan perlu diperhatikan?",
+            "options": [
+              "Agar tulisan berubah menjadi gambar",
+              "Agar tulisan terlihat dan tidak terlalu rapuh pada model",
+              "Agar file otomatis tercetak",
+              "Agar warna alas berubah"
+            ],
+            "answer_index": 1,
+            "explanation": "Ketebalan memengaruhi keterbacaan dan kekuatan bentuk."
+          },
+          {
+            "question": "Fitur apa yang membantu menempatkan tulisan di tengah alas?",
+            "options": [
+              "Hole",
+              "Duplicate",
+              "Align",
+              "Mirror"
+            ],
+            "answer_index": 2,
+            "explanation": "Align membantu menyelaraskan posisi tulisan dan alas."
+          },
+          {
+            "question": "Jika tulisan tidak terlihat karena masuk ke dalam alas, tindakan yang tepat adalah…",
+            "options": [
+              "Menghapus semua objek",
+              "Mengganti nama file",
+              "Mengubah warna browser",
+              "Mengatur ulang ketinggian/posisi tulisan sebelum Group"
+            ],
+            "answer_index": 3,
+            "explanation": "Tulisan perlu berada pada posisi yang benar sebelum digabungkan."
+          },
+          {
+            "question": "Apa tanda logo 3D tersusun baik?",
+            "options": [
+              "Tulisan terbaca, proporsional, dan terpasang rapi pada alas",
+              "Tulisan keluar jauh dari alas",
+              "Huruf saling menutupi",
+              "Ukuran tidak pernah diperiksa"
+            ],
+            "answer_index": 0,
+            "explanation": "Logo harus terbaca dan memiliki hubungan yang rapi antara tulisan dan alas."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Logo atau Label Nama 3D",
+            "instructions": "Buat logo atau label nama 3D menggunakan objek Text dan minimal satu bentuk alas/pendukung. Atur ukuran, ketebalan, dan posisi dengan Align. Periksa tampak atas dan samping, lalu bagikan tautan desain Tinkercad.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Tulisan Menjadi Objek 3D",
+            "content": "Kamu akan membuat label nama atau logo sederhana. Text di Tinkercad bukan sekadar tulisan pada layar, tetapi bentuk 3D yang memiliki ukuran dan ketebalan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "practice",
+            "order": 1,
+            "title": "Menambahkan Shape Text",
+            "content": "Ambil objek Text dari panel Shapes dan letakkan pada Workplane. Pilih objek untuk mengubah isi tulisan melalui panel pengaturan bentuk."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "lesson",
+            "order": 2,
+            "title": "Atur Ukuran dan Ketebalan",
+            "content": "Sesuaikan panjang, tinggi, dan ketebalan tulisan. Tulisan yang terlalu tipis dapat sulit terlihat atau rapuh jika model akan dicetak."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Pilih Font dan Keterbacaan",
+            "content": "Pilih bentuk huruf yang mudah dibaca. Hindari huruf terlalu rapat atau detail kecil yang membuat tulisan sulit dikenali saat dilihat dari jarak normal."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Contoh: Label Nama di Atas Alas",
+            "content": "Buat alas datar, letakkan Text di atasnya, lalu atur posisi menggunakan Align. Pastikan bagian bawah huruf menyentuh alas secukupnya agar menjadi satu desain."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Alas Logo",
+            "content": "Pilih bentuk dasar seperti balok pipih atau lingkaran. Atur ukuran alas sesuai panjang tulisan dan sisakan ruang di tepi."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Tambahkan Text",
+            "content": "Masukkan nama atau kata pendek. Atur ukuran agar tulisan tidak keluar dari alas dan tetap terbaca."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Atur Posisi dengan Align",
+            "content": "Pilih alas dan tulisan, gunakan Align untuk merapikan posisi tengah. Periksa dari atas dan samping untuk memastikan tulisan tidak melayang."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tambahkan Detail Pendukung",
+            "content": "Tambahkan satu bentuk sederhana sebagai ikon atau bingkai. Pastikan detail tidak membuat tulisan tertutup atau terlalu ramai."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Group dan Periksa Hasil",
+            "content": "Setelah posisi benar, Group objek yang memang perlu menjadi satu bagian. Periksa kembali apakah tulisan dan alas menyatu sesuai tujuan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Text 3D",
+            "content": "Jika tulisan terlalu tipis, tambah ketebalan. Jika tidak berada di tengah, gunakan Align. Jika tulisan tenggelam ke alas, naikkan sedikit posisinya sebelum Group."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat logo atau label nama 3D dengan tulisan dan alas. Tunjukkan tampak atas serta samping dan jelaskan ukuran yang kamu pilih."
+          }
+        ],
+        "activeChallengeIds": [
+          125
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 195,
+      "title": "Pola Geometris: Duplicate dan Repeat Transformation",
+      "description": "Membuat pola berulang menggunakan Duplicate, perubahan posisi atau rotasi, serta pengulangan transformasi yang konsisten.",
+      "challenge_id": 126,
+      "challenge_title": "Challenge: Ornamen Geometris Berulang",
+      "challenge_instructions": "Buat ornamen 3D dari satu bentuk dasar yang diulang minimal delapan kali. Gunakan Duplicate dan transformasi posisi atau rotasi yang konsisten. Periksa jarak dan simetri dari tampak atas, lalu bagikan tautan desain.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi Duplicate di Tinkercad?",
+            "options": [
+              "Menggandakan objek yang dipilih",
+              "Menghapus semua objek",
+              "Mengubah Workplane",
+              "Mengekspor model"
+            ],
+            "answer_index": 0,
+            "explanation": "Duplicate membuat salinan dari objek yang dipilih."
+          },
+          {
+            "question": "Apa yang dapat diulang oleh Duplicate setelah salinan pertama dipindah atau diputar?",
+            "options": [
+              "Nama objek",
+              "Transformasi posisi atau rotasi yang sama",
+              "Warna Workplane",
+              "Ukuran layar"
+            ],
+            "answer_index": 1,
+            "explanation": "Perintah Duplicate berikutnya dapat mengulang transformasi terakhir."
+          },
+          {
+            "question": "Apa yang perlu ditentukan sebelum membuat pola?",
+            "options": [
+              "Nama akun",
+              "Jumlah tab browser",
+              "Bentuk dasar dan aturan jarak atau sudut pengulangan",
+              "Warna wallpaper"
+            ],
+            "answer_index": 2,
+            "explanation": "Aturan pola membuat susunan lebih teratur dan mudah diperiksa."
+          },
+          {
+            "question": "Jika pola melingkar tidak simetris, apa yang perlu diperiksa?",
+            "options": [
+              "Nama file",
+              "Warna objek",
+              "Jumlah bentuk di panel",
+              "Jarak dari pusat dan besar sudut rotasi"
+            ],
+            "answer_index": 3,
+            "explanation": "Pusat dan sudut rotasi menentukan keteraturan pola melingkar."
+          },
+          {
+            "question": "Mengapa model sebaiknya disimpan sebelum Group?",
+            "options": [
+              "Agar bentuk individual masih dapat diedit jika diperlukan",
+              "Agar warna otomatis berubah",
+              "Agar jumlah objek bertambah",
+              "Agar Workplane hilang"
+            ],
+            "answer_index": 0,
+            "explanation": "Menyimpan versi sebelum Group memudahkan revisi bagian individual."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Ornamen Geometris Berulang",
+            "instructions": "Buat ornamen 3D dari satu bentuk dasar yang diulang minimal delapan kali. Gunakan Duplicate dan transformasi posisi atau rotasi yang konsisten. Periksa jarak dan simetri dari tampak atas, lalu bagikan tautan desain.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Membuat Pola dari Satu Bentuk",
+            "content": "Pola geometris dapat dibuat dengan menggandakan bentuk dasar. Kamu akan menggunakan Duplicate dan perubahan posisi atau rotasi untuk membuat susunan yang teratur."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Duplicate dan Repeat Transformation",
+            "content": "Di Tinkercad, setelah objek diduplikasi dan salinannya dipindah atau diputar, perintah Duplicate berikutnya dapat mengulang transformasi yang sama pada salinan baru."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Tentukan Bentuk dan Pola",
+            "content": "Pilih bentuk dasar seperti segitiga, lingkaran, atau balok. Tentukan apakah pola dibuat dalam baris, lingkaran, atau susunan simetris."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Contoh: Pola Baris",
+            "content": "Duplikasi satu bentuk, geser salinan sejauh jarak tertentu, lalu ulangi Duplicate untuk mengulang jarak yang sama. Periksa apakah semua objek memiliki jarak seragam."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Contoh: Pola Melingkar",
+            "content": "Letakkan bentuk pada jarak tertentu dari pusat, duplikasi, lalu putar dengan sudut tetap. Ulangi transformasi hingga membentuk pola mengelilingi pusat."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Objek Dasar",
+            "content": "Letakkan bentuk pada Workplane dan tentukan ukuran awal. Jangan mengubah ukuran setiap salinan tanpa alasan karena pola akan terlihat tidak konsisten."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Buat Salinan Pertama",
+            "content": "Gunakan Duplicate, lalu pindahkan atau putar salinan sesuai jarak atau sudut yang telah direncanakan."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Ulangi Transformasi",
+            "content": "Gunakan Duplicate lagi untuk mengulang perpindahan atau rotasi yang sama. Amati apakah pola berkembang dengan jarak dan orientasi yang konsisten."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Atur Pusat dan Simetri",
+            "content": "Jika pola melingkar, periksa posisi pusat dan jarak setiap objek. Gunakan tampak atas untuk melihat apakah susunan simetris."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Gabungkan Jika Diperlukan",
+            "content": "Jika pola sudah benar dan harus menjadi satu bagian, pilih objek lalu Group. Simpan versi sebelum Group jika kamu masih perlu mengubah masing-masing bentuk."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Pola",
+            "content": "Jika jarak tidak konsisten, batalkan salinan terakhir dan ulangi dari objek yang benar. Jika pola melingkar bergeser, periksa jarak dari pusat dan sudut rotasi."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat ornamen geometris dari satu bentuk dasar yang diulang minimal delapan kali. Jelaskan jarak atau sudut pengulangan yang kamu gunakan."
+          }
+        ],
+        "activeChallengeIds": [
+          126
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 196,
+      "title": "Persiapan 3D Printing: Memeriksa Model dan Ekspor STL",
+      "description": "Memeriksa geometri, ukuran, ketebalan, bidang dasar, dan bagian terpisah sebelum mengekspor model ke STL untuk diproses di aplikasi slicer.",
+      "challenge_id": 127,
+      "challenge_title": "Challenge: Model Siap Diproses untuk 3D Printing",
+      "challenge_instructions": "Pilih satu model Tinkercad. Periksa dimensi, ketebalan bagian penting, bidang dasar, dan komponen terpisah. Ekspor ke STL lalu buka di slicer jika tersedia. Sertakan tautan model dan catatan pemeriksaan yang sudah dilakukan.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi file STL dalam alur 3D printing?",
+            "options": [
+              "Menyimpan geometri model untuk diproses di aplikasi slicer",
+              "Menyimpan suara project",
+              "Mengatur warna monitor",
+              "Mengubah model menjadi video"
+            ],
+            "answer_index": 0,
+            "explanation": "STL menyimpan geometri untuk tahap pemrosesan berikutnya."
+          },
+          {
+            "question": "Aplikasi slicer digunakan untuk…",
+            "options": [
+              "Membuat akun Tinkercad",
+              "Mengatur orientasi, layer, support, dan parameter cetak",
+              "Mengganti nama objek",
+              "Menggambar backdrop"
+            ],
+            "answer_index": 1,
+            "explanation": "Slicer menyiapkan model untuk printer 3D."
+          },
+          {
+            "question": "Mengapa ketebalan dinding perlu diperiksa?",
+            "options": [
+              "Agar model memiliki banyak warna",
+              "Agar ukuran file selalu kecil",
+              "Bagian terlalu tipis dapat rapuh atau sulit dicetak",
+              "Agar objek otomatis menjadi padat"
+            ],
+            "answer_index": 2,
+            "explanation": "Ketebalan memengaruhi kekuatan dan kemungkinan keberhasilan cetak."
+          },
+          {
+            "question": "Jika bagian model hilang setelah ekspor, apa yang perlu diperiksa?",
+            "options": [
+              "Warna desktop",
+              "Nama akun",
+              "Ukuran browser",
+              "Apakah objek dipilih dan apakah komponen tergabung sesuai kebutuhan"
+            ],
+            "answer_index": 3,
+            "explanation": "Objek yang tidak dipilih atau komponen yang terpisah dapat menyebabkan hasil ekspor tidak sesuai."
+          },
+          {
+            "question": "Apa yang perlu dilakukan setelah mengekspor STL?",
+            "options": [
+              "Buka file di slicer dan periksa ukuran, orientasi, serta peringatan model",
+              "Langsung menganggap model pasti siap cetak",
+              "Menghapus file Tinkercad",
+              "Mengubah nama Workplane"
+            ],
+            "answer_index": 0,
+            "explanation": "Ekspor STL belum menyelesaikan proses slicing dan pemeriksaan printer."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Model Siap Diproses untuk 3D Printing",
+            "instructions": "Pilih satu model Tinkercad. Periksa dimensi, ketebalan bagian penting, bidang dasar, dan komponen terpisah. Ekspor ke STL lalu buka di slicer jika tersedia. Sertakan tautan model dan catatan pemeriksaan yang sudah dilakukan.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Dari Model ke Cetakan",
+            "content": "Model di Tinkercad perlu diperiksa sebelum dikirim ke proses cetak. Kamu akan memeriksa ukuran, ketebalan, posisi, dan mengekspor file untuk tahap berikutnya."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Desain dan Slicing Berbeda",
+            "content": "Tinkercad digunakan untuk membuat dan mengekspor model 3D. Aplikasi slicer kemudian mengatur orientasi, layer, support, dan parameter printer sebelum pencetakan."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Periksa Ukuran Model",
+            "content": "Gunakan Ruler untuk memastikan panjang, lebar, dan tinggi sesuai kebutuhan. Pastikan satuan dan ukuran realistis untuk benda yang akan dibuat."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Periksa Ketebalan Dinding",
+            "content": "Bagian yang terlalu tipis dapat rapuh atau sulit dicetak. Periksa dinding, pegangan, dan sambungan agar memiliki ketebalan yang masuk akal untuk ukuran model."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Periksa Bidang Dasar",
+            "content": "Pastikan model memiliki permukaan yang dapat diletakkan pada bidang cetak. Bagian yang melayang atau hanya menyentuh pada titik kecil mungkin memerlukan perubahan orientasi atau desain."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Periksa Bagian Terpisah",
+            "content": "Pastikan komponen yang harus menyatu benar-benar bersentuhan atau sudah di-Group sesuai kebutuhan. Komponen terpisah dapat diekspor sebagai bagian yang berbeda."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Periksa Rongga dan Hole",
+            "content": "Jika menggunakan Hole, pastikan bentuk pemotong menembus bagian yang benar. Periksa apakah lubang terbuka dan tidak menyisakan bagian yang tidak diinginkan."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Atur Posisi Model",
+            "content": "Letakkan model pada Workplane dengan orientasi yang masuk akal. Periksa apakah bagian penting memiliki dukungan yang cukup atau perlu diputar saat proses slicing."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Ekspor ke STL",
+            "content": "Pilih Export dan gunakan format STL untuk menyimpan geometri model. Simpan file dengan nama yang jelas agar mudah ditemukan saat dibuka di slicer."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Periksa File di Slicer",
+            "content": "Buka file STL pada aplikasi slicer yang tersedia. Periksa orientasi, ukuran, area cetak, dan peringatan geometri sebelum menyiapkan proses cetak."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Ekspor",
+            "content": "Jika ukuran berubah, periksa satuan saat ekspor dan impor. Jika bagian hilang, periksa apakah objek ikut dipilih. Jika model terpisah, periksa Group dan hubungan antarbagian."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Pilih satu model, periksa dimensi dan ketebalan, pastikan posisi dan komponen benar, lalu ekspor ke STL. Jelaskan apa yang masih harus diperiksa pada slicer."
+          }
+        ],
+        "activeChallengeIds": [
+          127
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 197,
+      "title": "Pemeriksaan Akhir dan Dokumentasi Model 3D",
+      "description": "Melakukan pemeriksaan akhir pada model Tinkercad, menyusun dokumentasi ukuran dan komponen, serta menyiapkan presentasi sebelum proyek akhir.",
+      "challenge_id": 128,
+      "challenge_title": "Challenge: Dokumentasi Model 3D",
+      "challenge_instructions": "Siapkan dokumentasi satu halaman untuk model Tinkercad. Sertakan fungsi produk, tampilan depan/samping/atas, minimal tiga fitur atau komponen, ukuran utama beserta satuan, dan satu keputusan desain. Bagikan tautan model dan dokumentasi.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa tujuan pemeriksaan akhir model?",
+            "options": [
+              "Memastikan fungsi, bentuk, ukuran, dan komponen sesuai rancangan",
+              "Mengubah semua warna",
+              "Menghapus semua ukuran",
+              "Mengganti nama akun"
+            ],
+            "answer_index": 0,
+            "explanation": "Pemeriksaan akhir memastikan model sesuai kebutuhan dan dapat dipresentasikan."
+          },
+          {
+            "question": "Mengapa dimensi perlu disertai satuan?",
+            "options": [
+              "Agar warna model berubah",
+              "Agar ukuran dapat dipahami dan dibandingkan",
+              "Agar jumlah komponen bertambah",
+              "Agar file otomatis tercetak"
+            ],
+            "answer_index": 1,
+            "explanation": "Satuan memberi konteks pada angka dimensi."
+          },
+          {
+            "question": "Apa yang perlu diperiksa pada komponen yang digabung?",
+            "options": [
+              "Nama browser",
+              "Jumlah tab",
+              "Apakah bagian yang harus menyatu benar-benar terhubung dan bagian yang perlu bergerak tetap bebas",
+              "Warna keyboard"
+            ],
+            "answer_index": 2,
+            "explanation": "Group harus sesuai tujuan perakitan dan fungsi komponen."
+          },
+          {
+            "question": "Apa isi dokumentasi desain yang baik?",
+            "options": [
+              "Hanya nama file",
+              "Hanya warna objek",
+              "Hanya jumlah bentuk",
+              "Fungsi, fitur, tampilan, ukuran, dan keputusan desain"
+            ],
+            "answer_index": 3,
+            "explanation": "Dokumentasi menjelaskan bentuk dan alasan di balik rancangan."
+          },
+          {
+            "question": "Jika model sulit dipahami dari satu sudut, tindakan yang tepat adalah…",
+            "options": [
+              "Menyiapkan tampilan dari beberapa sudut dan memberi label bila diperlukan",
+              "Menghapus semua komponen",
+              "Menyembunyikan ukuran",
+              "Mengganti nama project"
+            ],
+            "answer_index": 0,
+            "explanation": "Tampilan multi-sudut membantu menjelaskan bentuk dan hubungan komponen."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Dokumentasi Model 3D",
+            "instructions": "Siapkan dokumentasi satu halaman untuk model Tinkercad. Sertakan fungsi produk, tampilan depan/samping/atas, minimal tiga fitur atau komponen, ukuran utama beserta satuan, dan satu keputusan desain. Bagikan tautan model dan dokumentasi.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Model Siap Ditinjau",
+            "content": "Sebelum proyek akhir dipresentasikan, periksa kembali fungsi, bentuk, ukuran, dan kerapian model. Dokumentasi membantu orang lain memahami apa yang kamu buat."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Periksa Tujuan Produk",
+            "content": "Baca kembali tujuan awal. Pastikan bentuk model benar-benar membantu menyelesaikan kebutuhan yang dipilih, bukan hanya kumpulan bentuk dekoratif."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Periksa Dimensi Utama",
+            "content": "Gunakan Ruler untuk memeriksa panjang, lebar, tinggi, dan ukuran bagian penting. Catat satuan agar orang lain dapat memahami skala model."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Periksa Hubungan Komponen",
+            "content": "Lihat apakah semua bagian berada pada posisi yang benar. Pastikan bagian yang harus menyatu tidak terpisah dan bagian yang perlu bergerak tidak terkunci oleh Group."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "practice",
+            "order": 4,
+            "title": "Periksa Bentuk dari Beberapa Sudut",
+            "content": "Gunakan tampak depan, samping, atas, dan perspektif. Cari bagian yang terlalu tipis, tertutup, atau tidak sesuai fungsi."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Daftar Fitur",
+            "content": "Tuliskan fitur utama model dan fungsi setiap bagian. Pilih fitur yang paling penting agar presentasi tidak hanya menjelaskan bentuk luar."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Catat Keputusan Desain",
+            "content": "Tuliskan mengapa memilih bentuk, ukuran, dan susunan tertentu. Jika ada perubahan dari desain awal, jelaskan masalah yang ingin diperbaiki."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Siapkan Tampilan Presentasi",
+            "content": "Atur kamera agar model terlihat jelas. Ambil beberapa tampilan dan pastikan tidak ada bagian penting yang terpotong."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Rapikan Nama dan File",
+            "content": "Gunakan nama desain dan file ekspor yang mudah dikenali. Simpan versi kerja dan versi yang siap dibagikan secara terpisah."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Lakukan Pemeriksaan Terakhir",
+            "content": "Cocokkan model dengan daftar kriteria: fungsi, ukuran, komponen, tampilan, dan file. Tandai bagian yang belum selesai sebelum presentasi."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Presentasi",
+            "content": "Jika bagian model sulit terlihat, ubah sudut kamera atau pisahkan tampilan. Jika ukuran membingungkan, tambahkan satuan. Jika file ekspor tidak sesuai, ulangi pemeriksaan sebelum ekspor."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Siapkan dokumentasi satu halaman berisi fungsi produk, tampilan beberapa sudut, fitur, ukuran utama, dan satu keputusan desain yang penting."
+          }
+        ],
+        "activeChallengeIds": [
+          128
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    }
+  ]
+}
