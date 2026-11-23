@@ -94,3 +94,22 @@ No topic IDs were deleted or recreated. No student progress, quiz attempts, subm
 - Keep the canonical JSON as the source of truth and validate it before syncing to Supabase.
 - Revise in module-sized batches; after each batch, validate question count, option count, answer key, node substance, example, troubleshooting, challenge, and sequence.
 - Do not declare the curriculum complete based on row counts or JSON shape alone.
+
+
+## Remediation progress — Batch 1: Begin to Scratch
+
+Completed after the initial audit:
+
+- Re-authored module 11 topics 11–16 (topic IDs 172–177) as a six-topic continuation.
+- Each now has **5 topic-specific quiz questions**, each with four options and an authored answer key/explanation.
+- Each now has **12 learning nodes** with concrete Scratch concepts, block-sequence examples, guided practice, independent testing, troubleshooting, and a project challenge.
+- Updated the six matching `challenges` rows and kept their existing challenge IDs (103–108).
+- Verified all six topics have the expected quiz/node counts, no short nodes under the audit's 80-character screening threshold, no invalid quiz option/index structures, and valid `activeChallengeIds` links.
+- Before the rewrite, these six topics had zero `topic_progress` rows and zero `topic_quiz_attempts`; no learner history needed migration.
+- The module's original topic IDs 28–41 and the six new IDs 172–177 remain unchanged.
+
+Canonical batch file: `docs/curriculum/begin-to-scratch-quality-pass-1.json`.
+
+Remaining newly added topics that still need this substantive rewrite: **22** (modules 20: 4, 27: 4, 28: 4, 29: 4, 30: 4, and 31: 2).
+
+The ten pre-existing Begin to Scratch topics meet the 5-quiz and 10-node structural counts, but still require human review of content depth and answer-key semantics before this module can be called fully quality-approved.
