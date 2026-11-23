@@ -560,7 +560,7 @@ export class AdminWorkspace {
         if (submitButton) submitButton.disabled = true;
         const formData = new FormData(createSeriesForm);
         try {
-        const result = await this.repositories.classSessions.createRecurringSessionSeries({
+        const result = await this.repositories.classSessions.createRecurringSeries({
           studentId: String(formData.get('studentId') || ''),
           tutorId: String(formData.get('tutorId') || ''),
           startDate: String(formData.get('startDate') || ''),
@@ -644,7 +644,7 @@ export class AdminWorkspace {
         }
         if (submitButton) submitButton.disabled = true;
         try {
-          const result = await this.repositories.classSessions.createReplacementSession(
+          const result = await this.repositories.classSessions.createReplacement(
             form.getAttribute('data-replacement-form'),
             { scheduledStartAt: start.toISOString() },
             this.currentUser
