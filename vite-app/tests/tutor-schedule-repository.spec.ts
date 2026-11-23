@@ -47,7 +47,7 @@ test.describe("Production tutor schedule repository", () => {
         from: (table: string) => {
           const rows = table === "meetings" ? meetingRows : linkRows;
           const builder: Record<string, unknown> = {};
-          for (const method of ["select", "eq", "order", "limit", "in"]) {
+          for (const method of ["select", "eq", "gte", "lt", "order", "limit", "in"]) {
             builder[method] = (...args: unknown[]) => {
               calls.push({ table, method, args });
               return builder;
@@ -59,7 +59,7 @@ test.describe("Production tutor schedule repository", () => {
         }
       };
 
-      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const repository = createSupabaseTutorScheduleRepository(client as never, () => new Date("2026-11-23T00:00:00.000Z"));
       const snapshot = await repository.listForCurrentTutor("tutor-1");
       return { snapshot, calls };
     });
@@ -68,6 +68,10 @@ test.describe("Production tutor schedule repository", () => {
     expect(result.snapshot.studentCounts).toEqual({ 11: 2, 22: 1 });
     expect(result.calls).toContainEqual({ table: "meetings", method: "eq", args: ["teacher_id", "tutor-1"] });
     expect(result.calls).toContainEqual({ table: "meetings", method: "limit", args: [100] });
+    expect(result.calls).toContainEqual({ table: "meetings", method: "gte", args: ["meeting_date", "2026-11-23T00:00:00.000Z"] });
+    expect(result.calls).toContainEqual({ table: "meetings", method: "lt", args: ["meeting_date", "2026-11-23T00:00:00.000Z"] });
+    expect(result.calls).toContainEqual({ table: "meetings", method: "limit", args: [20] });
+
     expect(result.calls).toContainEqual({ table: "meeting_students", method: "in", args: ["meeting_id", [11, 22]] });
   });
 
@@ -87,7 +91,7 @@ test.describe("Production tutor schedule repository", () => {
           throw new Error("Data query must not run for a mismatched actor.");
         }
       };
-      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const repository = createSupabaseTutorScheduleRepository(client as never, () => new Date("2026-11-23T00:00:00.000Z"));
       let message = "";
       try {
         await repository.listForCurrentTutor("tutor-spoofed");
@@ -115,7 +119,7 @@ test.describe("Production tutor schedule repository", () => {
         from: (table: string) => {
           queriedTables.push(table);
           const builder: Record<string, unknown> = {};
-          for (const method of ["select", "eq", "order", "limit", "in"]) {
+          for (const method of ["select", "eq", "gte", "lt", "order", "limit", "in"]) {
             builder[method] = () => builder;
           }
           builder.then = (resolve: (value: unknown) => unknown, reject: (reason: unknown) => unknown) =>
@@ -123,7 +127,7 @@ test.describe("Production tutor schedule repository", () => {
           return builder;
         }
       };
-      const repository = createSupabaseTutorScheduleRepository(client as never);
+      const repository = createSupabaseTutorScheduleRepository(client as never, () => new Date("2026-11-23T00:00:00.000Z"));
       const snapshot = await repository.listForCurrentTutor("tutor-empty");
       return { snapshot, queriedTables };
     });
