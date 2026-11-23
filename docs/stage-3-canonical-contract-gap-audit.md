@@ -448,3 +448,11 @@ Using transaction-scoped authenticated role and JWT subject simulation, followed
 
 - Commit `e961d909aea7bb31716ff91b4096b6348bda5b51` passed TypeScript, Vite production build, and Playwright browser QA (66 passed, 21 skipped).
 - The latest migration-alignment commit `d99d0c6c6320c03e9a73d4b1ed8195da8ca835a0` has passed TypeScript and production build; browser QA was still running at this note.
+
+
+## Final QA result — 2026-11-23
+
+- Latest app-source checkpoint `d99d0c6c6320c03e9a73d4b1ed8195da8ca835a0`: TypeScript and Vite production build passed; Playwright browser QA passed with **67 passed, 21 skipped, 0 failed**.
+- The invoice SECURITY DEFINER bodies now live in the non-exposed `private` schema. Public RPC names used by the app remain available as SECURITY INVOKER wrappers. A transactional admin invoice lifecycle test passed after this move and rolled back all QA rows.
+- All Nov 22–23 migration versions now have exact filename matches in the repository and the active Supabase migration history; no missing or extra versions remain for that period.
+- Current branch HEAD after documentation update: `4a2221f31e178320325a7f30defc25bbd95e51ee` (`preview`). No new branch was created and `main` was not changed.
