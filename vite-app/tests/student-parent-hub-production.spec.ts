@@ -167,6 +167,90 @@ async function mockStudentPortalWithCurriculum(page: Page) {
       return;
     }
 
+    if (url.pathname === "/rest/v1/session_reports" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify([{
+          id: "report-1",
+          student_id: userId,
+          tutor_id: "tutor-1",
+          meeting_id: 11,
+          session_date: "2026-11-20",
+          session_number: 1,
+          topic: "Animasi Scratch",
+          activities: "Membuat sprite bergerak",
+          achievements: "Berhasil membuat animasi",
+          difficulties: "",
+          solutions: "",
+          parent_recommendations: "Latihan 10 menit",
+          competencies: {},
+          status: "submitted",
+          version: 1,
+          created_at: createdAt,
+          updated_at: createdAt,
+          submitted_at: createdAt
+        }])
+      });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/monthly_evaluations" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify([{
+          id: "evaluation-1",
+          student_id: userId,
+          tutor_id: "tutor-1",
+          period: "2026-11",
+          rating: "Baik",
+          summary: "Kemajuan konsisten",
+          strengths: "Kreatif",
+          next_goals: "Latihan logika",
+          status: "published",
+          version: 1,
+          created_at: createdAt,
+          updated_at: createdAt,
+          published_at: createdAt
+        }])
+      });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/invoices" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify([{
+          id: "invoice-1",
+          student_id: userId,
+          month_year: "2026-10",
+          total_meetings: 1,
+          attended_meetings: 1,
+          price_per_meeting: 50000,
+          total_amount: 50000,
+          status: "sent",
+          currency: "IDR",
+          discount_amount: 0,
+          additional_charges: 0,
+          adjustment_note: "",
+          created_at: createdAt,
+          updated_at: createdAt,
+          invoice_items: [{
+            id: "item-1",
+            meeting_id: 11,
+            session_number: 1,
+            session_date: "2026-10-20T09:00:00.000Z",
+            description: "Pertemuan Scratch",
+            amount: 50000
+          }],
+          invoice_payments: []
+        }])
+      });
+      return;
+    }
+
     if (url.pathname === "/rest/v1/student_lesson_progress" && request.method() === "GET") {
       await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
       return;
@@ -206,7 +290,7 @@ async function mockStudentPortalWithCurriculum(page: Page) {
   });
 }
 
-test("production student dashboard never opens the local-demo Parent Hub", async ({ page }) => {
+test("production student Parent Hub reads only submitted Supabase records and issued invoices", async ({ page }) => {
   await mockStudentPortalWithCurriculum(page);
   await page.goto("/");
   await page.getByLabel("Nomor WhatsApp").fill("081234567890");
@@ -214,9 +298,17 @@ test("production student dashboard never opens the local-demo Parent Hub", async
   await page.getByRole("button", { name: "Masuk" }).click();
 
   await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
-  await expect(page.locator(".parent-hub-entry-card").getByText("Belum tersedia", { exact: true })).toBeVisible();
-  await expect(page.getByText(/tidak menampilkan data contoh pada akun asli/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ })).toHaveCount(0);
+  await expect(page.locator(".parent-hub-entry-card").getByText("Lihat laporan belajar", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
+  await expect(page.getByRole("heading", { name: "Laporan Belajar Siswa E2E" })).toBeVisible();
+  await expect(page.getByText("Animasi Scratch", { exact: true })).toBeVisible();
+  await expect(page.getByText("Membuat sprite bergerak", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Perkembangan Bulanan" }).click();
+  await expect(page.getByText("Kemajuan konsisten", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Riwayat Tagihan" }).click();
+  await expect(page.getByText("Tagihan Oktober 2026", { exact: true })).toBeVisible();
+  await expect(page.getByText("Rp50.000", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /Kembali ke Ruang Belajar/ }).click();
 
   await page.getByRole("button", { name: /Lanjutkan Misi/ }).click();
   for (let stage = 0; stage < 5; stage += 1) {
