@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 import type { TutorMeetingSummary, TutorAssignedStudent } from "./data/supabase-tutor-schedule-repository";
 import TutorLearningRecords from "./TutorLearningRecords";
+import { getTutorMeetingStatusLabel } from "./data/tutor-meeting-status";
 
 type TutorUser = { id: string; displayName: string; role: "admin" | "tutor" | "student" };
 
@@ -13,13 +14,6 @@ function formatMeetingDate(value: string | null) {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
     hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta"
   }).format(date) + " WIB";
-}
-
-export function getTutorMeetingStatusLabel(meeting: TutorMeetingSummary) {
-  if (meeting.is_completed || ["completed", "held", "selesai"].includes(meeting.completion_status ?? "")) return "Selesai";
-  if (["cancelled", "soft_deleted"].includes(meeting.completion_status ?? "")) return "Dibatalkan";
-  if (["not_held", "terlewat"].includes(meeting.completion_status ?? "")) return "Tidak terlaksana";
-  return "Terjadwal";
 }
 
 export default function TutorExperience({ user }: { user: TutorUser }) {
