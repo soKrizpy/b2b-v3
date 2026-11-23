@@ -114,8 +114,9 @@ Deno.serve(async (req: Request) => {
           ? adminClient.from("students").select("id").eq("id", userId).maybeSingle()
           : Promise.resolve({ data: null, error: null }),
       ]);
-      return !authCheck.data?.user &&
-        !authCheck.error &&
+      const authUserAbsent = !authCheck.data?.user &&
+        (!authCheck.error || /not found|does not exist/i.test(authCheck.error.message));
+      return authUserAbsent &&
         !profileCheck.error && !profileCheck.data &&
         !studentCheck.error && !studentCheck.data;
     };
