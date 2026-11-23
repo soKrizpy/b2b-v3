@@ -22,6 +22,25 @@ async function mockStudentPortalWithCurriculum(page: Page) {
       return;
     }
 
+    if (url.pathname === "/auth/v1/user" && request.method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          id: userId,
+          aud: "authenticated",
+          role: "authenticated",
+          email: "student@bits2bytes.test",
+          app_metadata: { provider: "email", providers: ["email"] },
+          user_metadata: {},
+          created_at: createdAt,
+          updated_at: createdAt,
+          is_anonymous: false
+        })
+      });
+      return;
+    }
+
     if (url.pathname === "/functions/v1/student-mpin-login" && request.method() === "POST") {
       const payload = Buffer.from(JSON.stringify({
         sub: userId,
