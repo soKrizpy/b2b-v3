@@ -341,3 +341,26 @@ Current branch: `preview`. Current implementation checkpoint: `f99323cc617060e37
 - No production deployment, real-account browser login, production row mutation, schema migration, RLS change, or `main` branch update is claimed.
 
 Stage 3 remains open. The next work should continue with secure student submission/review design and the production-backed tutor/admin capabilities, while keeping schema and production mutations behind a separate explicit approval.
+
+
+## Production fallback isolation checkpoint — 2026-11-23
+
+Current branch HEAD at the time of this note: `f19c7729dca98e4637c923e99d56e0106a43a84f` (`preview`).
+
+Additional root-level fixes:
+
+- Added `createScopedWorkspaceRepositories()`. Unlike the legacy demo composition, it accepts only explicitly supplied repositories and throws when a required capability is missing; it never fills production gaps from local-demo stores.
+- Active React Student runtime now uses the scoped production composition with only its verified learning bridge. The active Admin runtime uses only the Supabase-backed, read-only identity capability. Both are explicitly marked production mode.
+- The legacy lesson controller now supports a fail-closed production repository mode. Its local-demo default composition remains available only to legacy/demo callers.
+- The Parent Hub entry remains visible as a transparent unavailable state in production; its local-demo repositories cannot be opened from the production student flow.
+- The production student lesson flow now disables project submission until a secure server-side submit/review path exists. It no longer presents a submit action that is guaranteed to fail or route data to a demo store.
+- The Admin workspace now explicitly labels its production account list as read-only; account creation, status changes, and tutor assignments are not represented as working production actions.
+- Tutor schedule reads are isolated behind the actor-checked repository described above.
+
+### Latest CI / deployment observations
+
+- The Vite App CI production build step for `f19c7729` completed successfully; browser QA was still running at the last poll.
+- The Preview Build for `f19c7729` completed its production build successfully.
+- Vercel account discovery did not find a Git-linked `b2b-v3` project for this repository/commit in the selected team; the team project listing only returned `b2b-v2`. Therefore no new Preview deployment URL is claimed from this checkpoint. Do not create or relink a Vercel project as part of this audit without an explicit request.
+
+The seven workstreams remain open where their production contracts or data models are absent. The new isolation behavior is intentional: unsupported operations must remain unavailable rather than silently falling back to demo data.
