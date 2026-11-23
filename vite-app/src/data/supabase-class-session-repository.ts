@@ -72,9 +72,9 @@ function mapStatus(value: string | null, deletedAt: string | null): ClassSession
 }
 
 function mapAttendance(link: MeetingStudentRow): AttendanceStatus {
-  if (!link.attendance_recorded_at) return "not_recorded";
   if (link.attendance_status === "hadir") return "present";
   if (link.attendance_status === "telat") return "late";
+  if (!link.attendance_recorded_at) return "not_recorded";
   return "absent";
 }
 
