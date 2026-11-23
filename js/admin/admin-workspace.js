@@ -837,7 +837,7 @@ export class AdminWorkspace {
     modal.innerHTML = `
       <div class="modal-dialog" style="max-width: 520px; width: 92%;">
         <div class="modal-header">
-          <h3 class="modal-title">${isEdit ? 'Edit Akun Pengguna' : 'Tambah Akun Demo Baru'}</h3>
+          <h3 class="modal-title">${isEdit ? 'Edit Akun Pengguna' : 'Tambah Akun Baru'}</h3>
           <button type="button" class="btn btn-ghost btn-sm" id="btn-close-user-modal">✕</button>
         </div>
 
@@ -855,7 +855,7 @@ export class AdminWorkspace {
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
             <div class="form-group">
               <label for="admin-select-role" class="form-label">Peran / Role *</label>
-              <select id="admin-select-role" class="form-control">
+              <select id="admin-select-role" class="form-control" ${isEdit ? 'disabled' : ''}>
                 <option value="student" ${user.role === 'student' ? 'selected' : ''}>Siswa (Student)</option>
                 <option value="tutor" ${(user.role === 'tutor' || user.role === 'teacher') ? 'selected' : ''}>Tutor / Guru</option>
                 <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrator</option>
@@ -875,6 +875,12 @@ export class AdminWorkspace {
             <label for="admin-input-grade" class="form-label">Tingkat Kelas (Khusus Siswa)</label>
             <input type="text" id="admin-input-grade" class="form-control" value="${escapeHtml(user.gradeLevel || 'Grade 5')}" placeholder="contoh: Grade 5" />
           </div>
+          <div class="form-group" id="admin-student-login-group" style="${user.role === 'student' || !isEdit ? '' : 'display: none;'}">
+            <label for="admin-input-whatsapp" class="form-label">Nomor WhatsApp Siswa *</label>
+            <input type="tel" id="admin-input-whatsapp" class="form-control" value="${escapeHtml(user.whatsapp || '')}" placeholder="contoh: 081234567890" autocomplete="tel" />
+            <label for="admin-input-mpin" class="form-label">MPIN 6 Digit ${isEdit ? '(kosongkan jika tidak diubah)' : '*'}</label>
+            <input type="password" id="admin-input-mpin" class="form-control" value="" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="new-password" placeholder="6 digit angka" />
+          </div>
 
           <div class="modal-footer" style="padding: var(--space-4) 0 0 0; margin-top: var(--space-2);">
             <button type="button" class="btn btn-secondary" id="btn-cancel-user-modal">Batal</button>
@@ -890,9 +896,12 @@ export class AdminWorkspace {
 
     const roleSelect = modal.querySelector('#admin-select-role');
     const gradeGroup = modal.querySelector('#admin-grade-group');
-    if (roleSelect && gradeGroup) {
+    const studentLoginGroup = modal.querySelector('#admin-student-login-group');
+    if (roleSelect && gradeGroup && studentLoginGroup) {
       roleSelect.addEventListener('change', () => {
-        gradeGroup.style.display = roleSelect.value === 'student' ? '' : 'none';
+        const isStudent = roleSelect.value === 'student';
+        gradeGroup.style.display = isStudent ? '' : 'none';
+        studentLoginGroup.style.display = isStudent ? '' : 'none';
       });
     }
 
@@ -906,9 +915,15 @@ export class AdminWorkspace {
       const role = modal.querySelector('#admin-select-role')?.value;
       const status = modal.querySelector('#admin-select-status')?.value;
       const grade = modal.querySelector('#admin-input-grade')?.value.trim();
+      const whatsapp = modal.querySelector('#admin-input-whatsapp')?.value.trim();
+      const mpin = modal.querySelector('#admin-input-mpin')?.value.trim();
 
       if (!name || !email) {
         showToast({ title: 'Data Kurang', message: 'Nama dan email wajib diisi.', type: 'warning' });
+        return;
+      }
+      if (role === 'student' && (!whatsapp || (!isEdit && !/^[0-9]{6}$/.test(mpin || '')) || (mpin && !/^[0-9]{6}$/.test(mpin)))) {
+        showToast({ title: 'Data Login Siswa Belum Lengkap', message: 'Siswa memerlukan nomor WhatsApp dan MPIN tepat 6 digit. Saat edit, MPIN boleh dikosongkan jika tidak diubah.', type: 'warning' });
         return;
       }
 
@@ -919,7 +934,9 @@ export class AdminWorkspace {
           email,
           role,
           status,
-          gradeLevel: role === 'student' ? grade : undefined
+          gradeLevel: role === 'student' ? grade : undefined,
+          whatsapp: role === 'student' ? whatsapp : undefined,
+          mpin: role === 'student' && mpin ? mpin : undefined
         });
       } else {
         res = await this.repositories.identity.createUser({
@@ -927,7 +944,9 @@ export class AdminWorkspace {
           email,
           role,
           status,
-          gradeLevel: role === 'student' ? grade : undefined
+          gradeLevel: role === 'student' ? grade : undefined,
+          whatsapp: role === 'student' ? whatsapp : undefined,
+          mpin: role === 'student' ? mpin : undefined
         });
       }
 
@@ -940,7 +959,7 @@ export class AdminWorkspace {
           type: 'success'
         });
         closeModal();
-        this.render();
+        await this.refreshData();
       }
     });
   }
