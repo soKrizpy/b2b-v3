@@ -1552,6 +1552,59 @@ test.describe("Local demo domain repository adapters", () => {
   });
 
 
+  test("student progress RPC contract rejects stale versions and malformed server rows", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const {
+        mapStudentLessonProgressRow,
+        resolveStudentLessonProgressRpc
+      } = await import("/src/data/lesson-progress-rpc-contract.ts");
+      const validRow = {
+        id: 7,
+        student_id: "student-uuid",
+        topic_id: 29,
+        state: "in-progress",
+        checkpoints: { "step-1": true, "step-2": false },
+        submission_draft: { link: "https://scratch.mit.edu/projects/123", notes: "Draft" },
+        slide_index: 4,
+        version: 3,
+        updated_at: "2026-11-23T09:00:00.000Z"
+      };
+      const mapped = mapStudentLessonProgressRow(validRow);
+      const rejects = (row: unknown) => {
+        try {
+          mapStudentLessonProgressRow(row);
+          return false;
+        } catch {
+          return true;
+        }
+      };
+      let conflictMessage = "";
+      try {
+        resolveStudentLessonProgressRpc(null, { code: "40001", message: "serialization failure" });
+      } catch (error) {
+        conflictMessage = error instanceof Error ? error.message : String(error);
+      }
+      return {
+        mappedIdentity: [mapped.studentId, mapped.topicId, mapped.version],
+        mappedDraft: mapped.submissionDraft?.link,
+        rejectsMalformedCheckpoint: rejects({ ...validRow, checkpoints: { "step-1": "true" } }),
+        rejectsOutOfRangeSlide: rejects({ ...validRow, slide_index: 201 }),
+        rejectsMissingVersion: rejects({ ...validRow, version: null }),
+        conflictMessage
+      };
+    });
+
+    expect(result).toEqual({
+      mappedIdentity: ["student-uuid", 29, 3],
+      mappedDraft: "https://scratch.mit.edu/projects/123",
+      rejectsMalformedCheckpoint: true,
+      rejectsOutOfRangeSlide: true,
+      rejectsMissingVersion: true,
+      conflictMessage: "Progres berubah di perangkat lain. Muat ulang materi sebelum menyimpan lagi."
+    });
+  });
+
   test("student progress payload validation rejects malformed checkpoints, drafts, and slide positions", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
