@@ -13,6 +13,7 @@ const workspaceRepositoryImports = [
   "../js/student/parent-hub.js"
 ].map((path) => readFileSync(resolve(process.cwd(), path), "utf8"));
 const studentExperienceSource = readFileSync(resolve(process.cwd(), "src/StudentExperience.tsx"), "utf8");
+const studentLearningCapabilitiesSource = readFileSync(resolve(process.cwd(), "src/data/supabase-student-learning-capabilities.ts"), "utf8");
 const adminExperienceSource = readFileSync(resolve(process.cwd(), "src/AdminExperience.tsx"), "utf8");
 const adminWorkspaceSource = readFileSync(resolve(process.cwd(), "../js/admin/admin-workspace.js"), "utf8");
 const adminIdentityRepositorySource = readFileSync(resolve(process.cwd(), "src/data/supabase-admin-identity-repository.ts"), "utf8");
@@ -64,8 +65,9 @@ test.describe("Bits2Bytes demo portal", () => {
       expect(source).toContain("workspace-repositories.js");
       expect(source).not.toMatch(/services\/(?:identity|learning-state|class-session|learning-record|billing)-repository\.js/);
     }
-    expect(studentExperienceSource).toContain("createSupabaseLegacyLearningBridge()");
-    expect(studentExperienceSource).toContain("{ learning: createSupabaseLegacyLearningBridge() }");
+    expect(studentExperienceSource).toContain("supabaseStudentLearningCapabilities.createLessonBridge()");
+    expect(studentExperienceSource).toContain("{ learning: supabaseStudentLearningCapabilities.createLessonBridge() }");
+    expect(studentLearningCapabilitiesSource).toContain("createLessonBridge: createSupabaseLegacyLearningBridge");
     expect(studentExperienceSource).not.toContain("workspace-repositories.js");
   });
 
