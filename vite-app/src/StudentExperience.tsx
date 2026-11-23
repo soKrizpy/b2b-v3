@@ -107,6 +107,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           role: "student",
           gradeLevel: user.gradeLevel || "Siswa"
         }, { learning: supabaseProductionCapabilities.studentLearning.createLessonBridge() }, {
+          repositoryMode: "production",
           parentHubEnabled: false,
           submissionEnabled: false
         }) as WorkspaceController;
