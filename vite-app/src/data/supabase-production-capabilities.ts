@@ -2,6 +2,8 @@ import { supabaseAuthRepository } from "./supabase-auth-repository";
 import { supabaseAdminIdentityRepository } from "./supabase-admin-identity-repository";
 import { supabaseStudentLearningCapabilities } from "./supabase-student-learning-capabilities";
 import { supabaseTutorScheduleRepository } from "./supabase-tutor-schedule-repository";
+import { supabaseAdminBillingRepository } from "./supabase-admin-billing-repository";
+import { supabaseSessionReportRepository, supabaseMonthlyEvaluationRepository } from "./supabase-stage3-report-repositories";
 import type { StudentLearningCapabilities } from "./supabase-student-learning-capabilities";
 import type { TutorScheduleRepository } from "./supabase-tutor-schedule-repository";
 
@@ -19,6 +21,9 @@ export interface SupabaseProductionCapabilities {
   adminIdentity: typeof supabaseAdminIdentityRepository;
   studentLearning: StudentLearningCapabilities;
   tutorSchedule: TutorScheduleRepository;
+  adminBilling: typeof supabaseAdminBillingRepository;
+  sessionReports: typeof supabaseSessionReportRepository;
+  monthlyEvaluations: typeof supabaseMonthlyEvaluationRepository;
 }
 
 export const supabaseProductionCapabilities: SupabaseProductionCapabilities =
@@ -26,5 +31,8 @@ export const supabaseProductionCapabilities: SupabaseProductionCapabilities =
     auth: supabaseAuthRepository,
     adminIdentity: supabaseAdminIdentityRepository,
     studentLearning: supabaseStudentLearningCapabilities,
-    tutorSchedule: supabaseTutorScheduleRepository
+    tutorSchedule: supabaseTutorScheduleRepository,
+    adminBilling: supabaseAdminBillingRepository,
+    sessionReports: supabaseSessionReportRepository,
+    monthlyEvaluations: supabaseMonthlyEvaluationRepository
   });
