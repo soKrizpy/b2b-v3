@@ -86,7 +86,7 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
           </div>
           <div className="card tutor-live-list">
             <div className="tutor-live-list-heading">
-              <div><h3>Jadwal Mengajar</h3><p>100 pertemuan terbaru yang ditautkan ke akun guru ini, diurutkan dari jadwal terdekat.</p></div>
+              <div><h3>Jadwal Mengajar</h3><p>20 riwayat terbaru dan hingga 100 jadwal mendatang yang ditautkan ke akun guru ini.</p></div>
             </div>
             {meetings.length === 0 ? (
               <p className="tutor-live-empty">Belum ada jadwal yang ditautkan ke akun guru ini di Supabase.</p>
