@@ -59,7 +59,12 @@ export class AdminWorkspace {
     const request = ++this.refreshSequence;
     const users = await this.repositories.identity.getAllUsers();
     if (this.destroyed || request !== this.refreshSequence) return;
+    const assignments = typeof this.repositories.identity.getAllAssignments === 'function'
+      ? await this.repositories.identity.getAllAssignments()
+      : [];
+    if (this.destroyed || request !== this.refreshSequence) return;
     this.users = users;
+    this.assignments = Array.isArray(assignments) ? assignments : [];
     this.usersById = new Map(users.map(user => [user.id, user]));
     this.ratesByStudent = new Map();
     if (render && this.container) this.render();
@@ -110,7 +115,7 @@ export class AdminWorkspace {
             </p>
             ${this.productionMode ? `
               <p class="admin-readonly-notice" role="status" style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin: var(--space-2) 0 0;">
-                Mode produksi hanya-baca. Pembuatan akun, perubahan status, dan penugasan tutor belum diaktifkan.
+                Daftar akun dibaca dari Supabase. Penugasan tutor-siswa kini tersimpan di Supabase; pembuatan akun dan perubahan status masih menunggu jalur Auth Admin yang aman.
               </p>
             ` : ''}
           </div>
