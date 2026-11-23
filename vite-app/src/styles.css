@@ -147,3 +147,12 @@
 .tutor-pending-submission > div:first-child span { color:var(--color-text-muted); font-size:var(--font-size-xs); }
 .tutor-pending-submission a { color:var(--color-link); overflow-wrap:anywhere; }
 .tutor-pending-submission p { margin:0; color:var(--color-text-secondary); }
+
+.tutor-attendance-list { display:grid; gap:var(--space-2); margin-top:var(--space-3); padding-top:var(--space-3); border-top:1px solid var(--color-border-subtle); }
+.tutor-attendance-list > strong { font-size:var(--font-size-xs); color:var(--color-text-secondary); }
+.tutor-attendance-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-2); }
+.tutor-attendance-row > span { font-size:var(--font-size-sm); color:var(--color-text-primary); }
+.tutor-attendance-row small { color:var(--color-text-muted); }
+.tutor-attendance-row > div { display:flex; flex-wrap:wrap; gap:var(--space-1); }
+.tutor-attendance-row button { padding:var(--space-1) var(--space-2); border:1px solid var(--color-border-subtle); border-radius:var(--radius-sm); background:var(--color-bg-surface-subtle); color:var(--color-text-primary); font-size:var(--font-size-xs); cursor:pointer; }
+.tutor-attendance-row button:disabled { opacity:.5; cursor:not-allowed; }
