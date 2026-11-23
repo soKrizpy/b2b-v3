@@ -1,4 +1,5 @@
 import { supabase } from "./supabase-client";
+import { validateLessonProgressUpdate } from "./lesson-progress-validation";
 import { submitStudentTopicQuiz, type TopicQuizAnswer } from "./supabase-quiz-repository";
 import {
   getStudentLessonProgress,
@@ -81,25 +82,16 @@ export function createSupabaseLegacyLearningBridge() {
           throw new Error("Identitas siswa tidak cocok dengan sesi aktif.");
         }
 
-        const state = updates.state;
-        if (state !== "not-started" && state !== "in-progress" && state !== "practice-completed") {
-          throw new Error("Status pengumpulan/review belum memiliki jalur penyimpanan produksi.");
-        }
-        const checkpoints = updates.checkpoints;
-        if (!checkpoints || typeof checkpoints !== "object" || Array.isArray(checkpoints)) {
-          throw new Error("Data checkpoint tidak valid.");
-        }
-        const draft = updates.submissionDraft;
-        if (draft !== null && (typeof draft !== "object" || Array.isArray(draft))) {
-          throw new Error("Draf proyek tidak valid.");
-        }
+        const validated = validateLessonProgressUpdate({
+          state: updates.state,
+          checkpoints: updates.checkpoints,
+          submissionDraft: updates.submissionDraft,
+          slideIndex: updates.slideIndex
+        });
 
         const saved = await saveStudentLessonProgress({
           topicId: parseTopicId(lessonKey),
-          state,
-          checkpoints: checkpoints as Record<string, boolean>,
-          submissionDraft: draft as { link?: string; notes?: string } | null,
-          slideIndex: Number.isInteger(updates.slideIndex) ? Number(updates.slideIndex) : 0,
+          ...validated,
           expectedVersion: serverVersion
         });
         serverVersion = saved.version;
