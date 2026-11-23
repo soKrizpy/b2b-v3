@@ -37,13 +37,13 @@ security definer
 set search_path = ''
 as $$
 declare
-  v_released boolean := false;
+  v_rows integer := 0;
 begin
   delete from private.admin_deactivation_lock
   where lock_name = 'global' and lock_token = p_lock_token;
 
-  get diagnostics v_released = row_count;
-  return v_released;
+  get diagnostics v_rows = row_count;
+  return v_rows = 1;
 end;
 $$;
 
