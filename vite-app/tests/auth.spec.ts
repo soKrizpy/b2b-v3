@@ -293,9 +293,9 @@ test.describe("Supabase Auth portal", () => {
     await page.getByLabel("Modul").selectOption("17");
     await page.getByRole("button", { name: "Aktifkan Modul" }).click();
 
-    await expect(page.getByText("E2E Student", { exact: true })).toBeVisible();
-    await expect(page.getByText("Scratch Beginner", { exact: true })).toBeVisible();
-    await expect(page.getByText("Aktif", { exact: true })).toBeVisible();
+    const assignmentCard = page.locator("#admin-tab-body .card").filter({ hasText: "Scratch Beginner" });
+    await expect(assignmentCard).toContainText("E2E Student");
+    await expect(assignmentCard).toContainText("Aktif");
   });
 
   test("admin production workspace creates a real student account with WhatsApp and MPIN fields", async ({ page }) => {
