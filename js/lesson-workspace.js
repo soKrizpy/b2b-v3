@@ -440,7 +440,7 @@ export class LessonWorkspace {
                 </div>
               </div>
               <p class="daily-sub">Laporan, evaluasi, dan tagihan belum tersambung ke data produksi. Bits2Bytes tidak menampilkan data contoh pada akun asli.</p>
-            </section>`}`
+            </section>`}
           </div>
         </div>
 
