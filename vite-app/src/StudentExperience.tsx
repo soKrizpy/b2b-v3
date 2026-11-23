@@ -106,7 +106,9 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
           role: "student",
           gradeLevel: user.gradeLevel || "Siswa"
-        }, { learning: supabaseProductionCapabilities.studentLearning.createLessonBridge() }) as WorkspaceController;
+        }, { learning: supabaseProductionCapabilities.studentLearning.createLessonBridge() }, {
+          parentHubEnabled: false
+        }) as WorkspaceController;
 
         await controller.init();
         if (active) setReady(true);
