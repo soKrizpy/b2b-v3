@@ -113,3 +113,83 @@ Canonical batch file: `docs/curriculum/begin-to-scratch-quality-pass-1.json`.
 Remaining newly added topics that still need this substantive rewrite: **22** (modules 20: 4, 27: 4, 28: 4, 29: 4, 30: 4, and 31: 2).
 
 The ten pre-existing Begin to Scratch topics meet the 5-quiz and 10-node structural counts, but still require human review of content depth and answer-key semantics before this module can be called fully quality-approved.
+
+
+## Remediation progress — current verified state (23 November 2026, later pass)
+
+This section supersedes the earlier remediation counts and module-specific concerns above where they conflict.
+
+### Production curriculum changes now applied
+
+- All **28 newly added topics** have been substantively re-authored. Each has 5 topic-specific quiz questions, 12 learning nodes, concrete examples or demonstrations, guided and independent practice, troubleshooting, and a practical challenge.
+- The 12 pre-existing Tinkercad foundation topics (module 30) were expanded from 9 to 12 nodes each. Added nodes are topic-specific worked examples, independent practice, and troubleshooting; existing challenge instructions were made specific.
+- The original 10 Begin to Scratch topics had their concept/practice nodes rewritten with Scratch-specific explanations and tasks.
+- The 12 original Scratch Visual Block Coding & Games topics had their guided-practice and recap nodes rewritten with topic-specific block sequences and test criteria. Their old quiz bank was also replaced with 60 authored questions because no production quiz attempts existed for those 12 topics.
+- The 12 original ScratchJr topics had their generic challenge-node copy replaced with the actual challenge instructions from their linked challenge rows.
+- The 16 HTML foundation topics and 14 pre-existing CSS/JavaScript topics had generic lesson-node copy rewritten with topic-specific concepts, examples, setup, practice, browser tests, and troubleshooting.
+- The 86 previously short or empty learning-node contents were replaced with topic-specific instructions. The final structural screen now finds **zero** learning nodes with fewer than 80 characters.
+- Repeated quiz questions were replaced. The final duplicate-question screen finds **zero** duplicated question texts across the 128 topics.
+
+### Quiz history preservation
+
+- For the 16 HTML foundation topics, 14 original CSS/JavaScript topics, and 10 original Begin to Scratch topics, revised quiz questions are stored as the current quiz while the prior question set is preserved in `lesson_content.legacyQuiz`.
+- Those 40 topics are marked with `legacyQuizVersion=1` and `quizVersion=2`.
+- Existing `topic_quiz_attempts` rows were not deleted or reset. Historical scores remain intact; the prior quiz arrays are retained for audit/reference.
+- The 75 previously incorrect Basic Visual Web answer indexes were corrected. The 10 original Begin to Scratch topics also had their answer indexes corrected using the unique intended option in the old generated option template.
+- Module 20's 12 old topics now have a new 60-question topic-specific quiz bank.
+- All 28 new topics use newly authored questions and answer explanations.
+
+### Sequence and capstone corrections
+
+- Module 10 was reordered from HTML structure and content fundamentals through lists/tables/forms/semantics, then practical pages and profile project.
+- Module 20's original Showcase Project (topic ID 107) is now topic 16, after clone, My Blocks, balancing, and debugging.
+- Module 27's original product/printing capstone (topic ID 132) is now topic 16. The new documentation/presentation topic is a preparation skill, not a duplicate capstone.
+- Module 28's original interactive-story capstone (topic ID 145) is now topic 16. The new last added topic is testing and presentation, not another final story project.
+- Module 29's original Scratch capstone (topic ID 157) is now topic 16. The new topic 15 teaches playtesting/showcase.
+- Module 30's original product capstone (topic ID 169) is now topic 16. The new topic 15 teaches model review/documentation.
+- Module 31 places Responsive Design at topic 14, the Mini Website project at topic 15, and Portfolio Web Interaktif at topic 16.
+
+### Latest production verification
+
+The final aggregate SQL verification returned:
+
+| Check | Result |
+|---|---:|
+| Modules | 8 |
+| Published topics | 128 |
+| Modules with exactly 16 contiguous topics | 8/8 |
+| Topics with exactly 5 quiz questions | 128/128 |
+| Topics with 10–20 learning nodes | 128/128 |
+| Quiz items with invalid option count or answer index | 0 |
+| Challenge-to-topic/activeChallengeIds mismatches | 0 |
+| Learning nodes under 80 characters | 0 |
+| Duplicate quiz question texts | 0 |
+| Legacy quiz snapshots retained | 40 |
+| Student progress rows | 21 (unchanged) |
+| Quiz attempt rows | 55 (unchanged) |
+
+Canonical content files are stored under `docs/curriculum/`, including:
+- `begin-to-scratch-quality-pass-1.json`
+- `scratch-visual-games-quality-pass-1.json`
+- `3d-design-beginner-quality-pass-1.json`
+- `scratchjr-quality-pass-1.json`
+- `scratch-beginner-grade-4-6-quality-pass-1.json`
+- `tinkercad-3d-beginner-quality-pass-1.json`
+- `basic-visual-web-quality-pass-1.json`
+- `tinkercad-3d-foundation-quality-pass-2.json`
+- `basic-visual-web-html-quality-pass-1.json`
+- `basic-visual-web-css-js-quality-pass-1.json`
+- `scratch-visual-games-quiz-quality-pass-1.json`
+- `begin-to-scratch-quiz-quality-pass-1.json`
+- `basic-visual-web-quiz-quality-pass-1.json`
+
+### Remaining quality gates — do not mark curriculum fully approved yet
+
+The structural and duplicate-content checks pass, but this is not equivalent to a complete pedagogical sign-off. Remaining work:
+1. Human semantic review of every existing quiz answer key and explanation, especially module 27's older quiz bank (which has a predictable answer-position pattern) and other pre-existing quizzes not fully re-authored.
+2. Confirm age/grade alignment for every module against the approved course plan. Module 29's production sequence matches the SD 4–6 source set, but module-level grade metadata and the overall module progression still need a formal check.
+3. Review lesson content and code examples in the actual student lesson UI, including responsive web examples and ScratchJr demonstration workflow.
+4. Run a real student-account smoke test in the deployed preview after the curriculum content is reviewed. No Vercel deployment was made by this curriculum remediation.
+5. Confirm that new quiz-version metadata is surfaced appropriately in student progress/reporting views; existing attempt rows remain untouched but do not themselves store a quiz-version field.
+
+The curriculum is now structurally complete and the previously identified filler batches have been replaced, but **do not declare it 100% quality-approved** until these remaining gates are completed.
