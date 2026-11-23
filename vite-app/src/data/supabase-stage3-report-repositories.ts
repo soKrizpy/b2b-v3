@@ -116,7 +116,6 @@ export function createSupabaseSessionReportRepository(): SessionReportRepository
         if (!meetingId) {
           return { success: false, error: { code: "SESSION_REQUIRED", message: "Laporan harus terhubung ke sesi Supabase yang valid." } };
         }
-        const now = new Date().toISOString();
         const values = {
           student_id: input.studentId,
           tutor_id: input.tutorId,
@@ -225,7 +224,6 @@ export function createSupabaseMonthlyEvaluationRepository(): MonthlyEvaluationRe
         if (!/^[0-9]{4}-(0[1-9]|1[0-2])$/.test(input.period)) {
           return { success: false, error: { code: "INVALID_PERIOD", message: "Periode evaluasi harus berformat YYYY-MM." } };
         }
-        const now = new Date().toISOString();
         const values = {
           student_id: input.studentId,
           tutor_id: input.tutorId,
