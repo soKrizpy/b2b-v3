@@ -16,12 +16,19 @@ export type TutorMeetingSummary = {
 type MeetingStudentRow = {
   meeting_id: number;
   student_id: string;
+  attendance_status: "hadir" | "telat" | "absen";
+  attendance_recorded_at: string | null;
 };
 
 export type TutorScheduleSnapshot = {
   meetings: TutorMeetingSummary[];
   studentCounts: Record<number, number>;
-  meetingStudents: Array<{ meetingId: number; studentId: string }>;
+  meetingStudents: Array<{
+    meetingId: number;
+    studentId: string;
+    attendanceStatus: "hadir" | "telat" | "absen";
+    attendanceRecordedAt: string | null;
+  }>;
 };
 
 export type TutorAssignedStudent = {
@@ -34,6 +41,12 @@ export type TutorAssignedStudent = {
 export interface TutorScheduleRepository {
   listForCurrentTutor(expectedTutorId: string): Promise<TutorScheduleSnapshot>;
   listAssignedStudents(expectedTutorId: string): Promise<TutorAssignedStudent[]>;
+  recordAttendance(
+    expectedTutorId: string,
+    meetingId: number,
+    studentId: string,
+    status: "hadir" | "telat" | "absen"
+  ): Promise<{ success: boolean; message?: string }>;
 }
 
 function requireClient(client: SupabaseClient | null): SupabaseClient {
@@ -96,7 +109,7 @@ export function createSupabaseTutorScheduleRepository(
 
       const { data: links, error: linksError } = await db
         .from("meeting_students")
-        .select("meeting_id,student_id")
+        .select("meeting_id,student_id,attendance_status,attendance_recorded_at")
         .in("meeting_id", meetings.map((meeting) => meeting.id));
 
       if (linksError) {
@@ -125,8 +138,40 @@ export function createSupabaseTutorScheduleRepository(
             Number.isSafeInteger(link.meeting_id) && link.meeting_id > 0 &&
             typeof link.student_id === "string" && link.student_id.length > 0
           )
-          .map((link: MeetingStudentRow) => ({ meetingId: link.meeting_id, studentId: link.student_id }))
+          .map((link: MeetingStudentRow) => ({
+            meetingId: link.meeting_id,
+            studentId: link.student_id,
+            attendanceStatus: link.attendance_status,
+            attendanceRecordedAt: link.attendance_recorded_at
+          }))
       };
+    },
+
+    async recordAttendance(
+      expectedTutorId: string,
+      meetingId: number,
+      studentId: string,
+      status: "hadir" | "telat" | "absen"
+    ) {
+      if (!Number.isSafeInteger(meetingId) || meetingId <= 0 || !studentId) {
+        return { success: false, message: "Sesi atau siswa tidak valid." };
+      }
+      const db = requireClient(client);
+      const { data: authData, error: authError } = await db.auth.getUser();
+      if (authError || !authData.user || authData.user.id !== expectedTutorId) {
+        return { success: false, message: "Sesi tutor tidak cocok. Silakan masuk kembali." };
+      }
+      const { data, error } = await db
+        .from("meeting_students")
+        .update({ attendance_status: status })
+        .eq("meeting_id", meetingId)
+        .eq("student_id", studentId)
+        .select("meeting_id")
+        .maybeSingle();
+      if (error || !data) {
+        return { success: false, message: "Kehadiran gagal disimpan. Pastikan tutor memiliki akses ke pertemuan ini." };
+      }
+      return { success: true };
     },
 
     async listAssignedStudents(expectedTutorId: string): Promise<TutorAssignedStudent[]> {
