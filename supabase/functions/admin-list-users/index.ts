@@ -69,7 +69,7 @@ Deno.serve(async (req: Request) => {
     .map((profile) => profile.id);
 
   const { data: students, error: studentsError } = studentIds.length
-    ? await adminClient.from("students").select("id, grade").in("id", studentIds)
+    ? await adminClient.from("students").select("id, grade, whatsapp").in("id", studentIds)
     : { data: [], error: null };
 
   if (studentsError) return json({ error: "Unable to load student details" }, 500);
@@ -89,6 +89,7 @@ Deno.serve(async (req: Request) => {
       status: isBanned ? "inactive" : "active",
       avatar: (profile.full_name ?? "U").trim().split(/\s+/).map((part: string) => part[0]).join("").slice(0, 2).toUpperCase(),
       gradeLevel: student?.grade ?? undefined,
+      whatsapp: student?.whatsapp ?? undefined,
       createdAt: profile.created_at ?? authResult?.user?.created_at ?? new Date(0).toISOString(),
       updatedAt: profile.created_at ?? authResult?.user?.created_at ?? new Date(0).toISOString(),
     };
