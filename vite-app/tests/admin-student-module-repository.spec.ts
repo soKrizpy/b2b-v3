@@ -40,7 +40,7 @@ test.describe("Admin student curriculum access repository", () => {
       const repository = createSupabaseAdminStudentModuleRepository(client as never);
       const listed = await repository.listAssignments();
       const assigned = await repository.assignStudentModule("student-1", 29);
-      const paused = await repository.setAssignmentStatus("student-1", 17, "paused");
+      const paused = await repository.setAssignmentStatus("student-1", 29, "paused");
       return { listed, assigned, paused, calls };
     });
 
@@ -51,7 +51,7 @@ test.describe("Admin student curriculum access repository", () => {
       status: "active",
       createdAt: "2026-11-23T10:00:00.000Z"
     }]);
-    expect(result.assigned.moduleId).toBe(17);
+    expect(result.assigned.moduleId).toBe(29);
     expect(result.paused).toBe(true);
     expect(result.calls).toContainEqual({
       table: "student_modules",
