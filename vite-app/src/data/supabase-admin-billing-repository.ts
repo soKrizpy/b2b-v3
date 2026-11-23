@@ -44,13 +44,14 @@ function mapInvoice(row: Row) {
   };
 }
 
-async function fetchInvoices(studentId?: string) {
+async function fetchInvoices(studentId?: string, issuedOnly = false) {
   if (!supabase) throw new Error("Koneksi Supabase belum dikonfigurasi.");
   let query = supabase
     .from("invoices")
     .select("*,invoice_items(id,meeting_id,session_number,session_date,description,amount),invoice_payments(id,amount,paid_at,payment_method,reference,notes)")
     .order("created_at", { ascending: false });
   if (studentId) query = query.eq("student_id", studentId);
+  if (issuedOnly) query = query.in("status", ["sent", "paid"]);
   const { data, error } = await query;
   if (error) throw new Error("Data tagihan gagal dimuat dari Supabase.");
   return (data ?? []).map((row) => mapInvoice(row as Row));
@@ -66,7 +67,14 @@ export const supabaseAdminBillingRepository = {
     if (!supabase) throw new Error("Koneksi Supabase belum dikonfigurasi.");
     const { data: auth, error } = await supabase.auth.getUser();
     if (error || !auth.user || auth.user.id !== studentId) throw new Error("Akses tagihan siswa ditolak.");
-    return fetchInvoices(studentId);
+    return fetchInvoices(studentId, true);
+  },
+
+  async getStudentInvoiceHistory(studentId: string) {
+    if (!supabase) throw new Error("Koneksi Supabase belum dikonfigurasi.");
+    const { data: auth, error } = await supabase.auth.getUser();
+    if (error || !auth.user || auth.user.id !== studentId) throw new Error("Akses riwayat tagihan siswa ditolak.");
+    return fetchInvoices(studentId, true);
   },
 
   async getRate(studentId: string) {
