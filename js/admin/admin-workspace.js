@@ -22,7 +22,7 @@ export class AdminWorkspace {
     this.productionMode = options.productionMode === true;
     if (options.productionMode === true) {
       if (!repositories) throw new Error('Repository Admin produksi wajib diberikan secara eksplisit.');
-      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity']);
+      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity', 'billing']);
     } else {
       this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
     }
@@ -62,11 +62,16 @@ export class AdminWorkspace {
     const assignments = typeof this.repositories.identity.getAllAssignments === 'function'
       ? await this.repositories.identity.getAllAssignments()
       : [];
+    const invoices = this.productionMode ? await this.repositories.billing.getInvoices() : [];
+    const rateEntries = this.productionMode
+      ? await Promise.all(users.filter(user => user.role === 'student').map(async user => [user.id, await this.repositories.billing.getRate(user.id)]))
+      : [];
     if (this.destroyed || request !== this.refreshSequence) return;
     this.users = users;
     this.assignments = Array.isArray(assignments) ? assignments : [];
+    this.invoices = Array.isArray(invoices) ? invoices : [];
     this.usersById = new Map(users.map(user => [user.id, user]));
-    this.ratesByStudent = new Map();
+    this.ratesByStudent = new Map(rateEntries.filter((entry) => entry[1] != null));
     if (render && this.container) this.render();
   }
 
