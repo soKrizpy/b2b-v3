@@ -19,7 +19,7 @@ declare
   v_acquired boolean := false;
 begin
   insert into private.admin_deactivation_lock (lock_name, lock_token, expires_at)
-  values ('global', p_lock_token, clock_timestamp() + interval '5 minutes')
+  values ('global', p_lock_token, clock_timestamp() + interval '10 minutes')
   on conflict (lock_name) do update
     set lock_token = excluded.lock_token,
         expires_at = excluded.expires_at
