@@ -11,7 +11,7 @@ test.describe("Admin student curriculum access repository", () => {
       const assignment = {
         id: 51,
         student_id: "student-1",
-        module_id: 17,
+        module_id: 29,
         status: "active",
         created_at: "2026-11-23T10:00:00.000Z"
       };
@@ -39,7 +39,7 @@ test.describe("Admin student curriculum access repository", () => {
       };
       const repository = createSupabaseAdminStudentModuleRepository(client as never);
       const listed = await repository.listAssignments();
-      const assigned = await repository.assignStudentModule("student-1", 17);
+      const assigned = await repository.assignStudentModule("student-1", 29);
       const paused = await repository.setAssignmentStatus("student-1", 17, "paused");
       return { listed, assigned, paused, calls };
     });
@@ -47,7 +47,7 @@ test.describe("Admin student curriculum access repository", () => {
     expect(result.listed).toEqual([{
       id: 51,
       studentId: "student-1",
-      moduleId: 17,
+      moduleId: 29,
       status: "active",
       createdAt: "2026-11-23T10:00:00.000Z"
     }]);
@@ -56,7 +56,7 @@ test.describe("Admin student curriculum access repository", () => {
     expect(result.calls).toContainEqual({
       table: "student_modules",
       method: "upsert",
-      args: [{ student_id: "student-1", module_id: 17, status: "active" }, { onConflict: "student_id,module_id" }]
+      args: [{ student_id: "student-1", module_id: 29, status: "active" }, { onConflict: "student_id,module_id" }]
     });
     expect(result.calls).toContainEqual({
       table: "student_modules",
