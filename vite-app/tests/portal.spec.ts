@@ -67,26 +67,31 @@ test.describe("Bits2Bytes demo portal", () => {
       expect(source).not.toMatch(/services\/(?:identity|learning-state|class-session|learning-record|billing)-repository\.js/);
     }
     expect(studentExperienceSource).toContain("supabaseProductionCapabilities.studentLearning.createLessonBridge()");
-    expect(studentExperienceSource).toContain("{ learning: supabaseProductionCapabilities.studentLearning.createLessonBridge() }");
+    expect(studentExperienceSource).toContain("learning: supabaseProductionCapabilities.studentLearning.createLessonBridge()");
+    expect(studentExperienceSource).toContain("parentHubEnabled: true");
+    expect(studentExperienceSource).toContain("submissionEnabled: true");
     expect(studentLearningCapabilitiesSource).toContain("createLessonBridge: createSupabaseLegacyLearningBridge");
     expect(studentExperienceSource).not.toContain("workspace-repositories.js");
   });
 
-  test("active Admin workspace is Supabase-backed, read-only, and does not expose legacy demo controls", () => {
-    expect(adminExperienceSource).toContain("new AdminWorkspace(host, session.user, { identity: supabaseProductionCapabilities.adminIdentity }, { productionMode: true })");
+  test("active Admin workspace uses production account, assignment, billing and session repositories", () => {
+    expect(adminExperienceSource).toContain("supabaseProductionCapabilities.adminIdentity");
+    expect(adminExperienceSource).toContain("supabaseProductionCapabilities.adminBilling");
+    expect(adminExperienceSource).toContain("supabaseProductionCapabilities.classSessions");
     expect(adminIdentityRepositorySource).toContain('supabase.functions.invoke("admin-list-users"');
+    expect(adminIdentityRepositorySource).toContain('supabase.functions.invoke("admin-manage-user"');
     expect(adminIdentityRepositorySource).toContain("Compatibility no-op: production must never initialize local demo data.");
-    expect(adminIdentityRepositorySource).toContain('error: "READ_ONLY"');
 
     const activeContent = adminWorkspaceSource.match(/renderActiveTabContent\(\)\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
-    expect(activeContent).toContain("return this.renderUsersView()");
-    expect(activeContent).not.toContain("renderTutorRelationsView");
-    expect(activeContent).not.toContain("renderBillingView");
+    expect(activeContent).toContain("renderUsersView()");
+    expect(activeContent).toContain("renderTutorRelationsView()");
+    expect(activeContent).toContain("renderBillingView()");
+    expect(activeContent).toContain("renderScheduleView()");
 
     const usersView = adminWorkspaceSource.match(/renderUsersView\(\)\s*\{([\s\S]*?)\n  \}\n\n  \/\*/)?.[1] ?? "";
-    expect(usersView).not.toContain("btn-admin-add-user");
-    expect(usersView).not.toContain('data-action="edit-user"');
-    expect(usersView).not.toContain('data-action="toggle-status"');
+    expect(usersView).toContain("btn-admin-add-user");
+    expect(usersView).toContain('data-action="edit-user"');
+    expect(usersView).toContain('data-action="toggle-status"');
     expect(usersView).toContain("Data Supabase");
 
     expect(adminListUsersFunctionSource).toContain("auth.getUser(token)");
