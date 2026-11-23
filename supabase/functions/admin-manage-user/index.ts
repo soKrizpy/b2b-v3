@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.119.0";
 import { verifyAdminDeactivation } from "../_shared/admin-deactivation.ts";
+import { withAdminDeactivationLock } from "../_shared/admin-deactivation-lock.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -73,6 +74,65 @@ Deno.serve(async (req: Request) => {
   const { data: actor, error: actorError } = await adminClient
     .from("profiles").select("id,role").eq("id", authData.user.id).maybeSingle();
   if (actorError || actor?.role !== "admin") return json({ error: "Forbidden" }, 403);
+
+  const updateAdminAuthWithDeactivationGuard = async (
+    targetId: string,
+    authUpdates: Record<string, unknown>,
+  ): Promise<{ ok: true } | { ok: false; status: number; error: string }> => {
+    const lockToken = crypto.randomUUID();
+    const locked = await withAdminDeactivationLock({
+      acquire: async () => {
+        const { data, error } = await adminClient.rpc("acquire_admin_deactivation_lock", {
+          p_lock_token: lockToken,
+        });
+        return { data: data === true, error };
+      },
+      run: async () => {
+        const guard = await verifyAdminDeactivation({
+          actorId: actor.id,
+          targetId,
+          listAdminIds: async () => {
+            const { data, error } = await adminClient.from("profiles").select("id").eq("role", "admin");
+            return { ids: data?.map((row) => row.id) ?? null, error };
+          },
+          readAuthStatus: async (adminId) => {
+            const { data, error } = await adminClient.auth.admin.getUserById(adminId);
+            return { exists: Boolean(data?.user), bannedUntil: data?.user?.banned_until ?? null, error };
+          },
+        });
+        if (!guard.allowed) {
+          if (guard.reason === "self") {
+            return { ok: false as const, status: 409, error: "Admin tidak dapat menonaktifkan akunnya sendiri" };
+          }
+          if (guard.reason === "last_admin") {
+            return { ok: false as const, status: 409, error: "Admin aktif terakhir tidak dapat dinonaktifkan" };
+          }
+          return { ok: false as const, status: 503, error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" };
+        }
+
+        const { error } = await adminClient.auth.admin.updateUserById(targetId, authUpdates);
+        return error
+          ? { ok: false as const, status: 500, error: "Status akun gagal diperbarui" }
+          : { ok: true as const };
+      },
+      release: async () => {
+        const { error } = await adminClient.rpc("release_admin_deactivation_lock", {
+          p_lock_token: lockToken,
+        });
+        return { error };
+      },
+    });
+
+    if (!locked.acquired) {
+      return locked.reason === "busy"
+        ? { ok: false, status: 409, error: "Perubahan status admin lain sedang diproses; coba lagi sebentar" }
+        : { ok: false, status: 503, error: "Kunci keamanan penonaktifan admin tidak dapat diperoleh; akun tidak diubah" };
+    }
+    if (locked.releaseFailed) {
+      console.error("Admin deactivation lock release failed; lease will expire", { targetId });
+    }
+    return locked.value;
+  };
 
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return json({ error: "Invalid JSON body" }, 400); }
@@ -178,28 +238,16 @@ Deno.serve(async (req: Request) => {
     const status = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
     if (!status) return json({ error: "Status akun tidak valid" }, 400);
     if (status === "inactive" && profile.role === "admin") {
-      const guard = await verifyAdminDeactivation({
-        actorId: actor.id,
-        targetId: userId,
-        listAdminIds: async () => {
-          const { data, error } = await adminClient.from("profiles").select("id").eq("role", "admin");
-          return { ids: data?.map((row) => row.id) ?? null, error };
-        },
-        readAuthStatus: async (adminId) => {
-          const { data, error } = await adminClient.auth.admin.getUserById(adminId);
-          return { exists: Boolean(data?.user), bannedUntil: data?.user?.banned_until ?? null, error };
-        },
+      const result = await updateAdminAuthWithDeactivationGuard(userId, {
+        ban_duration: "876000h",
       });
-      if (!guard.allowed) {
-        if (guard.reason === "self") return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
-        if (guard.reason === "last_admin") return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
-        return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
-      }
+      if (!result.ok) return json({ error: result.error }, result.status);
+    } else {
+      const { error } = await adminClient.auth.admin.updateUserById(userId, {
+        ban_duration: status === "inactive" ? "876000h" : "none",
+      });
+      if (error) return json({ error: "Status akun gagal diperbarui" }, 500);
     }
-    const { error } = await adminClient.auth.admin.updateUserById(userId, {
-      ban_duration: status === "inactive" ? "876000h" : "none",
-    });
-    if (error) return json({ error: "Status akun gagal diperbarui" }, 500);
     return json({ user: accountView(profile, status), source: "supabase" });
   }
 
@@ -243,26 +291,6 @@ Deno.serve(async (req: Request) => {
     }
 
     const requestedStatus = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
-    if (requestedStatus === "inactive" && currentRole === "admin") {
-      const guard = await verifyAdminDeactivation({
-        actorId: actor.id,
-        targetId: userId,
-        listAdminIds: async () => {
-          const { data, error } = await adminClient.from("profiles").select("id").eq("role", "admin");
-          return { ids: data?.map((row) => row.id) ?? null, error };
-        },
-        readAuthStatus: async (adminId) => {
-          const { data, error } = await adminClient.auth.admin.getUserById(adminId);
-          return { exists: Boolean(data?.user), bannedUntil: data?.user?.banned_until ?? null, error };
-        },
-      });
-      if (!guard.allowed) {
-        if (guard.reason === "self") return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
-        if (guard.reason === "last_admin") return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
-        return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
-      }
-    }
-
     const authUpdates: Record<string, unknown> = {
       email,
       user_metadata: { ...(authBefore.user_metadata ?? {}), full_name: displayName },
@@ -270,8 +298,13 @@ Deno.serve(async (req: Request) => {
     if (email !== (authBefore.email ?? profile.email)) authUpdates.email_confirm = false;
     if (requestedStatus) authUpdates.ban_duration = requestedStatus === "inactive" ? "876000h" : "none";
 
-    const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, authUpdates);
-    if (authUpdateError) return json({ error: "Data Auth gagal diperbarui; data profil belum diubah" }, 400);
+    if (requestedStatus === "inactive" && currentRole === "admin") {
+      const result = await updateAdminAuthWithDeactivationGuard(userId, authUpdates);
+      if (!result.ok) return json({ error: result.error }, result.status);
+    } else {
+      const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, authUpdates);
+      if (authUpdateError) return json({ error: "Data Auth gagal diperbarui; data profil belum diubah" }, 400);
+    }
 
     let profileChanged = false;
     let studentChanged = false;
