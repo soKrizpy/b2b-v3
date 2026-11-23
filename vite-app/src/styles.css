@@ -122,3 +122,22 @@
   .tutor-live-header,.tutor-live-meeting { align-items:flex-start; flex-direction:column; }
   .tutor-live-stats { grid-template-columns:1fr; }
 }
+
+
+/* Production tutor learning records. */
+.tutor-records { padding:var(--space-5); display:grid; gap:var(--space-4); }
+.tutor-records > header h3 { margin:0 0 var(--space-1); }
+.tutor-records > header p { margin:0; color:var(--color-text-muted); font-size:var(--font-size-sm); }
+.tutor-records label { display:grid; gap:var(--space-1); color:var(--color-text-secondary); font-size:var(--font-size-sm); }
+.tutor-records input,.tutor-records select,.tutor-records textarea { width:100%; min-width:0; padding:var(--space-2) var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); background:var(--color-bg-surface); color:var(--color-text-primary); font:inherit; }
+.tutor-record-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-4); align-items:start; }
+.tutor-record-grid form { display:grid; gap:var(--space-3); padding:var(--space-4); border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); }
+.tutor-record-grid h4,.tutor-record-history h4 { margin:0; }
+.tutor-record-actions { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+.tutor-record-actions button { padding:var(--space-2) var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); background:var(--color-bg-surface-subtle); color:var(--color-text-primary); cursor:pointer; }
+.tutor-record-actions button:disabled { opacity:.55; cursor:not-allowed; }
+.tutor-record-success { color:var(--color-success); }
+.tutor-record-history { display:grid; gap:var(--space-2); }
+.tutor-record-history article { display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--space-2); padding:var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); }
+.tutor-record-history article span { color:var(--color-text-muted); font-size:var(--font-size-xs); }
+@media(max-width:768px) { .tutor-record-grid { grid-template-columns:1fr; } }
