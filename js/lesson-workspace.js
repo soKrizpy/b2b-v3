@@ -6,7 +6,7 @@
 
 import { renderContentBlocks, renderQuiz, attachInteractions } from './content-renderer.js';
 import { showToast } from './components/toast.js';
-import { createWorkspaceRepositories, WorkspaceRepositories } from './services/workspace-repositories.js';
+import { createScopedWorkspaceRepositories, createWorkspaceRepositories, WorkspaceRepositories } from './services/workspace-repositories.js';
 import { ParentHubView } from './student/parent-hub.js';
 import {
   SVG_MASCOT,
@@ -31,10 +31,15 @@ export class LessonWorkspace {
    * @param {Object} lessonData - Parsed lesson JSON
    * @param {Object} [currentUser=null] - Student user object
    */
-  constructor(container, lessonData, currentUser = null, repositories = WorkspaceRepositories, options = {}) {
+  constructor(container, lessonData, currentUser = null, repositories = null, options = {}) {
     this.container = container;
     this.lesson = lessonData;
-    this.repositories = createWorkspaceRepositories(repositories);
+    if (options.repositoryMode === 'production') {
+      if (!repositories) throw new Error('Repository produksi wajib diberikan secara eksplisit.');
+      this.repositories = createScopedWorkspaceRepositories(repositories, ['learning']);
+    } else {
+      this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
+    }
     // Production React portal can disable Parent Hub until its data adapters are production-backed.
     this.parentHubEnabled = options.parentHubEnabled !== false;
     this.submissionEnabled = options.submissionEnabled !== false;
