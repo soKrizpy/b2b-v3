@@ -84,7 +84,6 @@ export class LessonWorkspace {
     this.activeStoreSubmission = activeSub || null;
     if (activeSub && ['approved', 'revision-required', 'submitted'].includes(activeSub.status)) {
       this.progressState = activeSub.status;
-      this.saveProgress({ state: this.progressState });
     }
     this.render();
     this.bindKeyboardNav();
@@ -128,7 +127,6 @@ export class LessonWorkspace {
         : null;
       if (nextState && this.progressState !== nextState) {
         this.progressState = nextState;
-        this.saveProgress({ state: nextState });
         changed = true;
       }
     }
@@ -1094,7 +1092,8 @@ export class LessonWorkspace {
           });
           if (!subRecord) throw new Error('Data proyek belum berhasil disimpan.');
           this.activeStoreSubmission = subRecord;
-          this.saveProgress({ state: 'submitted', submission: { link, notes, submittedAt } });
+          this.submissionData = { link, notes, submittedAt }; 
+          this.progressState = 'submitted';
           showToast({
             title: 'Proyek Berhasil Dikumpulkan! 🎉',
             message: 'Status berubah menjadi Sudah dikirim. Guru akan segera memeriksa karyamu.',
@@ -1128,7 +1127,7 @@ export class LessonWorkspace {
 
         showToast({
           title: 'Draf Disimpan',
-          message: 'Tautan dan catatan belajar tersimpan secara lokal.',
+          message: 'Tautan dan catatan belajar tersimpan pada akun Supabase ini.',
           type: 'info'
         });
       });
