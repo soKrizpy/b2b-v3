@@ -7,6 +7,8 @@ export type LessonProgressUpdate = {
   slideIndex: number;
 };
 
+const maxSlideIndex = 200;
+
 const validStates = new Set<LessonProgressState>([
   "not-started",
   "in-progress",
@@ -63,7 +65,8 @@ export function validateLessonProgressUpdate(input: {
   if (
     typeof input.slideIndex !== "number" ||
     !Number.isSafeInteger(input.slideIndex) ||
-    input.slideIndex < 0
+    input.slideIndex < 0 ||
+    input.slideIndex > maxSlideIndex
   ) {
     throw new Error("Posisi materi tidak valid.");
   }
