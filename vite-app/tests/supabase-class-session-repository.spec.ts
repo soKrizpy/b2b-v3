@@ -13,7 +13,7 @@ test.describe("Production billable class-session contract", () => {
         { id: "2:student-1", studentId: "student-1", status: "held", attendanceStatus: "late", scheduledStartAt: "2026-11-04T03:00:00.000Z" },
         { id: "3:student-1", studentId: "student-1", status: "held", attendanceStatus: "absent", scheduledStartAt: "2026-11-05T03:00:00.000Z" },
         { id: "4:student-1", studentId: "student-1", status: "not_held", attendanceStatus: "present", scheduledStartAt: "2026-11-06T03:00:00.000Z" },
-        { id: "5:student-1", studentId: "student-1", status: "held", attendanceStatus: "late", scheduledStartAt: "2026-10-31T17:00:00.000Z" }
+        { id: "5:student-1", studentId: "student-1", status: "held", attendanceStatus: "late", scheduledStartAt: "2026-10-31T16:00:00.000Z" }
       ];
       repository.listSessions = async () => sessions as never;
       const result = await repository.listBillableSessions("student-1", "2026-11" as never);
