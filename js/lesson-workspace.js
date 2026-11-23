@@ -36,7 +36,9 @@ export class LessonWorkspace {
     this.lesson = lessonData;
     if (options.repositoryMode === 'production') {
       if (!repositories) throw new Error('Repository produksi wajib diberikan secara eksplisit.');
-      this.repositories = createScopedWorkspaceRepositories(repositories, ['learning']);
+      const requiredCapabilities = ['learning'];
+      if (options.parentHubEnabled) requiredCapabilities.push('sessionReports', 'monthlyEvaluations', 'billing');
+      this.repositories = createScopedWorkspaceRepositories(repositories, requiredCapabilities);
     } else {
       this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
     }
