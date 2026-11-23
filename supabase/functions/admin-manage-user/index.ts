@@ -131,7 +131,11 @@ Deno.serve(async (req: Request) => {
 
     if (status === "inactive") {
       const { error: banError } = await adminClient.auth.admin.updateUserById(userId, { ban_duration: "876000h" });
-      if (banError) return json({ error: "Akun dibuat tetapi status nonaktif gagal diterapkan" }, 500);
+      if (banError) {
+        if (role === "student") await adminClient.from("students").delete().eq("id", userId);
+        await adminClient.auth.admin.deleteUser(userId);
+        return json({ error: "Status nonaktif gagal diterapkan; akun undangan dibatalkan" }, 500);
+      }
     }
     return json({ user: accountView({ ...profile, grade }, status), source: "supabase" }, 201);
   }
