@@ -1,0 +1,728 @@
+{
+  "schema_version": 1,
+  "module_id": 20,
+  "module_title": "Scratch Visual Block Coding & Games",
+  "revision": "quiz-quality-pass-1",
+  "topics": [
+    {
+      "topic_id": 133,
+      "quiz": [
+        {
+          "question": "Blok event apa yang memulai gerak kucing ketika permainan baru dijalankan?",
+          "options": [
+            "when I receive",
+            "when green flag clicked",
+            "when this sprite clicked",
+            "when backdrop switches"
+          ],
+          "answer_index": 1,
+          "explanation": "Green Flag menjadi pemicu awal skrip ketika project dimulai."
+        },
+        {
+          "question": "Apa yang dilakukan move 10 steps?",
+          "options": [
+            "Mengubah ukuran sprite",
+            "Memindahkan sprite 10 langkah mengikuti arah hadapnya",
+            "Memutar backdrop 10 derajat",
+            "Mengubah nilai Y selalu menjadi 10"
+          ],
+          "answer_index": 1,
+          "explanation": "Move mengubah posisi berdasarkan arah hadap sprite."
+        },
+        {
+          "question": "Koordinat X mengatur posisi sprite pada arah…",
+          "options": [
+            "Mendatar kiri dan kanan",
+            "Vertikal atas dan bawah",
+            "Ukuran dan warna",
+            "Depan dan belakang kamera"
+          ],
+          "answer_index": 0,
+          "explanation": "Sumbu X mengatur posisi mendatar pada Stage."
+        },
+        {
+          "question": "Jika kucing menghadap ke kiri lalu menjalankan move 10 steps, apa yang terjadi?",
+          "options": [
+            "Kucing bergerak ke kanan",
+            "Kucing berubah ukuran",
+            "Kucing bergerak ke kiri",
+            "Stage berpindah halaman"
+          ],
+          "answer_index": 2,
+          "explanation": "Gerak mengikuti arah hadap sprite, sehingga kucing bergerak ke kiri."
+        },
+        {
+          "question": "Blok apa yang paling tepat untuk mengatur posisi awal kucing secara konsisten?",
+          "options": [
+            "next costume",
+            "say Hello",
+            "change color effect",
+            "go to x: y:"
+          ],
+          "answer_index": 3,
+          "explanation": "Go to x/y menempatkan sprite pada koordinat awal yang ditentukan."
+        }
+      ]
+    },
+    {
+      "topic_id": 97,
+      "quiz": [
+        {
+          "question": "Variabel apa yang menyimpan jumlah koin yang sudah dikumpulkan?",
+          "options": [
+            "Backdrop",
+            "Score",
+            "Direction",
+            "Costume"
+          ],
+          "answer_index": 1,
+          "explanation": "Score menyimpan jumlah poin yang diperoleh pemain."
+        },
+        {
+          "question": "Mengapa Score diatur menjadi 0 saat Green Flag?",
+          "options": [
+            "Agar permainan baru dimulai dari skor awal yang konsisten",
+            "Agar semua koin otomatis hilang",
+            "Agar pemain tidak bisa bergerak",
+            "Agar backdrop berubah"
+          ],
+          "answer_index": 0,
+          "explanation": "Nilai awal menghindari skor dari permainan sebelumnya terbawa."
+        },
+        {
+          "question": "Blok sensing apa yang dapat memeriksa pemain menyentuh koin?",
+          "options": [
+            "touching [Coin]?",
+            "change x by 10",
+            "next costume",
+            "set size to 100"
+          ],
+          "answer_index": 0,
+          "explanation": "Touching memeriksa kontak antara dua sprite."
+        },
+        {
+          "question": "Apa yang perlu dilakukan setelah satu koin berhasil dikumpulkan?",
+          "options": [
+            "Menambah skor terus selama pemain menyentuhnya",
+            "Menghapus seluruh variabel",
+            "Menambah skor satu kali lalu menyembunyikan atau memindahkan koin",
+            "Menghentikan browser"
+          ],
+          "answer_index": 2,
+          "explanation": "Satu tangkapan harus menghasilkan satu poin, lalu koin tidak boleh terus dihitung."
+        },
+        {
+          "question": "Bagaimana mencegah satu koin menambah skor berkali-kali saat pemain masih menyentuhnya?",
+          "options": [
+            "Menambah ukuran koin",
+            "Mengganti backdrop",
+            "Menghapus pemain",
+            "Menyembunyikan/memindahkan koin atau menunggu sampai sentuhan berhenti"
+          ],
+          "answer_index": 3,
+          "explanation": "Koin perlu keluar dari kondisi sentuh setelah satu skor diberikan."
+        }
+      ]
+    },
+    {
+      "topic_id": 98,
+      "quiz": [
+        {
+          "question": "Blok apa yang meminta pemain memasukkan angka lalu menunggu jawaban?",
+          "options": [
+            "ask and wait",
+            "say",
+            "broadcast",
+            "move"
+          ],
+          "answer_index": 0,
+          "explanation": "Ask and wait menampilkan pertanyaan dan menunggu input."
+        },
+        {
+          "question": "Di mana Scratch menyimpan jawaban terakhir dari ask and wait?",
+          "options": [
+            "Score",
+            "Answer",
+            "Backdrop",
+            "Direction"
+          ],
+          "answer_index": 1,
+          "explanation": "Reporter Answer berisi input terakhir dari pemain."
+        },
+        {
+          "question": "Kategori blok apa yang menyediakan operasi tambah, kurang, kali, dan bagi?",
+          "options": [
+            "Looks",
+            "Sound",
+            "Operators",
+            "Events"
+          ],
+          "answer_index": 2,
+          "explanation": "Operator menyediakan operasi matematika dan perbandingan."
+        },
+        {
+          "question": "Mengapa kalkulator perlu memeriksa pembagian dengan nol?",
+          "options": [
+            "Agar warna angka berubah",
+            "Agar semua variabel terhapus",
+            "Agar jawaban selalu positif",
+            "Karena pembagian dengan nol tidak menghasilkan nilai matematika yang valid"
+          ],
+          "answer_index": 3,
+          "explanation": "Program perlu menangani input pembagi nol dengan pesan atau aturan khusus."
+        },
+        {
+          "question": "Apa fungsi variabel angkaA, angkaB, dan hasil?",
+          "options": [
+            "Menyimpan input dan hasil perhitungan agar dapat digunakan kembali",
+            "Mengubah kostum sprite",
+            "Mengatur ukuran panggung",
+            "Mengganti nama project"
+          ],
+          "answer_index": 0,
+          "explanation": "Variabel menyimpan nilai yang dimasukkan dan hasil operasi."
+        }
+      ]
+    },
+    {
+      "topic_id": 99,
+      "quiz": [
+        {
+          "question": "Apa perbedaan utama Go to dan Glide?",
+          "options": [
+            "Go to bergerak perlahan, Glide berpindah seketika",
+            "Go to berpindah seketika, Glide bergerak selama durasi tertentu",
+            "Keduanya hanya mengganti kostum",
+            "Keduanya menghapus sprite"
+          ],
+          "answer_index": 1,
+          "explanation": "Go to langsung menempatkan sprite; Glide menganimasikan perpindahan."
+        },
+        {
+          "question": "Blok apa yang mengirim pesan ke skrip sprite lain?",
+          "options": [
+            "broadcast",
+            "change y by",
+            "hide",
+            "stop all"
+          ],
+          "answer_index": 0,
+          "explanation": "Broadcast mengirim sinyal yang dapat diterima skrip lain."
+        },
+        {
+          "question": "Koordinat Y mengatur posisi…",
+          "options": [
+            "Mendatar kiri dan kanan",
+            "Ukuran sprite",
+            "Vertikal atas dan bawah",
+            "Warna sprite"
+          ],
+          "answer_index": 2,
+          "explanation": "Sumbu Y mengatur posisi vertikal."
+        },
+        {
+          "question": "Pemicu apa yang menunggu pesan bernama PESAN_TIBA?",
+          "options": [
+            "when green flag clicked",
+            "when space key pressed",
+            "when this sprite clicked",
+            "when I receive [PESAN_TIBA]"
+          ],
+          "answer_index": 3,
+          "explanation": "When I receive menjalankan skrip saat pesan yang cocok diterima."
+        },
+        {
+          "question": "Mengapa pengirim dan penerima pesan perlu memakai nama broadcast yang sama?",
+          "options": [
+            "Agar skrip penerima mengenali sinyal yang dikirim",
+            "Agar sprite berubah warna",
+            "Agar koordinat otomatis reset",
+            "Agar suara diputar"
+          ],
+          "answer_index": 0,
+          "explanation": "Nama pesan menghubungkan sinyal pengirim dengan skrip penerima."
+        }
+      ]
+    },
+    {
+      "topic_id": 100,
+      "quiz": [
+        {
+          "question": "Apa fungsi create clone of myself pada game meteor?",
+          "options": [
+            "Menggandakan Stage",
+            "Membuat salinan meteor saat game berjalan",
+            "Menghapus meteor utama",
+            "Mengganti nama project"
+          ],
+          "answer_index": 1,
+          "explanation": "Clone membuat banyak meteor dari satu sprite sumber."
+        },
+        {
+          "question": "Mengapa posisi X meteor dapat dibuat acak?",
+          "options": [
+            "Agar meteor muncul di jalur mendatar yang bervariasi",
+            "Agar meteor selalu muncul di tempat sama",
+            "Agar pemain berhenti bergerak",
+            "Agar backdrop hilang"
+          ],
+          "answer_index": 0,
+          "explanation": "Posisi X acak membuat jalur jatuh meteor bervariasi."
+        },
+        {
+          "question": "Nilai Y yang makin negatif biasanya membuat meteor bergerak ke arah…",
+          "options": [
+            "Atas",
+            "Kanan",
+            "Bawah",
+            "Belakang"
+          ],
+          "answer_index": 2,
+          "explanation": "Koordinat Y yang menurun menggerakkan sprite ke bawah."
+        },
+        {
+          "question": "Blok sensing apa yang memeriksa meteor menyentuh pemain?",
+          "options": [
+            "go to",
+            "next costume",
+            "set size",
+            "touching [Player]?"
+          ],
+          "answer_index": 3,
+          "explanation": "Touching mendeteksi tabrakan antara meteor dan pemain."
+        },
+        {
+          "question": "Apa tujuan broadcast GAME_OVER?",
+          "options": [
+            "Memberi sinyal agar Stage dan sprite lain menjalankan aksi akhir permainan",
+            "Menggandakan meteor",
+            "Menambah skor otomatis",
+            "Mengubah warna editor"
+          ],
+          "answer_index": 0,
+          "explanation": "Broadcast GAME_OVER menyelaraskan tampilan akhir dan penghentian permainan."
+        }
+      ]
+    },
+    {
+      "topic_id": 101,
+      "quiz": [
+        {
+          "question": "Apa fungsi backdrop dalam cerita tiga babak?",
+          "options": [
+            "Mengatur skor",
+            "Menunjukkan lokasi atau suasana setiap adegan",
+            "Menggerakkan sprite",
+            "Menyimpan jawaban pemain"
+          ],
+          "answer_index": 1,
+          "explanation": "Backdrop membantu membedakan lokasi atau babak cerita."
+        },
+        {
+          "question": "Blok apa yang mengirim sinyal dari satu skrip ke skrip lain?",
+          "options": [
+            "broadcast",
+            "move",
+            "change size",
+            "hide"
+          ],
+          "answer_index": 0,
+          "explanation": "Broadcast mengirim pesan untuk menyelaraskan beberapa skrip."
+        },
+        {
+          "question": "Blok apa yang menampilkan dialog pada sprite?",
+          "options": [
+            "repeat",
+            "glide",
+            "say",
+            "change x"
+          ],
+          "answer_index": 2,
+          "explanation": "Say menampilkan dialog pada sprite."
+        },
+        {
+          "question": "Mengapa Wait dapat dipakai setelah dialog?",
+          "options": [
+            "Agar sprite otomatis terhapus",
+            "Agar skor bertambah",
+            "Agar backdrop berubah acak",
+            "Agar pembaca memiliki waktu memahami dialog sebelum adegan berikutnya"
+          ],
+          "answer_index": 3,
+          "explanation": "Wait mengatur tempo dan memberi jeda antaraksi."
+        },
+        {
+          "question": "Kapan Broadcast and wait lebih tepat daripada Broadcast biasa?",
+          "options": [
+            "Saat pengirim perlu menunggu skrip penerima selesai sebelum melanjutkan",
+            "Saat ingin menghapus semua sprite",
+            "Saat ingin mengubah ukuran Stage",
+            "Saat tidak ada skrip penerima"
+          ],
+          "answer_index": 0,
+          "explanation": "Broadcast and wait menahan skrip pengirim sampai penerima selesai."
+        }
+      ]
+    },
+    {
+      "topic_id": 102,
+      "quiz": [
+        {
+          "question": "Blok apa yang mengganti tampilan kostum penari?",
+          "options": [
+            "next costume",
+            "move 10 steps",
+            "ask and wait",
+            "touching"
+          ],
+          "answer_index": 0,
+          "explanation": "Next costume mengganti kostum ke urutan berikutnya."
+        },
+        {
+          "question": "Blok kategori Sound digunakan untuk…",
+          "options": [
+            "Mengubah posisi X",
+            "Memainkan suara atau musik",
+            "Mengganti nama sprite",
+            "Membuat clone"
+          ],
+          "answer_index": 1,
+          "explanation": "Sound mengatur pemutaran audio dalam pertunjukan."
+        },
+        {
+          "question": "Apa kegunaan Repeat pada rangkaian gerak tari?",
+          "options": [
+            "Menghapus semua gerakan",
+            "Menghentikan musik",
+            "Mengulang gerakan sesuai jumlah yang ditentukan",
+            "Mengubah backdrop"
+          ],
+          "answer_index": 2,
+          "explanation": "Repeat mengulang rangkaian blok beberapa kali."
+        },
+        {
+          "question": "Bagaimana Wait membantu sinkronisasi gerakan dan musik?",
+          "options": [
+            "Membuat sprite menghilang",
+            "Mengganti kostum acak",
+            "Menghapus suara",
+            "Memberi jeda agar pergantian aksi mengikuti tempo"
+          ],
+          "answer_index": 3,
+          "explanation": "Wait mengatur jeda antaraksi sehingga gerak tidak terlalu cepat."
+        },
+        {
+          "question": "Event apa yang dapat digunakan agar penari mulai bergerak ketika tombol ditekan?",
+          "options": [
+            "when [space] key pressed",
+            "when backdrop switches",
+            "when I receive clone",
+            "when loudness"
+          ],
+          "answer_index": 0,
+          "explanation": "Event keyboard dapat memulai rangkaian gerakan saat tombol ditekan."
+        }
+      ]
+    },
+    {
+      "topic_id": 103,
+      "quiz": [
+        {
+          "question": "Dalam platformer sederhana, kecepatan Y terutama mengatur…",
+          "options": [
+            "Gerak vertikal pemain",
+            "Warna pemain",
+            "Ukuran platform",
+            "Jumlah backdrop"
+          ],
+          "answer_index": 0,
+          "explanation": "Kecepatan Y mengatur gerak naik dan turun."
+        },
+        {
+          "question": "Bagaimana gravitasi sederhana dapat disimulasikan?",
+          "options": [
+            "Menambah ukuran sprite",
+            "Mengurangi kecepatan Y secara bertahap",
+            "Mengganti kostum terus-menerus",
+            "Menghapus platform"
+          ],
+          "answer_index": 1,
+          "explanation": "Mengurangi kecepatan vertikal membuat pemain jatuh kembali."
+        },
+        {
+          "question": "Apa fungsi pemeriksaan touching floor?",
+          "options": [
+            "Mengubah backdrop",
+            "Mengatur volume",
+            "Mendeteksi apakah pemain menyentuh permukaan platform",
+            "Membuat clone"
+          ],
+          "answer_index": 2,
+          "explanation": "Deteksi lantai membantu menentukan kapan pemain mendarat."
+        },
+        {
+          "question": "Apa yang terjadi ketika pemain melompat?",
+          "options": [
+            "Kecepatan Y dibuat negatif tanpa aturan",
+            "Pemain dihapus",
+            "Platform berpindah",
+            "Pemain diberi kecepatan vertikal ke atas"
+          ],
+          "answer_index": 3,
+          "explanation": "Lompatan memberi impuls vertikal agar pemain bergerak ke atas."
+        },
+        {
+          "question": "Bagaimana mencegah pemain melompat terus saat masih di udara?",
+          "options": [
+            "Izinkan lompatan hanya ketika status menyentuh lantai",
+            "Selalu set kecepatan Y positif",
+            "Hapus semua platform",
+            "Matikan kontrol kiri-kanan"
+          ],
+          "answer_index": 0,
+          "explanation": "Pemeriksaan lantai membatasi lompatan pada saat pemain mendarat."
+        }
+      ]
+    },
+    {
+      "topic_id": 104,
+      "quiz": [
+        {
+          "question": "Apa fungsi Pen down?",
+          "options": [
+            "Mulai menggambar jejak saat sprite bergerak",
+            "Menghapus semua jejak",
+            "Mengganti backdrop",
+            "Menyembunyikan sprite"
+          ],
+          "answer_index": 0,
+          "explanation": "Pen down membuat sprite meninggalkan garis ketika bergerak."
+        },
+        {
+          "question": "Apa fungsi Pen up?",
+          "options": [
+            "Mengubah warna pena",
+            "Menghentikan gambar garis saat sprite bergerak",
+            "Menghapus semua sprite",
+            "Menggandakan pena"
+          ],
+          "answer_index": 1,
+          "explanation": "Pen up mengangkat pena sehingga gerakan tidak menggambar."
+        },
+        {
+          "question": "Blok apa yang membuat sprite mengikuti posisi pointer mouse?",
+          "options": [
+            "set size",
+            "broadcast",
+            "go to [mouse-pointer]",
+            "next costume"
+          ],
+          "answer_index": 2,
+          "explanation": "Go to mouse-pointer memindahkan sprite ke lokasi pointer."
+        },
+        {
+          "question": "Apa fungsi Change pen color atau set pen color?",
+          "options": [
+            "Mengubah ukuran Stage",
+            "Menghapus gambar",
+            "Mengganti nama sprite",
+            "Mengatur warna garis yang digambar"
+          ],
+          "answer_index": 3,
+          "explanation": "Pengaturan warna pena mengubah warna jejak berikutnya."
+        },
+        {
+          "question": "Bagaimana pengguna menghapus gambar pada kanvas?",
+          "options": [
+            "Gunakan blok clear pada extension Pen",
+            "Gunakan move 10 steps",
+            "Ubah backdrop",
+            "Klik nama sprite"
+          ],
+          "answer_index": 0,
+          "explanation": "Clear menghapus jejak pena pada Stage."
+        }
+      ]
+    },
+    {
+      "topic_id": 105,
+      "quiz": [
+        {
+          "question": "Variabel apa yang menyimpan sisa kesehatan boss?",
+          "options": [
+            "BossHealth",
+            "BackdropName",
+            "CostumeIndex",
+            "MouseX"
+          ],
+          "answer_index": 0,
+          "explanation": "BossHealth menyimpan jumlah health boss."
+        },
+        {
+          "question": "Apa tujuan cooldown pada serangan pemain?",
+          "options": [
+            "Mengubah warna boss",
+            "Membatasi seberapa sering serangan dapat dilakukan",
+            "Menghapus semua clone",
+            "Memindahkan Stage"
+          ],
+          "answer_index": 1,
+          "explanation": "Cooldown mencegah serangan dipicu terlalu sering."
+        },
+        {
+          "question": "Blok apa yang dapat mendeteksi serangan menyentuh boss?",
+          "options": [
+            "say",
+            "change size",
+            "touching [Boss]?",
+            "next backdrop"
+          ],
+          "answer_index": 2,
+          "explanation": "Touching memeriksa kontak serangan dengan boss."
+        },
+        {
+          "question": "Apa fungsi pesan WIN atau GAME_OVER?",
+          "options": [
+            "Mengubah nama project",
+            "Menambah jumlah sprite",
+            "Mengatur posisi mouse",
+            "Memberi sinyal status akhir kepada Stage dan sprite lain"
+          ],
+          "answer_index": 3,
+          "explanation": "Broadcast menyelaraskan tampilan dan penghentian game."
+        },
+        {
+          "question": "Operator perbandingan apa yang dapat memeriksa boss kalah ketika health mencapai nol?",
+          "options": [
+            "BossHealth <= 0",
+            "BossHealth + 10",
+            "BossHealth contains 0",
+            "BossHealth is blue"
+          ],
+          "answer_index": 0,
+          "explanation": "Perbandingan memeriksa apakah health sudah nol atau kurang."
+        }
+      ]
+    },
+    {
+      "topic_id": 106,
+      "quiz": [
+        {
+          "question": "Blok apa yang meminta pilihan pemain dan menunggu jawaban?",
+          "options": [
+            "ask and wait",
+            "say",
+            "move",
+            "stop all"
+          ],
+          "answer_index": 0,
+          "explanation": "Ask and wait menerima pilihan pemain."
+        },
+        {
+          "question": "Struktur apa yang memilih hasil berdasarkan jawaban?",
+          "options": [
+            "forever",
+            "if/else",
+            "next costume",
+            "glide"
+          ],
+          "answer_index": 1,
+          "explanation": "If/else menentukan cabang berdasarkan kondisi."
+        },
+        {
+          "question": "Apa syarat agar dua pilihan cerita benar-benar berbeda?",
+          "options": [
+            "Keduanya harus menuju halaman yang sama",
+            "Hanya mengganti warna tombol",
+            "Setiap jawaban memicu dialog atau adegan yang berbeda",
+            "Tidak perlu menguji pilihan"
+          ],
+          "answer_index": 2,
+          "explanation": "Pilihan harus memiliki konsekuensi atau kelanjutan berbeda."
+        },
+        {
+          "question": "Mengapa broadcast berguna pada cerita bercabang?",
+          "options": [
+            "Untuk menghapus jawaban",
+            "Untuk mengganti nama project",
+            "Untuk mengubah ukuran Stage",
+            "Untuk memulai skrip adegan yang sesuai dengan pilihan"
+          ],
+          "answer_index": 3,
+          "explanation": "Broadcast dapat mengaktifkan adegan atau sprite penerima sesuai cabang."
+        },
+        {
+          "question": "Apa pengujian yang wajib dilakukan sebelum cerita dibagikan?",
+          "options": [
+            "Mencoba setiap pilihan dan memastikan semua cabang memiliki akhir",
+            "Hanya mencoba pilihan pertama",
+            "Menghapus satu cabang",
+            "Menyembunyikan halaman akhir"
+          ],
+          "answer_index": 0,
+          "explanation": "Setiap cabang harus diuji agar tidak ada jalur yang buntu."
+        }
+      ]
+    },
+    {
+      "topic_id": 107,
+      "quiz": [
+        {
+          "question": "Apa langkah pertama sebelum membangun fitur showcase?",
+          "options": [
+            "Menentukan tujuan dan aturan proyek",
+            "Menambahkan efek suara sebanyak mungkin",
+            "Mengganti semua kostum",
+            "Membuat clone tanpa tujuan"
+          ],
+          "answer_index": 0,
+          "explanation": "Tujuan dan aturan menentukan fitur yang benar-benar diperlukan."
+        },
+        {
+          "question": "Mengapa fitur inti sebaiknya dibuat sebelum dekorasi?",
+          "options": [
+            "Agar jumlah sprite bertambah",
+            "Agar alur utama dapat diuji lebih awal",
+            "Agar project tidak bisa dimainkan",
+            "Agar tidak perlu menyimpan"
+          ],
+          "answer_index": 1,
+          "explanation": "Fitur inti membuktikan proyek dapat berjalan sebelum polesan ditambahkan."
+        },
+        {
+          "question": "Apa yang perlu dilakukan saat menemukan bug?",
+          "options": [
+            "Menghapus semua file",
+            "Menambah blok acak",
+            "Mengulang masalah, memeriksa penyebab, memperbaiki satu bagian, lalu menguji kembali",
+            "Mengabaikan hasil"
+          ],
+          "answer_index": 2,
+          "explanation": "Debugging yang terarah mengisolasi penyebab masalah."
+        },
+        {
+          "question": "Mengapa meminta orang lain mencoba project?",
+          "options": [
+            "Agar mereka mengganti akun",
+            "Agar semua sprite dihapus",
+            "Agar skor selalu tinggi",
+            "Untuk mengetahui apakah aturan dan kontrol mudah dipahami"
+          ],
+          "answer_index": 3,
+          "explanation": "Pemain lain dapat menemukan kebingungan yang tidak disadari pembuat."
+        },
+        {
+          "question": "Apa tanda showcase siap dipresentasikan?",
+          "options": [
+            "Alur utama berfungsi, aturan jelas, dan hasil uji dapat dijelaskan",
+            "Hanya judul yang selesai",
+            "Project belum pernah dicoba",
+            "Kondisi akhir belum dibuat"
+          ],
+          "answer_index": 0,
+          "explanation": "Showcase perlu dapat dimainkan dan dijelaskan."
+        }
+      ]
+    }
+  ]
+}
