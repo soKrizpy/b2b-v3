@@ -186,7 +186,7 @@ Canonical content files are stored under `docs/curriculum/`, including:
 ### Remaining quality gates — do not mark curriculum fully approved yet
 
 The structural and duplicate-content checks pass, but this is not equivalent to a complete pedagogical sign-off. Remaining work:
-1. Human semantic review of every existing quiz answer key and explanation, especially module 27's older quiz bank (which has a predictable answer-position pattern) and other pre-existing quizzes not fully re-authored.
+1. Human semantic review of every existing quiz answer key and explanation, including module 27's older quiz bank. Its answer positions are now balanced, but the correctness of every original answer still needs content-level verification.
 2. Confirm age/grade alignment for every module against the approved course plan. Module 29's production sequence matches the SD 4–6 source set, but module-level grade metadata and the overall module progression still need a formal check.
 3. Review lesson content and code examples in the actual student lesson UI, including responsive web examples and ScratchJr demonstration workflow.
 4. Run a real student-account smoke test in the deployed preview after the curriculum content is reviewed. No Vercel deployment was made by this curriculum remediation.
