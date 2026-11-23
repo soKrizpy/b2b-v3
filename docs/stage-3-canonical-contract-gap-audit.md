@@ -507,3 +507,24 @@ Do not attempt a superficial client-side retry: it cannot make the cross-service
 - Branch: `preview`; no new branch and no `main` changes.
 - The latest application CI checkpoint `9c006953c723902cfc9c6b07530dcc5130680de4` passed TypeScript, production build, and Playwright browser QA (**70 passed, 21 skipped, 0 failed**). The Preview Build for that checkpoint also passed.
 - The current branch tip has a subsequent documentation-only commit `8c94c0c9e0d5d8675ced2fec94c64966b9335d31`; the application workflows were not rerun for that documentation-only commit.
+
+
+## Admin Identity update compensation hardening — 2026-11-23
+
+The `admin-manage-user` Edge Function update path was hardened on `preview`:
+
+- It now preflights the Auth identity and, for students, the existing student row before the first write.
+- Input validation for WhatsApp and MPIN occurs before Auth mutation.
+- The Auth change is applied first; profile and student updates follow; the existing transactional WhatsApp/MPIN RPC is deliberately last.
+- If a later database step fails, the function attempts to restore the changed student/profile rows and the original Auth email, user metadata, and ban state.
+- The response distinguishes a confirmed rollback (`IDENTITY_UPDATE_ROLLED_BACK`) from a failed compensation requiring manual reconciliation (`IDENTITY_UPDATE_REPAIR_REQUIRED`). A successful write followed by a failed result read is reported as saved/refresh-required, not falsely described as rolled back.
+- MPIN plaintext and hashes are not logged or returned. The prior stored phone fallback (`email_or_phone`) is retained when only the MPIN is changed and `whatsapp` is null.
+
+This is compensating consistency, not a distributed transaction: Supabase Auth and Postgres cannot be committed atomically through the current Edge Function. If compensation itself fails, the endpoint explicitly signals a repair-required state. No production account was modified and no database migration was applied.
+
+### Verification
+
+- Code commit with the main hardening: `67d8d8436ff96c4630b7bc0c1f75993a54c2985f`.
+- Follow-up compatibility fix for legacy phone fallback: `5a0cc8bc098929eadc48453ac0d060ecae685ec6`.
+- Vite App CI was triggered for the first code commit and is still being monitored. The final branch tip is the follow-up commit; do not claim its CI passed until a run for that exact SHA is confirmed.
+- Branch remains `preview`; `main` and production Supabase data/schema were not changed.
