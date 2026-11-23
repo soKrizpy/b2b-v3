@@ -315,6 +315,10 @@ Deno.serve(async (req: Request) => {
 
       const authRollback: Record<string, unknown> = {
         email: authBefore.email,
+        // Restore the prior confirmation state as well as the email address.
+        // Otherwise a failed profile write could leave a previously verified
+        // account unexpectedly requiring email confirmation.
+        email_confirm: Boolean(authBefore.email_confirmed_at),
         user_metadata: authBefore.user_metadata ?? {},
         ban_duration: authBefore.banned_until && Date.parse(authBefore.banned_until) > Date.now()
           ? "876000h"
