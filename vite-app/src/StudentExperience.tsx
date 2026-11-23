@@ -106,9 +106,14 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           avatar: user.avatar || user.displayName.slice(0, 2).toUpperCase(),
           role: "student",
           gradeLevel: user.gradeLevel || "Siswa"
-        }, { learning: supabaseProductionCapabilities.studentLearning.createLessonBridge() }, {
+        }, {
+          learning: supabaseProductionCapabilities.studentLearning.createLessonBridge(),
+          sessionReports: supabaseProductionCapabilities.sessionReports,
+          monthlyEvaluations: supabaseProductionCapabilities.monthlyEvaluations,
+          billing: supabaseProductionCapabilities.adminBilling
+        }, {
           repositoryMode: "production",
-          parentHubEnabled: false,
+          parentHubEnabled: true,
           submissionEnabled: false
         }) as WorkspaceController;
 
