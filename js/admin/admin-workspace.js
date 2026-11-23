@@ -977,7 +977,9 @@ export class AdminWorkspace {
       } else {
         showToast({
           title: isEdit ? 'Akun Diperbarui' : 'Akun Baru Dibuat 🎉',
-          message: `Akun ${res.user.displayName} (${res.user.role}) berhasil disimpan.`,
+          message: isEdit
+            ? `Akun ${res.user.displayName} berhasil diperbarui.`
+            : `Undangan akun ${res.user.displayName} berhasil dikirim ke email. Siswa juga sudah memiliki nomor WhatsApp dan MPIN yang tersimpan dalam bentuk hash.`,
           type: 'success'
         });
         closeModal();
