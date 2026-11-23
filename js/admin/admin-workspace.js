@@ -590,11 +590,17 @@ export class AdminWorkspace {
 
     this.container.querySelectorAll('[data-cancel-session]').forEach(button => {
       button.addEventListener('click', async () => {
+        const reason = window.prompt('Tuliskan alasan pembatalan sesi:');
+        if (reason === null) return;
+        if (!reason.trim()) {
+          showToast({ title: 'Alasan wajib diisi', message: 'Pembatalan harus memiliki alasan yang tercatat.', type: 'warning' });
+          return;
+        }
         button.disabled = true;
         try {
           const result = await this.repositories.classSessions.cancelSession(
             button.getAttribute('data-cancel-session'),
-            this.currentUser
+            reason.trim()
           );
           if (!result.success) showToast({ title: 'Pembatalan gagal', message: result.error.message, type: 'error' });
           else {
