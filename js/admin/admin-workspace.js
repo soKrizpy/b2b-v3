@@ -22,11 +22,11 @@ export class AdminWorkspace {
     this.productionMode = options.productionMode === true;
     if (options.productionMode === true) {
       if (!repositories) throw new Error('Repository Admin produksi wajib diberikan secara eksplisit.');
-      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity', 'billing', 'classSessions']);
+      this.repositories = createScopedWorkspaceRepositories(repositories, ['identity', 'billing', 'classSessions', 'curriculum', 'studentModules']);
     } else {
       this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
     }
-    this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'billing'
+    this.activeTab = 'users'; // 'users' | 'tutor-relations' | 'student-modules' | 'billing'
     this.roleFilter = 'all';
     this.statusFilter = 'all';
     this.editingUser = null;
@@ -36,7 +36,10 @@ export class AdminWorkspace {
     this.assignments = [];
     this.sessions = [];
     this.invoices = [];
+    this.modules = [];
+    this.moduleAssignments = [];
     this.usersById = new Map();
+    this.modulesById = new Map();
     this.ratesByStudent = new Map();
     this.refreshSequence = 0;
     this.destroyed = false;
@@ -64,6 +67,8 @@ export class AdminWorkspace {
       : [];
     const invoices = this.productionMode ? await this.repositories.billing.getInvoices() : [];
     const sessions = this.productionMode ? await this.repositories.classSessions.listSessions() : [];
+    const modules = this.productionMode ? await this.repositories.curriculum.listModules() : [];
+    const moduleAssignments = this.productionMode ? await this.repositories.studentModules.listAssignments() : [];
     const rateEntries = this.productionMode
       ? await Promise.all(users.filter(user => user.role === 'student').map(async user => [user.id, await this.repositories.billing.getRate(user.id)]))
       : [];
@@ -72,7 +77,10 @@ export class AdminWorkspace {
     this.assignments = Array.isArray(assignments) ? assignments : [];
     this.invoices = Array.isArray(invoices) ? invoices : [];
     this.sessions = Array.isArray(sessions) ? sessions : [];
+    this.modules = Array.isArray(modules) ? modules : [];
+    this.moduleAssignments = Array.isArray(moduleAssignments) ? moduleAssignments : [];
     this.usersById = new Map(users.map(user => [user.id, user]));
+    this.modulesById = new Map(this.modules.map(module => [Number(module.id), module]));
     this.ratesByStudent = new Map(rateEntries.filter((entry) => entry[1] != null));
     if (render && this.container) this.render();
   }
@@ -143,6 +151,9 @@ export class AdminWorkspace {
           <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations">
             🧑‍🏫 Penugasan Tutor (${this.assignments.length})
           </button>
+          <button type="button" class="btn btn-sm ${this.activeTab === 'student-modules' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="student-modules">
+            📚 Akses Kurikulum (${this.moduleAssignments.length})
+          </button>
           <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
             🧾 Tarif & Tagihan (${this.invoices.length})
           </button>
@@ -164,6 +175,7 @@ export class AdminWorkspace {
 
   renderActiveTabContent() {
     if (this.activeTab === 'tutor-relations') return this.renderTutorRelationsView();
+    if (this.activeTab === 'student-modules') return this.renderStudentModulesView();
     if (this.activeTab === 'billing') return this.renderBillingView();
     if (this.activeTab === 'schedule') return this.renderScheduleView();
     return this.renderUsersView();
@@ -274,6 +286,72 @@ export class AdminWorkspace {
   /* --------------------------------------------------------------------------
      TAB 2: TUTOR-STUDENT RELATIONS VIEW
      -------------------------------------------------------------------------- */
+
+  renderStudentModulesView() {
+    const students = this.users.filter(user => user.role === 'student' && user.status === 'active');
+    const modules = this.modules;
+    const assignments = this.moduleAssignments.slice().sort((a, b) =>
+      String(a.status).localeCompare(String(b.status)) || Number(a.moduleId) - Number(b.moduleId)
+    );
+
+    return `
+      <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+        <div>
+          <h3 style="margin:0;color:var(--color-text-primary);">Akses Kurikulum Siswa</h3>
+          <p style="margin:var(--space-1) 0 0;color:var(--color-text-muted);font-size:var(--font-size-xs);">
+            Tentukan modul yang muncul di ruang belajar setiap siswa. Akses dapat dijeda tanpa menghapus riwayat penugasan.
+          </p>
+        </div>
+
+        <form id="admin-student-module-form" class="card" style="padding:var(--space-4);display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--space-3);align-items:end;">
+          <div class="form-group">
+            <label for="select-student-module-student" class="form-label">Siswa *</label>
+            <select id="select-student-module-student" name="studentId" class="form-control" required>
+              <option value="">Pilih siswa</option>
+              ${students.map(student => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.displayName)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="select-student-module-module" class="form-label">Modul *</label>
+            <select id="select-student-module-module" name="moduleId" class="form-control" required>
+              <option value="">Pilih modul</option>
+              ${modules.map(module => `<option value="${Number(module.id)}">${escapeHtml(module.title)}</option>`).join('')}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" ${students.length === 0 || modules.length === 0 ? 'disabled' : ''}>Aktifkan Modul</button>
+        </form>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+          ${assignments.length === 0 ? `
+            <div class="card" style="padding:var(--space-5);text-align:center;color:var(--color-text-muted);">
+              Belum ada penugasan modul siswa.
+            </div>
+          ` : assignments.map(assignment => {
+            const student = this.usersById.get(assignment.studentId);
+            const module = this.modulesById.get(Number(assignment.moduleId));
+            const active = assignment.status === 'active';
+            return `
+              <div class="card" style="padding:var(--space-4);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+                <div>
+                  <strong style="color:var(--color-text-primary);">${escapeHtml(student?.displayName || 'Siswa tidak ditemukan')}</strong>
+                  <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${escapeHtml(module?.title || `Modul #${assignment.moduleId}`)}</div>
+                  <span class="badge ${active ? 'badge-approved' : 'badge-warning'}">${active ? 'Aktif' : 'Dijeda'}</span>
+                </div>
+                <button type="button" class="btn btn-sm ${active ? 'btn-ghost' : 'btn-secondary'}"
+                  data-action="toggle-student-module"
+                  data-student-id="${escapeHtml(assignment.studentId)}"
+                  data-module-id="${Number(assignment.moduleId)}"
+                  data-target-status="${active ? 'paused' : 'active'}">
+                  ${active ? 'Jeda akses' : 'Aktifkan kembali'}
+                </button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
   renderTutorRelationsView() {
     const assignments = this.assignments;
     const tutors = this.users.filter(user => user.role === 'tutor');
@@ -820,6 +898,48 @@ export class AdminWorkspace {
             type: 'info'
           });
           await this.refreshData();
+        }
+      });
+    });
+
+    // Assign a curriculum module to a student.
+    const studentModuleForm = this.container.querySelector('#admin-student-module-form');
+    if (studentModuleForm) {
+      studentModuleForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const formData = new FormData(studentModuleForm);
+        const studentId = String(formData.get('studentId') || '');
+        const moduleId = Number(formData.get('moduleId'));
+        const submitButton = studentModuleForm.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
+        try {
+          await this.repositories.studentModules.assignStudentModule(studentId, moduleId);
+          showToast({ title: 'Akses modul aktif', message: 'Modul sekarang tersedia di ruang belajar siswa.', type: 'success' });
+          await this.refreshData();
+        } catch (error) {
+          showToast({ title: 'Gagal mengaktifkan modul', message: error instanceof Error ? error.message : 'Periksa data siswa dan modul.', type: 'error' });
+        } finally {
+          if (submitButton && submitButton.isConnected) submitButton.disabled = false;
+        }
+      });
+    }
+
+    this.container.querySelectorAll('[data-action="toggle-student-module"]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const studentId = button.getAttribute('data-student-id') || '';
+        const moduleId = Number(button.getAttribute('data-module-id'));
+        const targetStatus = button.getAttribute('data-target-status');
+        if (targetStatus !== 'active' && targetStatus !== 'paused') return;
+        button.disabled = true;
+        try {
+          const updated = await this.repositories.studentModules.setAssignmentStatus(studentId, moduleId, targetStatus);
+          if (!updated) throw new Error('Penugasan modul tidak ditemukan.');
+          showToast({ title: targetStatus === 'active' ? 'Akses modul aktif' : 'Akses modul dijeda', message: 'Status akses kurikulum siswa berhasil diperbarui.', type: 'success' });
+          await this.refreshData();
+        } catch (error) {
+          showToast({ title: 'Status modul gagal diperbarui', message: error instanceof Error ? error.message : 'Terjadi kesalahan.', type: 'error' });
+        } finally {
+          if (button.isConnected) button.disabled = false;
         }
       });
     });
