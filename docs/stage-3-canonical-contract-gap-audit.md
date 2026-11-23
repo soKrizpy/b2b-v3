@@ -432,3 +432,19 @@ Using transaction-scoped authenticated role and JWT subject simulation, followed
 - Commit `3278650f3093492dba57e6d70a1425e6813c47d2` completed TypeScript and Vite production build successfully.
 - Playwright browser QA and the preview build workflow were still running at the time of this note. The previous failed runs were traced to test-only issues (localized Rupiah assertion, Playwright importing a Vite module directly, and unused locals); fixes are on `preview`.
 - No claim of complete Stage 3 or production deployment is made until the latest browser QA completes green and Vercel deployment is independently verified.
+
+
+## Migration reproducibility and final security boundary — 2026-11-23
+
+- Supabase's applied migration versions for the Nov 22–23 auth/domain work are now mirrored exactly by the filenames in `supabase/migrations/`. The earlier mismatch between filenames and remote migration history was corrected on `preview`; the Stage 3 migration chain is ordered by its actual applied versions, so the final write-guard migration runs after the domain workflow migrations.
+- Recovered the two applied Nov 22 migration files that were absent from the repository: Postgres default-privilege hardening and failed-MPIN-attempt-only lockout logic.
+- The four invoice mutation SECURITY DEFINER implementations were moved into the non-exposed `private` schema. Public PostgREST functions are now SECURITY INVOKER wrappers; internal authorization checks remain in the private functions. The Supabase security advisor no longer reports these four invoice functions as exposed SECURITY DEFINER warnings.
+- Final authenticated privilege audit: direct invoice INSERT/UPDATE/DELETE, attendance audit-field updates, report/evaluation version updates, and challenge review-audit updates are all denied. The corresponding approved RPC/trigger paths remain functional.
+- Security advisor now reports only the intentional server-only `private.student_login_attempts` no-policy informational finding and Auth leaked-password protection being disabled. The latter is an Auth dashboard setting, not a SQL migration, and remains a follow-up.
+- Current tariff table has no rows. The admin billing UI supports setting per-student tariffs, but no current tariff was inferred from old invoice snapshots. Admin must set each active student's current rate before creating new invoices.
+- Legacy baseline migration files from the older 2025/early-2026 history are still not all present in this repository. The Nov 22–23 Stage 3 chain is aligned; a fully clean-slate database rebuild still requires recovery of those older baseline migrations or an approved schema snapshot.
+
+### Latest CI state
+
+- Commit `e961d909aea7bb31716ff91b4096b6348bda5b51` passed TypeScript, Vite production build, and Playwright browser QA (66 passed, 21 skipped).
+- The latest migration-alignment commit `d99d0c6c6320c03e9a73d4b1ed8195da8ca835a0` has passed TypeScript and production build; browser QA was still running at this note.
