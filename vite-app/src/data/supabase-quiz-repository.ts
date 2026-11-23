@@ -1,7 +1,9 @@
 import { supabase } from "./supabase-client";
 import {
   mapTopicQuizAttemptResult,
-  validateTopicQuizSubmission
+  validateTopicQuizSubmission,
+  type TopicQuizAnswer,
+  type TopicQuizAttemptResult
 } from "./quiz-contract";
 
 export type TopicQuizAnswer = {
