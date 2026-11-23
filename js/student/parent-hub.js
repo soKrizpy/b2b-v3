@@ -16,7 +16,7 @@ export class ParentHubView {
   constructor(container, studentUser, onBack = () => {}, repositories = WorkspaceRepositories) {
     this.container = container;
     this.studentUser = studentUser || {};
-    this.repositories = createWorkspaceRepositories(repositories);
+    this.repositories = createScopedWorkspaceRepositories(repositories, ['sessionReports', 'monthlyEvaluations', 'billing']);
     this.onBack = onBack;
     this.activeTab = 'sessions';
     this.unsubscribeSessionStore = null;
