@@ -56,4 +56,25 @@ export function createWorkspaceRepositories(overrides = {}) {
   });
 }
 
+
+/**
+ * Production composition for incremental workspace migrations.
+ * Unlike createWorkspaceRepositories, this never fills missing capabilities
+ * with local-demo stores. Every required capability must be explicitly passed.
+ */
+export function createScopedWorkspaceRepositories(overrides = {}, requiredCapabilities = []) {
+  if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+    throw new Error('Repository production tidak valid.');
+  }
+
+  const missing = requiredCapabilities.filter((key) =>
+    !Object.prototype.hasOwnProperty.call(overrides, key) || overrides[key] == null
+  );
+  if (missing.length) {
+    throw new Error(`Repository produksi belum lengkap: ${missing.join(', ')}.`);
+  }
+
+  return Object.freeze({ ...overrides });
+}
+
 export const WorkspaceRepositories = createWorkspaceRepositories();
