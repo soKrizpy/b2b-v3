@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.119.0";
+import { verifyAdminDeactivation } from "../_shared/admin-deactivation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -177,22 +178,23 @@ Deno.serve(async (req: Request) => {
     const status = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
     if (!status) return json({ error: "Status akun tidak valid" }, 400);
     if (status === "inactive" && profile.role === "admin") {
-      if (userId === actor.id) return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
-      const { data: admins, error: adminsError } = await adminClient
-        .from("profiles").select("id").eq("role", "admin");
-      if (adminsError) return json({ error: "Daftar admin aktif tidak dapat diverifikasi" }, 500);
-      let activeAdminCount = 0;
-      for (const admin of admins ?? []) {
-        const { data: adminAuth, error: adminAuthError } = await adminClient.auth.admin.getUserById(admin.id);
-        // Fail closed: if even one admin's Auth status cannot be verified,
-        // do not risk disabling the last known active administrator.
-        if (adminAuthError || !adminAuth.user) {
-          return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
-        }
-        const bannedUntil = adminAuth.user.banned_until;
-        if (!bannedUntil || new Date(bannedUntil).getTime() <= Date.now()) activeAdminCount += 1;
+      const guard = await verifyAdminDeactivation({
+        actorId: actor.id,
+        targetId: userId,
+        listAdminIds: async () => {
+          const { data, error } = await adminClient.from("profiles").select("id").eq("role", "admin");
+          return { ids: data?.map((row) => row.id) ?? null, error };
+        },
+        readAuthStatus: async (adminId) => {
+          const { data, error } = await adminClient.auth.admin.getUserById(adminId);
+          return { exists: Boolean(data?.user), bannedUntil: data?.user?.banned_until ?? null, error };
+        },
+      });
+      if (!guard.allowed) {
+        if (guard.reason === "self") return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
+        if (guard.reason === "last_admin") return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
+        return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
       }
-      if (activeAdminCount <= 1) return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
     }
     const { error } = await adminClient.auth.admin.updateUserById(userId, {
       ban_duration: status === "inactive" ? "876000h" : "none",
@@ -242,25 +244,22 @@ Deno.serve(async (req: Request) => {
 
     const requestedStatus = body.status === "inactive" ? "inactive" : body.status === "active" ? "active" : null;
     if (requestedStatus === "inactive" && currentRole === "admin") {
-      if (userId === actor.id) {
-        return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
-      }
-      const { data: admins, error: adminsError } = await adminClient
-        .from("profiles").select("id").eq("role", "admin");
-      if (adminsError) {
-        return json({ error: "Daftar admin aktif tidak dapat diverifikasi" }, 500);
-      }
-      let activeAdminCount = 0;
-      for (const admin of admins ?? []) {
-        const { data: adminAuth, error: adminAuthError } = await adminClient.auth.admin.getUserById(admin.id);
-        if (adminAuthError || !adminAuth.user) {
-          return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
-        }
-        const bannedUntil = adminAuth.user.banned_until;
-        if (!bannedUntil || new Date(bannedUntil).getTime() <= Date.now()) activeAdminCount += 1;
-      }
-      if (activeAdminCount <= 1) {
-        return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
+      const guard = await verifyAdminDeactivation({
+        actorId: actor.id,
+        targetId: userId,
+        listAdminIds: async () => {
+          const { data, error } = await adminClient.from("profiles").select("id").eq("role", "admin");
+          return { ids: data?.map((row) => row.id) ?? null, error };
+        },
+        readAuthStatus: async (adminId) => {
+          const { data, error } = await adminClient.auth.admin.getUserById(adminId);
+          return { exists: Boolean(data?.user), bannedUntil: data?.user?.banned_until ?? null, error };
+        },
+      });
+      if (!guard.allowed) {
+        if (guard.reason === "self") return json({ error: "Admin tidak dapat menonaktifkan akunnya sendiri" }, 409);
+        if (guard.reason === "last_admin") return json({ error: "Admin aktif terakhir tidak dapat dinonaktifkan" }, 409);
+        return json({ error: "Status seluruh admin tidak dapat diverifikasi; akun tidak diubah" }, 503);
       }
     }
 
