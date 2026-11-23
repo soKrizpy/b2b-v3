@@ -364,3 +364,42 @@ Additional root-level fixes:
 - Vercel account discovery did not find a Git-linked `b2b-v3` project for this repository/commit in the selected team; the team project listing only returned `b2b-v2`. Therefore no new Preview deployment URL is claimed from this checkpoint. Do not create or relink a Vercel project as part of this audit without an explicit request.
 
 The seven workstreams remain open where their production contracts or data models are absent. The new isolation behavior is intentional: unsupported operations must remain unavailable rather than silently falling back to demo data.
+
+
+## Production schema integration and data reconciliation — 2026-11-23 (latest checkpoint)
+
+The explicit approval to apply production schema changes was received. The active Supabase project is `enfqoofluceqrlcjemfu`; migrations below are applied there and mirrored in `supabase/migrations/` on branch `preview`. No destructive table/row changes were made.
+
+### Applied database work
+
+- The Stage 3 domain schema is now present: `tutor_student_assignments`, `session_reports`, `monthly_evaluations`, `student_tariffs`, `invoice_items`, and `invoice_payments`, plus invoice lifecycle, challenge submission, tutor attendance, meeting lifecycle, RLS, grants, and supporting indexes/RPCs.
+- Seven active tutor-student assignments were backfilled only from pairs with future, non-cancelled meetings. Preflight found seven such pairs, each with one valid teacher and one valid student profile. Historical-only pairs were intentionally not promoted. Tutor RPC verification returns exactly seven assigned students.
+- Historical invoice line items were backfilled only for invoices where the current completed/attended meeting count exactly matches the stored `attended_meetings`. Result: 43 line items across 14 of 20 invoices. Six mismatching invoices were left untouched; invoice totals/statuses and payment history were not rewritten, and no payment rows were fabricated.
+- Student project submission is mediated by a private actor-derived RPC. Tutor review reads only pending submissions for active assigned students. Challenge catalogue check: 100 challenge rows for 100 topics; 99 topics are published and 99 published topics carry a JSONB challenge key.
+- Attendance audit columns `attendance_recorded_by` and `attendance_recorded_at` are no longer writable by authenticated clients. A transaction-level test as an authenticated tutor confirmed the trigger still stamps actor and timestamp while the client updates only attendance status.
+- Recurring schedule creation now rejects null/empty/invalid configuration and serializes checks by tutor and student using transaction advisory locks. Replacement scheduling uses the same stable resource-locking strategy.
+
+### Production runtime and adapter alignment
+
+- Student runtime now uses Supabase-backed lesson progress, quiz, project submission, Parent Hub reports/evaluations, and issued invoice history. No local-demo fallback is used by the production composition.
+- Parent Hub now calls the canonical `listStudentSubmittedReports` and `listStudentPublished` repository methods. A browser test caught and fixed the prior method-name mismatch.
+- Legacy invoice display preserves the stored totals for historical invoices whose session-level evidence cannot be reconciled. It explicitly states when line-item details could not be verified rather than inventing sessions.
+- Tutor dashboard maps database completion values `selesai` and `terlewat` to the correct visible status labels.
+- Admin production workspace is wired to Supabase-backed identity, billing, and class-session capabilities; account operations are delegated to the admin-authorized Edge Function, and assignments are admin-only under RLS.
+
+### Remaining production data realities
+
+- `session_reports`, `monthly_evaluations`, and `challenge_submissions` are structurally ready but currently contain no student/tutor-authored rows. Parent Hub and tutor history will show honest empty states until real work is submitted.
+- `invoice_payments` has no historical rows. Existing invoice paid/unpaid status was preserved; the payment ledger starts recording new payments through the audited RPC.
+- Six legacy invoices were not given synthetic line items because their stored attendance counts did not match verifiable completed sessions.
+- Five students with no future active tutor-linked meeting were not auto-assigned; the two historical-only tutor/student pairs remain unpromoted. Admin can create the correct current assignment when confirmed.
+- Auth leaked-password protection remains disabled in project Auth settings (configuration follow-up). The `private.student_login_attempts` no-policy advisor is intentional for a server-only private table. Unused-index notices are informational and were not "fixed" by dropping potentially useful indexes.
+
+### Latest verification boundary
+
+- Database schema and migration history were verified on the active project.
+- RLS/privilege checks and tutor assignment RPC were exercised using transaction-scoped authenticated-role simulations; the attendance trigger was verified after column-grant tightening.
+- GitHub TypeScript/production build and browser QA are being rerun after the Parent Hub and tutor status fixes. Do not mark Stage 3 complete until the latest `preview` CI and browser QA finish green.
+- Production Vercel deployment was not independently verified in this checkpoint; do not claim a deployment URL or production browser sign-in.
+
+This checkpoint supersedes earlier notes in this document that described Parent Hub/submissions as disabled or the Admin workspace as read-only. The active production paths are now wired to the newly applied schema; their real data will remain empty until actual tutor/admin actions create records.
