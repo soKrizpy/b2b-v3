@@ -73,8 +73,6 @@ export const supabaseChallengeSubmissionRepository = {
         .update({
           status,
           review_note: reviewNote.trim() || null,
-          reviewed_by: actorId,
-          reviewed_at: new Date().toISOString(),
         })
         .eq("id", submissionId)
         .eq("status", "pending")
