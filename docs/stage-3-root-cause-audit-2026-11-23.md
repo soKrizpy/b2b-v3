@@ -152,3 +152,42 @@ The live database is functioning, but a clean environment cannot reproduce the f
 - The audit document commit is documentation-only; no additional build was triggered for it.
 - No Vercel production deployment or Edge Function deployment was performed.
 - GitHub currently exposes only the `preview` branch for this repository. No `main` branch exists there, and none was created.
+
+
+## 6. Curriculum rollout — standard 16 topics (23 November 2026)
+
+This section supersedes the earlier curriculum counts in Section 2, which describe the pre-rollout audit snapshot.
+
+### Result in the active Supabase project
+
+- **8 modules, 128 topics, all 128 published.**
+- Every module has exactly **16 topics**; verification returned 0 modules outside the target.
+- Every topic has at least 3 quiz questions, at least 5 learning-path steps, a challenge row, and a matching `activeChallengeIds` reference.
+- Validation found 0 malformed quiz items, 0 challenge-link mismatches, and 0 short learning paths.
+- The new content manifest is versioned at `docs/curriculum/standard-16-topics-2026-11-23.json`.
+
+### How the 30-topic web module was handled
+
+The former `BASIC VISUAL WEB` module (ID 10) covered HTML, CSS, and JavaScript across 30 topics. Rather than deleting or hiding existing topics, it was split after topic 16:
+
+- Module 10 is now **BASIC VISUAL WEB — HTML & Struktur Halaman** (16 topics).
+- New module ID 31 is **BASIC VISUAL WEB — CSS & JavaScript** (16 topics).
+- Existing topic IDs for former topics 17–30 were preserved and reassigned to module 31, with order indexes 1–14.
+- Two new topics complete module 31: Responsive Design and Portfolio Web Interaktif.
+- The five existing student-module assignment rows for module 10 were copied to module 31 so the same students retain access to the continuation. No student identity data is included here.
+
+### Other module updates
+
+- Module 11: added 6 topics.
+- Module 20: promoted existing draft topic ID 133 to published and added 4 topics.
+- Modules 27, 28, 29, and 30: added 4 topics each.
+- Module titles that still said “12 Topik” were updated to “16 Topik”.
+
+### Preservation and verification
+
+- Existing topic IDs were not deleted.
+- Aggregate learning history remained at 21 `topic_progress` rows and 55 `topic_quiz_attempts` rows after the update.
+- The existing meeting attached to module 10 remains attached to module 10 and its original topic.
+- The final live verification returned 8 modules, 128 published topics, 128 challenge rows, 0 invalid quiz items, 0 challenge-link mismatches, and 0 modules with a topic count other than 16.
+
+This rollout changed production curriculum data directly through the Supabase SQL connection. The JSON manifest is committed, but this data change was not added as a Supabase migration file; the repository's historical migration-source gap remains a separate reproducibility issue. No application code, Vercel deployment, or production branch was changed.
