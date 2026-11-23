@@ -114,7 +114,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
         }, {
           repositoryMode: "production",
           parentHubEnabled: true,
-          submissionEnabled: false
+          submissionEnabled: true
         }) as WorkspaceController;
 
         await controller.init();
