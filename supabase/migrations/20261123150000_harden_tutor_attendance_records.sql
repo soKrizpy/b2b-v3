@@ -2,13 +2,6 @@ alter table public.meeting_students
   add column if not exists attendance_recorded_by uuid references auth.users(id) on delete set null,
   add column if not exists attendance_recorded_at timestamptz;
 
-create unique index if not exists meeting_students_meeting_student_unique
-  on public.meeting_students(meeting_id,student_id);
-
-alter table public.meeting_students
-  add constraint meeting_students_attendance_status_check
-  check(attendance_status in ('hadir','absen'));
-
 revoke update on public.meeting_students from authenticated;
 grant update (attendance_status,attendance_recorded_by,attendance_recorded_at,has_joined)
   on public.meeting_students to authenticated;
