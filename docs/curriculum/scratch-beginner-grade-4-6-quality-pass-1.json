@@ -1,0 +1,735 @@
+{
+  "schema_version": 1,
+  "module_id": 29,
+  "module_title": "Scratch Beginner — SD 4–6",
+  "revision": "quality-pass-1",
+  "standard": {
+    "quiz_questions": 5,
+    "options_per_question": 4,
+    "learning_nodes": 12,
+    "practical_challenge": 1
+  },
+  "sequence_note": "Move the existing original capstone (topic ID 157) to topic 16. Topic ID 193 is playtesting/showcase, not a duplicate capstone. Grade mapping is SD 4–6 based on the existing first four topics' source curriculum.",
+  "topics": [
+    {
+      "topic_id": 190,
+      "title": "Game Design: Menulis Aturan Sebelum Coding",
+      "description": "Merancang tujuan pemain, kontrol, tantangan, aturan skor, dan kondisi menang/kalah sebelum membangun game Scratch.",
+      "challenge_id": 121,
+      "challenge_title": "Challenge: Game Design One-Page",
+      "challenge_instructions": "Buat rancangan satu halaman untuk game Scratch yang berisi tujuan pemain, kontrol, tantangan, aturan skor/nyawa, dan kondisi menang/kalah. Buat prototipe sederhana untuk membuktikan satu aturan utama. Bagikan tautan project dan rancanganmu.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa yang perlu ditentukan sebelum mulai menyusun blok game?",
+            "options": [
+              "Tujuan, kontrol, tantangan, dan aturan permainan",
+              "Warna semua sprite",
+              "Jumlah suara latar",
+              "Nama akun pemain"
+            ],
+            "answer_index": 0,
+            "explanation": "Rancangan aturan menentukan fitur dan blok yang diperlukan."
+          },
+          {
+            "question": "Contoh tujuan game yang dapat diuji adalah…",
+            "options": [
+              "Membuat game terlihat keren",
+              "Mengumpulkan lima koin sebelum waktu habis",
+              "Membuat semua sprite bergerak",
+              "Mengubah backdrop setiap saat"
+            ],
+            "answer_index": 1,
+            "explanation": "Tujuan yang terukur dapat diperiksa saat game dimainkan."
+          },
+          {
+            "question": "Mengapa kondisi menang dan kalah harus ditulis dengan jelas?",
+            "options": [
+              "Agar semua level memiliki warna sama",
+              "Agar game tidak perlu diuji",
+              "Agar pemain dan pembuat tahu kapan permainan selesai",
+              "Agar jumlah sprite bertambah"
+            ],
+            "answer_index": 2,
+            "explanation": "Kondisi akhir yang jelas membuat alur game dapat diuji."
+          },
+          {
+            "question": "Apa manfaat flow game?",
+            "options": [
+              "Mengganti semua blok secara otomatis",
+              "Menghapus kebutuhan kontrol",
+              "Menentukan warna karakter",
+              "Menunjukkan urutan mulai, bermain, dan kondisi akhir"
+            ],
+            "answer_index": 3,
+            "explanation": "Flow membantu melihat urutan dan hubungan antaraturan sebelum coding."
+          },
+          {
+            "question": "Jika teman tidak memahami cara bermain dari rancanganmu, tindakan terbaik adalah…",
+            "options": [
+              "Perjelas tujuan dan kontrol lalu uji kembali",
+              "Menambah banyak efek suara",
+              "Menghapus kondisi menang",
+              "Menambahkan rintangan tanpa aturan"
+            ],
+            "answer_index": 0,
+            "explanation": "Rancangan harus mudah dipahami sebelum fitur tambahan dibuat."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Game Design One-Page",
+            "instructions": "Buat rancangan satu halaman untuk game Scratch yang berisi tujuan pemain, kontrol, tantangan, aturan skor/nyawa, dan kondisi menang/kalah. Buat prototipe sederhana untuk membuktikan satu aturan utama. Bagikan tautan project dan rancanganmu.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Game Dimulai dari Aturan",
+            "content": "Sebelum menyusun blok, tentukan game seperti apa yang ingin dibuat. Aturan yang jelas membantu memilih sprite, kontrol, variabel, dan kondisi akhir yang benar-benar dibutuhkan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Tentukan Tujuan Pemain",
+            "content": "Tuliskan satu tujuan utama yang dapat diamati, misalnya mengumpulkan lima koin atau mencapai pintu keluar. Hindari tujuan yang terlalu umum seperti hanya bermain selama mungkin."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Tentukan Aksi dan Kontrol",
+            "content": "Tuliskan apa yang dapat dilakukan pemain dan tombol yang digunakan. Contoh: panah kiri/kanan untuk bergerak dan spasi untuk melompat."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Tentukan Tantangan",
+            "content": "Pilih rintangan yang menghalangi tujuan. Pastikan setiap rintangan memiliki aturan yang jelas: disentuh berarti kehilangan nyawa, dilewati berarti aman, atau dikumpulkan berarti mendapat poin."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Tentukan Aturan Skor dan Akhir",
+            "content": "Tentukan kapan skor bertambah, kapan nyawa berkurang, dan kapan game berakhir. Kondisi menang dan kalah harus dapat diuji, bukan hanya berdasarkan perasaan."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Buat Flow Game",
+            "content": "Gambar alur mulai, bermain, kondisi berhasil, dan kondisi gagal. Jika game memiliki level, tambahkan titik perpindahan level pada alur."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Pilih Sprite dan Panggung",
+            "content": "Pilih sprite pemain, objek tujuan, dan rintangan. Gunakan backdrop yang membantu pemain mengenali area bermain."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Buat Prototipe Kontrol",
+            "content": "Bangun gerakan pemain terlebih dahulu. Uji apakah kontrol mudah digunakan sebelum menambahkan sistem skor atau efek."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Buat Prototipe Tantangan",
+            "content": "Tambahkan satu rintangan dan satu aturan interaksi. Pastikan pemain dapat memahami akibat dari menyentuh atau menghindari rintangan."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Uji Aturan dengan Pemain Lain",
+            "content": "Minta teman membaca aturan dan mencoba prototipe. Catat bagian yang membingungkan atau aturan yang tidak berjalan sesuai tulisan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Rancangan",
+            "content": "Jika game sulit diuji, buat tujuan lebih spesifik. Jika aturan saling bertentangan, tentukan prioritas. Jika prototipe terlalu besar, kurangi fitur hingga alur inti berjalan."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat rancangan satu halaman berisi tujuan, kontrol, tantangan, skor, dan kondisi menang/kalah. Bangun prototipe kecil yang membuktikan satu aturan utama."
+          }
+        ],
+        "activeChallengeIds": [
+          121
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 191,
+      "title": "Timer, Nyawa, dan Kondisi Game Over",
+      "description": "Membangun sistem waktu dan nyawa menggunakan variabel, loop, kondisi, serta pesan untuk mengakhiri permainan secara konsisten.",
+      "challenge_id": 122,
+      "challenge_title": "Challenge: Game dengan Timer dan Tiga Nyawa",
+      "challenge_instructions": "Buat game Scratch dengan Time=30 dan Lives=3. Pemain harus menyelesaikan tujuan sebelum waktu habis. Nyawa berkurang saat menyentuh rintangan. Tampilkan Game Over jika Time atau Lives mencapai nol. Uji kedua skenario dan bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa fungsi variabel Lives?",
+            "options": [
+              "Menyimpan jumlah kesempatan pemain",
+              "Mengatur ukuran Stage",
+              "Menyimpan nama backdrop",
+              "Menghitung jumlah sprite"
+            ],
+            "answer_index": 0,
+            "explanation": "Lives menyimpan jumlah kesempatan pemain sebelum permainan berakhir."
+          },
+          {
+            "question": "Mengapa Time dan Lives harus diatur ulang saat Green Flag?",
+            "options": [
+              "Agar sprite berubah warna",
+              "Agar setiap permainan dimulai dari kondisi yang sama",
+              "Agar semua suara berhenti",
+              "Agar pemain tidak dapat bergerak"
+            ],
+            "answer_index": 1,
+            "explanation": "Nilai awal memastikan percobaan baru tidak memakai sisa nilai sebelumnya."
+          },
+          {
+            "question": "Apa fungsi wait (1) seconds pada loop hitung mundur?",
+            "options": [
+              "Mengganti backdrop",
+              "Menghapus nyawa",
+              "Membuat pengurangan Time terjadi setiap satu detik",
+              "Mengubah posisi pemain"
+            ],
+            "answer_index": 2,
+            "explanation": "Wait satu detik mengatur kecepatan hitung mundur."
+          },
+          {
+            "question": "Jika Lives berkurang berkali-kali saat pemain masih menyentuh rintangan, penyebab yang mungkin adalah…",
+            "options": [
+              "Variabel tidak memiliki nama",
+              "Backdrop terlalu besar",
+              "Tombol keyboard rusak",
+              "Pemeriksaan tabrakan terus berjalan tanpa jeda atau perlindungan"
+            ],
+            "answer_index": 3,
+            "explanation": "Pemeriksaan berulang dapat mengurangi nyawa terus-menerus selama sentuhan berlangsung."
+          },
+          {
+            "question": "Kapan Game Over harus muncul?",
+            "options": [
+              "Saat Time mencapai nol atau Lives mencapai nol",
+              "Saat pemain mengganti kostum",
+              "Saat backdrop berubah",
+              "Saat sprite dipilih"
+            ],
+            "answer_index": 0,
+            "explanation": "Kondisi akhir muncul ketika salah satu batas permainan terpenuhi."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Game dengan Timer dan Tiga Nyawa",
+            "instructions": "Buat game Scratch dengan Time=30 dan Lives=3. Pemain harus menyelesaikan tujuan sebelum waktu habis. Nyawa berkurang saat menyentuh rintangan. Tampilkan Game Over jika Time atau Lives mencapai nol. Uji kedua skenario dan bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Permainan Memiliki Batas",
+            "content": "Kamu akan menambahkan batas waktu dan nyawa agar permainan memiliki tantangan yang jelas. Pemain harus menyelesaikan tujuan sebelum waktu habis atau nyawanya mencapai nol."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Bedakan Timer dan Nyawa",
+            "content": "Timer membatasi durasi bermain. Lives menyimpan kesempatan pemain. Keduanya perlu dimulai dari nilai awal setiap kali Green Flag ditekan."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "code",
+            "order": 2,
+            "title": "Buat Variabel Time dan Lives",
+            "content": "Buat variabel Time dan Lives untuk semua sprite. Atur Time menjadi 30 dan Lives menjadi 3 saat permainan dimulai.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "when green flag clicked\nset [Time] to (30)\nset [Lives] to (3)"
+            }
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "code",
+            "order": 3,
+            "title": "Buat Hitung Mundur",
+            "content": "Gunakan repeat until Time=0. Di dalamnya tunggu satu detik lalu kurangi Time satu angka. Ketika Time mencapai nol, kirim pesan GAME_OVER.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "repeat until <(Time) = (0)>\n wait (1) seconds\n change [Time] by (-1)\nend\nbroadcast [GAME_OVER]"
+            }
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Kurangi Nyawa Saat Bahaya",
+            "content": "Saat pemain menyentuh rintangan, kurangi Lives satu angka. Pindahkan pemain ke posisi aman atau beri jeda singkat agar satu tabrakan tidak mengurangi banyak nyawa sekaligus."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Siapkan Monitor Variabel",
+            "content": "Tampilkan Time dan Lives pada Stage. Pastikan nama variabel jelas dan mudah dibaca pemain."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Atur Nilai Awal",
+            "content": "Buat skrip Green Flag untuk mengatur Time=30 dan Lives=3. Jalankan ulang game dan pastikan nilainya kembali ke awal."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Hubungkan Timer dengan Game",
+            "content": "Buat hitung mundur satu angka per detik. Uji dengan nilai kecil terlebih dahulu, misalnya lima detik, agar kamu tidak perlu menunggu terlalu lama."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Hubungkan Nyawa dengan Tabrakan",
+            "content": "Tambahkan kondisi touching pada pemain. Kurangi Lives saat menyentuh rintangan, lalu beri jeda atau pindahkan pemain untuk mencegah pengurangan berulang."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Buat Kondisi Game Over",
+            "content": "Jika Time mencapai nol atau Lives mencapai nol, kirim pesan GAME_OVER. Stage menerima pesan itu untuk menampilkan layar akhir dan menghentikan gerakan rintangan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Timer dan Nyawa",
+            "content": "Jika timer tidak mulai ulang, periksa nilai awal. Jika timer turun terlalu cepat, pastikan wait satu detik berada di dalam loop. Jika nyawa turun berkali-kali, tambahkan perlindungan setelah tabrakan."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat game dengan timer 30 detik dan tiga nyawa. Uji skenario waktu habis dan nyawa nol, lalu tunjukkan bahwa kedua kondisi menampilkan Game Over."
+          }
+        ],
+        "activeChallengeIds": [
+          122
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 192,
+      "title": "Level dan Progres Pemain",
+      "description": "Menggunakan variabel Level, target skor, dan broadcast untuk membuka tahap berikutnya dengan peningkatan kesulitan yang terukur.",
+      "challenge_id": 123,
+      "challenge_title": "Challenge: Game Dua Level dengan Progres",
+      "challenge_instructions": "Kembangkan game menjadi dua level. Level 1 memiliki target Score 5. Saat tercapai, variabel Level berubah menjadi 2 dan kecepatan atau jumlah rintangan meningkat. Tentukan target akhir dan tampilkan pesan menang. Bagikan tautan project dan jelaskan perbedaan level.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa yang disimpan variabel Level?",
+            "options": [
+              "Tahap permainan yang sedang aktif",
+              "Jumlah kostum",
+              "Nama pemain",
+              "Warna backdrop"
+            ],
+            "answer_index": 0,
+            "explanation": "Level menyimpan tahap permainan yang sedang berlangsung."
+          },
+          {
+            "question": "Apa manfaat menampilkan Score dan Level pada Stage?",
+            "options": [
+              "Agar sprite lebih besar",
+              "Agar pemain dapat melihat perkembangan dan tahap yang sedang dimainkan",
+              "Agar semua rintangan hilang",
+              "Agar game tidak perlu diuji"
+            ],
+            "answer_index": 1,
+            "explanation": "Monitor membantu pemain memahami progres."
+          },
+          {
+            "question": "Kondisi mana yang tepat untuk naik ke Level 2 setelah skor mencapai 5?",
+            "options": [
+              "if touching edge",
+              "if Lives = 0",
+              "if Level = 1 and Score >= 5",
+              "if green flag clicked"
+            ],
+            "answer_index": 2,
+            "explanation": "Kondisi memeriksa level saat ini dan target skor."
+          },
+          {
+            "question": "Mengapa kondisi Level=1 diperlukan saat menaikkan level?",
+            "options": [
+              "Agar semua sprite menghilang",
+              "Agar timer bertambah",
+              "Agar suara diputar",
+              "Agar kenaikan level hanya terjadi sekali"
+            ],
+            "answer_index": 3,
+            "explanation": "Setelah Level berubah menjadi 2, syarat Level=1 tidak lagi terpenuhi."
+          },
+          {
+            "question": "Apa contoh peningkatan kesulitan pada Level 2?",
+            "options": [
+              "Meningkatkan kecepatan rintangan atau menambah objek tantangan",
+              "Menghapus semua kontrol",
+              "Menyembunyikan skor",
+              "Menghilangkan tujuan game"
+            ],
+            "answer_index": 0,
+            "explanation": "Level berikutnya dapat meningkatkan tantangan dengan perubahan yang terukur."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Game Dua Level dengan Progres",
+            "instructions": "Kembangkan game menjadi dua level. Level 1 memiliki target Score 5. Saat tercapai, variabel Level berubah menjadi 2 dan kecepatan atau jumlah rintangan meningkat. Tentukan target akhir dan tampilkan pesan menang. Bagikan tautan project dan jelaskan perbedaan level.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Pemain Berkembang",
+            "content": "Level membagi game menjadi beberapa tahap. Kamu akan membuat Level 1 dan Level 2 dengan tujuan serta tingkat kesulitan yang berbeda."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Progres?",
+            "content": "Progres menunjukkan perkembangan pemain menuju tujuan. Skor dan variabel Level dapat digunakan untuk memberi tahu pemain seberapa jauh mereka sudah bermain."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Buat Variabel Level",
+            "content": "Buat variabel Level dan atur nilainya menjadi 1 saat Green Flag. Tampilkan monitor agar pemain mengetahui tahap yang sedang aktif."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "lesson",
+            "order": 3,
+            "title": "Tentukan Target Tiap Level",
+            "content": "Contoh: Level 1 selesai saat Score mencapai 5. Level 2 selesai saat Score mencapai 10. Pastikan target dapat dicapai dengan jumlah objek atau waktu yang tersedia."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "code",
+            "order": 4,
+            "title": "Contoh Kondisi Naik Level",
+            "content": "Periksa Level=1 dan Score>=5. Jika keduanya benar, atur Level menjadi 2 dan kirim pesan LEVEL_UP agar rintangan mengubah kecepatannya.",
+            "code": {
+              "language": "Scratch blocks",
+              "content": "if <<(Level) = (1)> and <(Score) >= (5)>> then\n set [Level] to (2)\n broadcast [LEVEL_UP]"
+            }
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Tampilkan Progres",
+            "content": "Tampilkan variabel Level dan Score pada Stage. Tambahkan pesan singkat saat pemain berhasil membuka level berikutnya."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Buat Kondisi Level 1",
+            "content": "Atur target Level 1 dan uji apakah pemain dapat mencapainya. Pastikan skor bertambah sesuai aksi yang benar."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Hubungkan Perpindahan Level",
+            "content": "Tambahkan kondisi Level=1 dan Score>=5. Setelah syarat terpenuhi, ubah Level menjadi 2 agar kondisi tidak dijalankan berulang."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Tingkatkan Tantangan",
+            "content": "Pada skrip when I receive LEVEL_UP, tingkatkan kecepatan rintangan atau tambahkan satu objek. Ubah satu parameter agar perbedaan mudah diuji."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Buat Target Akhir",
+            "content": "Tentukan syarat menang pada Level 2, misalnya Score mencapai 10. Tampilkan pesan kemenangan dan hentikan rintangan saat target akhir terpenuhi."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Progres",
+            "content": "Jika level naik berulang, periksa syarat Level=1. Jika tantangan tidak berubah, periksa nama pesan LEVEL_UP dan skrip penerima. Jika skor tidak cukup, tinjau target dan jumlah objek."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Buat game dua level. Level 1 memiliki target skor 5, Level 2 memiliki tantangan lebih tinggi, dan target akhir menampilkan pesan menang."
+          }
+        ],
+        "activeChallengeIds": [
+          123
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    },
+    {
+      "topic_id": 193,
+      "title": "Playtesting dan Showcase: Menguji Game Sebelum Rilis",
+      "description": "Menguji game dari sudut pandang pemain, mencatat bug dan tingkat kesulitan, memperbaiki masalah, serta menyiapkan demonstrasi karya.",
+      "challenge_id": 124,
+      "challenge_title": "Challenge: Playtest dan Showcase Game",
+      "challenge_instructions": "Minta satu orang mencoba game Scratch-mu. Catat minimal dua temuan (bug, kontrol, aturan, atau tingkat kesulitan), lakukan minimal satu perbaikan, lalu uji ulang. Siapkan demo singkat yang menjelaskan tujuan, kontrol, dan fitur utama. Bagikan tautan project.",
+      "lesson_content": {
+        "quiz": [
+          {
+            "question": "Apa tujuan playtesting?",
+            "options": [
+              "Mengetahui apakah game mudah dipahami, berfungsi, dan menyenangkan dimainkan",
+              "Mengubah semua warna sprite",
+              "Menghapus semua level",
+              "Membuat file project lebih besar"
+            ],
+            "answer_index": 0,
+            "explanation": "Playtesting menguji pengalaman pemain dan perilaku game."
+          },
+          {
+            "question": "Mengapa pemain lain sebaiknya mencoba game tanpa banyak petunjuk?",
+            "options": [
+              "Agar pembuat dapat bermain sendiri",
+              "Agar terlihat apakah instruksi dan kontrol sudah cukup jelas",
+              "Agar skor selalu tinggi",
+              "Agar game tidak bisa dimenangkan"
+            ],
+            "answer_index": 1,
+            "explanation": "Pemain baru membantu menemukan bagian yang membingungkan."
+          },
+          {
+            "question": "Apa yang perlu dicatat ketika menemukan bug?",
+            "options": [
+              "Hanya nama sprite",
+              "Warna backdrop",
+              "Langkah yang dilakukan, hasil yang diharapkan, dan hasil yang terjadi",
+              "Jumlah tab browser"
+            ],
+            "answer_index": 2,
+            "explanation": "Catatan reproduksi membantu menemukan dan memperbaiki penyebab bug."
+          },
+          {
+            "question": "Mengapa game perlu diuji lagi setelah perbaikan?",
+            "options": [
+              "Agar jumlah sprite bertambah",
+              "Agar semua suara berhenti",
+              "Agar judul berubah",
+              "Untuk memastikan perbaikan tidak merusak fitur lain"
+            ],
+            "answer_index": 3,
+            "explanation": "Pengujian ulang membantu menemukan masalah baru akibat perubahan."
+          },
+          {
+            "question": "Apa yang sebaiknya dilakukan saat pemain bingung menggunakan game?",
+            "options": [
+              "Perjelas instruksi atau kontrol lalu minta pemain mencoba kembali",
+              "Menambah rintangan tanpa aturan",
+              "Menghapus kondisi menang",
+              "Menyembunyikan tombol"
+            ],
+            "answer_index": 0,
+            "explanation": "Instruksi yang jelas membantu pemain memahami cara bermain."
+          }
+        ],
+        "challenge": [
+          {
+            "xp": 35,
+            "title": "Challenge: Playtest dan Showcase Game",
+            "instructions": "Minta satu orang mencoba game Scratch-mu. Catat minimal dua temuan (bug, kontrol, aturan, atau tingkat kesulitan), lakukan minimal satu perbaikan, lalu uji ulang. Siapkan demo singkat yang menjelaskan tujuan, kontrol, dan fitur utama. Bagikan tautan project.",
+            "submission_type": "link"
+          }
+        ],
+        "learningPath": [
+          {
+            "id": "node-01",
+            "xp": 5,
+            "type": "lesson",
+            "order": 0,
+            "title": "Brief: Game Harus Diuji oleh Pemain",
+            "content": "Game yang berjalan di komputer pembuat belum tentu mudah dimainkan orang lain. Kamu akan meminta pemain mencoba game dan mencatat masalah yang ditemukan."
+          },
+          {
+            "id": "node-02",
+            "xp": 5,
+            "type": "lesson",
+            "order": 1,
+            "title": "Apa Itu Playtesting?",
+            "content": "Playtesting adalah mencoba game untuk mengetahui apakah aturan mudah dipahami, kontrol bekerja, tantangan adil, dan kondisi menang/kalah dapat dicapai."
+          },
+          {
+            "id": "node-03",
+            "xp": 10,
+            "type": "practice",
+            "order": 2,
+            "title": "Siapkan Skenario Uji",
+            "content": "Tulis beberapa skenario: mulai game, bergerak, mendapat poin, terkena bahaya, naik level, menang, dan kalah. Setiap skenario harus memiliki hasil yang diharapkan."
+          },
+          {
+            "id": "node-04",
+            "xp": 10,
+            "type": "practice",
+            "order": 3,
+            "title": "Amati Pemain Tanpa Membantu",
+            "content": "Minta teman mencoba game tanpa diberi terlalu banyak petunjuk. Amati bagian yang membuat mereka bingung atau gagal melakukan aksi yang seharusnya mudah."
+          },
+          {
+            "id": "node-05",
+            "xp": 10,
+            "type": "lesson",
+            "order": 4,
+            "title": "Catat Bug dan Kesulitan",
+            "content": "Catat apa yang terjadi, langkah yang dilakukan, dan hasil yang diharapkan. Pisahkan bug teknis dari masalah desain seperti tombol sulit digunakan atau target terlalu tinggi."
+          },
+          {
+            "id": "node-06",
+            "xp": 10,
+            "type": "practice",
+            "order": 5,
+            "title": "Uji Kontrol dan Aturan",
+            "content": "Periksa setiap tombol dan aksi. Pastikan pemain memahami cara bergerak, menyerang, menghindar, atau mengumpulkan objek sesuai aturan game."
+          },
+          {
+            "id": "node-07",
+            "xp": 10,
+            "type": "practice",
+            "order": 6,
+            "title": "Uji Menang dan Kalah",
+            "content": "Coba capai kondisi menang dan sengaja picu kondisi kalah. Pastikan pesan akhir muncul pada waktu yang tepat dan permainan berhenti sesuai rancangan."
+          },
+          {
+            "id": "node-08",
+            "xp": 10,
+            "type": "practice",
+            "order": 7,
+            "title": "Perbaiki Satu Masalah Prioritas",
+            "content": "Pilih bug atau masalah yang paling mengganggu pemain. Perbaiki satu bagian dan ulangi skenario uji yang sama."
+          },
+          {
+            "id": "node-09",
+            "xp": 10,
+            "type": "practice",
+            "order": 8,
+            "title": "Uji Ulang Setelah Perbaikan",
+            "content": "Periksa apakah perbaikan menyelesaikan masalah tanpa merusak fitur lain. Uji kembali alur utama dari Green Flag sampai akhir."
+          },
+          {
+            "id": "node-10",
+            "xp": 10,
+            "type": "practice",
+            "order": 9,
+            "title": "Siapkan Showcase",
+            "content": "Rapikan judul, instruksi, kontrol, dan tampilan awal. Siapkan penjelasan singkat tentang tujuan game dan fitur yang paling kamu banggakan."
+          },
+          {
+            "id": "node-11",
+            "xp": 10,
+            "type": "lesson",
+            "order": 10,
+            "title": "Troubleshooting Saat Demo",
+            "content": "Jika game berhenti, mulai ulang dari Green Flag dan periksa kondisi awal. Jika pemain bingung, perjelas instruksi. Jika bug muncul lagi, catat langkah untuk mengulanginya."
+          },
+          {
+            "id": "node-12",
+            "xp": 20,
+            "type": "challenge",
+            "order": 11,
+            "title": "Challenge dan Refleksi",
+            "content": "Minta satu orang mencoba game, catat minimal dua temuan, lakukan satu perbaikan, lalu demonstrasikan versi terbaru dan jelaskan perubahanmu."
+          }
+        ],
+        "activeChallengeIds": [
+          124
+        ],
+        "estimatedDurationMinutes": 60
+      }
+    }
+  ]
+}
