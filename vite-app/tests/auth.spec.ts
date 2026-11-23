@@ -24,6 +24,27 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
       return;
     }
 
+    if (url.pathname === "/functions/v1/admin-list-users" && request.method() === "POST") {
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify({
+          source: "supabase",
+          accounts: [{
+            id: "e2e-admin-user",
+            email: "admin@bits2bytes.test",
+            displayName: "E2E Admin",
+            role: "admin",
+            status: "active",
+            avatar: "EA",
+            createdAt,
+            updatedAt: createdAt
+          }]
+        })
+      });
+      return;
+    }
+
     if (url.pathname === "/functions/v1/student-mpin-login" && request.method() === "POST") {
       const payload = Buffer.from(JSON.stringify({
         sub: userId,
@@ -172,6 +193,21 @@ test.describe("Supabase Auth portal", () => {
 
     await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
+  });
+
+  test("admin production workspace shows Supabase accounts as explicitly read-only", async ({ page }) => {
+    await mockSupabaseAuth(page, "admin");
+    await page.goto("/");
+    await page.getByRole("button", { name: "Guru / Admin" }).click();
+    await page.getByLabel("Email").fill("admin@bits2bytes.test");
+    await page.getByLabel("Password").fill("valid-e2e-password");
+    await page.getByRole("button", { name: "Masuk" }).click();
+
+    await expect(page.getByRole("heading", { name: "Ruang Admin" })).toBeVisible();
+    await expect(page.getByText("E2E Admin", { exact: true })).toBeVisible();
+    await expect(page.getByText(/Mode produksi hanya-baca/)).toBeVisible();
+    await expect(page.getByText(/Pembuatan akun, perubahan status, dan penugasan tutor belum diaktifkan/)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Tambah Akun/ })).toHaveCount(0);
   });
 
   test("restores the Supabase session after reload and clears it on sign-out", async ({ page }) => {
