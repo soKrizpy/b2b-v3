@@ -132,7 +132,7 @@ test.describe("Production tutor schedule repository", () => {
       return { snapshot, queriedTables };
     });
 
-    expect(result.snapshot).toEqual({ meetings: [], studentCounts: {} });
+    expect(result.snapshot).toEqual({ meetings: [], studentCounts: {}, meetingStudents: [] });
     expect(result.queriedTables).toEqual(["meetings"]);
   });
 });
