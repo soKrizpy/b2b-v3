@@ -61,7 +61,7 @@ export const supabaseChallengeSubmissionRepository = {
     reviewNote: string
   ) {
     try {
-      const actorId = await requireTutor(expectedTutorId);
+      await requireTutor(expectedTutorId);
       if (!Number.isSafeInteger(submissionId) || submissionId <= 0) {
         return { success: false, message: "ID pengumpulan tidak valid." };
       }
