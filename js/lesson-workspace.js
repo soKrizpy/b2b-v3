@@ -31,10 +31,12 @@ export class LessonWorkspace {
    * @param {Object} lessonData - Parsed lesson JSON
    * @param {Object} [currentUser=null] - Student user object
    */
-  constructor(container, lessonData, currentUser = null, repositories = WorkspaceRepositories) {
+  constructor(container, lessonData, currentUser = null, repositories = WorkspaceRepositories, options = {}) {
     this.container = container;
     this.lesson = lessonData;
     this.repositories = createWorkspaceRepositories(repositories);
+    // Production React portal can disable Parent Hub until its data adapters are production-backed.
+    this.parentHubEnabled = options.parentHubEnabled !== false;
     this.stages = lessonData.stages || [];
     if (!currentUser?.id) throw new Error('Sesi siswa diperlukan untuk membuka ruang belajar.');
     this.currentUser = currentUser;
@@ -234,6 +236,11 @@ export class LessonWorkspace {
     if (this.currentScreen === 'dashboard') {
       this.renderDashboard();
     } else if (this.currentScreen === 'parent-hub') {
+      if (!this.parentHubEnabled) {
+        this.currentScreen = 'dashboard';
+        this.renderDashboard();
+        return;
+      }
       this.renderParentHub();
     } else {
       this.renderWorkspace();
@@ -244,6 +251,11 @@ export class LessonWorkspace {
    * Phase 2: Render Parent Hub View
    */
   renderParentHub() {
+    if (!this.parentHubEnabled) {
+      this.currentScreen = 'dashboard';
+      this.renderDashboard();
+      return;
+    }
     if (!this.parentHubView) {
       this.parentHubView = new ParentHubView(this.container, this.currentUser, () => {
         this.parentHubView?.destroy();
@@ -405,7 +417,8 @@ export class LessonWorkspace {
               <p class="daily-sub">Target harian, streak, total poin, dan lencana akan ditampilkan setelah pencatatan gamifikasi terhubung ke data akun. Saat ini Bits2Bytes tidak menampilkan angka contoh sebagai progres asli.</p>
             </div>
 
-            <!-- PARENT HUB: parent-facing area remains inside Student Workspace -->
+            <!-- Parent Hub is hidden from production until its repositories are production-backed. -->
+            ${this.parentHubEnabled ? `
             <section class="card parent-hub-entry-card" aria-labelledby="parent-hub-entry-title">
               <div class="achievements-header">
                 <div class="achieve-icon-wrap" aria-hidden="true">💛</div>
@@ -416,7 +429,17 @@ export class LessonWorkspace {
               </div>
               <p class="daily-sub">Lihat laporan pertemuan, perkembangan bulanan, dan riwayat tagihan belajar ananda.</p>
               <button type="button" class="btn btn-secondary btn-sm" id="btn-open-parent-hub">Buka Ruang Ayah/Bunda →</button>
-            </section>
+            </section>` : `
+            <section class="card parent-hub-entry-card" aria-labelledby="parent-hub-entry-title">
+              <div class="achievements-header">
+                <div class="achieve-icon-wrap" aria-hidden="true">💛</div>
+                <div>
+                  <h4 class="achieve-title" id="parent-hub-entry-title">Ruang Khusus Ayah/Bunda</h4>
+                  <span class="badge badge-not-started">Belum tersedia</span>
+                </div>
+              </div>
+              <p class="daily-sub">Laporan, evaluasi, dan tagihan belum tersambung ke data produksi. Bits2Bytes tidak menampilkan data contoh pada akun asli.</p>
+            </section>`}`
           </div>
         </div>
 
