@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { getTutorMeetingStatusLabel } from "../src/TutorExperience";
+import { getTutorMeetingStatusLabel } from "../src/data/tutor-meeting-status";
 
 test("maps production meeting completion values to tutor-facing labels", () => {
   const base = {
