@@ -1,0 +1,761 @@
+{
+  "schema_version": 1,
+  "modules": [
+    10,
+    31
+  ],
+  "revision": "quiz-quality-pass-1",
+  "preserve_previous_quiz_as": "legacyQuiz",
+  "topics": [
+    {
+      "topic_id": 32,
+      "q2": {
+        "question": "Elemen mana yang tepat ditempatkan di dalam head?",
+        "options": [
+          "h1",
+          "meta charset",
+          "p",
+          "ul"
+        ],
+        "answer_index": 1,
+        "explanation": "Meta charset adalah metadata dokumen dan berada di head."
+      },
+      "q5": {
+        "question": "Mengapa atribut lang=\"id\" berguna pada elemen html?",
+        "options": [
+          "Agar browser mengubah semua gambar",
+          "Agar halaman otomatis diterjemahkan",
+          "Agar bahasa dokumen dikenali oleh teknologi bantu dan browser",
+          "Agar file HTML menjadi lebih kecil"
+        ],
+        "answer_index": 2,
+        "explanation": "Atribut lang membantu pembaca layar dan alat lain mengenali bahasa konten."
+      }
+    },
+    {
+      "topic_id": 33,
+      "q2": {
+        "question": "Jika h1 adalah judul artikel, elemen apa yang tepat untuk judul bagian utama di bawahnya?",
+        "options": [
+          "h2",
+          "h5",
+          "p",
+          "strong"
+        ],
+        "answer_index": 0,
+        "explanation": "h2 menandai bagian utama di bawah judul h1."
+      },
+      "q5": {
+        "question": "Kapan teks sebaiknya dibungkus dengan p?",
+        "options": [
+          "Saat teks menjadi judul utama",
+          "Saat teks merupakan paragraf penjelasan",
+          "Saat teks menjadi tautan",
+          "Saat teks menjadi gambar"
+        ],
+        "answer_index": 1,
+        "explanation": "p digunakan untuk blok paragraf, bukan untuk membuat heading."
+      }
+    },
+    {
+      "topic_id": 34,
+      "q2": {
+        "question": "Apa tujuan href=\"#kontak\" pada sebuah anchor?",
+        "options": [
+          "Membuka gambar baru",
+          "Mengirim formulir",
+          "Menuju elemen dengan id=\"kontak\" pada halaman yang sama",
+          "Mengganti judul tab"
+        ],
+        "answer_index": 2,
+        "explanation": "Anchor dengan tanda # menuju elemen yang memiliki id yang cocok."
+      },
+      "q5": {
+        "question": "Apa yang perlu diperiksa jika anchor link tidak menuju bagian yang benar?",
+        "options": [
+          "Warna tautan",
+          "Ukuran font",
+          "Jumlah paragraf",
+          "Kecocokan nilai href dan id target"
+        ],
+        "answer_index": 3,
+        "explanation": "Href dan id harus sama persis dan target harus tersedia."
+      }
+    },
+    {
+      "topic_id": 17,
+      "q2": {
+        "question": "Atribut apa yang menentukan lokasi file gambar?",
+        "options": [
+          "src",
+          "alt",
+          "title",
+          "class"
+        ],
+        "answer_index": 0,
+        "explanation": "src menentukan path atau alamat gambar."
+      },
+      "q5": {
+        "question": "Apa isi alt yang paling tepat untuk foto kegiatan coding?",
+        "options": [
+          "foto1",
+          "Anak sedang menyusun blok Scratch di laptop",
+          "gambar bagus",
+          "file jpg"
+        ],
+        "answer_index": 1,
+        "explanation": "Alt menjelaskan isi atau fungsi gambar secara informatif."
+      }
+    },
+    {
+      "topic_id": 15,
+      "q2": {
+        "question": "Kapan ol lebih tepat daripada ul?",
+        "options": [
+          "Saat item tidak memiliki urutan",
+          "Saat daftar berisi warna",
+          "Saat urutan langkah harus diikuti",
+          "Saat item harus disembunyikan"
+        ],
+        "answer_index": 2,
+        "explanation": "ol menunjukkan urutan, misalnya langkah kerja."
+      },
+      "q5": {
+        "question": "Di dalam elemen mana setiap item daftar harus ditempatkan?",
+        "options": [
+          "div",
+          "p",
+          "span",
+          "li"
+        ],
+        "answer_index": 3,
+        "explanation": "li adalah elemen item pada daftar ul atau ol."
+      }
+    },
+    {
+      "topic_id": 45,
+      "q2": {
+        "question": "Elemen mana yang tepat untuk judul kolom tabel?",
+        "options": [
+          "th",
+          "td",
+          "tr",
+          "caption"
+        ],
+        "answer_index": 0,
+        "explanation": "th menandai sel header tabel."
+      },
+      "q5": {
+        "question": "Apa fungsi caption pada table?",
+        "options": [
+          "Mengatur warna baris",
+          "Memberi judul atau keterangan untuk tabel",
+          "Membuat tautan eksternal",
+          "Menggabungkan semua sel"
+        ],
+        "answer_index": 1,
+        "explanation": "Caption menjelaskan isi atau tujuan tabel."
+      }
+    },
+    {
+      "topic_id": 46,
+      "q2": {
+        "question": "Agar label terhubung dengan input, atribut apa yang harus cocok?",
+        "options": [
+          "name dan type",
+          "value dan placeholder",
+          "for pada label dan id pada input",
+          "class pada form dan name pada button"
+        ],
+        "answer_index": 2,
+        "explanation": "Nilai for harus sama dengan id input."
+      },
+      "q5": {
+        "question": "Apa manfaat type=\"email\" pada input?",
+        "options": [
+          "Mengirim email otomatis",
+          "Menyimpan email ke database",
+          "Membuat kolom menjadi password",
+          "Memberi validasi format email dasar oleh browser"
+        ],
+        "answer_index": 3,
+        "explanation": "type=email membantu browser memeriksa format alamat email."
+      }
+    },
+    {
+      "topic_id": 47,
+      "q2": {
+        "question": "Elemen semantik mana yang menampung konten utama halaman?",
+        "options": [
+          "main",
+          "nav",
+          "footer",
+          "aside"
+        ],
+        "answer_index": 0,
+        "explanation": "main menandai konten utama halaman."
+      },
+      "q5": {
+        "question": "Kapan article cocok digunakan?",
+        "options": [
+          "Untuk setiap elemen dekoratif",
+          "Untuk konten mandiri yang dapat dipahami sebagai satu unit",
+          "Untuk mengatur jarak antar elemen",
+          "Untuk menyimpan stylesheet"
+        ],
+        "answer_index": 1,
+        "explanation": "article cocok untuk konten mandiri seperti artikel atau kartu berita."
+      }
+    },
+    {
+      "topic_id": 43,
+      "q2": {
+        "question": "Elemen apa yang memberi keterangan pada media di dalam figure?",
+        "options": [
+          "alt",
+          "title",
+          "figcaption",
+          "footer"
+        ],
+        "answer_index": 2,
+        "explanation": "figcaption memberi caption pada konten figure."
+      },
+      "q5": {
+        "question": "Apa perbedaan alt dan figcaption?",
+        "options": [
+          "Keduanya selalu harus berisi kalimat identik",
+          "Alt mengatur ukuran gambar",
+          "Figcaption hanya untuk mengubah warna",
+          "Alt memberi teks alternatif; figcaption memberi keterangan yang terlihat"
+        ],
+        "answer_index": 3,
+        "explanation": "Alt membantu ketika gambar tidak tersedia atau bagi pembaca layar, caption memberi konteks terlihat."
+      }
+    },
+    {
+      "topic_id": 44,
+      "q2": {
+        "question": "Di mana daftar anak harus diletakkan dalam daftar bertingkat?",
+        "options": [
+          "Di dalam li induk",
+          "Langsung di dalam body tanpa pembungkus",
+          "Di dalam title",
+          "Di dalam head"
+        ],
+        "answer_index": 0,
+        "explanation": "Daftar anak ditempatkan di dalam li yang menjadi induknya."
+      },
+      "q5": {
+        "question": "Apa manfaat daftar bertingkat?",
+        "options": [
+          "Mengubah warna daftar",
+          "Menunjukkan hubungan kategori dan subkategori",
+          "Mengubah tabel menjadi gambar",
+          "Menyimpan data form"
+        ],
+        "answer_index": 1,
+        "explanation": "Struktur bertingkat memperlihatkan hierarki informasi."
+      }
+    },
+    {
+      "topic_id": 18,
+      "q2": {
+        "question": "Properti mana yang memberi ruang di dalam border?",
+        "options": [
+          "margin",
+          "outline",
+          "padding",
+          "position"
+        ],
+        "answer_index": 2,
+        "explanation": "Padding adalah ruang antara content dan border."
+      },
+      "q5": {
+        "question": "Jika lebar total kartu perlu mencakup padding dan border, nilai box-sizing apa yang membantu?",
+        "options": [
+          "content-only",
+          "inherit-only",
+          "margin-box",
+          "border-box"
+        ],
+        "answer_index": 3,
+        "explanation": "border-box membuat width mencakup content, padding, dan border."
+      }
+    },
+    {
+      "topic_id": 19,
+      "q2": {
+        "question": "Properti apa yang mengaktifkan layout Flexbox pada nav?",
+        "options": [
+          "display:flex",
+          "font-weight:bold",
+          "text-decoration:none",
+          "border-radius"
+        ],
+        "answer_index": 0,
+        "explanation": "display:flex menjadikan elemen anak sebagai flex items."
+      },
+      "q5": {
+        "question": "Properti apa yang paling langsung mengatur jarak antaritem Flexbox?",
+        "options": [
+          "opacity",
+          "gap",
+          "z-index",
+          "line-height"
+        ],
+        "answer_index": 1,
+        "explanation": "gap memberi jarak antar flex items tanpa margin manual."
+      }
+    },
+    {
+      "topic_id": 24,
+      "q2": {
+        "question": "Mengapa file gambar sebaiknya disimpan dalam folder project?",
+        "options": [
+          "Agar gambar otomatis berubah warna",
+          "Agar halaman tidak perlu HTML",
+          "Agar path aset dapat dikelola dan dibagikan bersama halaman",
+          "Agar tautan tidak bisa diklik"
+        ],
+        "answer_index": 2,
+        "explanation": "Aset lokal yang tersimpan dalam project memudahkan pemindahan dan pengujian halaman."
+      },
+      "q5": {
+        "question": "Apa yang perlu diperiksa setelah halaman pertama dibuat?",
+        "options": [
+          "Hanya ukuran jendela browser",
+          "Hanya warna judul",
+          "Hanya jumlah file",
+          "Struktur, gambar, daftar, tautan, dan hasil di browser"
+        ],
+        "answer_index": 3,
+        "explanation": "Pengujian perlu mencakup seluruh elemen yang digabungkan."
+      }
+    },
+    {
+      "topic_id": 11,
+      "q2": {
+        "question": "Elemen apa yang paling tepat untuk daftar hobi pada halaman biodata?",
+        "options": [
+          "ul dengan li",
+          "table tanpa header",
+          "form",
+          "nav"
+        ],
+        "answer_index": 0,
+        "explanation": "ul dan li menyajikan kumpulan hobi tanpa urutan wajib."
+      },
+      "q5": {
+        "question": "Informasi apa yang sebaiknya tidak dimasukkan ke halaman biodata publik anak?",
+        "options": [
+          "Hobi umum",
+          "Alamat rumah dan nomor telepon pribadi",
+          "Minat belajar",
+          "Karya yang aman dibagikan"
+        ],
+        "answer_index": 1,
+        "explanation": "Hindari membagikan data pribadi sensitif pada halaman publik."
+      }
+    },
+    {
+      "topic_id": 13,
+      "q2": {
+        "question": "Apa tujuan utama halaman About?",
+        "options": [
+          "Menampilkan semua kode JavaScript",
+          "Mengatur ukuran gambar",
+          "Menjelaskan identitas dan tujuan website kepada pengunjung",
+          "Mengumpulkan password"
+        ],
+        "answer_index": 2,
+        "explanation": "About menjelaskan siapa atau apa website tersebut dan tujuan dibuat."
+      },
+      "q5": {
+        "question": "Mengapa isi About sebaiknya dibagi ke beberapa section?",
+        "options": [
+          "Agar jumlah file bertambah",
+          "Agar semua paragraf sama panjang",
+          "Agar heading menjadi dekorasi",
+          "Agar setiap bagian memiliki fokus informasi yang mudah dipindai"
+        ],
+        "answer_index": 3,
+        "explanation": "Section membantu mengelompokkan tujuan, kegiatan, dan informasi pendukung."
+      }
+    },
+    {
+      "topic_id": 48,
+      "q2": {
+        "question": "Elemen mana yang tepat untuk membungkus konten utama halaman profil?",
+        "options": [
+          "main",
+          "head",
+          "title",
+          "script"
+        ],
+        "answer_index": 0,
+        "explanation": "main membungkus konten utama yang ditampilkan pada halaman."
+      },
+      "q5": {
+        "question": "Apa yang perlu diuji sebelum halaman profil dibagikan?",
+        "options": [
+          "Hanya nama file",
+          "Navigasi, gambar, daftar, tautan, dan tampilan pada ukuran layar berbeda",
+          "Hanya warna background",
+          "Hanya jumlah heading"
+        ],
+        "answer_index": 1,
+        "explanation": "Semua bagian interaktif dan konten perlu diperiksa sebelum dibagikan."
+      }
+    },
+    {
+      "topic_id": 49,
+      "q2": {
+        "question": "Apa bagian pertama dari aturan CSS berikut: .card { padding: 16px; }?",
+        "options": [
+          "Selector .card",
+          "Property padding",
+          "Value 16px",
+          "Deklarasi seluruh file"
+        ],
+        "answer_index": 0,
+        "explanation": ".card adalah selector yang memilih elemen dengan class card."
+      },
+      "q5": {
+        "question": "Bagaimana cara menghubungkan file style.css ke HTML?",
+        "options": [
+          "Dengan tag img",
+          "Dengan link rel=\"stylesheet\" di head",
+          "Dengan h1",
+          "Dengan button"
+        ],
+        "answer_index": 1,
+        "explanation": "Link stylesheet memuat aturan CSS eksternal ke dokumen."
+      }
+    },
+    {
+      "topic_id": 50,
+      "q2": {
+        "question": "Property apa yang mengatur jarak vertikal antarbaris teks?",
+        "options": [
+          "font-weight",
+          "text-align",
+          "line-height",
+          "border"
+        ],
+        "answer_index": 2,
+        "explanation": "line-height mengatur tinggi baris dan ruang antarbaris."
+      },
+      "q5": {
+        "question": "Apa praktik tipografi yang membantu pembaca memindai artikel?",
+        "options": [
+          "Menggunakan lima font berbeda",
+          "Membuat semua teks sama besar",
+          "Menghapus subjudul",
+          "Membuat hierarki ukuran dan ketebalan heading yang konsisten"
+        ],
+        "answer_index": 3,
+        "explanation": "Hierarki tipografi membedakan judul, subjudul, dan isi."
+      }
+    },
+    {
+      "topic_id": 51,
+      "q2": {
+        "question": "Bagian box model yang berada di antara content dan border adalah…",
+        "options": [
+          "padding",
+          "margin",
+          "outline",
+          "gap"
+        ],
+        "answer_index": 0,
+        "explanation": "Padding berada di dalam border dan mengelilingi content."
+      },
+      "q5": {
+        "question": "Apa keuntungan box-sizing:border-box?",
+        "options": [
+          "Menghilangkan semua margin",
+          "Lebar yang ditetapkan sudah mencakup padding dan border",
+          "Membuat elemen selalu 100%",
+          "Mengubah posisi menjadi fixed"
+        ],
+        "answer_index": 1,
+        "explanation": "Border-box membuat perhitungan lebar elemen lebih mudah diprediksi."
+      }
+    },
+    {
+      "topic_id": 52,
+      "q2": {
+        "question": "Pada Flexbox, justify-content mengatur item pada…",
+        "options": [
+          "Sumbu silang",
+          "Sumbu utama",
+          "Lapisan z",
+          "Ukuran font"
+        ],
+        "answer_index": 1,
+        "explanation": "justify-content bekerja pada main axis."
+      },
+      "q5": {
+        "question": "Property apa yang mengatur jarak antar flex items?",
+        "options": [
+          "position",
+          "float",
+          "gap",
+          "overflow"
+        ],
+        "answer_index": 2,
+        "explanation": "gap memberi jarak antaritem tanpa margin manual."
+      }
+    },
+    {
+      "topic_id": 53,
+      "q2": {
+        "question": "Jika menu memiliki href=\"#layanan\", elemen tujuan harus memiliki…",
+        "options": [
+          "class=\"layanan\"",
+          "name=\"layanan\"",
+          "href=\"layanan\"",
+          "id=\"layanan\""
+        ],
+        "answer_index": 3,
+        "explanation": "Anchor link mencari elemen dengan id yang sama."
+      },
+      "q5": {
+        "question": "Apa fungsi elemen nav?",
+        "options": [
+          "Menandai kelompok tautan navigasi",
+          "Mengatur ukuran gambar",
+          "Menyimpan data form",
+          "Menjalankan JavaScript"
+        ],
+        "answer_index": 0,
+        "explanation": "nav memberi makna semantik pada area navigasi."
+      }
+    },
+    {
+      "topic_id": 54,
+      "q2": {
+        "question": "Apa fungsi CTA pada hero section?",
+        "options": [
+          "Mengisi ruang kosong",
+          "Mengajak pengunjung melakukan tindakan yang jelas",
+          "Mengganti logo website",
+          "Menyembunyikan kartu"
+        ],
+        "answer_index": 1,
+        "explanation": "Call-to-action mengarahkan pengunjung ke tindakan berikutnya."
+      },
+      "q5": {
+        "question": "Headline hero yang baik seharusnya…",
+        "options": [
+          "Berisi semua detail teknis",
+          "Tidak berkaitan dengan halaman",
+          "Menyampaikan manfaat atau tujuan utama secara ringkas",
+          "Hanya berupa angka"
+        ],
+        "answer_index": 2,
+        "explanation": "Headline membantu pengunjung memahami nilai utama halaman."
+      }
+    },
+    {
+      "topic_id": 55,
+      "q2": {
+        "question": "Mengapa landing page perlu memiliki satu tujuan utama yang jelas?",
+        "options": [
+          "Agar tidak perlu CSS",
+          "Agar semua kartu sama",
+          "Agar pengunjung tidak membaca konten",
+          "Agar struktur, pesan, dan CTA mendukung tindakan yang sama"
+        ],
+        "answer_index": 3,
+        "explanation": "Tujuan utama membuat isi halaman dan CTA lebih fokus."
+      },
+      "q5": {
+        "question": "Apa yang harus diuji pada CTA?",
+        "options": [
+          "Apakah tautan menuju tujuan yang benar",
+          "Apakah tombol selalu berwarna merah",
+          "Apakah jumlah kartu bertambah",
+          "Apakah judul tab berubah"
+        ],
+        "answer_index": 0,
+        "explanation": "CTA harus mengarahkan pengguna ke bagian atau halaman yang benar."
+      }
+    },
+    {
+      "topic_id": 56,
+      "q2": {
+        "question": "Apa fungsi console.log pada tahap belajar JavaScript?",
+        "options": [
+          "Mengubah HTML",
+          "Menampilkan nilai atau pesan pada Developer Console",
+          "Menyimpan data ke database",
+          "Membuat stylesheet"
+        ],
+        "answer_index": 1,
+        "explanation": "console.log membantu memeriksa jalannya kode dan nilai."
+      },
+      "q5": {
+        "question": "Apa cara yang benar menghubungkan file app.js eksternal?",
+        "options": [
+          "Menggunakan img src",
+          "Menggunakan link rel stylesheet",
+          "Menggunakan script src",
+          "Menggunakan table"
+        ],
+        "answer_index": 2,
+        "explanation": "Script src memuat file JavaScript ke halaman."
+      }
+    },
+    {
+      "topic_id": 57,
+      "q2": {
+        "question": "Kapan let lebih tepat daripada const?",
+        "options": [
+          "Saat nilai akan ditugaskan ulang",
+          "Saat nilai tidak pernah berubah",
+          "Saat membuat heading",
+          "Saat menghubungkan CSS"
+        ],
+        "answer_index": 0,
+        "explanation": "let digunakan untuk binding yang nilainya dapat ditugaskan ulang."
+      },
+      "q5": {
+        "question": "Manakah contoh nilai boolean?",
+        "options": [
+          "\"true\" sebagai teks",
+          "true tanpa tanda kutip",
+          "42",
+          "\"nama\""
+        ],
+        "answer_index": 1,
+        "explanation": "Boolean memiliki nilai true atau false tanpa tanda kutip."
+      }
+    },
+    {
+      "topic_id": 58,
+      "q2": {
+        "question": "Apa fungsi addEventListener('click', handler)?",
+        "options": [
+          "Mengubah ukuran tombol",
+          "Menghapus elemen",
+          "Menjalankan handler saat elemen menerima event click",
+          "Membuat file baru"
+        ],
+        "answer_index": 2,
+        "explanation": "Event listener menghubungkan kejadian klik dengan fungsi."
+      },
+      "q5": {
+        "question": "Mengapa listener sebaiknya dipasang pada elemen yang tepat dan satu kali?",
+        "options": [
+          "Agar semua tombol berhenti",
+          "Agar browser mengganti warna",
+          "Agar event tidak dapat dipicu",
+          "Agar satu aksi tidak memanggil handler berulang tanpa sengaja"
+        ],
+        "answer_index": 3,
+        "explanation": "Listener ganda dapat menyebabkan satu klik menjalankan aksi beberapa kali."
+      }
+    },
+    {
+      "topic_id": 59,
+      "q2": {
+        "question": "Apa yang dikembalikan querySelector('#message')?",
+        "options": [
+          "Elemen pertama yang cocok dengan selector tersebut",
+          "Semua elemen pada halaman",
+          "File CSS",
+          "Nilai variabel global"
+        ],
+        "answer_index": 0,
+        "explanation": "querySelector mengembalikan elemen pertama yang cocok atau null."
+      },
+      "q5": {
+        "question": "Property apa yang aman untuk mengubah teks biasa pada elemen?",
+        "options": [
+          "innerHTML selalu",
+          "textContent",
+          "src",
+          "href"
+        ],
+        "answer_index": 1,
+        "explanation": "textContent mengubah teks tanpa mem-parsingnya sebagai HTML."
+      }
+    },
+    {
+      "topic_id": 60,
+      "q2": {
+        "question": "Kapan blok else dijalankan?",
+        "options": [
+          "Saat kondisi if selalu benar",
+          "Sebelum if diperiksa",
+          "Saat kondisi if bernilai false",
+          "Saat file CSS dimuat"
+        ],
+        "answer_index": 2,
+        "explanation": "Else menangani jalur ketika kondisi if tidak terpenuhi."
+      },
+      "q5": {
+        "question": "Mengapa trim() berguna saat memvalidasi input teks?",
+        "options": [
+          "Mengubah huruf menjadi kapital",
+          "Menghapus semua karakter",
+          "Membuat input menjadi angka",
+          "Menghapus spasi di awal dan akhir sebelum memeriksa kosong"
+        ],
+        "answer_index": 3,
+        "explanation": "Input berisi spasi saja akan dianggap kosong setelah trim."
+      }
+    },
+    {
+      "topic_id": 61,
+      "q2": {
+        "question": "Apa fungsi parameter pada function?",
+        "options": [
+          "Menerima nilai yang diberikan saat fungsi dipanggil",
+          "Menghapus fungsi",
+          "Mengatur warna halaman",
+          "Menghubungkan CSS"
+        ],
+        "answer_index": 0,
+        "explanation": "Parameter membuat fungsi menerima input yang dapat dipakai dalam proses."
+      },
+      "q5": {
+        "question": "Apa kegunaan return?",
+        "options": [
+          "Menampilkan alert otomatis",
+          "Mengembalikan hasil dari fungsi kepada pemanggil",
+          "Mengulang fungsi tanpa henti",
+          "Mengubah event"
+        ],
+        "answer_index": 1,
+        "explanation": "Return mengirim nilai hasil fungsi agar dapat digunakan kembali."
+      }
+    },
+    {
+      "topic_id": 62,
+      "q2": {
+        "question": "Mengapa HTML, CSS, dan JavaScript sebaiknya dipisah dalam file yang sesuai?",
+        "options": [
+          "Agar jumlah folder banyak",
+          "Agar browser tidak membaca halaman",
+          "Agar struktur, tampilan, dan perilaku lebih mudah dikelola",
+          "Agar semua kode menjadi satu baris"
+        ],
+        "answer_index": 2,
+        "explanation": "Pemisahan tanggung jawab membuat project lebih mudah dibaca dan diperbaiki."
+      },
+      "q5": {
+        "question": "Apa yang perlu diuji pada mini website interaktif?",
+        "options": [
+          "Hanya judul halaman",
+          "Hanya warna tombol",
+          "Hanya nama file",
+          "Navigasi, tombol, input, perubahan DOM, dan Console"
+        ],
+        "answer_index": 3,
+        "explanation": "Uji alur interaksi dan error, bukan hanya tampilan statis."
+      }
+    }
+  ]
+}
