@@ -4,7 +4,7 @@
  * through asynchronous repositories. Production repositories provide student-scoped, read-only data.
  */
 
-import { createWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
+import { createScopedWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
 
 const TABS = [
   { id: 'sessions', label: 'Laporan Sesi' },
