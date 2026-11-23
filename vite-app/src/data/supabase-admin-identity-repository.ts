@@ -1,5 +1,48 @@
 import { supabase } from "./supabase-client";
 
+type FunctionFailure = { code: string; message: string };
+
+async function readFunctionFailure(
+  data: unknown,
+  error: unknown,
+  fallbackCode: string,
+  fallbackMessage: string,
+): Promise<FunctionFailure> {
+  const readPayload = (value: unknown): FunctionFailure | null => {
+    if (!value || typeof value !== "object") return null;
+    const payload = value as { code?: unknown; error?: unknown; message?: unknown };
+    const message = typeof payload.error === "string"
+      ? payload.error
+      : typeof payload.message === "string" ? payload.message : null;
+    if (!message) return null;
+    return {
+      code: typeof payload.code === "string" ? payload.code : fallbackCode,
+      message,
+    };
+  };
+
+  const direct = readPayload(data);
+  if (direct) return direct;
+
+  const context = error && typeof error === "object"
+    ? (error as { context?: unknown }).context
+    : null;
+  if (context instanceof Response) {
+    try {
+      const fromResponse = readPayload(await context.clone().json());
+      if (fromResponse) return fromResponse;
+    } catch {
+      // Keep the stable fallback below for non-JSON or consumed responses.
+    }
+  }
+
+  const errorMessage = error && typeof error === "object" &&
+    "message" in error && typeof error.message === "string"
+    ? error.message
+    : fallbackMessage;
+  return { code: fallbackCode, message: errorMessage || fallbackMessage };
+}
+
 type AdminAccount = {
   id: string;
   email: string;
@@ -68,7 +111,10 @@ export const supabaseAdminIdentityRepository = {
     const { data, error } = await supabase.functions.invoke("admin-manage-user", {
       body: { action: "create", ...input },
     });
-    if (error || !data?.user) return { error: "CREATE_FAILED", message: data?.error ?? error?.message ?? "Akun gagal dibuat." };
+    if (error || !data?.user) {
+      const failure = await readFunctionFailure(data, error, "CREATE_FAILED", "Akun gagal dibuat.");
+      return { error: failure.code, message: failure.message };
+    }
     return { user: data.user as AdminAccount };
   },
   async updateUser(userId: string, changes: {
@@ -84,7 +130,10 @@ export const supabaseAdminIdentityRepository = {
     const { data, error } = await supabase.functions.invoke("admin-manage-user", {
       body: { action: "update", userId, ...changes },
     });
-    if (error || !data?.user) return { error: "UPDATE_FAILED", message: data?.error ?? error?.message ?? "Akun gagal diperbarui." };
+    if (error || !data?.user) {
+      const failure = await readFunctionFailure(data, error, "UPDATE_FAILED", "Akun gagal diperbarui.");
+      return { error: failure.code, message: failure.message };
+    }
     return { user: data.user as AdminAccount };
   },
   async setAccountStatus(userId: string, status: "active" | "inactive") {
@@ -92,7 +141,10 @@ export const supabaseAdminIdentityRepository = {
     const { data, error } = await supabase.functions.invoke("admin-manage-user", {
       body: { action: "status", userId, status },
     });
-    if (error || !data?.user) return { error: "STATUS_FAILED", message: data?.error ?? error?.message ?? "Status akun gagal diperbarui." };
+    if (error || !data?.user) {
+      const failure = await readFunctionFailure(data, error, "STATUS_FAILED", "Status akun gagal diperbarui.");
+      return { error: failure.code, message: failure.message };
+    }
     return { user: data.user as AdminAccount };
   },
   async activateUser(userId: string) {
