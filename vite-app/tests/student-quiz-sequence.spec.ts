@@ -4,7 +4,7 @@ test.describe("Sequential comprehension quiz", () => {
   test("renders exactly one question at a time and advances by the active index", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
-      const { LessonWorkspace } = await import("/js/lesson-workspace.js");
+      const { LessonWorkspace } = await import("/src/data/lesson-workspace-access.ts");
       const workspace = Object.create(LessonWorkspace.prototype) as {
         currentCheckQuestionIndex: number;
         renderComprehensionCheck: (stage: { questions: Array<Record<string, unknown>> }) => string;
@@ -69,7 +69,7 @@ test.describe("Sequential comprehension quiz", () => {
   test("does not render a next button for an empty quiz", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
-      const { LessonWorkspace } = await import("/js/lesson-workspace.js");
+      const { LessonWorkspace } = await import("/src/data/lesson-workspace-access.ts");
       const workspace = Object.create(LessonWorkspace.prototype) as {
         currentCheckQuestionIndex: number;
         renderComprehensionCheck: (stage: { questions: Array<Record<string, unknown>> }) => string;
