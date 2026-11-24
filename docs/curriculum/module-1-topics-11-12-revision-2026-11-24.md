@@ -76,6 +76,7 @@ Migrations `20261124170000_add_topic_quiz_attempt_snapshots.sql` and `2026112418
 ## Deployment and verification
 
 - Supabase project: `enfqoofluceqrlcjemfu`.
-- Edge Function `student-submit-topic-quiz` version 4 was deployed first; version 5 with the private-snapshot transaction is pending its current CI check before deployment. Existing `verify_jwt=false` platform setting is preserved; the handler independently validates the bearer token with Supabase Auth.
+- Edge Function `student-submit-topic-quiz` is deployed as version 5 with the private-snapshot transaction. Existing `verify_jwt=false` platform setting is preserved; the handler independently validates the bearer token with Supabase Auth.
 - GitHub Actions typecheck/build/browser workflow passed for the function and migration commits.
-- Live authenticated student submission and history rendering still require a real student session and a controlled student-side test. No test attempt was inserted during this revision.
+- GitHub Actions passed for the snapshot function and migration commits. The database transaction was smoke-tested inside a rollback-only SQL block; no test attempt was persisted.
+- Live authenticated student submission and student-side history rendering still require a real student session and a controlled test. No test attempt was inserted during this revision.
