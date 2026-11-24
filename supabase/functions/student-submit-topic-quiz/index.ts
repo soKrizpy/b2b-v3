@@ -169,19 +169,26 @@ Deno.serve(async (req: Request) => {
   const attemptNum = (priorAttempts?.length ?? 0) + 1;
   if (attemptNum > 2) return json({ error: "All quiz attempts have been used" }, 409);
 
-  const { error: insertError } = await admin.from("topic_quiz_attempts").insert({
-    student_id: studentId,
-    topic_id: topicId,
-    attempt_num: attemptNum,
-    score,
-    answers: normalizedAnswers,
-    quiz_version: quizVersion,
-    quiz_snapshot: quizSnapshot,
-  });
+  const { data: savedAttemptId, error: insertError } = await admin.rpc(
+    "save_topic_quiz_attempt_with_snapshot",
+    {
+      p_student_id: studentId,
+      p_topic_id: topicId,
+      p_attempt_num: attemptNum,
+      p_score: score,
+      p_answers: normalizedAnswers,
+      p_quiz_version: quizVersion,
+      p_quiz_snapshot: quizSnapshot,
+    },
+  );
   if (insertError) {
     if (insertError.code === "23505") return json({ error: "Quiz attempt already submitted. Refresh and try again." }, 409);
     console.error("Quiz attempt insert failed:", insertError.message);
     return json({ error: "Quiz result could not be saved" }, 500);
+  }
+  if (!Number.isSafeInteger(savedAttemptId) || Number(savedAttemptId) <= 0) {
+    console.error("Quiz attempt transaction returned an invalid attempt ID.");
+    return json({ error: "Quiz result could not be confirmed" }, 500);
   }
 
   return json({ attemptNumber: attemptNum, score, correctCount: correct, totalQuestions: quiz.length });
