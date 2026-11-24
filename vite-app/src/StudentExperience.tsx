@@ -166,7 +166,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
       {!catalogueLoading && !ready && !failed && <div className="card student-loading" role="status">Memuat materi dan progres belajar…</div>}
       {failed && <div className="card student-loading" role="alert"><strong>Ruang belajar belum bisa dibuka.</strong><p>{failed}</p></div>}
       <div ref={hostRef} className="student-lesson-host" />
-      {!catalogueLoading && selectedModuleId === 10 && <ModuleFinalBoss assessmentId={1} />
+      {!catalogueLoading && selectedModuleId === 10 && <ModuleFinalBoss assessmentId={1} />}
     </section>
   );
 }
