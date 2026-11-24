@@ -66,6 +66,8 @@ export class LessonWorkspace {
     this.quizAnswers = {};
     this.quizSubmitted = false;
     this.quizSubmissionPromise = null;
+    this.currentCheckQuestionIndex = 0;
+    this.checkedQuizQuestionIndexes = new Set();
   }
 
   async init() {
@@ -619,7 +621,13 @@ export class LessonWorkspace {
         this.checkpointStates[cpId] = isChecked;
         this.evaluateCheckpointsProgress();
       }, (questionIndex, selectedIndex) => {
+        this.checkedQuizQuestionIndexes.add(questionIndex);
         void this.handleQuizAnswer(questionIndex, selectedIndex);
+        const nextButton = bodyEl.querySelector('[data-quiz-next]');
+        if (nextButton) {
+          nextButton.hidden = false;
+          nextButton.disabled = false;
+        }
       });
     }
 
@@ -777,14 +785,31 @@ export class LessonWorkspace {
     const questions = stage.questions || [];
     if (questions.length === 0) return '<p>Belum ada soal evaluasi.</p>';
 
-    return questions.map(q => renderQuiz({
-      id: q.id,
-      questionIndex: q.questionIndex,
-      quizType: q.type || 'mcq',
-      question: q.prompt,
-      options: q.options,
-      hint: null
-    })).join('<div style="margin: var(--space-5) 0; border-top: 1px solid var(--color-border-subtle);"></div>');
+    const questionIndex = Math.min(this.currentCheckQuestionIndex, questions.length - 1);
+    const question = questions[questionIndex];
+    const isLastQuestion = questionIndex === questions.length - 1;
+    const progress = Math.round(((questionIndex + 1) / questions.length) * 100);
+
+    return `
+      <section class="comprehension-check" aria-label="Kuis pemahaman">
+        <div class="quiz-progress" aria-live="polite">
+          <div class="quiz-progress-label">Soal ${questionIndex + 1} dari ${questions.length}</div>
+          <div class="progress-bar-bg" role="progressbar" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar-fill" style="width: ${progress}%;"></div>
+          </div>
+        </div>
+        ${renderQuiz({
+          id: question.id,
+          questionIndex,
+          quizType: question.type || 'mcq',
+          question: question.prompt,
+          options: question.options,
+          hint: null
+        })}
+        ${isLastQuestion
+          ? '<p class="quiz-completion-note" role="status">Soal terakhir. Periksa jawaban untuk menyelesaikan kuis.</p>'
+          : '<button type="button" class="btn btn-primary" data-quiz-next hidden disabled>Soal Berikutnya →</button>'}
+      </section>`;
   }
 
   async handleQuizAnswer(questionIndex, selectedIndex) {
@@ -1025,6 +1050,20 @@ export class LessonWorkspace {
     const nextBtn = area.querySelector('#btn-stage-next');
     if (prevBtn) prevBtn.addEventListener('click', () => this.goToStage(this.currentStageIndex - 1));
     if (nextBtn) nextBtn.addEventListener('click', () => this.goToStage(this.currentStageIndex + 1));
+
+    // Sequential comprehension quiz navigation: reveal the next question only
+    // after the current answer has been checked.
+    const quizNext = area.querySelector('[data-quiz-next]');
+    if (quizNext) {
+      quizNext.addEventListener('click', () => {
+        const questions = this.stages.find(stage => stage.id === 'check')?.questions || [];
+        if (!this.checkedQuizQuestionIndexes.has(this.currentCheckQuestionIndex)) return;
+        const nextIndex = this.currentCheckQuestionIndex + 1;
+        if (nextIndex >= questions.length) return;
+        this.currentCheckQuestionIndex = nextIndex;
+        this.renderStageContent();
+      });
+    }
 
     // Slide navigation buttons
     const slidePrev = area.querySelector('#btn-slide-prev');
