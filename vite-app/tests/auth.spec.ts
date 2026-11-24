@@ -429,6 +429,13 @@ test.describe("Supabase Auth portal", () => {
   test("student Final Boss renders questions, submits answers, and refreshes attempt history", async ({ page }) => {
     await mockSupabaseAuth(page, "student");
 
+    const corsHeaders = {
+      "access-control-allow-origin": "http://127.0.0.1:4173",
+      "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
+      "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+      "access-control-max-age": "86400"
+    };
+
     let submittedAnswers: Array<{ questionId: number; selectedOption: string }> = [];
     let submitted = false;
     await page.route(`https://${supabaseHost}/functions/v1/student-module-assessment`, async (route) => {
@@ -506,11 +513,16 @@ test.describe("Supabase Auth portal", () => {
     await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
 
     await page.evaluate(async () => {
-      const [{ createElement }, { createRoot }, { default: ModuleFinalBoss }] = await Promise.all([
+      const [reactModule, reactDomModule, { default: ModuleFinalBoss }] = await Promise.all([
         import("/node_modules/.vite/deps/react.js"),
         import("/node_modules/.vite/deps/react-dom_client.js"),
         import("/src/ModuleFinalBoss.tsx")
       ]);
+      const createElement = reactModule.createElement ?? reactModule.default?.createElement;
+      const createRoot = reactDomModule.createRoot ?? reactDomModule.default?.createRoot;
+      if (typeof createElement !== "function" || typeof createRoot !== "function") {
+        throw new Error("Unable to resolve React DOM client exports for Final Boss test");
+      }
       const mount = document.createElement("div");
       mount.id = "final-boss-component-test";
       document.body.append(mount);
