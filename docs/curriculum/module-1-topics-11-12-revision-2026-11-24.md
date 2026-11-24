@@ -55,11 +55,11 @@ Module: **BASIC VISUAL WEB — HTML & Struktur Halaman** (module ID 10)
 
 ## Historical quiz integrity implementation
 
-Migration `20261124170000_add_topic_quiz_attempt_snapshots.sql` adds nullable `quiz_version` and `quiz_snapshot` fields to `topic_quiz_attempts`.
+Migrations `20261124170000_add_topic_quiz_attempt_snapshots.sql` and `20261124180000_isolate_private_topic_quiz_snapshots.sql` add a nullable `quiz_version` to `topic_quiz_attempts` and a separate service-role-only `topic_quiz_attempt_snapshots` table.
 
 - Existing rows remain NULL in these new fields and are explicitly treated as legacy history; no historical version is fabricated.
-- The `student-submit-topic-quiz` Edge Function now reads the published `quizVersion`, validates question text/options/answer key, and stores a server-side snapshot of question text, options, correct index, and explanation alongside each new attempt.
-- The snapshot is stored only in the service-role-protected attempt table and is not returned to the student response.
+- The `student-submit-topic-quiz` Edge Function now reads the published `quizVersion`, validates question text/options/answer key, and calls a database transaction that stores the attempt and a snapshot of question text, options, correct index, and explanation together.
+- Full snapshots are stored in `topic_quiz_attempt_snapshots`, a separate table with RLS enabled, no `anon`/`authenticated` SELECT grants, and only a `service_role` policy. Students can still read their own score/attempt rows without reading the answer key.
 - Existing submission response shape remains unchanged for frontend compatibility.
 
 ## Validation
@@ -76,6 +76,6 @@ Migration `20261124170000_add_topic_quiz_attempt_snapshots.sql` adds nullable `q
 ## Deployment and verification
 
 - Supabase project: `enfqoofluceqrlcjemfu`.
-- Edge Function `student-submit-topic-quiz` deployed as version 4 with `verify_jwt=false`, preserving its existing platform setting; the handler independently validates the bearer token with Supabase Auth.
+- Edge Function `student-submit-topic-quiz` version 4 was deployed first; version 5 with the private-snapshot transaction is pending its current CI check before deployment. Existing `verify_jwt=false` platform setting is preserved; the handler independently validates the bearer token with Supabase Auth.
 - GitHub Actions typecheck/build/browser workflow passed for the function and migration commits.
 - Live authenticated student submission and history rendering still require a real student session and a controlled student-side test. No test attempt was inserted during this revision.
