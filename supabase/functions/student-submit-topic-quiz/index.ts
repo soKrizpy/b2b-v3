@@ -109,9 +109,20 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Quiz answer count does not match the published quiz" }, 400);
   }
 
+  const quizVersionValue = content.quizVersion;
+  const quizVersion = Number.isSafeInteger(quizVersionValue) && Number(quizVersionValue) > 0
+    ? Number(quizVersionValue)
+    : 1;
   const seen = new Set<number>();
   let correct = 0;
   const normalizedAnswers: Array<{ question_index: number; selected_index: number }> = [];
+  const quizSnapshot: Array<{
+    question_index: number;
+    question: string;
+    options: string[];
+    correct_index: number;
+    explanation: string;
+  }> = [];
   for (const answer of answers) {
     const questionIndex = answer?.questionIndex;
     const selectedIndex = answer?.selectedIndex;
@@ -122,8 +133,11 @@ Deno.serve(async (req: Request) => {
     const question = quiz[Number(questionIndex)];
     const options = Array.isArray(question?.options) ? question.options : [];
     const answerIndex = Number(question?.answer_index);
-    if (!Number.isSafeInteger(answerIndex) || answerIndex < 0 || answerIndex >= options.length) {
-      return json({ error: "Published quiz contains an invalid answer key" }, 422);
+    if (typeof question?.question !== "string" || !question.question.trim() ||
+        options.length < 2 || options.length > 6 ||
+        !options.every((option) => typeof option === "string" && option.trim().length > 0) ||
+        !Number.isSafeInteger(answerIndex) || answerIndex < 0 || answerIndex >= options.length) {
+      return json({ error: "Published quiz contains an invalid question or answer key" }, 422);
     }
     if (!Number.isSafeInteger(selectedIndex) || Number(selectedIndex) < 0 || Number(selectedIndex) >= options.length) {
       return json({ error: "Selected option is invalid" }, 400);
@@ -133,6 +147,13 @@ Deno.serve(async (req: Request) => {
     normalizedAnswers.push({
       question_index: Number(questionIndex),
       selected_index: Number(selectedIndex),
+    });
+    quizSnapshot.push({
+      question_index: Number(questionIndex),
+      question: question.question,
+      options: options as string[],
+      correct_index: answerIndex,
+      explanation: typeof question.explanation === "string" ? question.explanation : "",
     });
   }
 
@@ -154,6 +175,8 @@ Deno.serve(async (req: Request) => {
     attempt_num: attemptNum,
     score,
     answers: normalizedAnswers,
+    quiz_version: quizVersion,
+    quiz_snapshot: quizSnapshot,
   });
   if (insertError) {
     if (insertError.code === "23505") return json({ error: "Quiz attempt already submitted. Refresh and try again." }, 409);
