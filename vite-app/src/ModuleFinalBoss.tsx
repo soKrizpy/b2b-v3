@@ -42,7 +42,7 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
     try {
       const submission = await submitStudentModuleAssessment(assessment.assessment.id, questions.map((question) => ({
         questionId: question.id,
-        selectedOption: answers[question.id],
+        selectedOption: answers[question.id]!,
       })));
       setResult(submission.result);
       setAnswers({});
