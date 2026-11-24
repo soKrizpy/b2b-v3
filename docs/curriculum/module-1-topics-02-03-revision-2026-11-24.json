@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "module_id": 10,
+  "module_title": "BASIC VISUAL WEB — HTML & Struktur Halaman",
+  "revision": "pedagogical-revision-2026-11-24-batch-1",
+  "database_status": "applied-and-verified",
+  "topics": [
+    {
+      "topic_id": 33,
+      "order_index": 2,
+      "title": "Heading dan Paragraf: Menyusun Konten",
+      "learning_nodes": 10,
+      "quiz_count": 5,
+      "challenge_count": 1,
+      "coverage": ["hierarki h1-h6","heading versus paragraph","planning article structure","nested heading relationship","browser structure review"],
+      "challenge": "Artikel dengan satu h1, minimal dua h2, satu h3 sebagai subbagian, dan empat paragraf.",
+      "validation": {"invalid_quiz_items":0,"duplicate_node_ids":0}
+    },
+    {
+      "topic_id": 34,
+      "order_index": 3,
+      "title": "Hyperlink: Tautan Internal dan Eksternal",
+      "learning_nodes": 10,
+      "quiz_count": 5,
+      "challenge_count": 1,
+      "coverage": ["anchor element","href","relative local page path","external https URL","same-page id anchor","link labels and testing"],
+      "challenge": "Dua halaman HTML dengan tautan antarhalaman, tautan eksternal, dan anchor link.",
+      "validation": {"invalid_quiz_items":0,"duplicate_node_ids":0}
+    }
+  ],
+  "preservation": "Existing topic IDs and topic_progress records were not changed. Only lesson_content and descriptions for topic IDs 33 and 34 were updated."
+}
