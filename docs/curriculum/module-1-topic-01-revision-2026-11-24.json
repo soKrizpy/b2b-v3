@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "module_id": 10,
+  "module_title": "BASIC VISUAL WEB — HTML & Struktur Halaman",
+  "revision": "pedagogical-revision-2026-11-24-batch-1",
+  "topic_id": 32,
+  "order_index": 1,
+  "title": "Struktur Dokumen HTML dan Tag Dasar",
+  "database_status": "applied-and-verified",
+  "scope": "Topic 1 lesson_content only; existing topic ID and progress records preserved.",
+  "learning_nodes": [
+    {"order":0,"title":"Tujuan Belajar dan Peta Dokumen","purpose":"Set the learning goal and distinguish HTML structure from CSS and JavaScript."},
+    {"order":1,"title":"Membaca Kerangka HTML","purpose":"Explain doctype, html, head, meta, title, and body with a working code example."},
+    {"order":2,"title":"Kenali Bagian Dokumen","purpose":"Check understanding of element roles."},
+    {"order":3,"title":"Menyiapkan File Kerja","purpose":"Create a single index.html file; no unrelated CSS/JS setup."},
+    {"order":4,"title":"Menyusun Kerangka Langkah demi Langkah","purpose":"Build the document in correct nesting order."},
+    {"order":5,"title":"Lengkapi Kerangka yang Belum Selesai","purpose":"Modify title and body content independently."},
+    {"order":6,"title":"Uji Halaman di Browser","purpose":"Verify tab title and visible body content."},
+    {"order":7,"title":"Perbaiki Kesalahan Umum","purpose":"Troubleshoot misplaced content, title, charset, and tags."},
+    {"order":8,"title":"Checklist Struktur yang Benar","purpose":"Verify document structure."},
+    {"order":9,"title":"Refleksi Singkat","purpose":"Explain why metadata and visible content belong in different sections."}
+  ],
+  "quiz": {
+    "count": 5,
+    "coverage": ["body content", "title role", "document nesting", "UTF-8 charset", "placing visible heading"],
+    "options_per_question": 4,
+    "answer_index_range": [0,3],
+    "validation": "passed"
+  },
+  "challenge": {
+    "title": "Challenge: Halaman Perkenalan Pertamaku",
+    "deliverable": "One HTML page with complete HTML5 skeleton, metadata, one heading, and two paragraphs.",
+    "privacy_guard": "Do not include home address, phone number, or sensitive personal data."
+  },
+  "verification": {
+    "learning_nodes": 10,
+    "quiz_count": 5,
+    "challenge_count": 1,
+    "invalid_node_ids": 0,
+    "duplicate_node_ids": 0,
+    "invalid_quiz_items": 0
+  },
+  "not_yet_done": [
+    "Remaining 15 topics in module 10",
+    "Final topic ordering",
+    "Challenge rubric standardization",
+    "Student browser smoke test"
+  ]
+}
