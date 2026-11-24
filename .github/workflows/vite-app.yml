@@ -47,6 +47,9 @@ jobs:
       - name: Typecheck admin identity Edge Function
         working-directory: .
         run: deno check supabase/functions/admin-manage-user/index.ts
+      - name: Typecheck student module assessment Edge Function
+        working-directory: .
+        run: deno check supabase/functions/student-module-assessment/index.ts
       - name: Test admin deactivation security invariants
         working-directory: .
         run: deno test supabase/functions/_shared/
