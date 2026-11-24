@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 import { adaptSupabaseTopicToLegacyLesson } from "./data/supabase-lesson-adapter";
+import ModuleFinalBoss from "./ModuleFinalBoss";
 
 import type { CurriculumModule, CurriculumTopic } from "./data/domain-contracts";
 // @ts-ignore - Existing JavaScript lesson renderer is reused during migration.
@@ -165,6 +166,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
       {!catalogueLoading && !ready && !failed && <div className="card student-loading" role="status">Memuat materi dan progres belajar…</div>}
       {failed && <div className="card student-loading" role="alert"><strong>Ruang belajar belum bisa dibuka.</strong><p>{failed}</p></div>}
       <div ref={hostRef} className="student-lesson-host" />
+      {!catalogueLoading && selectedModuleId === 10 && <ModuleFinalBoss assessmentId={1} />
     </section>
   );
 }
