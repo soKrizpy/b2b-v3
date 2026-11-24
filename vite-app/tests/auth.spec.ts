@@ -426,4 +426,111 @@ test.describe("Supabase Auth portal", () => {
     });
   }
 
+  test("student Final Boss renders questions, submits answers, and refreshes attempt history", async ({ page }) => {
+    await mockSupabaseAuth(page, "student");
+
+    let submittedAnswers: Array<{ questionId: number; selectedOption: string }> = [];
+    let submitted = false;
+    await page.route(`https://${supabaseHost}/functions/v1/student-module-assessment`, async (route) => {
+      const request = route.request();
+      const headers = {
+        ...corsHeaders,
+        "content-type": "application/json"
+      };
+      if (request.method() === "OPTIONS") {
+        await route.fulfill({ status: 204, headers: corsHeaders });
+        return;
+      }
+      const payload = request.postDataJSON() as {
+        action: "load" | "submit";
+        assessmentId: number;
+        answers?: Array<{ questionId: number; selectedOption: string }>;
+      };
+      if (payload.assessmentId !== 1) {
+        await route.fulfill({ status: 404, headers, body: JSON.stringify({ error: "Assessment unavailable" }) });
+        return;
+      }
+      if (payload.action === "load") {
+        await route.fulfill({
+          status: 200,
+          headers,
+          body: JSON.stringify({
+            assessment: { id: 1, title: "Ujian Basic Visual Web", moduleId: 10 },
+            questions: [
+              {
+                id: 101,
+                questionText: "Apa fungsi HTML?",
+                options: { A: "Mengatur jaringan", B: "Menyusun struktur halaman", C: "Mengolah database", D: "Mengedit gambar" }
+              },
+              {
+                id: 102,
+                questionText: "Atribut untuk tujuan tautan adalah?",
+                options: { A: "src", B: "alt", C: "href", D: "class" }
+              }
+            ],
+            attempts: submitted ? [{
+              attempt_number: 1,
+              score: 50,
+              best_score: 50,
+              submitted_at: "2026-11-24T05:00:00.000Z"
+            }] : [],
+            attemptsRemaining: submitted ? 1 : 2
+          })
+        });
+        return;
+      }
+      submittedAnswers = payload.answers ?? [];
+      submitted = true;
+      await route.fulfill({
+        status: 200,
+        headers,
+        body: JSON.stringify({
+          result: {
+            attemptNumber: 1,
+            score: 50,
+            bestScore: 50,
+            correctCount: 1,
+            totalQuestions: 2,
+            submittedAt: "2026-11-24T05:00:00.000Z"
+          },
+          attemptsRemaining: 1
+        })
+      });
+    });
+
+    await page.goto("/");
+    await page.getByRole("button", { name: "Guru / Admin" }).click();
+    await page.getByLabel("Email").fill("student@bits2bytes.test");
+    await page.getByLabel("Password").fill("valid-e2e-password");
+    await page.getByRole("button", { name: "Masuk" }).click();
+    await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
+
+    await page.evaluate(async () => {
+      const [{ createElement }, { createRoot }, { default: ModuleFinalBoss }] = await Promise.all([
+        import("/node_modules/.vite/deps/react.js"),
+        import("/node_modules/.vite/deps/react-dom_client.js"),
+        import("/src/ModuleFinalBoss.tsx")
+      ]);
+      const mount = document.createElement("div");
+      mount.id = "final-boss-component-test";
+      document.body.append(mount);
+      createRoot(mount).render(createElement(ModuleFinalBoss, { assessmentId: 1 }));
+    });
+
+    await expect(page.getByRole("heading", { name: "Ujian Basic Visual Web" })).toBeVisible();
+    await expect(page.getByText("Apa fungsi HTML?")).toBeVisible();
+    await expect(page.getByText("Atribut untuk tujuan tautan adalah?")).toBeVisible();
+    await page.locator('input[name="assessment-question-101"][value="B"]').check();
+    await page.locator('input[name="assessment-question-102"][value="C"]').check();
+    await page.getByRole("button", { name: "Kirim jawaban Final Boss" }).click();
+
+    await expect(page.getByText("Percobaan 1 selesai — nilai 50/100")).toBeVisible();
+    await expect(page.getByText("Percobaan 1: 50/100")).toBeVisible();
+    await expect(page.getByText("Sisa percobaan:").locator("..")).toContainText("1 dari 2");
+    expect(submittedAnswers).toEqual([
+      { questionId: 101, selectedOption: "B" },
+      { questionId: 102, selectedOption: "C" }
+    ]);
+  });
+
 });
