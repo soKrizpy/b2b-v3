@@ -32,6 +32,7 @@ export class AdminWorkspace {
     this.editingUser = null;
     this.isCreatingUser = false;
     this.isCreatingTutorRel = false;
+    this.schedulePage = 0;
     this.users = [];
     this.assignments = [];
     this.sessions = [];
@@ -449,9 +450,23 @@ export class AdminWorkspace {
     const students = this.users.filter(user => user.role === 'student').filter(user => user.status === 'active');
     const tutors = this.users.filter(user => user.role === 'tutor').filter(user => user.status === 'active');
     const usersById = new Map(this.users.map(user => [user.id, user]));
-    const sessions = this.sessions.sort((a, b) =>
+    const sessions = [...this.sessions].sort((a, b) =>
       new Date(a.scheduledStartAt).getTime() - new Date(b.scheduledStartAt).getTime()
     );
+    const pageSize = 25;
+    const pageCount = Math.max(1, Math.ceil(sessions.length / pageSize));
+    this.schedulePage = Math.max(0, Math.min(this.schedulePage, pageCount - 1));
+    const startIndex = this.schedulePage * pageSize;
+    const visibleSessions = sessions.slice(startIndex, startIndex + pageSize);
+    const renderPagination = (placement) => `
+      <div class="admin-list-pagination" role="group" aria-label="Navigasi daftar sesi" data-schedule-pagination="${placement}">
+        <span aria-live="polite">Menampilkan ${startIndex + 1}-${Math.min(startIndex + pageSize, sessions.length)} dari ${sessions.length} sesi · Halaman ${this.schedulePage + 1}/${pageCount}</span>
+        <div class="admin-list-pagination-controls">
+          <button type="button" class="btn btn-secondary btn-sm" data-schedule-page="previous" ${this.schedulePage === 0 ? 'disabled' : ''}>Sebelumnya</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-schedule-page="next" ${this.schedulePage >= pageCount - 1 ? 'disabled' : ''}>Berikutnya</button>
+        </div>
+      </div>
+    `;
     const todayParts = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit'
     }).formatToParts(new Date());
@@ -516,14 +531,14 @@ export class AdminWorkspace {
 
         <div class="card" style="padding:var(--space-4);">
           <h3 style="margin-top:0;">Daftar sesi</h3>
-          ${sessions.length ? `<div style="display:flex;flex-direction:column;gap:var(--space-3);">
-            ${sessions.map(session => {
+          ${sessions.length ? `${renderPagination('top')}<div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            ${visibleSessions.map(session => {
               const student = usersById.get(session.studentId);
               const tutor = usersById.get(session.tutorId);
               const status = statusLabels[session.status] || session.status;
               const replacementPending = session.replacementRequired && !session.replacementSessionId &&
                 ['cancelled', 'soft_deleted'].includes(session.status);
-              return `<article class="card" style="padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2);">
+              return `<article class="card" data-session-row style="padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2);">
                 <div style="display:flex;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;">
                   <div>
                     <strong>Sesi ke-${Number(session.sessionNumber) || '-' } · ${escapeHtml(student ? student.displayName : session.studentId)}</strong>
@@ -554,7 +569,7 @@ export class AdminWorkspace {
                 ` : ''}
               </article>`;
             }).join('')}
-          </div>` : '<p style="color:var(--color-text-muted);">Belum ada jadwal sesi.</p>'}
+          </div>${renderPagination('bottom')}` : '<p style="color:var(--color-text-muted);">Belum ada jadwal sesi.</p>'}
         </div>
       </section>
     `;
@@ -607,8 +622,9 @@ export class AdminWorkspace {
           (invoice.status === 'unpaid' ? '<button type="button" class="btn btn-secondary btn-sm" data-mark-invoice-paid="' + escapeHtml(invoice.id) + '">Tandai lunas</button>' : '') +
           '</div></div>';
         if (invoice.status === 'draft') {
-          html += '<form data-draft-form="' + escapeHtml(invoice.id) + '" style="border-top:1px solid var(--color-border-subtle);padding-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-3);">' +
-            '<strong>Koreksi draft sebelum diterbitkan</strong><span>Pilih pertemuan yang akan ditagihkan:</span>' +
+          html += '<details class="admin-invoice-correction"><summary><strong>Koreksi draft sebelum diterbitkan</strong></summary>' +
+            '<form data-draft-form="' + escapeHtml(invoice.id) + '" style="border-top:1px solid var(--color-border-subtle);padding-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-3);">' +
+            '<span>Pilih pertemuan yang akan ditagihkan:</span>' +
             (invoice.items || []).map(item => '<label style="display:flex;align-items:center;gap:var(--space-2);"><input type="checkbox" name="sessionIds" value="' + escapeHtml(item.sessionId) + '" checked> Sesi ke-' + (Number(item.sessionNumber) || '-') + ' · ' + escapeHtml(formatInvoiceDate(item.sessionDate)) + ' · ' + formatRupiah(item.amount) + '</label>').join('') +
             '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-3);">' +
             '<label>Diskon (Rp)<input name="discountAmount" type="number" min="0" step="1" value="' + (Number(invoice.discountAmount) || 0) + '" style="width:100%;"></label>' +
@@ -616,7 +632,7 @@ export class AdminWorkspace {
             '<label>Total akhir (Rp)<input name="totalAmount" type="number" min="0" step="1" value="' + (Number(invoice.totalAmount) || 0) + '" required style="width:100%;"></label></div>' +
             '<label>Catatan koreksi total (wajib jika total berbeda dari perhitungan otomatis)<input name="adjustmentNote" type="text" value="' + escapeHtml(invoice.adjustmentNote || '') + '" maxlength="300" style="width:100%;"></label>' +
             '<div style="display:flex;gap:var(--space-2);flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" type="submit">Simpan koreksi</button>' +
-            '<button class="btn btn-primary btn-sm" type="button" data-issue-invoice="' + escapeHtml(invoice.id) + '">Terbitkan tagihan</button></div></form>';
+            '<button class="btn btn-primary btn-sm" type="button" data-issue-invoice="' + escapeHtml(invoice.id) + '">Terbitkan tagihan</button></div></form></details>';
         } else {
           html += '<div>Subtotal: ' + formatRupiah(invoice.subtotalAmount ?? invoice.totalAmount) + ' · Diskon: ' + formatRupiah(invoice.discountAmount || 0) +
             ' · Biaya tambahan: ' + formatRupiah(invoice.additionalCharges || 0) +
@@ -629,6 +645,19 @@ export class AdminWorkspace {
   }
 
   bindActionEvents() {
+    this.container.querySelectorAll('[data-schedule-page]').forEach(button => {
+      button.addEventListener('click', () => {
+        const direction = button.getAttribute('data-schedule-page');
+        const placement = button.closest('[data-schedule-pagination]')?.getAttribute('data-schedule-pagination');
+        this.schedulePage += direction === 'next' ? 1 : -1;
+        this.render();
+        const focusTarget = this.container.querySelector(
+          `[data-schedule-pagination="${placement}"] [data-schedule-page="${direction}"]:not(:disabled)`
+        );
+        if (focusTarget) focusTarget.focus();
+      });
+    });
+
     // Save per-student rates
     const createSeriesForm = this.container.querySelector('#admin-create-series-form');
     if (createSeriesForm) {
