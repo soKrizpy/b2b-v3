@@ -44,7 +44,7 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
     ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100)
     : 0;
   const attemptsRemaining = assessment?.attemptsRemaining ?? 0;
-  const canStart = Boolean(assessment && attemptsRemaining > 0 && questions.length > 0);
+  const canStart = Boolean(assessment && attemptsRemaining > 0);
 
   async function handleSubmit() {
     if (!assessment || !canStart || answeredCount !== questions.length || submitting) return;
