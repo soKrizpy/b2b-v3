@@ -304,9 +304,10 @@ test.describe("Supabase Auth portal", () => {
       await expect(page.getByRole("heading", { name: expectedTitle })).toBeVisible();
       await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
       if (role === "teacher") {
-        await expect(page.getByRole("navigation", { name: "Navigasi bagian tutor" })).toBeVisible();
-        await expect(page.getByRole("link", { name: "Jadwal & Presensi" })).toHaveAttribute("href", "#tutor-schedule");
-        await expect(page.getByRole("link", { name: "Catatan Pembelajaran" })).toHaveAttribute("href", "#tutor-learning-records");
+        const navigation = page.getByRole("navigation", { name: "Bagian halaman" });
+        await expect(navigation).toBeVisible();
+        await expect(navigation.getByRole("link", { name: "Jadwal" })).toHaveAttribute("href", "#tutor-schedule");
+        await expect(navigation.getByRole("link", { name: "Catatan belajar" })).toHaveAttribute("href", "#tutor-learning-records");
       }
       await expect(page.locator("#demo-account")).toHaveCount(0);
     });

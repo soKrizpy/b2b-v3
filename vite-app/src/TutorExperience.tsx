@@ -129,14 +129,6 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
             <article className="card tutor-live-stat"><span>Jadwal mendatang</span><strong>{upcoming.length}</strong></article>
             <article className="card tutor-live-stat"><span>Total relasi siswa pada jadwal*</span><strong>{totalStudentLinks}</strong></article>
           </div>
-          <nav className="tutor-section-nav" aria-label="Navigasi bagian tutor">
-            <a className="btn btn-secondary btn-sm" href="#tutor-schedule">Jadwal &amp; Presensi</a>
-            <a className="btn btn-secondary btn-sm" href="#tutor-learning-records">Catatan Pembelajaran</a>
-            {assignedStudents.length > 0 && <>
-              <a className="btn btn-secondary btn-sm" href="#tutor-report-forms">Laporan &amp; Evaluasi</a>
-              <a className="btn btn-secondary btn-sm" href="#tutor-pending-submissions">Review Proyek</a>
-            </>}
-          </nav>
           <div className="card tutor-live-list" id="tutor-schedule" aria-labelledby="tutor-schedule-heading">
             <div className="tutor-live-list-heading">
               <div><h3 id="tutor-schedule-heading">Jadwal Mengajar</h3><p>20 riwayat terbaru dan hingga 100 jadwal mendatang yang ditautkan ke akun guru ini.</p></div>

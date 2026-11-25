@@ -1,16 +1,31 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { lazy, Suspense, useEffect, useState, type FormEvent } from "react";
 import logoLight from "../../logo-b2b-light.svg";
 import logoDark from "../../logo-b2b-dark.svg";
-import StudentExperience from "./StudentExperience";
-import TutorExperience from "./TutorExperience";
-import AdminExperience from "./AdminExperience";
 import { supabaseProductionCapabilities } from "./data/supabase-production-capabilities";
 import type { AuthSession } from "./data/domain-contracts";
+
+const StudentExperience = lazy(() => import("./StudentExperience"));
+const TutorExperience = lazy(() => import("./TutorExperience"));
+const AdminExperience = lazy(() => import("./AdminExperience"));
 
 const workspaceTitles = {
   admin: "Ruang Admin",
   tutor: "Ruang Tutor",
   student: "Ruang Belajarku"
+} as const;
+
+const navigationByRole = {
+  guest: [{ href: "#portal", label: "Masuk" }],
+  student: [
+    { href: "#student-learning", label: "Belajar" },
+    { href: "#module-final-boss", label: "Ujian akhir" }
+  ],
+  tutor: [
+    { href: "#tutor-schedule", label: "Jadwal" },
+    { href: "#tutor-learning-records", label: "Catatan belajar" },
+    { href: "#tutor-pending-submissions", label: "Review proyek" }
+  ],
+  admin: [{ href: "#admin-workspace", label: "Manajemen" }]
 } as const;
 
 export default function App() {
@@ -101,6 +116,7 @@ export default function App() {
 
   const user = session?.user ?? null;
   const workspaceTitle = user ? workspaceTitles[user.role] : "Bits2Bytes";
+  const sidebarNavigation = navigationByRole[user?.role ?? "guest"];
 
   return (
     <div className="app-shell b2b-vite-shell">
@@ -109,9 +125,19 @@ export default function App() {
           <img src={theme === "dark" ? logoDark : logoLight} alt="Bits2Bytes" className="brand-logo" width="36" height="36" />
           <div><div className="brand-title">Bits2Bytes</div><div className="brand-subtitle">Tempat belajar coding</div></div>
         </div>
-        <nav className="sidebar-content" aria-label="Menu">
-          <div><div className="nav-section-title">Menu utama</div><ul className="nav-list"><li className="nav-item"><a className="nav-link active" href="#portal" aria-current="page"><span className="nav-icon" aria-hidden="true">🚪</span><span>{user ? workspaceTitle : "Masuk"}</span></a></li></ul></div>
-          <div className="sidebar-footer b2b-vite-sidebar-note"><strong>Belajar, berkarya, dan bertumbuh!</strong><small>Temukan hal baru dan buat karya hebat bersama Bits2Bytes.</small></div>
+        <nav className="sidebar-content" aria-label="Bagian halaman">
+          <div>
+            <div className="nav-section-title">{user ? workspaceTitle : "Akun"}</div>
+            <ul className="nav-list">
+              {sidebarNavigation.map((item, index) => (
+                <li className="nav-item" key={item.href}>
+                  <a className={`nav-link${index === 0 ? " active" : ""}`} href={item.href} aria-current={index === 0 ? "page" : undefined}>
+                    <span>{item.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </nav>
         <div className="sidebar-footer"><small>Bits2Bytes Learning</small></div>
       </aside>
@@ -156,9 +182,11 @@ export default function App() {
             </form>
           </section>}
 
-          {!authLoading && user?.role === "student" && <StudentExperience user={{ ...user, avatar: user.avatar ?? undefined, gradeLevel: user.gradeLevel ?? undefined }} />}
-          {!authLoading && user?.role === "tutor" && <TutorExperience user={user} />}
-          {!authLoading && user?.role === "admin" && <AdminExperience />}
+          {!authLoading && user && <Suspense fallback={<section className="card student-loading" role="status">Menyiapkan ruang kerja…</section>}>
+            {user.role === "student" && <StudentExperience user={{ ...user, avatar: user.avatar ?? undefined, gradeLevel: user.gradeLevel ?? undefined }} />}
+            {user.role === "tutor" && <TutorExperience user={user} />}
+            {user.role === "admin" && <AdminExperience />}
+          </Suspense>}
         </main>
       </div>
     </div>

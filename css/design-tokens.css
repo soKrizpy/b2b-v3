@@ -49,9 +49,9 @@
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
   --radius-pill: 9999px;
   --radius-full: 9999px;
 
@@ -111,34 +111,34 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  /* Backgrounds & Surfaces (Sky-Blue Atmosphere & Elevated White Cards) */
-  --color-bg-canvas: #ebf5fb;
+  /* Calm, practical education palette: content should lead, not decoration. */
+  --color-bg-canvas: #f6f8fb;
   --color-bg-surface: #ffffff;
   --color-bg-surface-elevated: #ffffff;
-  --color-bg-surface-muted: #e1effa;
-  --color-bg-surface-subtle: #f4f9fd;
-  --color-bg-surface-hover: #e8f4fc;
-  --color-bg-surface-active: #d4e9f7;
+  --color-bg-surface-muted: #eef2f7;
+  --color-bg-surface-subtle: #fafbfd;
+  --color-bg-surface-hover: #eef4fb;
+  --color-bg-surface-active: #e3edf8;
 
   /* Borders & Dividers (Soft Tinted Sky Dividers) */
-  --color-border-subtle: #d6e8f5;
-  --color-border-default: #b9d8ee;
-  --color-border-strong: #85b8db;
+  --color-border-subtle: #e0e6ed;
+  --color-border-default: #c7d2df;
+  --color-border-strong: #94a8bd;
 
   /* Text & Foreground */
-  --color-text-primary: #0f2742;
-  --color-text-secondary: #335372;
-  --color-text-muted: #5e7d9b;
-  --color-text-placeholder: #8ea8c2;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-placeholder: #94a3b8;
   --color-text-inverse: #ffffff;
 
   /* Primary Brand Action (Bright Turquoise / Sky Action) */
-  --color-primary: #0284c7;
-  --color-primary-hover: #0369a1;
-  --color-primary-active: #075985;
-  --color-primary-subtle: #e0f2fe;
+  --color-primary: #2563a9;
+  --color-primary-hover: #1e4f87;
+  --color-primary-active: #183f6d;
+  --color-primary-subtle: #e8f0fa;
   --color-primary-text: #ffffff;
-  --color-primary-border: #38bdf8;
+  --color-primary-border: #8eb5df;
 
   /* Status Colors (Vibrant, Friendly) */
   --color-success: #15803d;
@@ -191,13 +191,13 @@
   --color-disabled-border: #b9d8ee;
 
   /* Remembero Soft Multi-layer Shadows & Elevation */
-  --shadow-xs: 0 1px 2px rgba(12, 74, 110, 0.04);
-  --shadow-sm: 0 3px 8px rgba(12, 74, 110, 0.06), 0 1px 3px rgba(12, 74, 110, 0.04);
-  --shadow-md: 0 8px 18px -2px rgba(12, 74, 110, 0.08), 0 3px 6px -2px rgba(12, 74, 110, 0.04);
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 10px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 14px 28px -4px rgba(12, 74, 110, 0.10), 0 6px 12px -4px rgba(12, 74, 110, 0.05);
   --shadow-xl: 0 22px 42px -6px rgba(12, 74, 110, 0.12), 0 8px 16px -4px rgba(12, 74, 110, 0.05);
-  --shadow-card: 0 10px 25px -4px rgba(12, 74, 110, 0.08), 0 4px 10px -2px rgba(12, 74, 110, 0.04);
-  --shadow-card-hover: 0 18px 36px -6px rgba(12, 74, 110, 0.12), 0 8px 16px -4px rgba(12, 74, 110, 0.06);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 6px 16px rgba(15, 23, 42, 0.10);
   --shadow-drawer: -8px 0 28px rgba(12, 74, 110, 0.14);
   --shadow-glow-cyan: 0 0 20px rgba(14, 165, 233, 0.35);
   --shadow-glow-amber: 0 0 20px rgba(245, 158, 11, 0.35);

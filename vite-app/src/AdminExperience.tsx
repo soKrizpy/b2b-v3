@@ -47,7 +47,7 @@ export default function AdminExperience() {
     <section className="admin-experience" aria-label="Ruang Admin" aria-busy={status === "loading"}>
       {status === "loading" && <div className="card admin-loading" role="status">Menyiapkan ruang admin…</div>}
       {status === "error" && <div className="card admin-loading" role="alert"><strong>Ruang Admin tidak dapat dibuka.</strong><p>{errorMessage}</p></div>}
-      <div ref={hostRef} className="admin-workspace-host" />
+      <div ref={hostRef} id="admin-workspace" className="admin-workspace-host" />
     </section>
   );
 }
