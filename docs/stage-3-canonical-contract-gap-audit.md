@@ -528,3 +528,24 @@ This is compensating consistency, not a distributed transaction: Supabase Auth a
 - Follow-up compatibility fix for legacy phone fallback: `5a0cc8bc098929eadc48453ac0d060ecae685ec6`.
 - Vite App CI was triggered for the first code commit and is still being monitored. The final branch tip is the follow-up commit; do not claim its CI passed until a run for that exact SHA is confirmed.
 - Branch remains `preview`; `main` and production Supabase data/schema were not changed.
+
+## Follow-up audit — schedule-to-topic release path (2026-11-25)
+
+Read-only source verification on Preview commit `4db7d6e96a31897dae543f544c70025cfa43e24a` confirms the schedule mapping gap is present in both the Student and Admin paths:
+
+- `StudentExperience.tsx` loads every published Topic for every active assigned Module. It does not read the student's upcoming meetings or filter Topics by `module_id` / `topic_id`.
+- The Admin recurring-schedule form in `js/admin/admin-workspace.js` collects student, tutor, start date/time, weekdays, meeting count, duration, and meeting URL. It has no Module or Topic selector.
+- `RecurringSessionSeriesInput` likewise has no Module/Topic fields, and `supabase-class-session-repository.ts` calls `create_recurring_meeting_series` without either association.
+- The current recurring-series SQL function signature accepts student/tutor/date/time/weekdays/count/duration/URL only. Its inserted meeting rows therefore do not receive a curriculum mapping.
+- Replacement-session SQL copies `module_id` and `topic_id` from the original meeting; it cannot repair a missing association.
+- The prior aggregate audit recorded 532 meetings, with only 14 having both mapping fields and 518 missing at least one. Do not infer mappings from titles, session numbers, or chronological order.
+
+Consequences and safe next step:
+
+1. Do not enable a strict schedule-based Topic gate yet; it would strand students whose legacy/new meetings lack mapping.
+2. Add Module/Topic association to the Admin scheduling workflow and its typed input/RPC only after defining how a recurring series advances Topic references. A single fixed Topic for every meeting in a series would be incorrect for multi-session progression.
+3. Define an explicit legacy policy for unmapped meetings and an approved manual mapping/backfill workflow. Do not auto-backfill.
+4. Keep Topic Quiz formative; it must not affect release.
+5. Final Boss remains blocked from implementation until authoritative whole-Topic completion is defined and can be checked server-side. `practice-completed` only represents checkpoint completion in the Practice stage and is not proof that all six Topic stages are complete.
+
+No application source, production database, migration, RLS policy, Auth user, or Vercel setting was changed in this follow-up. No deployment was performed.
