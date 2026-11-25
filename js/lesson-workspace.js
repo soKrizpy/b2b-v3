@@ -66,6 +66,7 @@ export class LessonWorkspace {
 
     this.activeStoreSubmission = null;
     this.quizAnswers = {};
+    this.quizAttemptHistory = [];
     this.quizSubmitted = false;
     this.quizSubmissionPromise = null;
     this.currentCheckQuestionIndex = 0;
@@ -88,6 +89,9 @@ export class LessonWorkspace {
       const progress = await this.repositories.learning.getTopicStageProgress(this.currentUser.id, this.lesson.id);
       if (this.destroyed) return;
       this.stageProgress = Object.fromEntries(progress.map(item => [item.stageKey, item.status]));
+      this.quizAttemptHistory = await this.repositories.learning.getTopicQuizAttempts(this.currentUser.id, this.lesson.id);
+      if (this.destroyed) return;
+      this.quizSubmitted = this.quizAttemptHistory.length > 0;
     }
     const activeSub = await this.repositories.learning.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
     if (this.destroyed) return;
@@ -781,6 +785,21 @@ export class LessonWorkspace {
 
   renderComprehensionCheck(stage) {
     const questions = stage.questions || [];
+    if (this.quizSubmitted && this.quizAttemptHistory.length > 0) {
+      const bestScore = Math.max(...this.quizAttemptHistory.map(attempt => attempt.score));
+      const attemptsHtml = this.quizAttemptHistory.map(attempt =>
+        `<li>Percobaan ${attempt.attemptNumber}: <strong>${attempt.score}/100</strong></li>`
+      ).join('');
+      const attemptsUsed = this.quizAttemptHistory.length;
+      return `
+        <section class="quiz-result-summary" role="status" aria-live="polite">
+          <h4>Hasil Kuis Tersimpan</h4>
+          <p>Nilai terbaik: <strong>${bestScore}/100</strong></p>
+          <p>Percobaan digunakan: ${attemptsUsed} dari 2</p>
+          <ul>${attemptsHtml}</ul>
+          <p>Riwayat ini diambil dari akun Supabase kamu. Kamu bisa melanjutkan setelah tahap sebelumnya tersimpan.</p>
+        </section>`;
+    }
     if (questions.length === 0) return '<p>Belum ada soal evaluasi.</p>';
 
     const questionIndex = Math.min(this.currentCheckQuestionIndex, questions.length - 1);
@@ -829,7 +848,16 @@ export class LessonWorkspace {
       questions.map((_, index) => ({ questionIndex: index, selectedIndex: this.quizAnswers[index] }))
     ).then(result => {
       this.quizSubmitted = true;
+      this.quizAttemptHistory = [
+        ...this.quizAttemptHistory,
+        {
+          attemptNumber: result.attemptNumber,
+          score: result.score,
+          submittedAt: new Date().toISOString()
+        }
+      ];
       this.updateStageNextButton();
+      this.renderStageContent();
       showToast({
         title: 'Hasil kuis tersimpan',
         message: `Nilai kamu ${result.score}/100 (percobaan ${result.attemptNumber} dari 2).`,
@@ -996,9 +1024,9 @@ export class LessonWorkspace {
 
         <div class="submission-form">
           <div class="form-group">
-            <label for="submission-link" class="form-label">Link Proyek Scratch Publik (URL)</label>
+            <label for="submission-link" class="form-label">Link Proyek ${escapeHtml(this.lesson.requiredTool?.name || 'Karya')} (URL)</label>
             <input type="url" id="submission-link" class="form-control"
-                   placeholder="https://scratch.mit.edu/projects/..."
+                   placeholder="${escapeHtml(this.lesson.requiredTool?.url || 'https://tautan-proyek-kamu.example/')}"
                    ${isFormDisabled ? 'disabled' : ''}
                    value="${escapeHtml(projectUrl || (this.submissionData && this.submissionData.link) || '')}">
           </div>
@@ -1066,7 +1094,7 @@ export class LessonWorkspace {
           && checkpoints.every(checkpoint => this.checkpointStates[checkpoint.id] === true);
       }
       case 'check':
-        return this.quizSubmitted;
+        return this.quizSubmitted || this.quizAttemptHistory.length > 0;
       case 'challenge':
         return Boolean(this.activeStoreSubmission);
       case 'submission':
@@ -1179,17 +1207,19 @@ export class LessonWorkspace {
         if (!link) {
           showToast({
             title: 'Tautan Diperlukan',
-            message: 'Masukkan tautan link proyek Scratch kamu sebelum mengirim.',
+            message: `Masukkan tautan proyek ${this.lesson.requiredTool?.name || ''} sebelum mengirim.`.trim(),
             type: 'warning'
           });
           if (linkInput) linkInput.focus();
           return;
         }
 
-        if (!this.isValidUrl(link)) {
+        if (!this.isValidSubmissionUrl(link)) {
           showToast({
             title: 'Tautan Tidak Valid',
-            message: 'Harap masukkan URL yang sah (diawali https:// atau http://).',
+            message: this.lesson.requiredTool?.name
+              ? `Gunakan tautan proyek dari ${this.lesson.requiredTool.name} yang diawali https:// atau http://.`
+              : 'Harap masukkan URL yang sah (diawali https:// atau http://).',
             type: 'error'
           });
           if (linkInput) linkInput.focus();
@@ -1214,8 +1244,10 @@ export class LessonWorkspace {
             status: 'submitted',
             checkpointsPassed,
             checkpointsTotal,
-            // Quiz attempts are not persisted yet; do not report a fabricated score.
-            quizScore: null,
+            // The authoritative quiz score is stored in topic_quiz_attempts.
+            quizScore: this.quizAttemptHistory.length
+              ? Math.max(...this.quizAttemptHistory.map(attempt => attempt.score))
+              : null,
             submittedAt
           });
           if (!subRecord) throw new Error('Data proyek belum berhasil disimpan.');
@@ -1281,6 +1313,20 @@ export class LessonWorkspace {
     this.saveProgress({ slideIndex: index });
 
     this.renderStageContent();
+  }
+
+  isValidSubmissionUrl(value) {
+    try {
+      const submitted = new URL(value);
+      if (!['http:', 'https:'].includes(submitted.protocol)) return false;
+      const requiredToolUrl = this.lesson.requiredTool?.url;
+      if (!requiredToolUrl) return true;
+      const requiredHost = new URL(requiredToolUrl).hostname.replace(/^www\\./i, '').toLowerCase();
+      const submittedHost = submitted.hostname.replace(/^www\\./i, '').toLowerCase();
+      return submittedHost === requiredHost || submittedHost.endsWith(`.${requiredHost}`);
+    } catch {
+      return false;
+    }
   }
 
   formatProgressState(state) {
