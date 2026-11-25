@@ -628,7 +628,7 @@ create or replace function public.create_recurring_meeting_series(
   p_weekdays integer[],
   p_target_count integer,
   p_duration_minutes integer,
-  p_meeting_url text
+  p_meeting_url text DEFAULT NULL
 )
 returns setof public.meetings
 language plpgsql
