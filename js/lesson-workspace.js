@@ -707,26 +707,39 @@ export class LessonWorkspace {
     const stage = this.stages.find(s => s.id === 'practice');
     if (!stage || !stage.content || !stage.content.checkpoints) return;
 
-    const total = stage.content.checkpoints.length;
-    const checkedCount = Object.values(this.checkpointStates).filter(Boolean).length;
+    const checkpoints = stage.content.checkpoints;
+    const total = checkpoints.length;
+    const checkedCount = checkpoints.filter(checkpoint => this.checkpointStates[checkpoint.id] === true).length;
+    const previousState = this.progressState;
+    let nextState = previousState;
 
-    // Persist checkpoint states
-    this.saveProgress({ checkpoints: this.checkpointStates });
+    if (checkedCount === total && !['submitted', 'approved'].includes(previousState)) {
+      nextState = 'practice-completed';
+    } else if (checkedCount < total && previousState === 'practice-completed') {
+      nextState = 'in-progress';
+    }
 
-    if (checkedCount === total && this.progressState !== 'submitted' && this.progressState !== 'approved') {
-      this.saveProgress({ state: 'practice-completed', checkpoints: this.checkpointStates });
+    // Persist checkpoint and derived practice status together.
+    this.saveProgress({ state: nextState, checkpoints: this.checkpointStates });
+
+    if (nextState !== previousState) {
+      const badgeEl = this.container.querySelector('.workspace-top-bar .badge');
+      if (badgeEl) {
+        const badgeClass = nextState === 'practice-completed'
+          ? 'badge-practice-completed'
+          : 'badge-in-progress';
+        badgeEl.className = `badge ${badgeClass}`;
+        badgeEl.textContent = `Status: ${this.formatProgressState(nextState)}`;
+      }
+    }
+
+    if (nextState === 'practice-completed' && previousState !== 'practice-completed') {
       showToast({
         title: 'Status Diperbarui 🎉',
         message: 'Semua langkah latihan selesai! Status: Latihan selesai.',
         type: 'success',
         duration: 3500
       });
-      // Re-render header badge
-      const badgeEl = this.container.querySelector('.workspace-top-bar .badge');
-      if (badgeEl) {
-        badgeEl.className = 'badge badge-practice-completed';
-        badgeEl.textContent = 'Status: Latihan selesai';
-      }
     }
   }
 
