@@ -215,6 +215,23 @@ export function adaptSupabaseTopicToLegacyLesson(
       url: tool.url,
       instructions: asText(tool.instructions)
     };
+  } else {
+    // Legacy curriculum topics may identify their required tool only in the
+    // published challenge instructions. Keep the inferred allowlist explicit.
+    const challengeContext = `${topic.title} ${asText(firstChallenge.instructions)}`.toLowerCase();
+    if (challengeContext.includes("tinkercad")) {
+      lesson.requiredTool = {
+        name: "Tinkercad",
+        url: "https://www.tinkercad.com/",
+        instructions: "Bagikan tautan proyek Tinkercad yang dapat dibuka guru."
+      };
+    } else if (challengeContext.includes("scratch")) {
+      lesson.requiredTool = {
+        name: "Scratch",
+        url: "https://scratch.mit.edu/",
+        instructions: "Bagikan tautan proyek Scratch yang dapat dibuka guru."
+      };
+    }
   }
 
   return lesson;
