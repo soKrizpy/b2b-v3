@@ -1,6 +1,6 @@
 import { supabase } from "./supabase-client";
 import { validateLessonProgressUpdate } from "./lesson-progress-validation";
-import { submitStudentTopicQuiz, type TopicQuizAnswer } from "./supabase-quiz-repository";
+import { getStudentTopicQuizAttempts, submitStudentTopicQuiz, type TopicQuizAnswer } from "./supabase-quiz-repository";
 import {
   getStudentLessonProgress,
   saveStudentLessonProgress,
@@ -178,6 +178,16 @@ export function createSupabaseLegacyLearningBridge() {
 
       writeQueue = operation.catch(() => undefined);
       return operation;
+    },
+
+    async getTopicQuizAttempts(studentId: string, lessonKey: string) {
+      const client = supabase;
+      if (!client) throw new Error("Konfigurasi Supabase belum tersedia.");
+      const { data, error } = await client.auth.getUser();
+      if (error || !data.user || data.user.id !== studentId) {
+        throw new Error("Identitas siswa tidak cocok dengan sesi aktif.");
+      }
+      return getStudentTopicQuizAttempts(parseTopicId(lessonKey));
     },
 
     async submitTopicQuizAttempt(topicId: number, answers: TopicQuizAnswer[]) {
