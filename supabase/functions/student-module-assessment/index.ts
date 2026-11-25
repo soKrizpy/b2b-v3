@@ -71,27 +71,20 @@ Deno.serve(async (req: Request) => {
 
   const payload = body as {
     action?: unknown;
-    assessmentId?: unknown;
+    moduleId?: unknown;
     answers?: unknown;
   };
-  if (!Number.isSafeInteger(payload?.assessmentId) || Number(payload.assessmentId) <= 0 ||
+  if (!Number.isSafeInteger(payload?.moduleId) || Number(payload.moduleId) <= 0 ||
       (payload.action !== "load" && payload.action !== "submit")) {
     return json({ error: "Invalid assessment request" }, 400);
   }
 
-  const assessmentId = Number(payload.assessmentId);
-  const { data: assessment, error: assessmentError } = await admin
-    .from("module_assessments")
-    .select("id, module_id, title")
-    .eq("id", assessmentId)
-    .maybeSingle();
-  if (assessmentError) return json({ error: "Unable to load assessment" }, 500);
-  if (!assessment) return json({ error: "Assessment unavailable" }, 404);
+  const moduleId = Number(payload.moduleId);
 
   const { data: moduleRow, error: moduleError } = await admin
     .from("modules")
     .select("is_active")
-    .eq("id", assessment.module_id)
+    .eq("id", moduleId)
     .maybeSingle();
   if (moduleError) return json({ error: "Unable to verify module" }, 500);
   if (!moduleRow?.is_active) return json({ error: "Module unavailable" }, 404);
@@ -100,11 +93,39 @@ Deno.serve(async (req: Request) => {
     .from("student_modules")
     .select("id")
     .eq("student_id", studentId)
-    .eq("module_id", assessment.module_id)
+    .eq("module_id", moduleId)
     .eq("status", "active")
     .maybeSingle();
   if (enrollmentError) return json({ error: "Unable to verify enrollment" }, 500);
   if (!enrollment) return json({ error: "You are not enrolled in this module" }, 403);
+
+  const { data: completion, error: completionError } = await admin.rpc("student_module_topic_completion", {
+    p_student_id: studentId,
+    p_module_id: moduleId
+  });
+  if (completionError) {
+    console.error("Module topic completion check failed:", completionError.message);
+    return json({ error: "Unable to verify Topic completion" }, 500);
+  }
+  const completionRow = Array.isArray(completion) ? completion[0] : completion;
+  if (completionRow?.total_topics !== 16) {
+    return json({ error: "Final Boss requires exactly 16 published Topics in this module" }, 409);
+  }
+  if (completionRow.completed_topics !== 16) {
+    return json({ error: "Complete all 16 Topics before starting the Final Boss" }, 403);
+  }
+
+  const { data: assessments, error: assessmentError } = await admin
+    .from("module_assessments")
+    .select("id, module_id, title")
+    .eq("module_id", moduleId);
+  if (assessmentError) return json({ error: "Unable to load module assessment" }, 500);
+  if (!assessments?.length) return json({ error: "No Final Boss is configured for this module" }, 404);
+  if (assessments.length !== 1) {
+    return json({ error: "This module has an ambiguous Final Boss configuration" }, 409);
+  }
+  const assessment = assessments[0];
+  const assessmentId = assessment.id;
 
   const { data: questions, error: questionsError } = await admin
     .from("module_assessment_questions")
@@ -112,7 +133,19 @@ Deno.serve(async (req: Request) => {
     .eq("assessment_id", assessmentId)
     .order("order_index", { ascending: true });
   if (questionsError) return json({ error: "Unable to load assessment questions" }, 500);
-  if (!questions?.length) return json({ error: "Assessment has no questions" }, 404);
+  if (questions?.length !== 20) {
+    return json({ error: "Final Boss must contain exactly 20 questions" }, 409);
+  }
+  if (questions.some((question) =>
+    !question.question_text?.trim()
+    || !question.option_a?.trim()
+    || !question.option_b?.trim()
+    || !question.option_c?.trim()
+    || !question.option_d?.trim()
+    || !OPTION_KEYS.includes(question.correct_option as OptionKey)
+  )) {
+    return json({ error: "Final Boss contains an invalid question or answer key" }, 422);
+  }
 
   const { data: priorAttempts, error: attemptsError } = await admin
     .from("module_assessment_attempts")
@@ -121,6 +154,14 @@ Deno.serve(async (req: Request) => {
     .eq("assessment_id", assessmentId)
     .order("attempt_number", { ascending: true });
   if (attemptsError) return json({ error: "Unable to load assessment history" }, 500);
+
+  const { data: certificate, error: certificateError } = await admin
+    .from("certificates")
+    .select("student_id, module_id, score, tier, certificate_number, issued_at, verification_token")
+    .eq("student_id", studentId)
+    .eq("module_id", moduleId)
+    .maybeSingle();
+  if (certificateError) return json({ error: "Unable to load certificate" }, 500);
 
   if (payload.action === "load") {
     return json({
@@ -136,12 +177,21 @@ Deno.serve(async (req: Request) => {
         },
       })),
       attempts: priorAttempts ?? [],
-      attemptsRemaining: Math.max(0, 2 - (priorAttempts?.length ?? 0)),
+      attemptsRemaining: Math.max(0, 1 - (priorAttempts?.length ?? 0)),
+      certificate: certificate ? {
+        studentId: certificate.student_id,
+        moduleId: certificate.module_id,
+        score: certificate.score,
+        tier: certificate.tier,
+        certificateNumber: certificate.certificate_number,
+        issuedAt: certificate.issued_at,
+        verificationToken: certificate.verification_token,
+      } : null,
     });
   }
 
-  if (!Array.isArray(payload.answers) || payload.answers.length !== questions.length) {
-    return json({ error: "Answer count does not match the assessment" }, 400);
+  if (!Array.isArray(payload.answers) || payload.answers.length > questions.length) {
+    return json({ error: "Answer count exceeds the assessment question count" }, 400);
   }
   const answerById = new Map<number, OptionKey>();
   for (const rawAnswer of payload.answers as Array<{ questionId?: unknown; selectedOption?: unknown }>) {
@@ -158,10 +208,12 @@ Deno.serve(async (req: Request) => {
   const answerSnapshot = [];
   for (const question of questions) {
     const selectedOption = answerById.get(question.id);
-    if (!selectedOption) return json({ error: "Every question must be answered" }, 400);
     if (!OPTION_KEYS.includes(question.correct_option as OptionKey)) {
       return json({ error: "Assessment contains an invalid answer key" }, 422);
     }
+    // Omitted answers are intentionally retained in the immutable snapshot and
+    // scored as incorrect. A client must never be able to turn an unanswered
+    // question into a validation error that preserves the only Final Boss try.
     const isCorrect = selectedOption === question.correct_option;
     if (isCorrect) correctCount += 1;
     answerSnapshot.push({
@@ -173,36 +225,47 @@ Deno.serve(async (req: Request) => {
         C: question.option_c,
         D: question.option_d,
       },
-      selected_option: selectedOption,
+      selected_option: selectedOption ?? null,
       correct_option: question.correct_option,
       is_correct: isCorrect,
     });
   }
 
-  const attemptNumber = (priorAttempts?.length ?? 0) + 1;
-  if (attemptNumber > 2) return json({ error: "All assessment attempts have been used" }, 409);
   const score = Math.round((correctCount / questions.length) * 100);
-  const bestScore = Math.max(score, ...(priorAttempts ?? []).map((attempt) => Number(attempt.best_score ?? attempt.score ?? 0)));
-
-  const { data: savedAttempt, error: saveError } = await admin
-    .from("module_assessment_attempts")
-    .insert({
-      student_id: studentId,
-      assessment_id: assessmentId,
-      attempt_number: attemptNumber,
-      score,
-      best_score: bestScore,
-      total_questions: questions.length,
-      correct_count: correctCount,
-      answers: answerSnapshot,
-    })
-    .select("attempt_number, score, best_score, total_questions, correct_count, submitted_at")
-    .single();
+  const { data: savedAttempts, error: saveError } = await admin.rpc("record_student_module_assessment_attempt", {
+    p_student_id: studentId,
+    p_assessment_id: assessmentId,
+    p_score: score,
+    p_correct_count: correctCount,
+    p_total_questions: questions.length,
+    p_answers: answerSnapshot
+  });
 
   if (saveError) {
-    if (saveError.code === "23505") return json({ error: "Assessment attempt already submitted. Refresh and try again." }, 409);
+    if (saveError.code === "55000" || saveError.code === "23505") {
+      return json({ error: saveError.message || "Assessment attempt cannot be submitted" }, 409);
+    }
+    if (saveError.code === "42501") return json({ error: saveError.message }, 403);
+    if (saveError.code === "22023") return json({ error: saveError.message }, 422);
     console.error("Assessment attempt insert failed:", saveError.message);
     return json({ error: "Assessment result could not be saved" }, 500);
+  }
+
+  const savedAttempt = Array.isArray(savedAttempts) ? savedAttempts[0] : savedAttempts;
+  if (!savedAttempt) {
+    console.error("Assessment attempt RPC returned no saved row");
+    return json({ error: "Assessment result could not be confirmed" }, 500);
+  }
+
+  const { data: issuedCertificate, error: issuedCertificateError } = await admin
+    .from("certificates")
+    .select("student_id, module_id, score, tier, certificate_number, issued_at, verification_token")
+    .eq("student_id", studentId)
+    .eq("module_id", moduleId)
+    .maybeSingle();
+  if (issuedCertificateError || !issuedCertificate) {
+    console.error("Certificate read after assessment failed:", issuedCertificateError?.message);
+    return json({ error: "Assessment was saved but its certificate could not be confirmed" }, 500);
   }
 
   return json({
@@ -214,6 +277,15 @@ Deno.serve(async (req: Request) => {
       totalQuestions: savedAttempt.total_questions,
       submittedAt: savedAttempt.submitted_at,
     },
-    attemptsRemaining: Math.max(0, 2 - attemptNumber),
+    attemptsRemaining: Math.max(0, 1 - savedAttempt.attempt_number),
+    certificate: {
+      studentId: issuedCertificate.student_id,
+      moduleId: issuedCertificate.module_id,
+      score: issuedCertificate.score,
+      tier: issuedCertificate.tier,
+      certificateNumber: issuedCertificate.certificate_number,
+      issuedAt: issuedCertificate.issued_at,
+      verificationToken: issuedCertificate.verification_token,
+    },
   });
 });

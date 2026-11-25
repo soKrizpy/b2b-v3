@@ -36,7 +36,7 @@ export class LessonWorkspace {
     if (options.repositoryMode === 'production') {
       if (!repositories) throw new Error('Repository produksi wajib diberikan secara eksplisit.');
       const requiredCapabilities = ['learning'];
-      if (options.parentHubEnabled) requiredCapabilities.push('sessionReports', 'monthlyEvaluations', 'billing');
+      if (options.parentHubEnabled) requiredCapabilities.push('sessionReports', 'monthlyEvaluations', 'billing', 'parentHub');
       this.repositories = createScopedWorkspaceRepositories(repositories, requiredCapabilities);
     } else {
       this.repositories = createWorkspaceRepositories(repositories || WorkspaceRepositories);
@@ -44,6 +44,7 @@ export class LessonWorkspace {
     // Production React portal can disable Parent Hub until its data adapters are production-backed.
     this.parentHubEnabled = options.parentHubEnabled !== false;
     this.submissionEnabled = options.submissionEnabled !== false;
+    this.serverValidatedStages = options.repositoryMode === 'production';
     this.stages = lessonData.stages || [];
     if (!currentUser?.id) throw new Error('Sesi siswa diperlukan untuk membuka ruang belajar.');
     this.currentUser = currentUser;
@@ -59,7 +60,9 @@ export class LessonWorkspace {
     this.checkpointStates = saved.checkpoints || {};
     this.submissionData = saved.submission || null;
     this.currentSlideIndex = typeof saved.slideIndex === 'number' ? saved.slideIndex : 0;
+    this.maxSlideIndex = Number.isInteger(saved.maxSlideIndex) ? saved.maxSlideIndex : this.currentSlideIndex;
     this.visitedSlides = new Set([0, this.currentSlideIndex]);
+    this.stageProgress = {};
 
     this.activeStoreSubmission = null;
     this.quizAnswers = {};
@@ -79,7 +82,13 @@ export class LessonWorkspace {
     this.checkpointStates = savedProgress.checkpoints || {};
     this.submissionData = savedProgress.submission || null;
     this.currentSlideIndex = typeof savedProgress.slideIndex === 'number' ? savedProgress.slideIndex : 0;
+    this.maxSlideIndex = Number.isInteger(savedProgress.maxSlideIndex) ? savedProgress.maxSlideIndex : this.currentSlideIndex;
     this.visitedSlides = new Set([0, this.currentSlideIndex]);
+    if (this.serverValidatedStages) {
+      const progress = await this.repositories.learning.getTopicStageProgress(this.currentUser.id, this.lesson.id);
+      if (this.destroyed) return;
+      this.stageProgress = Object.fromEntries(progress.map(item => [item.stageKey, item.status]));
+    }
     const activeSub = await this.repositories.learning.getStudentLessonSubmission(this.currentUser.id, this.lesson.id);
     if (this.destroyed) return;
     this.activeStoreSubmission = activeSub || null;
@@ -116,6 +125,7 @@ export class LessonWorkspace {
       this.checkpointStates = progress.checkpoints || {};
       this.submissionData = progress.submission || null;
       this.currentSlideIndex = progress.slideIndex;
+      this.maxSlideIndex = Number.isInteger(progress.maxSlideIndex) ? progress.maxSlideIndex : this.currentSlideIndex;
       this.visitedSlides = new Set([0, this.currentSlideIndex]);
       changed = true;
     }
@@ -123,6 +133,11 @@ export class LessonWorkspace {
     if (activeSub) {
       if (activeSub.version !== this.activeStoreSubmission?.version) changed = true;
       this.activeStoreSubmission = activeSub;
+      if (this.serverValidatedStages && changed) {
+        const progress = await this.repositories.learning.getTopicStageProgress(this.currentUser.id, this.lesson.id);
+        if (this.destroyed) return;
+        this.stageProgress = Object.fromEntries(progress.map(item => [item.stageKey, item.status]));
+      }
       const nextState = ['approved', 'revision-required', 'submitted'].includes(activeSub.status)
         ? activeSub.status
         : null;
@@ -189,7 +204,8 @@ export class LessonWorkspace {
       state: saved.state || 'not-started',
       checkpoints: saved.checkpoints || {},
       submission: saved.submissionDraft || null,
-      slideIndex: Number.isInteger(saved.slideIndex) ? saved.slideIndex : 0
+      slideIndex: Number.isInteger(saved.slideIndex) ? saved.slideIndex : 0,
+      maxSlideIndex: Number.isInteger(saved.maxSlideIndex) ? saved.maxSlideIndex : (Number.isInteger(saved.slideIndex) ? saved.slideIndex : 0)
     };
   }
 
@@ -219,7 +235,21 @@ export class LessonWorkspace {
       this.currentUser.id,
       this.lesson.id,
       progressUpdates
-    ).then(() => true).catch(error => {
+    ).then(saved => {
+      if (Number.isInteger(saved?.maxSlideIndex)) {
+        const previousMaxSlideIndex = this.maxSlideIndex;
+        this.maxSlideIndex = saved.maxSlideIndex;
+        this._lessonProgress = { ...this._lessonProgress, maxSlideIndex: saved.maxSlideIndex };
+        if (
+          this.maxSlideIndex !== previousMaxSlideIndex
+          && this.currentScreen === 'workspace'
+          && this.stages[this.currentStageIndex]?.id === 'materials'
+        ) {
+          this.renderStageContent();
+        }
+      }
+      return true;
+    }).catch(error => {
       console.error('LessonWorkspace: progres gagal disimpan.', error);
       showToast({
         title: 'Progres belum tersimpan',
@@ -270,7 +300,7 @@ export class LessonWorkspace {
         this.parentHubView = null;
         this.currentScreen = 'dashboard';
         this.render();
-      }, this.repositories);
+      }, this.repositories, this.lesson.moduleId);
       this.parentHubView.init();
     } else {
       this.parentHubView.container = this.container;
@@ -505,15 +535,17 @@ export class LessonWorkspace {
 
     navEl.innerHTML = this.stages.map((stage, idx) => {
       const isActive = idx === this.currentStageIndex;
-      const isPast = idx < this.currentStageIndex;
+      const isComplete = this.isStageComplete(stage.id);
+      const isLocked = this.serverValidatedStages
+        && this.stages.slice(0, idx).some(previous => !this.isStageComplete(previous.id));
       let cls = 'stage-nav-item';
       if (isActive) cls += ' active';
-      if (isPast) cls += ' completed';
+      if (isComplete) cls += ' completed';
 
       return `
         <button type="button" class="${cls}" data-stage-index="${idx}"
-                aria-current="${isActive ? 'step' : 'false'}">
-          <span class="stage-nav-number">${isPast ? '✓' : stage.number}</span>
+                aria-current="${isActive ? 'step' : 'false'}" ${isLocked ? 'disabled' : ''}>
+          <span class="stage-nav-number">${isComplete ? '✓' : stage.number}</span>
           <span>${escapeHtml(stage.title)}</span>
         </button>`;
     }).join('');
@@ -528,6 +560,8 @@ export class LessonWorkspace {
 
   goToStage(index) {
     if (index < 0 || index >= this.stages.length) return;
+    if (this.serverValidatedStages
+      && this.stages.slice(0, index).some(stage => !this.isStageComplete(stage.id))) return;
     this.currentStageIndex = index;
     this.currentSlideIndex = 0;
     this.renderStageNav();
@@ -633,7 +667,8 @@ export class LessonWorkspace {
       let cls = 'slide-dot';
       if (i === this.currentSlideIndex) cls += ' active';
       else if (this.visitedSlides.has(i)) cls += ' visited';
-      return `<button type="button" class="${cls}" data-slide-index="${i}" aria-label="Ke slide ${i + 1}"></button>`;
+      const isLocked = this.serverValidatedStages && i > this.maxSlideIndex + 1;
+      return `<button type="button" class="${cls}" data-slide-index="${i}" aria-label="Ke slide ${i + 1}" ${isLocked ? 'disabled' : ''}></button>`;
     }).join('');
 
     return `
@@ -721,6 +756,7 @@ export class LessonWorkspace {
 
     // Persist checkpoint and derived practice status together.
     this.saveProgress({ state: nextState, checkpoints: this.checkpointStates });
+    this.updateStageNextButton();
 
     if (nextState !== previousState) {
       const badgeEl = this.container.querySelector('.workspace-top-bar .badge');
@@ -793,6 +829,7 @@ export class LessonWorkspace {
       questions.map((_, index) => ({ questionIndex: index, selectedIndex: this.quizAnswers[index] }))
     ).then(result => {
       this.quizSubmitted = true;
+      this.updateStageNextButton();
       showToast({
         title: 'Hasil kuis tersimpan',
         message: `Nilai kamu ${result.score}/100 (percobaan ${result.attemptNumber} dari 2).`,
@@ -987,6 +1024,10 @@ export class LessonWorkspace {
     const isLast = this.currentStageIndex === this.stages.length - 1;
     const prevStage = !isFirst ? this.stages[this.currentStageIndex - 1] : null;
     const nextStage = !isLast ? this.stages[this.currentStageIndex + 1] : null;
+    const currentStage = this.stages[this.currentStageIndex];
+    const isComplete = this.isStageComplete(currentStage?.id);
+    const canComplete = this.canCompleteCurrentStage();
+    const isOptional = currentStage?.id === 'challenge' || currentStage?.id === 'submission';
 
     return `
       <div class="stage-footer">
@@ -996,11 +1037,95 @@ export class LessonWorkspace {
              </button>`
           : '<span></span>'}
         ${nextStage
-          ? `<button type="button" class="btn btn-primary" id="btn-stage-next">
-               ${escapeHtml(nextStage.title)} →
+          ? `<button type="button" class="btn btn-primary" id="btn-stage-next" ${this.serverValidatedStages && !isComplete && !canComplete ? 'disabled' : ''}>
+               ${isComplete ? 'Lanjut ke' : 'Selesaikan & lanjut ke'} ${escapeHtml(nextStage.title)} →
              </button>`
           : '<span></span>'}
+        ${isOptional && !isComplete
+          ? '<button type="button" class="btn btn-secondary" id="btn-stage-skip">Lewati tahapan opsional</button>'
+          : ''}
       </div>`;
+  }
+
+  isStageComplete(stageId) {
+    return ['completed', 'skipped'].includes(this.stageProgress?.[stageId]);
+  }
+
+  canCompleteCurrentStage() {
+    const stage = this.stages[this.currentStageIndex];
+    if (!stage) return false;
+    switch (stage.id) {
+      case 'brief':
+        return true;
+      case 'materials':
+        return (stage.slides || []).length > 0
+          && this.maxSlideIndex >= (stage.slides || []).length - 1;
+      case 'practice': {
+        const checkpoints = stage.content?.checkpoints || [];
+        return checkpoints.length > 0
+          && checkpoints.every(checkpoint => this.checkpointStates[checkpoint.id] === true);
+      }
+      case 'check':
+        return this.quizSubmitted;
+      case 'challenge':
+        return Boolean(this.activeStoreSubmission);
+      case 'submission':
+        return Boolean(this.activeStoreSubmission);
+      default:
+        return false;
+    }
+  }
+
+  updateStageNextButton() {
+    const button = this.container.querySelector('#btn-stage-next');
+    const stage = this.stages[this.currentStageIndex];
+    if (!button || !stage || !this.serverValidatedStages) return;
+    button.disabled = !this.isStageComplete(stage.id) && !this.canCompleteCurrentStage();
+  }
+
+  async refreshStageProgress() {
+    if (!this.serverValidatedStages) return;
+    const progress = await this.repositories.learning.getTopicStageProgress(this.currentUser.id, this.lesson.id);
+    this.stageProgress = Object.fromEntries(progress.map(item => [item.stageKey, item.status]));
+  }
+
+  async completeCurrentStage(status = 'completed') {
+    const stage = this.stages[this.currentStageIndex];
+    if (!stage) return;
+    if (stage.id === 'check' && this.quizSubmissionPromise) await this.quizSubmissionPromise;
+    if (status === 'completed' && !this.canCompleteCurrentStage() && !this.isStageComplete(stage.id)) {
+      showToast({
+        title: 'Tahapan belum selesai',
+        message: 'Selesaikan semua aktivitas tahap ini sebelum melanjutkan.',
+        type: 'warning'
+      });
+      return;
+    }
+
+    try {
+      if (this.serverValidatedStages) {
+        await this.repositories.learning.completeTopicStage(this.currentUser.id, this.lesson.id, stage.id, status);
+        await this.refreshStageProgress();
+      } else {
+        this.stageProgress[stage.id] = status;
+      }
+      this.renderStageNav();
+      if (status === 'skipped') {
+        showToast({ title: 'Tahapan dilewati', message: 'Tahapan opsional ditandai dilewati.', type: 'info' });
+      }
+      if (this.currentStageIndex < this.stages.length - 1) {
+        this.goToStage(this.currentStageIndex + 1);
+      } else {
+        this.renderStageContent();
+      }
+    } catch (error) {
+      console.error('Topic stage completion failed:', error);
+      showToast({
+        title: 'Tahapan belum tersimpan',
+        message: error instanceof Error ? error.message : 'Tahapan belajar gagal disimpan.',
+        type: 'error'
+      });
+    }
   }
 
   attachStageEvents() {
@@ -1011,7 +1136,9 @@ export class LessonWorkspace {
     const prevBtn = area.querySelector('#btn-stage-prev');
     const nextBtn = area.querySelector('#btn-stage-next');
     if (prevBtn) prevBtn.addEventListener('click', () => this.goToStage(this.currentStageIndex - 1));
-    if (nextBtn) nextBtn.addEventListener('click', () => this.goToStage(this.currentStageIndex + 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => { void this.completeCurrentStage(); });
+    const skipBtn = area.querySelector('#btn-stage-skip');
+    if (skipBtn) skipBtn.addEventListener('click', () => { void this.completeCurrentStage('skipped'); });
 
     // Sequential comprehension quiz navigation: reveal the next question only
     // after the current answer has been checked.
@@ -1095,6 +1222,7 @@ export class LessonWorkspace {
           this.activeStoreSubmission = subRecord;
           this.submissionData = { link, notes, submittedAt }; 
           this.progressState = 'submitted';
+          await this.refreshStageProgress();
           showToast({
             title: 'Proyek Berhasil Dikumpulkan! 🎉',
             message: 'Status berubah menjadi Sudah dikirim. Guru akan segera memeriksa karyamu.',
@@ -1146,6 +1274,7 @@ export class LessonWorkspace {
     if (!stage || stage.id !== 'materials') return;
     const slides = stage.slides || [];
     if (index < 0 || index >= slides.length) return;
+    if (this.serverValidatedStages && index > this.maxSlideIndex + 1) return;
 
     this.currentSlideIndex = index;
     this.visitedSlides.add(index);

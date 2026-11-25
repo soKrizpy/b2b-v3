@@ -11,6 +11,7 @@ export type StudentLessonProgress = {
   checkpoints: Record<string, boolean>;
   submissionDraft: { link?: string; notes?: string } | null;
   slideIndex: number;
+  maxSlideIndex: number;
   version: number;
   updatedAt: string;
 };
@@ -23,6 +24,7 @@ type ProgressRow = {
   checkpoints: Record<string, boolean>;
   submission_draft: { link?: string; notes?: string } | null;
   slide_index: number;
+  max_slide_index: number;
   version: number;
   updated_at: string;
 };
@@ -56,6 +58,7 @@ export function mapStudentLessonProgressRow(value: unknown): StudentLessonProgre
     || !checkpointsValid
     || !draftValid
     || !Number.isSafeInteger(row.slide_index) || row.slide_index < 0 || row.slide_index > 200
+    || !Number.isSafeInteger(row.max_slide_index) || row.max_slide_index < row.slide_index || row.max_slide_index > 200
     || !Number.isSafeInteger(row.version) || row.version <= 0
     || typeof row.updated_at !== "string" || !row.updated_at
   ) {
@@ -70,6 +73,7 @@ export function mapStudentLessonProgressRow(value: unknown): StudentLessonProgre
     checkpoints: row.checkpoints,
     submissionDraft: row.submission_draft,
     slideIndex: row.slide_index,
+    maxSlideIndex: row.max_slide_index,
     version: row.version,
     updatedAt: row.updated_at
   };

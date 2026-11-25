@@ -10,7 +10,7 @@ import { getCurrentAssessmentQuestion } from "./data/module-assessment-sequence"
 
 const OPTION_KEYS: AssessmentOptionKey[] = ["A", "B", "C", "D"];
 
-export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number }) {
+export default function ModuleFinalBoss({ moduleId }: { moduleId: number }) {
   const [assessment, setAssessment] = useState<StudentModuleAssessment | null>(null);
   const [answers, setAnswers] = useState<Record<number, AssessmentOptionKey>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -23,17 +23,18 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
     let active = true;
     setLoading(true);
     setError(null);
+    setAssessment(null);
     setAnswers({});
     setCurrentQuestionIndex(0);
     setResult(null);
-    void loadStudentModuleAssessment(assessmentId)
+    void loadStudentModuleAssessment(moduleId)
       .then((data) => { if (active) setAssessment(data); })
       .catch((loadError) => {
         if (active) setError(loadError instanceof Error ? loadError.message : "Ujian belum dapat dimuat.");
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [assessmentId]);
+  }, [moduleId]);
 
   const questions = assessment?.questions ?? [];
   const answeredCount = questions.filter((question) => answers[question.id]).length;
@@ -45,23 +46,32 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
     : 0;
   const attemptsRemaining = assessment?.attemptsRemaining ?? 0;
   const canStart = Boolean(assessment && attemptsRemaining > 0);
+  const certificate = assessment?.certificate ?? null;
+
+  function certificateLabel(tier: string) {
+    return tier === "excellent" ? "Excellent" : tier === "achievement" ? "Achievement" : "Participant";
+  }
 
   async function handleSubmit() {
-    if (!assessment || !canStart || answeredCount !== questions.length || submitting) return;
+    if (!assessment || !canStart || submitting) return;
     setSubmitting(true);
     setError(null);
     try {
-      const submission = await submitStudentModuleAssessment(assessment.assessment.id, questions.map((question) => ({
-        questionId: question.id,
-        selectedOption: answers[question.id]!,
-      })));
+      const submission = await submitStudentModuleAssessment(
+        moduleId,
+        questions.flatMap((question) => {
+          const selectedOption = answers[question.id];
+          return selectedOption ? [{ questionId: question.id, selectedOption }] : [];
+        })
+      );
       // The submit RPC has committed at this point. A later read failure must
       // not tell the student that the answers failed or invite a duplicate retry.
       setResult(submission.result);
+      setAssessment((current) => current ? { ...current, certificate: submission.certificate } : current);
       setAnswers({});
       setCurrentQuestionIndex(0);
       try {
-        const refreshed = await loadStudentModuleAssessment(assessment.assessment.id);
+        const refreshed = await loadStudentModuleAssessment(moduleId);
         setAssessment(refreshed);
       } catch {
         setError("Jawaban berhasil dikirim dan tersimpan, tetapi sisa percobaan belum dapat diperbarui. Muat ulang halaman untuk melihat status terbaru.");
@@ -84,7 +94,7 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
         <div>
           <p className="module-final-boss__eyebrow">Ujian akhir modul</p>
           <h2 id="module-final-boss-title">{assessment?.assessment.title ?? "Final Boss"}</h2>
-          <p>Uji pemahamanmu dari seluruh materi Basic Visual Web.</p>
+          <p>Uji pemahamanmu dari seluruh materi modul ini.</p>
         </div>
         <span className="module-final-boss__count">{questions.length || "—"} soal</span>
       </div>
@@ -94,7 +104,7 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
 
       {!loading && assessment && <>
         <div className="module-final-boss__meta">
-          <span>Sisa percobaan: <strong>{assessment.attemptsRemaining} dari 2</strong></span>
+          <span>Sisa percobaan: <strong>{assessment.attemptsRemaining} dari 1</strong></span>
           <span>Terjawab: <strong>{answeredCount} dari {questions.length}</strong></span>
         </div>
 
@@ -111,6 +121,16 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
             ))}
           </ul>
         </div>}
+
+        {certificate && <section className="module-certificate" aria-label="Sertifikat modul">
+          <div>
+            <p className="module-final-boss__eyebrow">Sertifikat diterbitkan</p>
+            <h3>{certificateLabel(certificate.tier)}</h3>
+            <p>Nilai {certificate.score}/100 · Nomor {certificate.certificateNumber}</p>
+            <small>Diterbitkan {new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date(certificate.issuedAt))}</small>
+          </div>
+          <button type="button" className="btn btn-secondary" onClick={() => window.print()}>Cetak sertifikat</button>
+        </section>}
 
         {canStart && activeQuestion ? <>
           <div className="module-final-boss__question-progress" aria-live="polite">
@@ -150,7 +170,7 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
               Soal Berikutnya →
             </button>
           )}
-          {answeredCount !== questions.length && isLastQuestion && <small className="module-final-boss__hint">Jawab semua soal sebelum mengirim.</small>}
+          {answeredCount !== questions.length && isLastQuestion && <small className="module-final-boss__hint">Jawaban yang dikosongkan akan dihitung salah.</small>}
         </> : canStart && questions.length === 0 ? (
           <p className="module-final-boss__closed">Belum ada soal ujian yang tersedia.</p>
         ) : !canStart ? (

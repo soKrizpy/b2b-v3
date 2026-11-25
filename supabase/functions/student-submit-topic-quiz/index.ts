@@ -69,7 +69,7 @@ Deno.serve(async (req: Request) => {
 
   const payload = body as { topicId?: unknown; answers?: unknown };
   if (!Number.isSafeInteger(payload?.topicId) || Number(payload.topicId) <= 0 ||
-      !Array.isArray(payload.answers) || payload.answers.length < 1 || payload.answers.length > 50) {
+      !Array.isArray(payload.answers) || payload.answers.length !== 5) {
     return json({ error: "Invalid quiz submission" }, 400);
   }
 
@@ -101,11 +101,34 @@ Deno.serve(async (req: Request) => {
   if (enrollmentError) return json({ error: "Unable to verify enrollment" }, 500);
   if (!enrollment) return json({ error: "You are not enrolled in this module" }, 403);
 
+  const { data: released, error: releaseError } = await admin.rpc("student_topic_is_released", {
+    p_student_id: studentId,
+    p_topic_id: topicId
+  });
+  if (releaseError) {
+    console.error("Topic schedule access check failed:", releaseError.message);
+    return json({ error: "Unable to verify Topic schedule access" }, 500);
+  }
+  if (released !== true) return json({ error: "This Topic is not released by the class schedule" }, 403);
+
+  const { data: stageRows, error: stageError } = await admin
+    .from("student_topic_stage_progress")
+    .select("stage_key, status")
+    .eq("student_id", studentId)
+    .eq("topic_id", topicId)
+    .in("stage_key", ["brief", "materials", "practice"])
+    .eq("status", "completed");
+  if (stageError) return json({ error: "Unable to verify learning stage progress" }, 500);
+  const completedStages = new Set((stageRows ?? []).map((row) => row.stage_key));
+  if (!["brief", "materials", "practice"].every((stage) => completedStages.has(stage))) {
+    return json({ error: "Complete Brief, Materials, and Practice before submitting the Topic Check" }, 403);
+  }
+
   const content = topic.lesson_content && typeof topic.lesson_content === "object"
     ? topic.lesson_content as Record<string, unknown>
     : {};
   const quiz = Array.isArray(content.quiz) ? content.quiz as Array<Record<string, unknown>> : [];
-  if (quiz.length === 0 || answers.length !== quiz.length) {
+  if (quiz.length !== 5 || answers.length !== quiz.length) {
     return json({ error: "Quiz answer count does not match the published quiz" }, 400);
   }
 
@@ -134,7 +157,7 @@ Deno.serve(async (req: Request) => {
     const options = Array.isArray(question?.options) ? question.options : [];
     const answerIndex = Number(question?.answer_index);
     if (typeof question?.question !== "string" || !question.question.trim() ||
-        options.length < 2 || options.length > 6 ||
+      options.length !== 4 ||
         !options.every((option) => typeof option === "string" && option.trim().length > 0) ||
         !Number.isSafeInteger(answerIndex) || answerIndex < 0 || answerIndex >= options.length) {
       return json({ error: "Published quiz contains an invalid question or answer key" }, 422);

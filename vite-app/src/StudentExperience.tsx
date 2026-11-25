@@ -53,7 +53,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           for (const topic of topics) entries.push({ module, topic });
         }
         if (entries.length === 0) {
-          throw new Error("Modul aktif belum memiliki topik berstatus published.");
+          throw new Error("Belum ada topik yang terbuka berdasarkan jadwal kelas.");
         }
 
         setCatalogue(entries);
@@ -114,7 +114,8 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
           learning: supabaseProductionCapabilities.studentLearning.createLessonBridge(),
           sessionReports: supabaseProductionCapabilities.sessionReports,
           monthlyEvaluations: supabaseProductionCapabilities.monthlyEvaluations,
-          billing: supabaseProductionCapabilities.adminBilling
+          billing: supabaseProductionCapabilities.adminBilling,
+          parentHub: supabaseProductionCapabilities.parentHub
         }, {
           repositoryMode: "production",
           parentHubEnabled: true,
@@ -169,7 +170,7 @@ export default function StudentExperience({ user }: { user: StudentUser }) {
       {!catalogueLoading && !ready && !failed && <div className="card student-loading" role="status">Memuat materi dan progres belajar…</div>}
       {failed && <div className="card student-loading" role="alert"><strong>Ruang belajar belum bisa dibuka.</strong><p>{failed}</p></div>}
       <div ref={hostRef} id="student-learning" className="student-lesson-host" />
-      {!catalogueLoading && selectedModuleId === 10 && <ModuleFinalBoss assessmentId={1} />}
+      {!catalogueLoading && selectedModuleId !== null && <div id="module-final-boss"><ModuleFinalBoss moduleId={selectedModuleId} key={selectedModuleId} /></div>}
     </section>
   );
 }

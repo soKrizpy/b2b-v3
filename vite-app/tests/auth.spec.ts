@@ -2,8 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 
 const supabaseHost = "b2b-e2e.supabase.test";
 const supabaseOrigin = `https://${supabaseHost}`;
+const appOrigin = process.env.PLAYWRIGHT_TEST_BASE_URL ?? "http://127.0.0.1:4173";
 const assessmentCorsHeaders = {
-  "access-control-allow-origin": "http://127.0.0.1:4173",
+  "access-control-allow-origin": appOrigin,
   "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
   "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "access-control-max-age": "86400"
@@ -34,7 +35,7 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
   }];
   const studentModuleRows: Array<Record<string, unknown>> = [];
   const corsHeaders = {
-    "access-control-allow-origin": "http://127.0.0.1:4173",
+    "access-control-allow-origin": appOrigin,
     "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
     "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "access-control-max-age": "86400"
@@ -255,7 +256,7 @@ async function signInE2eStudent(page: Page) {
   await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
 }
 
-async function mountFinalBoss(page: Page, assessmentId: number) {
+async function mountFinalBoss(page: Page, moduleId: number) {
   await page.evaluate(async (id) => {
     const [reactModule, reactDomModule, { default: ModuleFinalBoss }] = await Promise.all([
       import("/node_modules/.vite/deps/react.js"),
@@ -270,8 +271,8 @@ async function mountFinalBoss(page: Page, assessmentId: number) {
     const mount = document.createElement("div");
     mount.id = "final-boss-component-test";
     document.body.append(mount);
-    createRoot(mount).render(createElement(ModuleFinalBoss, { assessmentId: id }));
-  }, assessmentId);
+    createRoot(mount).render(createElement(ModuleFinalBoss, { moduleId: id }));
+  }, moduleId);
 }
 
 test.describe("Supabase Auth portal", () => {
@@ -480,6 +481,16 @@ test.describe("Supabase Auth portal", () => {
     let submittedAnswers: Array<{ questionId: number; selectedOption: string }> = [];
     let submitRequestCount = 0;
     let submitted = false;
+    const questions = Array.from({ length: 20 }, (_, index) => ({
+      id: 101 + index,
+      questionText: index === 0 ? "Apa fungsi HTML?" : index === 1 ? "Atribut untuk tujuan tautan adalah?" : `Pertanyaan ${index + 1}`,
+      options: {
+        A: "Pilihan A",
+        B: index === 0 ? "Menyusun struktur halaman" : "Pilihan B",
+        C: index === 1 ? "href" : "Pilihan C",
+        D: "Pilihan D"
+      }
+    }));
     await page.route(`https://${supabaseHost}/functions/v1/student-module-assessment`, async (route) => {
       const request = route.request();
       const headers = {
@@ -492,10 +503,10 @@ test.describe("Supabase Auth portal", () => {
       }
       const payload = request.postDataJSON() as {
         action: "load" | "submit";
-        assessmentId: number;
+        moduleId: number;
         answers?: Array<{ questionId: number; selectedOption: string }>;
       };
-      if (payload.assessmentId !== 1) {
+      if (payload.moduleId !== 10) {
         await route.fulfill({ status: 404, headers, body: JSON.stringify({ error: "Assessment unavailable" }) });
         return;
       }
@@ -505,25 +516,14 @@ test.describe("Supabase Auth portal", () => {
           headers,
           body: JSON.stringify({
             assessment: { id: 1, title: "Ujian Basic Visual Web", moduleId: 10 },
-            questions: [
-              {
-                id: 101,
-                questionText: "Apa fungsi HTML?",
-                options: { A: "Mengatur jaringan", B: "Menyusun struktur halaman", C: "Mengolah database", D: "Mengedit gambar" }
-              },
-              {
-                id: 102,
-                questionText: "Atribut untuk tujuan tautan adalah?",
-                options: { A: "src", B: "alt", C: "href", D: "class" }
-              }
-            ],
+            questions,
             attempts: submitted ? [{
               attempt_number: 1,
               score: 50,
               best_score: 50,
               submitted_at: "2026-11-24T05:00:00.000Z"
             }] : [],
-            attemptsRemaining: submitted ? 1 : 2
+            attemptsRemaining: submitted ? 0 : 1
           })
         });
         return;
@@ -540,22 +540,23 @@ test.describe("Supabase Auth portal", () => {
             attemptNumber: 1,
             score: 50,
             bestScore: 50,
-            correctCount: 1,
-            totalQuestions: 2,
+            correctCount: 10,
+            totalQuestions: 20,
             submittedAt: "2026-11-24T05:00:00.000Z"
           },
-          attemptsRemaining: 1
+          attemptsRemaining: 0
         })
       });
     });
 
-    await mountFinalBoss(page, 1);
+    await mountFinalBoss(page, 10);
 
     await expect(page.getByRole("heading", { name: "Ujian Basic Visual Web" })).toBeVisible();
+    await expect(page.getByText("20 soal")).toBeVisible();
     await expect(page.getByText("Apa fungsi HTML?")).toBeVisible();
     await expect(page.getByText("Atribut untuk tujuan tautan adalah?")).toHaveCount(0);
-    await expect(page.getByText("Soal 1 dari 2")).toBeVisible();
-    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
+    await expect(page.getByText("Soal 1 dari 20")).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "5");
     const nextQuestion = page.getByRole("button", { name: "Soal Berikutnya" });
     await expect(nextQuestion).toBeDisabled();
     await expect(page.getByRole("button", { name: "Kirim jawaban Final Boss" })).toHaveCount(0);
@@ -564,23 +565,33 @@ test.describe("Supabase Auth portal", () => {
     await nextQuestion.click();
     await expect(page.getByText("Apa fungsi HTML?")).toHaveCount(0);
     await expect(page.getByText("Atribut untuk tujuan tautan adalah?")).toBeVisible();
-    await expect(page.getByText("Soal 2 dari 2")).toBeVisible();
+    await expect(page.getByText("Soal 2 dari 20")).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "10");
+    await expect(page.locator(".module-final-boss__meta")).toContainText("Terjawab: 1 dari 20");
+    await page.locator('input[name="assessment-question-102"][value="C"]').check();
+    await page.getByRole("button", { name: "Soal Berikutnya" }).click();
+    for (let questionIndex = 2; questionIndex < 19; questionIndex += 1) {
+      await page.locator(`input[name="assessment-question-${101 + questionIndex}"][value="A"]`).check();
+      await page.getByRole("button", { name: "Soal Berikutnya" }).click();
+    }
+    await expect(page.getByText("Soal 20 dari 20")).toBeVisible();
     await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
-    await expect(page.locator(".module-final-boss__meta")).toContainText("Terjawab: 1 dari 2");
     await expect(page.getByRole("button", { name: "Soal Berikutnya" })).toHaveCount(0);
     const submitButton = page.getByRole("button", { name: "Kirim jawaban Final Boss" });
-    await expect(submitButton).toBeDisabled();
-    await page.locator('input[name="assessment-question-102"][value="C"]').check();
+    await expect(submitButton).toBeEnabled();
+    await page.locator('input[name="assessment-question-120"][value="D"]').check();
     await expect(submitButton).toBeEnabled();
     await submitButton.dblclick();
 
     await expect(page.getByText("Percobaan 1 selesai — nilai 50/100")).toBeVisible();
     await expect(page.getByText("Percobaan 1: 50/100")).toBeVisible();
-    await expect(page.getByText("Sisa percobaan:").locator("..")).toContainText("1 dari 2");
+    await expect(page.getByText("Sisa percobaan:").locator("..")).toContainText("0 dari 1");
     expect(submitRequestCount).toBe(1);
     expect(submittedAnswers).toEqual([
       { questionId: 101, selectedOption: "B" },
-      { questionId: 102, selectedOption: "C" }
+      { questionId: 102, selectedOption: "C" },
+      ...Array.from({ length: 17 }, (_, index) => ({ questionId: 103 + index, selectedOption: "A" })),
+      { questionId: 120, selectedOption: "D" }
     ]);
   });
 
@@ -598,13 +609,13 @@ test.describe("Supabase Auth portal", () => {
           assessment: { id: 2, title: "Ujian Kosong", moduleId: 10 },
           questions: [],
           attempts: [],
-          attemptsRemaining: 2
+          attemptsRemaining: 1
         })
       });
     });
-    await mountFinalBoss(page, 2);
+    await mountFinalBoss(page, 10);
 
-    await expect(page.getByText("Belum ada soal ujian yang tersedia.")).toBeVisible();
+    await expect(page.getByText("Final Boss harus memiliki tepat 20 soal valid.")).toBeVisible();
     await expect(page.getByRole("progressbar")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Soal Berikutnya" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Kirim jawaban Final Boss" })).toHaveCount(0);
@@ -623,7 +634,7 @@ test.describe("Supabase Auth portal", () => {
         body: JSON.stringify({ error: "Ujian sedang tidak dapat dimuat." })
       });
     });
-    await mountFinalBoss(page, 3);
+    await mountFinalBoss(page, 10);
 
     await expect(page.locator(".module-final-boss__error")).toContainText("Ujian sedang tidak dapat dimuat.");
     await expect(page.getByRole("button", { name: "Soal Berikutnya" })).toHaveCount(0);

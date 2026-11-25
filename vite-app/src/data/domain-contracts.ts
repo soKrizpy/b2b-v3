@@ -174,6 +174,8 @@ export interface ClassSession {
   sessionNumber: number;
   studentId: UUID;
   tutorId: UUID;
+  moduleId: ModuleId | null;
+  topicId: TopicId | null;
   scheduledStartAt: ISODateTime;
   durationMinutes: number;
   meetingUrl: string | null;
@@ -200,10 +202,11 @@ export interface ClassSession {
 export interface RecurringSessionSeriesInput {
   studentId: UUID;
   tutorId: UUID;
+  moduleId: ModuleId;
   startDate: string;
   startTime: string;
   weekdays: number[];
-  targetCount: number;
+  targetCount: 16;
   durationMinutes: number;
   meetingUrl?: string | null;
 }

@@ -17,5 +17,11 @@ export default defineConfig({
     url: "http://127.0.0.1:4173",
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
+    env: {
+      ...process.env,
+      // Browser tests must never inherit the production Supabase default.
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ?? "https://b2b-e2e.supabase.test",
+      VITE_SUPABASE_PUBLISHABLE_KEY: process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "e2e-publishable-key"
+    }
   },
 });

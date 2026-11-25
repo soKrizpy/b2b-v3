@@ -1652,6 +1652,7 @@ test.describe("Local demo domain repository adapters", () => {
         checkpoints: { "step-1": true, "step-2": false },
         submission_draft: { link: "https://scratch.mit.edu/projects/123", notes: "Draft" },
         slide_index: 4,
+        max_slide_index: 5,
         version: 3,
         updated_at: "2026-11-23T09:00:00.000Z"
       };
@@ -1675,6 +1676,7 @@ test.describe("Local demo domain repository adapters", () => {
         mappedDraft: mapped.submissionDraft?.link,
         rejectsMalformedCheckpoint: rejects({ ...validRow, checkpoints: { "step-1": "true" } }),
         rejectsOutOfRangeSlide: rejects({ ...validRow, slide_index: 201 }),
+        rejectsMaxSlideBeforeCurrent: rejects({ ...validRow, max_slide_index: 3 }),
         rejectsMissingVersion: rejects({ ...validRow, version: null }),
         conflictMessage
       };
@@ -1685,6 +1687,7 @@ test.describe("Local demo domain repository adapters", () => {
       mappedDraft: "https://scratch.mit.edu/projects/123",
       rejectsMalformedCheckpoint: true,
       rejectsOutOfRangeSlide: true,
+      rejectsMaxSlideBeforeCurrent: true,
       rejectsMissingVersion: true,
       conflictMessage: "Progres berubah di perangkat lain. Muat ulang materi sebelum menyimpan lagi."
     });

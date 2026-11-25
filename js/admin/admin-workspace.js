@@ -487,7 +487,7 @@ export class AdminWorkspace {
         <div class="card" style="padding:var(--space-4);">
           <h3 style="margin-top:0;">Buat seri jadwal kelas</h3>
           <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);">
-            Pilih beberapa hari dan jumlah pertemuan. Sistem memeriksa bentrok tutor secara atomik; jika satu slot bentrok, seluruh seri ditolak agar tidak ada jadwal parsial. Waktu menggunakan WIB.
+            Pilih siswa, modul aktif yang ditugaskan, dan hari kelas. Sistem memetakan 16 pertemuan ke 16 topik sesuai urutan kurikulum secara atomik. Waktu menggunakan WIB.
           </p>
           <form id="admin-create-series-form" style="display:flex;flex-direction:column;gap:var(--space-3);">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--space-3);">
@@ -503,14 +503,16 @@ export class AdminWorkspace {
                   ${tutors.map(user => `<option value="${escapeHtml(user.id)}">${escapeHtml(user.displayName)}</option>`).join('')}
                 </select>
               </label>
+              <label>Modul aktif siswa
+                <select name="moduleId" required style="width:100%;" disabled>
+                  <option value="">Pilih siswa terlebih dahulu</option>
+                </select>
+              </label>
               <label>Tanggal mulai
                 <input name="startDate" type="date" min="${today}" value="${today}" required style="width:100%;">
               </label>
               <label>Jam mulai (WIB)
                 <input name="startTime" type="time" value="16:00" required style="width:100%;">
-              </label>
-              <label>Jumlah pertemuan
-                <input name="targetCount" type="number" min="1" max="52" value="12" required style="width:100%;">
               </label>
               <label>Durasi pertemuan (menit)
                 <input name="durationMinutes" type="number" min="15" max="240" value="60" required style="width:100%;">
@@ -661,6 +663,26 @@ export class AdminWorkspace {
     // Save per-student rates
     const createSeriesForm = this.container.querySelector('#admin-create-series-form');
     if (createSeriesForm) {
+      const studentSelect = createSeriesForm.querySelector('[name="studentId"]');
+      const moduleSelect = createSeriesForm.querySelector('[name="moduleId"]');
+      if (studentSelect && moduleSelect) {
+        studentSelect.addEventListener('change', () => {
+          const studentId = studentSelect.value;
+          const assignedModuleIds = new Set(this.moduleAssignments
+            .filter(assignment => assignment.studentId === studentId && assignment.status === 'active')
+            .map(assignment => Number(assignment.moduleId)));
+          const modules = this.modules.filter(module =>
+            module.isPublished === true && assignedModuleIds.has(Number(module.id))
+          );
+          moduleSelect.replaceChildren(new Option(
+            modules.length ? 'Pilih modul' : studentId ? 'Tidak ada modul aktif ditugaskan' : 'Pilih siswa terlebih dahulu',
+            ''
+          ));
+          modules.forEach(module => moduleSelect.add(new Option(module.title, String(module.id))));
+          moduleSelect.disabled = modules.length === 0;
+        });
+      }
+
       createSeriesForm.addEventListener('submit', async event => {
         event.preventDefault();
         const submitButton = createSeriesForm.querySelector('button[type="submit"]');
@@ -670,10 +692,11 @@ export class AdminWorkspace {
         const result = await this.repositories.classSessions.createRecurringSeries({
           studentId: String(formData.get('studentId') || ''),
           tutorId: String(formData.get('tutorId') || ''),
+          moduleId: Number(formData.get('moduleId')),
           startDate: String(formData.get('startDate') || ''),
           startTime: String(formData.get('startTime') || ''),
           weekdays: formData.getAll('weekdays').map(Number),
-          targetCount: Number(formData.get('targetCount')),
+          targetCount: 16,
           durationMinutes: Number(formData.get('durationMinutes')),
           meetingUrl: String(formData.get('meetingUrl') || '')
         });

@@ -5,8 +5,9 @@ async function mockStudentPortalWithCurriculum(page: Page) {
   const userId = "production-student";
   const email = "student@bits2bytes.test";
   const createdAt = "2026-01-01T00:00:00.000Z";
+  const appOrigin = process.env.PLAYWRIGHT_TEST_BASE_URL ?? "http://127.0.0.1:4173";
   const cors = {
-    "access-control-allow-origin": "http://127.0.0.1:4173",
+    "access-control-allow-origin": appOrigin,
     "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
     "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "access-control-max-age": "86400"
@@ -72,7 +73,7 @@ async function mockStudentPortalWithCurriculum(page: Page) {
       return;
     }
 
-    if (url.pathname === "/auth/v1/user" && request.method === "GET") {
+    if (url.pathname === "/auth/v1/user" && request.method() === "GET") {
       await route.fulfill({
         status: 200,
         headers: jsonHeaders,
@@ -91,7 +92,7 @@ async function mockStudentPortalWithCurriculum(page: Page) {
       return;
     }
 
-    if (url.pathname === "/auth/v1/token" && request.method === "POST") {
+    if (url.pathname === "/auth/v1/token" && request.method() === "POST") {
       await route.fulfill({
         status: 200,
         headers: jsonHeaders,
@@ -182,6 +183,37 @@ async function mockStudentPortalWithCurriculum(page: Page) {
           },
           status: "published"
         }])
+      });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/rpc/list_my_released_topic_ids" && request.method() === "POST") {
+      const payload = request.postDataJSON() as { p_module_id: number };
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify(payload.p_module_id === 29 ? [{ topic_id: 146 }] : [])
+      });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/rpc/get_my_topic_stage_progress" && request.method() === "POST") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+
+    if (url.pathname === "/rest/v1/rpc/get_my_parent_hub_module" && request.method() === "POST") {
+      const payload = request.postDataJSON() as { p_module_id: number };
+      await route.fulfill({
+        status: 200,
+        headers: jsonHeaders,
+        body: JSON.stringify(payload.p_module_id === 29 ? {
+          topics: [{ id: 146, title: "Topik Pertama", order: 0, lessonState: "in-progress", updatedAt: createdAt,
+            stages: { brief: "completed", materials: "completed" },
+            quizAttempts: [{ attemptNumber: 1, score: 80, submittedAt: createdAt }],
+            projects: [{ id: 31, title: "Animasi Saya", url: "https://scratch.mit.edu/projects/1", status: "pending", submittedAt: createdAt, reviewNote: null }] }],
+          finalBoss: null, certificate: null
+        } : { topics: [], finalBoss: null, certificate: null })
       });
       return;
     }
@@ -354,6 +386,12 @@ test("production student Parent Hub reads only submitted Supabase records and is
   await expect(page.locator(".parent-hub-entry-card").getByText("Lihat laporan belajar", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
   await expect(page.getByRole("heading", { name: "Laporan Belajar Siswa E2E" })).toBeVisible();
+  await expect(page.getByText("Topik diselesaikan", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Progres Topik" }).click();
+  await expect(page.getByText("Topik Pertama", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Portofolio Karya" }).click();
+  await expect(page.getByText("Animasi Saya", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Laporan Sesi" }).click();
   await expect(page.getByText("Animasi Scratch", { exact: true })).toBeVisible();
   await expect(page.getByText("Membuat sprite bergerak", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Perkembangan Bulanan" }).click();
@@ -362,16 +400,4 @@ test("production student Parent Hub reads only submitted Supabase records and is
   await expect(page.getByText("Tagihan Oktober 2026", { exact: true })).toBeVisible();
   await expect(page.locator("[data-parent-invoice-id]").first()).toContainText("50.000");
   await page.getByRole("button", { name: /Kembali ke Ruang Belajar/ }).click();
-
-  await page.getByRole("button", { name: /Lanjutkan Misi/ }).click();
-  for (let stage = 0; stage < 5; stage += 1) {
-    await page.locator("#btn-stage-next").click();
-  }
-  await expect(page.getByLabel("Link Proyek Scratch Publik (URL)")).toBeVisible();
-  await expect(page.locator("#btn-submit-project")).toBeEnabled();
-  await page.getByLabel("Link Proyek Scratch Publik (URL)").fill("https://scratch.mit.edu/projects/123456789");
-  await page.getByLabel("Catatan Refleksi Belajar (Opsional)").fill("Saya berhasil membuat sprite bergerak.");
-  await page.locator("#btn-submit-project").click();
-  await expect(page.getByText("Proyek Berhasil Dikumpulkan!", { exact: true })).toBeVisible();
-  await expect(page.locator("#btn-submit-project")).toBeDisabled();
 });

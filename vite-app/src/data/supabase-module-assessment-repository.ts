@@ -20,6 +20,17 @@ export type StudentModuleAssessment = {
   questions: StudentAssessmentQuestion[];
   attempts: StudentAssessmentAttempt[];
   attemptsRemaining: number;
+  certificate: StudentCertificate | null;
+};
+
+export type StudentCertificate = {
+  studentId: string;
+  moduleId: number;
+  score: number;
+  tier: "excellent" | "achievement" | "participant";
+  certificateNumber: string;
+  issuedAt: string;
+  verificationToken: string;
 };
 
 export type StudentAssessmentResult = {
@@ -32,6 +43,7 @@ export type StudentAssessmentResult = {
     submittedAt: string;
   };
   attemptsRemaining: number;
+  certificate: StudentCertificate;
 };
 
 async function invokeAssessment<T>(body: Record<string, unknown>): Promise<T> {
@@ -56,13 +68,32 @@ async function invokeAssessment<T>(body: Record<string, unknown>): Promise<T> {
   return data as T;
 }
 
-export function loadStudentModuleAssessment(assessmentId: number) {
-  return invokeAssessment<StudentModuleAssessment>({ action: "load", assessmentId });
+export async function loadStudentModuleAssessment(moduleId: number) {
+  const assessment = await invokeAssessment<StudentModuleAssessment>({ action: "load", moduleId });
+  if (
+    !assessment
+    || !Number.isSafeInteger(assessment.assessment?.id)
+    || assessment.assessment.moduleId !== moduleId
+    || !Array.isArray(assessment.questions)
+    || assessment.questions.length !== 20
+    || new Set(assessment.questions.map((question) => question?.id)).size !== 20
+    || assessment.questions.some((question) =>
+      !question
+      || !Number.isSafeInteger(question.id)
+      || typeof question.questionText !== "string"
+      || !question.questionText.trim()
+      || !question.options
+      || !["A", "B", "C", "D"].every((key) => typeof question.options[key as AssessmentOptionKey] === "string" && question.options[key as AssessmentOptionKey].trim())
+    )
+  ) {
+    throw new Error("Final Boss harus memiliki tepat 20 soal valid.");
+  }
+  return assessment;
 }
 
 export function submitStudentModuleAssessment(
-  assessmentId: number,
+  moduleId: number,
   answers: Array<{ questionId: number; selectedOption: AssessmentOptionKey }>
 ) {
-  return invokeAssessment<StudentAssessmentResult>({ action: "submit", assessmentId, answers });
+  return invokeAssessment<StudentAssessmentResult>({ action: "submit", moduleId, answers });
 }

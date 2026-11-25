@@ -8,6 +8,7 @@ import { supabaseChallengeSubmissionRepository } from "./supabase-challenge-subm
 import { supabaseClassSessionRepository } from "./supabase-class-session-repository";
 import { supabaseCurriculumRepository } from "./supabase-curriculum-repository";
 import { supabaseAdminStudentModuleRepository } from "./supabase-admin-student-module-repository";
+import { supabaseParentHubRepository } from "./supabase-parent-hub-repository";
 import type { StudentLearningCapabilities } from "./supabase-student-learning-capabilities";
 import type { TutorScheduleRepository } from "./supabase-tutor-schedule-repository";
 
@@ -36,6 +37,7 @@ export interface SupabaseProductionCapabilities {
   monthlyEvaluations: typeof supabaseMonthlyEvaluationRepository;
   challengeSubmissions: typeof supabaseChallengeSubmissionRepository;
   classSessions: typeof supabaseClassSessionRepository;
+  parentHub: typeof supabaseParentHubRepository;
 }
 
 export const supabaseProductionCapabilities: SupabaseProductionCapabilities =
@@ -50,5 +52,6 @@ export const supabaseProductionCapabilities: SupabaseProductionCapabilities =
     sessionReports: supabaseSessionReportRepository,
     monthlyEvaluations: supabaseMonthlyEvaluationRepository,
     challengeSubmissions: supabaseChallengeSubmissionRepository,
-    classSessions: supabaseClassSessionRepository
+    classSessions: supabaseClassSessionRepository,
+    parentHub: supabaseParentHubRepository
   });

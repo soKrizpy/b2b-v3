@@ -108,6 +108,7 @@ test.describe("Production quiz and lesson-progress contracts", () => {
         checkpoints: { watched: true, practice: false },
         submission_draft: { link: "https://example.test/project", notes: "Draft" },
         slide_index: 4,
+        max_slide_index: 4,
         version: 3,
         updated_at: "2026-11-23T09:00:00.000Z"
       });
@@ -121,6 +122,7 @@ test.describe("Production quiz and lesson-progress contracts", () => {
       checkpoints: { watched: true, practice: false },
       submissionDraft: { link: "https://example.test/project", notes: "Draft" },
       slideIndex: 4,
+      maxSlideIndex: 4,
       version: 3,
       updatedAt: "2026-11-23T09:00:00.000Z"
     });
@@ -141,6 +143,7 @@ test.describe("Production quiz and lesson-progress contracts", () => {
         checkpoints: { watched: true },
         submission_draft: null,
         slide_index: 4,
+        max_slide_index: 4,
         version: 3,
         updated_at: "2026-11-23T09:00:00.000Z"
       };
@@ -166,6 +169,7 @@ test.describe("Production quiz and lesson-progress contracts", () => {
         invalidCheckpoint: rejects({ ...base, checkpoints: { watched: "yes" } }),
         invalidDraft: rejects({ ...base, submission_draft: { link: 42 } }),
         invalidSlide: rejects({ ...base, slide_index: 201 }),
+        invalidMaxSlide: rejects({ ...base, max_slide_index: 3 }),
         invalidVersion: rejects({ ...base, version: -1 }),
         zeroVersion: rejects({ ...base, version: 0 }),
         conflictMessage

@@ -581,3 +581,38 @@ This section restores the user's explicit decisions from the 21 November curricu
 - The assessment Edge Function checks role, active module enrollment, assessment/module status, and question availability, but not completion of all Topics.
 - The two out-of-contract curriculum modules and 518 previously unmapped meetings remain data-reconciliation blockers.
 - No production database write, migration application, Edge Function deployment, or Vercel deployment is authorized by this documentation update. Source implementation must be accompanied by a reviewed migration and tests before any production rollout.
+
+## Stage 3 implementation checkpoint — 2026-11-25
+
+This checkpoint supersedes the older 12-meeting/12-Topic statements above. The authoritative current decision is [stage-3-current-user-decisions-2026-11-25.md](./stage-3-current-user-decisions-2026-11-25.md): one Module maps to 16 published Topics and 16 meetings, ordered by `order_index`.
+
+### Git and operational boundary
+
+- Branch: `preview`; local HEAD `e70bbd9`, aligned with `origin/preview` at the start and end of this work.
+- No commit or push was created.
+- The Stage 3 migration and Edge Function edits remain local source changes only. No migration was applied, no Edge Function was deployed, and no production data, Supabase settings, or environment variables were changed.
+- Browser tests ran against a temporary isolated test host (`b2b-e2e.supabase.test`) to avoid writes to the active Supabase project. They are not evidence of live-production integration.
+
+### Implemented source changes
+
+- Admin recurring schedules select one actively assigned Module and remain fixed at 16 sessions. The repository sends `module_id`; the replacement RPC validates enrollment, Module state, 16 published Topics, and unique non-null ordering, then maps each session to its Topic in one transaction. The old unmapped RPC signature is removed. Replacement meetings preserve the original Module/Topic association.
+- Student curriculum reads are restricted to server-released Topics linked to the student's active schedule. Lesson progress is persisted by Topic; stage completion, material slide positions, practice checkpoints, quiz attempts, and project submissions are validated server-side.
+- Formative Topic Check uses five questions with four choices. Final Boss is selected by Module, requires exactly 20 valid questions and server-confirmed completion of all 16 Topics on load and submit. The existing two-attempt limit is retained; no passing threshold or certificate policy was invented.
+- The schedule and progress rules are in `supabase/migrations/20261125123825_stage3_16_topic_schedule_progression.sql`; the migration includes the narrowly scoped `topics` read-policy change previously approved for local source only.
+- An audit during this pass found that progress RPC slide indexes were capped but not bounded by the published `learningPath` length. The migration now rejects empty material lists and out-of-range slide indexes before saving progress.
+- A production Parent Hub browser fixture was updated for the schedule-release RPC and test-server CORS origin. Its assertions now focus on Parent Hub behavior; real lesson-stage progression is covered separately.
+
+### Verification
+
+- Full isolated Playwright run: **93 passed, 0 failed, 21 skipped** out of 114 discovered. All 21 skips are explicitly marked in the test source as legacy demo-portal flows superseded by Supabase Auth coverage; no failing test was disabled.
+- `npm run typecheck`: passed.
+- `npm run build`: passed; JavaScript bundle is **720.23 kB**, above Vite's 500 kB warning threshold. No bundle refactor was attempted.
+- `git diff --check`: passed.
+- The Final Boss browser test exercised sequential questions, answer retention, final-only submission, and attempt history; student progression and Admin recurring Module selection browser tests also passed.
+
+### Unverified / remaining gates
+
+- `supabase db lint` could not connect to the local database at `127.0.0.1:54322` (`ECONNREFUSED`). Docker/Postgres was unavailable, so the SQL migration has not been validated by a running PostgreSQL instance. Do not apply it to production until this check and a full SQL/RLS review pass.
+- Deno is unavailable; Edge Functions were not type-checked with Deno. `npm audit --omit=dev` could not run because `vite-app` has no lockfile. No dependency manifest or lockfile was generated to work around that.
+- The product decision says each Topic has 10–20 Nodes, but the repository schema does not identify a canonical Node field or establish that `learningPath` slides are those Nodes; this count is not enforced by this migration.
+- Passing score and certificate issuance remain undecided/unimplemented. Stage 4 and all production rollout gates remain closed.

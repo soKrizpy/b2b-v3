@@ -113,17 +113,23 @@ test.describe("Student curriculum access contract", () => {
 
       const client = {
         auth: { getUser: async () => ({ data: { user: { id: "student-1" } }, error: null }) },
-        from: (table: string) => makeBuilder(table)
+        from: (table: string) => makeBuilder(table),
+        rpc: async (name: string, args: { p_module_id: number }) => {
+          queryLog.push({ table: name, method: "rpc", args: [args] });
+          return { data: args.p_module_id === 29 ? [{ topic_id: 146 }] : [], error: null };
+        }
       };
       const repository = createSupabaseCurriculumRepository(client as never);
       const visibleModules = await repository.listModules();
       const visibleTopics = await repository.listTopics(29);
       const blockedTopic = await repository.getTopic(999);
+      const futureTopic = await repository.getTopic(147);
 
       return {
         moduleIds: visibleModules.map((module) => module.id),
         topicIds: visibleTopics.map((topic) => topic.id),
         blockedTopic,
+        futureTopic,
         studentFilter: queryLog.some((item) => item.table === "student_modules" && item.method === "eq" && item.args[0] === "student_id" && item.args[1] === "student-1"),
         activeFilter: queryLog.some((item) => item.table === "student_modules" && item.method === "eq" && item.args[0] === "status" && item.args[1] === "active"),
         assignedModuleFilter: queryLog.some((item) => item.table === "modules" && item.method === "in" && item.args[0] === "id" && JSON.stringify(item.args[1]) === "[29]"),
@@ -133,8 +139,9 @@ test.describe("Student curriculum access contract", () => {
 
     expect(result).toEqual({
       moduleIds: [29],
-      topicIds: [146, 147],
+      topicIds: [146],
       blockedTopic: null,
+      futureTopic: null,
       studentFilter: true,
       activeFilter: true,
       assignedModuleFilter: true,

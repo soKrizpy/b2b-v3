@@ -7,18 +7,24 @@
 import { createScopedWorkspaceRepositories, WorkspaceRepositories } from '../services/workspace-repositories.js';
 
 const TABS = [
+  { id: 'summary', label: 'Ringkasan Belajar' },
+  { id: 'topics', label: 'Progres Topik' },
+  { id: 'projects', label: 'Portofolio Karya' },
+  { id: 'final', label: 'Final Boss & Sertifikat' },
   { id: 'sessions', label: 'Laporan Sesi' },
   { id: 'monthly', label: 'Perkembangan Bulanan' },
   { id: 'invoices', label: 'Riwayat Tagihan' }
 ];
 
 export class ParentHubView {
-  constructor(container, studentUser, onBack = () => {}, repositories = WorkspaceRepositories) {
+  constructor(container, studentUser, onBack = () => {}, repositories = WorkspaceRepositories, moduleId = null) {
     this.container = container;
     this.studentUser = studentUser || {};
-    this.repositories = createScopedWorkspaceRepositories(repositories, ['sessionReports', 'monthlyEvaluations', 'billing']);
+    this.repositories = createScopedWorkspaceRepositories(repositories, ['sessionReports', 'monthlyEvaluations', 'billing', 'parentHub']);
+    this.moduleId = Number(moduleId);
     this.onBack = onBack;
-    this.activeTab = 'sessions';
+    this.activeTab = 'summary';
+    this.learningOverview = null;
     this.unsubscribeSessionStore = null;
     this.unsubscribeBillingStore = null;
     this.unsubscribeMonthlyEvaluationStore = null;
@@ -117,7 +123,9 @@ export class ParentHubView {
     this.isLoading = true;
     this.renderContent();
     try {
-      if (this.activeTab === 'sessions') {
+      if (['summary', 'topics', 'projects', 'final'].includes(this.activeTab)) {
+        this.learningOverview = await this.repositories.parentHub.getMyModule(this.moduleId);
+      } else if (this.activeTab === 'sessions') {
         this.sessionReports = await this.repositories.sessionReports.listStudentSubmittedReports(this.studentUser.id);
       } else if (this.activeTab === 'monthly') {
         this.monthlyEvaluations = await this.repositories.monthlyEvaluations.listStudentPublished(this.studentUser.id);
@@ -147,9 +155,49 @@ export class ParentHubView {
       content.innerHTML = '<div class="card parent-empty-state" role="status">Memuat data…</div>';
       return;
     }
-    if (this.activeTab === 'sessions') content.innerHTML = this.renderSessionReports();
+    if (this.activeTab === 'summary') content.innerHTML = this.renderSummary();
+    else if (this.activeTab === 'topics') content.innerHTML = this.renderTopics();
+    else if (this.activeTab === 'projects') content.innerHTML = this.renderProjects();
+    else if (this.activeTab === 'final') content.innerHTML = this.renderFinalBoss();
+    else if (this.activeTab === 'sessions') content.innerHTML = this.renderSessionReports();
     else if (this.activeTab === 'monthly') content.innerHTML = this.renderMonthlyEvaluations();
     else content.innerHTML = this.renderInvoices();
+  }
+
+  renderSummary() {
+    const topics = this.learningOverview?.topics || [];
+    const complete = topics.filter(topic => topic.stages?.submission === 'completed' || topic.stages?.submission === 'skipped').length;
+    const quizzes = topics.flatMap(topic => topic.quizAttempts || []);
+    const average = quizzes.length ? Math.round(quizzes.reduce((sum, item) => sum + Number(item.score || 0), 0) / quizzes.length) : null;
+    return `<div class="parent-summary-grid">
+      <article class="card"><span class="session-box-title">Topik diselesaikan</span><strong>${complete} dari ${topics.length}</strong></article>
+      <article class="card"><span class="session-box-title">Rata-rata Kuis Singkat</span><strong>${average === null ? 'Belum ada nilai' : `${average}%`}</strong></article>
+      <article class="card"><span class="session-box-title">Karya terkirim</span><strong>${topics.reduce((sum, topic) => sum + (topic.projects?.length || 0), 0)}</strong></article>
+    </div>`;
+  }
+
+  renderTopics() {
+    const topics = this.learningOverview?.topics || [];
+    if (!topics.length) return this.renderEmptyState('Belum ada progres topik', 'Topik yang terbuka akan muncul sesuai jadwal kelas.');
+    return `<div class="parent-session-report-list">${topics.map(topic => {
+      const attempts = topic.quizAttempts || [];
+      const score = attempts.length ? `${attempts[attempts.length - 1].score}%` : 'Belum dikerjakan';
+      const stages = Object.keys(topic.stages || {}).length;
+      return `<article class="session-report-card"><div class="session-report-header"><div><span class="badge badge-in-progress">Topik ${Number(topic.order) + 1}</span><h3>${escapeHtml(topic.title)}</h3><div class="session-meta-row">${stages}/6 tahap tercatat · Kuis: ${escapeHtml(score)}</div></div></div></article>`;
+    }).join('')}</div>`;
+  }
+
+  renderProjects() {
+    const projects = (this.learningOverview?.topics || []).flatMap(topic => (topic.projects || []).map(project => ({ ...project, topicTitle: topic.title })));
+    if (!projects.length) return this.renderEmptyState('Belum ada karya terkirim', 'Tautan karya akan tampil setelah siswa mengirimkan proyek.');
+    return `<div class="parent-session-report-list">${projects.map(project => `<article class="session-report-card"><div class="session-report-header"><div><span class="badge badge-in-progress">${escapeHtml(project.status)}</span><h3>${escapeHtml(project.title)}</h3><div class="session-meta-row">${escapeHtml(project.topicTitle)} · ${escapeHtml(formatDate(project.submittedAt))}</div></div></div>${project.url ? `<a href="${escapeHtml(project.url)}" target="_blank" rel="noopener noreferrer">Buka karya</a>` : ''}${project.reviewNote ? `<p class="session-narrative-text">Catatan tutor: ${escapeHtml(project.reviewNote)}</p>` : ''}</article>`).join('')}</div>`;
+  }
+
+  renderFinalBoss() {
+    const finalBoss = this.learningOverview?.finalBoss;
+    const certificate = this.learningOverview?.certificate;
+    if (!finalBoss) return this.renderEmptyState('Final Boss belum dikerjakan', 'Hasil akan muncul setelah seluruh topik selesai dan Final Boss dikirim.');
+    return `<article class="session-report-card"><span class="badge badge-approved">Final Boss selesai</span><h3>Nilai ${Number(finalBoss.score)}%</h3><p class="session-narrative-text">Dikirim ${escapeHtml(formatDate(finalBoss.submittedAt))}</p>${certificate ? `<div class="session-box"><span class="session-box-title">Sertifikat ${escapeHtml(certificate.tier)}</span><p>Nomor: ${escapeHtml(certificate.number)} · diterbitkan ${escapeHtml(formatDate(certificate.issuedAt))}</p></div>` : '<p class="session-narrative-text">Sertifikat belum diterbitkan.</p>'}</article>`;
   }
 
   renderMonthlyEvaluations() {

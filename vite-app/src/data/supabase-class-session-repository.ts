@@ -24,6 +24,8 @@ type MeetingRow = {
   is_completed: boolean | null;
   completion_status: string | null;
   teacher_id: string | null;
+  module_id: number | null;
+  topic_id: number | null;
   duration_minutes: number | null;
   cancelled_at: string | null;
   cancelled_by: string | null;
@@ -85,6 +87,8 @@ function mapClassSession({ meeting, link }: MeetingWithStudent): ClassSession {
     sessionNumber: meeting.session_number ?? 1,
     studentId: link.student_id,
     tutorId: meeting.teacher_id ?? "",
+    moduleId: meeting.module_id,
+    topicId: meeting.topic_id,
     scheduledStartAt: meeting.meeting_date,
     durationMinutes: meeting.duration_minutes ?? 60,
     meetingUrl: meeting.link_url,
@@ -195,18 +199,34 @@ export function createSupabaseClassSessionRepository(
         if (actor.role !== "admin" && (actor.role !== "teacher" || actor.id !== input.tutorId)) {
           return { success: false, error: { code: "FORBIDDEN", message: "Tutor hanya dapat membuat jadwal atas namanya sendiri." } };
         }
+        if (!Number.isSafeInteger(input.moduleId) || input.moduleId <= 0 || input.targetCount !== 16) {
+          return { success: false, error: { code: "INVALID_SERIES", message: "Pilih modul aktif dan buat tepat 16 pertemuan." } };
+        }
         const { data, error } = await db.rpc("create_recurring_meeting_series", {
           p_student_id: input.studentId,
           p_tutor_id: input.tutorId,
+          p_module_id: input.moduleId,
           p_start_date: input.startDate,
           p_start_time: input.startTime,
           p_weekdays: input.weekdays,
-          p_target_count: input.targetCount,
           p_duration_minutes: input.durationMinutes,
           p_meeting_url: input.meetingUrl ?? null,
         });
         if (error) return { success: false, error: { code: error.code ?? "SCHEDULE_FAILED", message: error.message } };
         const meetings = (data ?? []) as MeetingRow[];
+        if (
+          meetings.length !== 16
+          || meetings.some((meeting) => meeting.module_id !== input.moduleId || !Number.isSafeInteger(meeting.topic_id))
+          || new Set(meetings.map((meeting) => meeting.topic_id)).size !== 16
+        ) {
+          return {
+            success: false,
+            error: {
+              code: "SCHEDULE_MAPPING_UNVERIFIED",
+              message: "Server tidak mengonfirmasi pemetaan 16 sesi. Jangan kirim ulang sebelum jadwal diperiksa admin."
+            }
+          };
+        }
         const sessions = meetings.map((meeting) => mapClassSession({
           meeting,
           link: {

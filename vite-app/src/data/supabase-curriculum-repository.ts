@@ -60,6 +60,33 @@ async function getActor(client: SupabaseClient) {
   return data.user;
 }
 
+async function getReleasedTopicIdsForStudent(
+  client: SupabaseClient,
+  moduleId: ModuleId
+): Promise<Set<number> | null> {
+  const actor = await getActor(client);
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("role")
+    .eq("id", actor.id)
+    .maybeSingle();
+
+  if (profileError || !profile) throw new Error("Profil pengguna tidak dapat diverifikasi.");
+  if (profile.role !== "student") return null;
+
+  const { data, error } = await client.rpc("list_my_released_topic_ids", {
+    p_module_id: moduleId
+  });
+  if (error) throw new Error("Topik yang terbuka berdasarkan jadwal tidak dapat dimuat.");
+  if (!Array.isArray(data)) throw new Error("Respons akses topik dari server tidak valid.");
+
+  const ids = data.map((row: { topic_id?: unknown }) => row.topic_id);
+  if (ids.some((id) => !Number.isSafeInteger(id) || Number(id) <= 0)) {
+    throw new Error("Respons akses topik dari server tidak valid.");
+  }
+  return new Set(ids as number[]);
+}
+
 async function listAccessibleModuleIds(client: SupabaseClient): Promise<number[]> {
   const actor = await getActor(client);
   const { data: profile, error: profileError } = await client
@@ -150,7 +177,10 @@ export function createSupabaseCurriculumRepository(
         .order("order_index", { ascending: true });
 
       if (error) throw new Error("Materi topik tidak dapat dimuat.");
-      return ((data ?? []) as TopicRow[]).map(mapTopic);
+      const releasedIds = await getReleasedTopicIdsForStudent(db, moduleId);
+      return ((data ?? []) as TopicRow[])
+        .filter((row) => releasedIds === null || releasedIds.has(row.id))
+        .map(mapTopic);
     },
 
     async getTopic(topicId: TopicId): Promise<CurriculumTopic | null> {
@@ -166,6 +196,8 @@ export function createSupabaseCurriculumRepository(
       if (!data) return null;
       const topic = data as TopicRow;
       if (!(await repository.getModule(topic.module_id))) return null;
+      const releasedIds = await getReleasedTopicIdsForStudent(db, topic.module_id);
+      if (releasedIds !== null && !releasedIds.has(topic.id)) return null;
       return mapTopic(topic);
     }
   };

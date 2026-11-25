@@ -21,7 +21,7 @@ export async function getStudentLessonProgress(topicId: number): Promise<Student
 
   const { data, error } = await client
     .from("student_lesson_progress")
-    .select("id, student_id, topic_id, state, checkpoints, submission_draft, slide_index, version, updated_at")
+    .select("id, student_id, topic_id, state, checkpoints, submission_draft, slide_index, max_slide_index, version, updated_at")
     .eq("student_id", userData.user.id)
     .eq("topic_id", topicId)
     .maybeSingle();

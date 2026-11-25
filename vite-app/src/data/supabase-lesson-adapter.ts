@@ -3,6 +3,7 @@ import type { CurriculumModule, CurriculumTopic, JsonValue } from "./domain-cont
 type LegacyLesson = {
   id: string;
   topicId: number;
+  moduleId: number;
   title: string;
   subtitle: string;
   description: string;
@@ -181,6 +182,7 @@ export function adaptSupabaseTopicToLegacyLesson(
   const lesson: LegacyLesson = {
     id: `topic-${topic.id}`,
     topicId: topic.id,
+    moduleId: module.id,
     title: topic.title,
     subtitle: topic.description || topic.title,
     description: topic.description || "",
