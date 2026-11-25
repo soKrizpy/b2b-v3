@@ -20,6 +20,7 @@ test("production lesson stages unlock sequentially and optional stages require a
         version: 1
       }),
       getTopicStageProgress: async () => stageProgress,
+      getTopicQuizAttempts: async () => [],
       getStudentLessonSubmission: async () => null,
       saveLessonProgress: async (_studentId: string, _lessonId: string, updates: Record<string, unknown>) => ({
         ...updates,
