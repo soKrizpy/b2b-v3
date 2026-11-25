@@ -358,3 +358,51 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Student adventure navigation and gamified learning dashboard. */
+.b2b-vite-shell .app-sidebar { width:252px; }
+.b2b-vite-shell .sidebar-content { gap:var(--space-4); }
+.b2b-vite-shell .nav-section-title { margin:var(--space-2) 0 var(--space-3); }
+.b2b-vite-shell .nav-list { gap:6px; }
+.b2b-vite-shell .nav-link { min-height:44px; padding:10px 12px; border-radius:12px; }
+.b2b-vite-shell .nav-link.active { box-shadow:inset 3px 0 0 var(--color-primary); }
+.b2b-vite-shell .nav-icon { width:22px; height:22px; font-size:17px; }
+.sidebar-adventure-card { display:grid; grid-template-columns:34px minmax(0,1fr); gap:8px 10px; margin:0 12px 14px; padding:12px; border:1px solid var(--color-border-subtle); border-radius:14px; background:var(--color-bg-surface-subtle); }
+.sidebar-adventure-icon { display:grid; place-items:center; width:34px; height:34px; border-radius:11px; background:var(--color-primary-subtle); color:var(--color-primary); font-size:20px; }
+.sidebar-adventure-card strong,.sidebar-adventure-card small { display:block; }
+.sidebar-adventure-card strong { color:var(--color-text-primary); font-size:var(--font-size-sm); }
+.sidebar-adventure-card small { margin-top:2px; color:var(--color-text-muted); font-size:var(--font-size-xs); }
+.sidebar-adventure-card p { grid-column:1/-1; margin:0; color:var(--color-text-secondary); font-size:var(--font-size-xs); line-height:1.5; }
+.quest-map-card { display:grid; gap:var(--space-4); padding:var(--space-5); }
+.quest-map-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); }
+.quest-map-heading .realms-title { margin:var(--space-2) 0 0; }
+.quest-map-compass { font-size:2rem; }
+.quest-world-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--space-3); }
+.quest-world { display:grid; justify-items:center; gap:7px; min-width:0; padding:12px 8px; border:1px solid var(--color-border-subtle); border-radius:14px; background:var(--color-bg-surface-subtle); text-align:center; }
+.quest-world > span { display:grid; place-items:center; width:64px; height:64px; }
+.quest-world > span svg { width:100%; height:100%; }
+.quest-world strong { font-size:var(--font-size-xs); line-height:1.35; }
+.quest-world small { color:var(--color-text-muted); font-size:11px; line-height:1.35; }
+.adventure-progress-card { display:grid; gap:var(--space-4); }
+.adventure-progress-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.adventure-progress-stats > div { display:grid; gap:5px; min-width:0; padding:10px 8px; border-radius:12px; background:var(--color-bg-surface-subtle); text-align:center; }
+.adventure-progress-stats strong { font-size:clamp(1rem,2vw,1.25rem); overflow-wrap:anywhere; }
+.adventure-progress-stats span { color:var(--color-text-muted); font-size:11px; line-height:1.35; }
+.adventure-badge-preview { display:flex; align-items:center; gap:12px; padding:12px; border:1px dashed var(--color-border-strong); border-radius:14px; }
+.adventure-badge-art { display:grid; place-items:center; flex:0 0 48px; width:48px; height:48px; border-radius:14px; background:var(--color-primary-subtle); }
+.adventure-badge-art svg { width:32px; height:32px; }
+.adventure-badge-preview strong { display:block; margin-bottom:4px; }
+.adventure-badge-preview p,.adventure-points-note { margin:0; color:var(--color-text-muted); font-size:var(--font-size-xs); line-height:1.5; }
+.adventure-points-note { padding-top:var(--space-3); border-top:1px solid var(--color-border-subtle); }
+@media(max-width:1024px) { .quest-world-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:768px) {
+  .b2b-vite-shell .app-sidebar { width:100%; }
+  .sidebar-adventure-card { display:none; }
+  .quest-world-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .adventure-progress-stats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:420px) {
+  .adventure-progress-stats { grid-template-columns:1fr; }
+  .quest-world { padding:10px 6px; }
+}
