@@ -215,17 +215,18 @@ export class LessonWorkspace {
       lessonKey: this.lesson.id,
       version: (Number(this._lessonProgress?.version) || 0) + 1
     };
-    void this.repositories.learning.saveLessonProgress(
+    return this.repositories.learning.saveLessonProgress(
       this.currentUser.id,
       this.lesson.id,
       progressUpdates
-    ).catch(error => {
+    ).then(() => true).catch(error => {
       console.error('LessonWorkspace: progres gagal disimpan.', error);
       showToast({
         title: 'Progres belum tersimpan',
         message: 'Periksa koneksi penyimpanan lalu coba lagi.',
         type: 'error'
       });
+      return false;
     });
   }
 
@@ -1102,21 +1103,27 @@ export class LessonWorkspace {
 
     const draftBtn = area.querySelector('#btn-save-draft');
     if (draftBtn) {
-      draftBtn.addEventListener('click', () => {
+      draftBtn.addEventListener('click', async () => {
         const linkInput = area.querySelector('#submission-link');
         const notesInput = area.querySelector('#submission-notes');
         const link = linkInput ? linkInput.value.trim() : '';
         const notes = notesInput ? notesInput.value.trim() : '';
 
-        this.saveProgress({
-          submission: { link, notes, isDraft: true }
-        });
+        draftBtn.disabled = true;
+        try {
+          const saved = await this.saveProgress({
+            submission: { link, notes, isDraft: true }
+          });
+          if (!saved) return;
 
-        showToast({
-          title: 'Draf Disimpan',
-          message: 'Tautan dan catatan belajar tersimpan pada akun Supabase ini.',
-          type: 'info'
-        });
+          showToast({
+            title: 'Draf Disimpan',
+            message: 'Tautan dan catatan belajar tersimpan pada akun Supabase ini.',
+            type: 'info'
+          });
+        } finally {
+          if (draftBtn.isConnected) draftBtn.disabled = false;
+        }
       });
     }
   }
