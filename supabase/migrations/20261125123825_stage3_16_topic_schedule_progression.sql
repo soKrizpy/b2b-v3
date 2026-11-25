@@ -857,6 +857,57 @@ comment on function public.create_recurring_meeting_series(uuid,uuid,bigint,date
 comment on function public.complete_student_topic_stage(bigint,text,text) is
   'Records one server-validated Topic stage. Challenge and Submission may be explicitly skipped.';
 
+-- The Edge Function calculates the prospective attempt number, but concurrent
+-- requests must be serialized at the database boundary so a student can never
+-- obtain a third Topic Check attempt through a race.
+create or replace function public.save_topic_quiz_attempt_with_snapshot(
+  p_student_id uuid,
+  p_topic_id integer,
+  p_attempt_num smallint,
+  p_score integer,
+  p_answers jsonb,
+  p_quiz_version integer,
+  p_quiz_snapshot jsonb
+)
+returns integer
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_attempt_id integer;
+  v_attempt_count integer;
+begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('bits2bytes:topic-quiz:' || p_student_id::text || ':' || p_topic_id::text, 0)
+  );
+  select count(*)::integer into v_attempt_count
+  from public.topic_quiz_attempts
+  where student_id=p_student_id and topic_id=p_topic_id;
+  if v_attempt_count >= 2 then
+    raise exception 'All quiz attempts have been used' using errcode='55000';
+  end if;
+  if p_attempt_num is distinct from v_attempt_count + 1 then
+    raise exception 'Quiz attempt number is stale; refresh and try again' using errcode='40001';
+  end if;
+
+  insert into public.topic_quiz_attempts(
+    student_id,topic_id,attempt_num,score,answers,quiz_version
+  ) values (
+    p_student_id,p_topic_id,p_attempt_num,p_score,p_answers,p_quiz_version
+  ) returning id into v_attempt_id;
+  insert into public.topic_quiz_attempt_snapshots(attempt_id,quiz_snapshot)
+  values(v_attempt_id,p_quiz_snapshot);
+  return v_attempt_id;
+end;
+$$;
+revoke all on function public.save_topic_quiz_attempt_with_snapshot(
+  uuid,integer,smallint,integer,jsonb,integer,jsonb
+) from public,anon,authenticated;
+grant execute on function public.save_topic_quiz_attempt_with_snapshot(
+  uuid,integer,smallint,integer,jsonb,integer,jsonb
+) to service_role;
+
 -- Read-only Parent Hub projection.  It intentionally accepts only a module id:
 -- the student id always comes from the authenticated JWT, never from the browser.
 create or replace function public.get_my_parent_hub_module(p_module_id bigint)

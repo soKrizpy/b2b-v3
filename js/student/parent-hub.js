@@ -181,7 +181,9 @@ export class ParentHubView {
     if (!topics.length) return this.renderEmptyState('Belum ada progres topik', 'Topik yang terbuka akan muncul sesuai jadwal kelas.');
     return `<div class="parent-session-report-list">${topics.map(topic => {
       const attempts = topic.quizAttempts || [];
-      const score = attempts.length ? `${attempts[attempts.length - 1].score}%` : 'Belum dikerjakan';
+      const score = attempts.length
+        ? `${Math.max(...attempts.map(attempt => Number(attempt.score) || 0))}%`
+        : 'Belum dikerjakan';
       const stages = Object.keys(topic.stages || {}).length;
       return `<article class="session-report-card"><div class="session-report-header"><div><span class="badge badge-in-progress">Topik ${Number(topic.order) + 1}</span><h3>${escapeHtml(topic.title)}</h3><div class="session-meta-row">${stages}/6 tahap tercatat · Kuis: ${escapeHtml(score)}</div></div></div></article>`;
     }).join('')}</div>`;

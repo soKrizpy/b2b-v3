@@ -205,7 +205,9 @@ Deno.serve(async (req: Request) => {
     },
   );
   if (insertError) {
-    if (insertError.code === "23505") return json({ error: "Quiz attempt already submitted. Refresh and try again." }, 409);
+    if (["23505", "55000", "40001"].includes(insertError.code ?? "")) {
+      return json({ error: insertError.message || "Quiz attempt already submitted. Refresh and try again." }, 409);
+    }
     console.error("Quiz attempt insert failed:", insertError.message);
     return json({ error: "Quiz result could not be saved" }, 500);
   }

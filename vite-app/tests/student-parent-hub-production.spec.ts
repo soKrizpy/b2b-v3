@@ -210,7 +210,10 @@ async function mockStudentPortalWithCurriculum(page: Page) {
         body: JSON.stringify(payload.p_module_id === 29 ? {
           topics: [{ id: 146, title: "Topik Pertama", order: 0, lessonState: "in-progress", updatedAt: createdAt,
             stages: { brief: "completed", materials: "completed" },
-            quizAttempts: [{ attemptNumber: 1, score: 80, submittedAt: createdAt }],
+            quizAttempts: [
+              { attemptNumber: 1, score: 80, submittedAt: createdAt },
+              { attemptNumber: 2, score: 60, submittedAt: createdAt }
+            ],
             projects: [{ id: 31, title: "Animasi Saya", url: "https://scratch.mit.edu/projects/1", status: "pending", submittedAt: createdAt, reviewNote: null }] }],
           finalBoss: null, certificate: null
         } : { topics: [], finalBoss: null, certificate: null })
@@ -389,6 +392,7 @@ test("production student Parent Hub reads only submitted Supabase records and is
   await expect(page.getByText("Topik diselesaikan", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Progres Topik" }).click();
   await expect(page.getByText("Topik Pertama", { exact: true })).toBeVisible();
+  await expect(page.getByText("2/6 tahap tercatat · Kuis: 80%", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Portofolio Karya" }).click();
   await expect(page.getByText("Animasi Saya", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Laporan Sesi" }).click();
