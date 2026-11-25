@@ -71,3 +71,28 @@ All 8 active Modules have 16 published Topic rows and 16 distinct, non-null `ord
 - Modules 20, 28, 29, and 30 use order_index 0–15.
 
 Therefore, implementation must not assume `order_index = session_number`. It must rank published Topics within each Module by `order_index` (with a stable Topic ID tie-breaker) and map meeting session numbers 1–16 to ranked positions 1–16. The server must reject duplicate/missing ordering positions or a published Topic count other than 16 before creating any meeting.
+
+
+## Final Boss and student progression audit (source review, 2026-11-25)
+
+Confirmed in `vite-app/src/StudentExperience.tsx`:
+- The student view loads all published Topics for every Module returned by the student curriculum repository.
+- It does not consult upcoming meetings, `session_number`, or each meeting's `topic_id` to gate Topic availability.
+- The Final Boss is rendered by a client condition `selectedModuleId === 10` and passes hard-coded `assessmentId={1}`. This is presentation logic, not an eligibility check.
+
+Confirmed in `supabase/functions/student-module-assessment/index.ts`:
+- The Edge Function authenticates the bearer token, verifies student role, active Module, and active `student_modules` enrollment.
+- It loads the assessment questions and prior attempts, and accepts at most two attempts.
+- It does not verify that the student completed all 16 Topics or their required stages before loading/submitting the Final Boss.
+- It does not enforce a 20-question assessment count or a passing threshold before recording a passing outcome/certificate. The endpoint stores score/attempt snapshots.
+- Do not silently choose a pass threshold or change the two-attempt policy; those are product-policy decisions requiring confirmation from the existing approved specification/history.
+
+Required Stage 3 corrections (not yet implemented):
+1. Scope student curriculum to active assigned Modules and derive Topic access from authoritative meeting/Topic mapping and schedule rules, not merely the published catalog.
+2. Enforce Final Boss eligibility server-side: correct assessment-to-Module mapping and completion of every Topic under the agreed completion contract.
+3. Validate the Final Boss question count is exactly 20 before making the assessment available.
+4. Define and verify the approved passing threshold and retake policy from prior user decisions before changing behavior.
+5. Ensure certificate issuance follows a server-verified passing attempt; client state must not be able to issue or unlock it.
+6. Add automated tests for: no access before Topic completion, access after all 16 complete, wrong Module/assessment pairing, incomplete or non-20-question assessment, repeated submissions/races, and certificate eligibility.
+
+No source code, Edge Function, or production database was changed as part of this audit update.
