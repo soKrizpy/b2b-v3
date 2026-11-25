@@ -15,17 +15,20 @@ const workspaceTitles = {
 } as const;
 
 const navigationByRole = {
-  guest: [{ href: "#portal", label: "Masuk" }],
+  guest: [{ href: "#portal", label: "Masuk", icon: "↪" }],
   student: [
-    { href: "#student-learning", label: "Belajar" },
-    { href: "#module-final-boss", label: "Ujian akhir" }
+    { href: "#student-learning", label: "Beranda", icon: "⌂" },
+    { href: "#student-active-mission", label: "Misi aktif", icon: "✦" },
+    { href: "#student-quest-map", label: "Peta petualangan", icon: "◇" },
+    { href: "#student-achievements", label: "Pencapaian", icon: "🏅" },
+    { href: "#module-final-boss", label: "Ujian akhir", icon: "🏆" }
   ],
   tutor: [
-    { href: "#tutor-schedule", label: "Jadwal" },
-    { href: "#tutor-learning-records", label: "Catatan belajar" },
-    { href: "#tutor-pending-submissions", label: "Review proyek" }
+    { href: "#tutor-schedule", label: "Jadwal", icon: "▦" },
+    { href: "#tutor-learning-records", label: "Catatan belajar", icon: "▤" },
+    { href: "#tutor-pending-submissions", label: "Review proyek", icon: "✓" }
   ],
-  admin: [{ href: "#admin-workspace", label: "Manajemen" }]
+  admin: [{ href: "#admin-workspace", label: "Manajemen", icon: "⚙" }]
 } as const;
 
 export default function App() {
@@ -39,10 +42,23 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [activeNavHref, setActiveNavHref] = useState(
+    typeof window === "undefined" ? "#student-learning" : window.location.hash || "#student-learning"
+  );
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  useEffect(() => {
+    const syncActiveNavigation = () => setActiveNavHref(window.location.hash || "#student-learning");
+    window.addEventListener("hashchange", syncActiveNavigation);
+    return () => window.removeEventListener("hashchange", syncActiveNavigation);
+  }, []);
+
+  useEffect(() => {
+    if (session?.user?.role === "student") setActiveNavHref(window.location.hash || "#student-learning");
+  }, [session?.user?.role]);
 
   useEffect(() => {
     let active = true;
@@ -125,13 +141,19 @@ export default function App() {
           <img src={theme === "dark" ? logoDark : logoLight} alt="Bits2Bytes" className="brand-logo" width="36" height="36" />
           <div><div className="brand-title">Bits2Bytes</div><div className="brand-subtitle">Tempat belajar coding</div></div>
         </div>
-        <nav className="sidebar-content" aria-label="Bagian halaman">
+        <nav className="sidebar-content" aria-label="Navigasi ruang belajar">
           <div>
-            <div className="nav-section-title">{user ? workspaceTitle : "Akun"}</div>
+            <div className="nav-section-title">{user?.role === "student" ? "Petualangan" : user ? workspaceTitle : "Akun"}</div>
             <ul className="nav-list">
-              {sidebarNavigation.map((item, index) => (
+              {sidebarNavigation.map((item) => (
                 <li className="nav-item" key={item.href}>
-                  <a className={`nav-link${index === 0 ? " active" : ""}`} href={item.href} aria-current={index === 0 ? "page" : undefined}>
+                  <a
+                    className={`nav-link${activeNavHref === item.href ? " active" : ""}`}
+                    href={item.href}
+                    aria-current={activeNavHref === item.href ? "page" : undefined}
+                    onClick={() => setActiveNavHref(item.href)}
+                  >
+                    <span className="nav-icon" aria-hidden="true">{item.icon}</span>
                     <span>{item.label}</span>
                   </a>
                 </li>
@@ -139,7 +161,14 @@ export default function App() {
             </ul>
           </div>
         </nav>
-        <div className="sidebar-footer"><small>Bits2Bytes Learning</small></div>
+        {user?.role === "student" && (
+          <div className="sidebar-adventure-card">
+            <span className="sidebar-adventure-icon" aria-hidden="true">✦</span>
+            <div><strong>{user.displayName}</strong><small>Petualang coding</small></div>
+            <p>Satu langkah kecil hari ini, satu kemampuan baru besok.</p>
+          </div>
+        )}
+        <div className="sidebar-footer"><small>Belajar · Berkarya · Bertumbuh</small></div>
       </aside>
 
       <div className="app-container">
@@ -152,7 +181,7 @@ export default function App() {
         </header>
 
         <main className="app-main" id="portal">
-          {authLoading && <section className="card student-loading" role="status">Memeriksa sesi Bits2Bytes…</section>}
+          {authLoading && <section className="card student-loading" role="status">Sebentar ya, kami siapkan ruang belajarmu…</section>}
 
           {!authLoading && !user && <section className="b2b-login-panel card" aria-labelledby="login-title">
             <div className="b2b-vite-intro">
@@ -182,7 +211,7 @@ export default function App() {
             </form>
           </section>}
 
-          {!authLoading && user && <Suspense fallback={<section className="card student-loading" role="status">Menyiapkan ruang kerja…</section>}>
+          {!authLoading && user && <Suspense fallback={<section className="card student-loading" role="status">Menyiapkan ruang belajarmu…</section>}>
             {user.role === "student" && <StudentExperience user={{ ...user, avatar: user.avatar ?? undefined, gradeLevel: user.gradeLevel ?? undefined }} />}
             {user.role === "tutor" && <TutorExperience user={user} />}
             {user.role === "admin" && <AdminExperience />}
