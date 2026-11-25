@@ -6,12 +6,14 @@ import {
   type StudentAssessmentResult,
   type StudentModuleAssessment,
 } from "./data/supabase-module-assessment-repository";
+import { getCurrentAssessmentQuestion } from "./data/module-assessment-sequence";
 
 const OPTION_KEYS: AssessmentOptionKey[] = ["A", "B", "C", "D"];
 
 export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number }) {
   const [assessment, setAssessment] = useState<StudentModuleAssessment | null>(null);
   const [answers, setAnswers] = useState<Record<number, AssessmentOptionKey>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [result, setResult] = useState<StudentAssessmentResult["result"] | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -21,6 +23,9 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
     let active = true;
     setLoading(true);
     setError(null);
+    setAnswers({});
+    setCurrentQuestionIndex(0);
+    setResult(null);
     void loadStudentModuleAssessment(assessmentId)
       .then((data) => { if (active) setAssessment(data); })
       .catch((loadError) => {
@@ -32,8 +37,14 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
 
   const questions = assessment?.questions ?? [];
   const answeredCount = questions.filter((question) => answers[question.id]).length;
+  const activeQuestion = getCurrentAssessmentQuestion(questions, currentQuestionIndex);
+  const activeAnswer = activeQuestion ? answers[activeQuestion.id] : undefined;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const progressPercent = questions.length > 0
+    ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100)
+    : 0;
   const attemptsRemaining = assessment?.attemptsRemaining ?? 0;
-  const canStart = Boolean(assessment && attemptsRemaining > 0);
+  const canStart = Boolean(assessment && attemptsRemaining > 0 && questions.length > 0);
 
   async function handleSubmit() {
     if (!assessment || !canStart || answeredCount !== questions.length || submitting) return;
@@ -46,6 +57,7 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
       })));
       setResult(submission.result);
       setAnswers({});
+      setCurrentQuestionIndex(0);
       const refreshed = await loadStudentModuleAssessment(assessment.assessment.id);
       setAssessment(refreshed);
     } catch (submitError) {
@@ -53,6 +65,11 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function handleNextQuestion() {
+    if (!activeQuestion || !activeAnswer || isLastQuestion) return;
+    setCurrentQuestionIndex((index) => Math.min(index + 1, questions.length - 1));
   }
 
   return (
@@ -89,31 +106,50 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
           </ul>
         </div>}
 
-        {canStart ? <>
-          <div className="module-final-boss__questions">
-            {questions.map((question, index) => (
-              <fieldset className="module-final-boss__question" key={question.id} disabled={submitting}>
-                <legend>{index + 1}. {question.questionText}</legend>
-                {OPTION_KEYS.map((option) => (
-                  <label className="module-final-boss__option" key={option}>
-                    <input
-                      type="radio"
-                      name={`assessment-question-${question.id}`}
-                      value={option}
-                      checked={answers[question.id] === option}
-                      onChange={() => setAnswers((current) => ({ ...current, [question.id]: option }))}
-                    />
-                    <span><strong>{option}.</strong> {question.options[option]}</span>
-                  </label>
-                ))}
-              </fieldset>
-            ))}
+        {canStart && activeQuestion ? <>
+          <div className="module-final-boss__question-progress" aria-live="polite">
+            <div className="module-final-boss__question-progress-label">
+              <span>Soal {currentQuestionIndex + 1} dari {questions.length}</span>
+              <span>{progressPercent}%</span>
+            </div>
+            <div className="module-final-boss__progress-track" role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}>
+              <div className="module-final-boss__progress-fill" style={{ width: `${progressPercent}%` }} />
+            </div>
           </div>
-          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={submitting || answeredCount !== questions.length}>
-            {submitting ? "Memeriksa jawaban…" : "Kirim jawaban Final Boss"}
-          </button>
-          {answeredCount !== questions.length && <small className="module-final-boss__hint">Jawab semua soal sebelum mengirim.</small>}
-        </> : <p className="module-final-boss__closed">Semua percobaan ujian telah digunakan.</p>}
+
+          <div className="module-final-boss__questions">
+            <fieldset className="module-final-boss__question" disabled={submitting}>
+              <legend>{currentQuestionIndex + 1}. {activeQuestion.questionText}</legend>
+              {OPTION_KEYS.map((option) => (
+                <label className="module-final-boss__option" key={option}>
+                  <input
+                    type="radio"
+                    name={`assessment-question-${activeQuestion.id}`}
+                    value={option}
+                    checked={activeAnswer === option}
+                    onChange={() => setAnswers((current) => ({ ...current, [activeQuestion.id]: option }))}
+                  />
+                  <span><strong>{option}.</strong> {activeQuestion.options[option]}</span>
+                </label>
+              ))}
+            </fieldset>
+          </div>
+
+          {isLastQuestion ? (
+            <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={submitting || answeredCount !== questions.length}>
+              {submitting ? "Memeriksa jawaban…" : "Kirim jawaban Final Boss"}
+            </button>
+          ) : (
+            <button type="button" className="btn btn-primary" onClick={handleNextQuestion} disabled={!activeAnswer || submitting}>
+              Soal Berikutnya →
+            </button>
+          )}
+          {answeredCount !== questions.length && isLastQuestion && <small className="module-final-boss__hint">Jawab semua soal sebelum mengirim.</small>}
+        </> : canStart && questions.length === 0 ? (
+          <p className="module-final-boss__closed">Belum ada soal ujian yang tersedia.</p>
+        ) : !canStart ? (
+          <p className="module-final-boss__closed">Semua percobaan ujian telah digunakan.</p>
+        ) : null}
       </>}
     </section>
   );
