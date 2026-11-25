@@ -483,7 +483,6 @@ as $$ select private.save_student_lesson_progress(p_topic_id,p_state,p_checkpoin
 revoke all on function public.save_student_lesson_progress(bigint,text,jsonb,jsonb,integer,integer) from public,anon;
 grant execute on function public.save_student_lesson_progress(bigint,text,jsonb,jsonb,integer,integer) to authenticated;
 
-drop function if exists public.create_recurring_meeting_series(uuid,uuid,date,time,integer[],integer,integer,text);
 drop function if exists private.create_recurring_meeting_series(uuid,uuid,date,time,integer[],integer,integer,text);
 
 create function private.create_recurring_meeting_series(
@@ -617,6 +616,50 @@ revoke all on function private.create_recurring_meeting_series(uuid,uuid,bigint,
 grant execute on function private.create_recurring_meeting_series(uuid,uuid,bigint,date,time,integer[],integer,text) to authenticated;
 revoke all on function public.create_recurring_meeting_series(uuid,uuid,bigint,date,time,integer[],integer,text) from public,anon;
 grant execute on function public.create_recurring_meeting_series(uuid,uuid,bigint,date,time,integer[],integer,text) to authenticated;
+
+-- Preserve the pre-Stage-3 RPC signature without allowing it to bypass
+-- module/topic mapping. It remains usable only for a student with exactly one
+-- active module and an explicit request for the required 16-session series.
+create or replace function public.create_recurring_meeting_series(
+  p_student_id uuid,
+  p_tutor_id uuid,
+  p_start_date date,
+  p_start_time time,
+  p_weekdays integer[],
+  p_target_count integer,
+  p_duration_minutes integer,
+  p_meeting_url text
+)
+returns setof public.meetings
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_module_id bigint;
+  v_active_module_count integer;
+begin
+  if p_target_count is distinct from 16 then
+    raise exception 'Stage 3 scheduling requires exactly 16 sessions' using errcode='22023';
+  end if;
+
+  select count(*)::integer, min(sm.module_id)
+    into v_active_module_count, v_module_id
+  from public.student_modules sm
+  join public.modules mod on mod.id=sm.module_id and mod.is_active is true
+  where sm.student_id=p_student_id and sm.status='active';
+  if v_active_module_count <> 1 then
+    raise exception 'Legacy scheduling requires exactly one active module; use the module-aware RPC' using errcode='22023';
+  end if;
+
+  return query select * from private.create_recurring_meeting_series(
+    p_student_id,p_tutor_id,v_module_id,p_start_date,p_start_time,
+    p_weekdays,p_duration_minutes,p_meeting_url
+  );
+end;
+$$;
+revoke all on function public.create_recurring_meeting_series(uuid,uuid,date,time,integer[],integer,integer,text) from public,anon;
+grant execute on function public.create_recurring_meeting_series(uuid,uuid,date,time,integer[],integer,integer,text) to authenticated;
 
 create or replace function private.submit_student_challenge(
   p_topic_id bigint,
@@ -939,7 +982,7 @@ begin
         from public.student_topic_stage_progress s
         where s.student_id=v_student_id and s.topic_id=t.id), '{}'::jsonb),
       'quizAttempts', coalesce((select jsonb_agg(jsonb_build_object(
-        'attemptNumber', q.attempt_num, 'score', q.score, 'submittedAt', q.created_at)
+        'attemptNumber', q.attempt_num, 'score', q.score, 'submittedAt', q.submitted_at)
         order by q.attempt_num) from public.topic_quiz_attempts q
         where q.student_id=v_student_id and q.topic_id=t.id), '[]'::jsonb),
       'projects', coalesce((select jsonb_agg(jsonb_build_object(
