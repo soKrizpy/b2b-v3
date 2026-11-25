@@ -212,7 +212,7 @@ export function renderQuiz(quiz) {
         <span class="quiz-option-marker">${letter}</span>
         <div style="flex: 1;">
           <span>${escapeHtml(opt.text)}</span>
-          <div class="quiz-explanation">${escapeHtml(opt.explanation || '')}</div>
+          <div class="quiz-explanation" hidden>${escapeHtml(opt.explanation || '')}</div>
         </div>
       </div>`;
   }).join('');
@@ -313,6 +313,8 @@ export function attachInteractions(container, onCheckpointChange, onQuizAnswered
         }
 
         options.forEach(o => {
+          const explanation = o.querySelector('.quiz-explanation');
+          if (explanation) explanation.hidden = false;
           const correct = o.getAttribute('data-correct') === 'true';
           if (correct) o.classList.add('correct');
           if (o === selectedOption && !correct) o.classList.add('incorrect');
