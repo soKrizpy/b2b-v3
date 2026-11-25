@@ -266,7 +266,9 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
                 <button type="submit" disabled={saving || !availableMeetings.length}>Simpan Draft</button>
                 <button type="button" disabled={saving || !availableMeetings.length} onClick={(event) => {
                   const form = event.currentTarget.form;
-                  if (form) void saveReport({ preventDefault: () => undefined } as FormEvent<HTMLFormElement>, "submitted");
+                  if (form?.reportValidity()) {
+                    void saveReport({ preventDefault: () => undefined } as FormEvent<HTMLFormElement>, "submitted");
+                  }
                 }}>Terbitkan Laporan</button>
               </div>
               {!availableMeetings.length && <small>Belum ada pertemuan siswa ini yang terhubung ke jadwal tutor.</small>}
@@ -293,8 +295,11 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
               </label>
               <div className="tutor-record-actions">
                 <button type="submit" disabled={saving}>Simpan Draft</button>
-                <button type="button" disabled={saving} onClick={() => {
-                  void saveEvaluation({ preventDefault: () => undefined } as FormEvent<HTMLFormElement>, "published");
+                <button type="button" disabled={saving} onClick={(event) => {
+                  const form = event.currentTarget.form;
+                  if (form?.reportValidity()) {
+                    void saveEvaluation({ preventDefault: () => undefined } as FormEvent<HTMLFormElement>, "published");
+                  }
                 }}>Publikasikan</button>
               </div>
             </form>
