@@ -55,11 +55,17 @@ export default function ModuleFinalBoss({ assessmentId }: { assessmentId: number
         questionId: question.id,
         selectedOption: answers[question.id]!,
       })));
+      // The submit RPC has committed at this point. A later read failure must
+      // not tell the student that the answers failed or invite a duplicate retry.
       setResult(submission.result);
       setAnswers({});
       setCurrentQuestionIndex(0);
-      const refreshed = await loadStudentModuleAssessment(assessment.assessment.id);
-      setAssessment(refreshed);
+      try {
+        const refreshed = await loadStudentModuleAssessment(assessment.assessment.id);
+        setAssessment(refreshed);
+      } catch {
+        setError("Jawaban berhasil dikirim dan tersimpan, tetapi sisa percobaan belum dapat diperbarui. Muat ulang halaman untuk melihat status terbaru.");
+      }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Jawaban ujian gagal dikirim.");
     } finally {
