@@ -62,3 +62,12 @@ Meetings currently carrying a Module reference: Module 10 = 1, Module 27 = 12, M
 ## Current repository checkpoint
 
 At the time of this record, `preview` is at `c9db982e002333bcba2d4eb6b6bbf917e695dcb2`. This record itself does not change application source or production data.
+
+
+## Additional live ordering audit (read-only, 2026-11-25)
+
+All 8 active Modules have 16 published Topic rows and 16 distinct, non-null `order_index` values. The catalog mixes indexing conventions:
+- Modules 10, 11, 27, and 31 use order_index 1–16.
+- Modules 20, 28, 29, and 30 use order_index 0–15.
+
+Therefore, implementation must not assume `order_index = session_number`. It must rank published Topics within each Module by `order_index` (with a stable Topic ID tie-breaker) and map meeting session numbers 1–16 to ranked positions 1–16. The server must reject duplicate/missing ordering positions or a published Topic count other than 16 before creating any meeting.
