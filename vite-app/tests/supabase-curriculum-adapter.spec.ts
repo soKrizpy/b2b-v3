@@ -117,14 +117,17 @@ test.describe("Supabase curriculum lesson adapter", () => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
       const { LessonWorkspace } = await import("/src/data/lesson-workspace-access.ts");
-      const validate = LessonWorkspace.prototype.isValidSubmissionUrl;
-      const workspace = {
-        lesson: { requiredTool: { name: "Tinkercad", url: "https://www.tinkercad.com/" } }
+      const workspace = Object.create(LessonWorkspace.prototype) as {
+        lesson: { requiredTool: { name: string; url: string } };
+        isValidSubmissionUrl: (value: string) => boolean;
+      };
+      workspace.lesson = {
+        requiredTool: { name: "Tinkercad", url: "https://www.tinkercad.com/" }
       };
       return {
-        validProject: validate.call(workspace, "https://www.tinkercad.com/things/example"),
-        wrongPlatform: validate.call(workspace, "https://scratch.com/projects/example"),
-        invalidProtocol: validate.call(workspace, "javascript:alert(1)")
+        validProject: workspace.isValidSubmissionUrl("https://www.tinkercad.com/things/example"),
+        wrongPlatform: workspace.isValidSubmissionUrl("https://scratch.com/projects/example"),
+        invalidProtocol: workspace.isValidSubmissionUrl("javascript:alert(1)")
       };
     });
 
