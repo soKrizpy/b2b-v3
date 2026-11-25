@@ -549,3 +549,35 @@ Consequences and safe next step:
 5. Final Boss remains blocked from implementation until authoritative whole-Topic completion is defined and can be checked server-side. `practice-completed` only represents checkpoint completion in the Practice stage and is not proof that all six Topic stages are complete.
 
 No application source, production database, migration, RLS policy, Auth user, or Vercel setting was changed in this follow-up. No deployment was performed.
+
+## User-approved curriculum progression contract — 2026-11-25
+
+This section restores the user's explicit decisions from the 21 November curriculum discussion and supersedes the earlier follow-up wording that asked for manual Topic selection per meeting.
+
+### Binding product rules
+
+- A standard module learning run is **12 class meetings → 12 sequential Topics → 12 main projects**.
+- Meeting 1 maps to Topic 1, Meeting 2 to Topic 2, and so on. Mapping is automatic from the module's published Topic order; Admin must not manually pick a different Topic for every meeting.
+- A Topic contains the six workspace stages: Brief → Materials → Practice → Check → Challenge → Submission.
+- Topic quiz contains five questions and is formative evidence reported to Parent Hub. Quiz score does not unlock or block the next Topic.
+- The next Topic becomes available when its corresponding next scheduled meeting arrives. This is schedule/time-based release, not dependent on the previous Topic quiz score.
+- Challenge is optional. Project submission is a portfolio action and is not a prerequisite for the next Topic.
+- Final Boss is separate from the 12 Topics, contains 20 multiple-choice questions, and is available only after all Topics in that module are complete. Passing grants the module certificate.
+- Existing user-approved rules do not define a pass threshold or retry policy; do not invent either.
+
+### Implementation implications
+
+1. The recurring schedule must be associated with exactly one active student module. For a standard 12-meeting run, meeting `session_number = n` receives the nth published Topic ordered by `order_index`.
+2. The schedule creation transaction must validate that the selected module has exactly 12 published Topics before creating any meeting. Current audited catalogue counts (30 Topics in one module, 10 in another, 12 in five others) mean the two out-of-contract modules must be corrected in curriculum before they can use this standard 12-meeting schedule. Do not silently truncate or duplicate Topics.
+3. Student release is based on the mapped meeting's scheduled start time in Asia/Jakarta. The Topic for the current meeting and all earlier Topics are visible; future Topics remain locked. Cancelled/deleted meetings do not release a Topic; a valid replacement inherits the original module/Topic mapping and scheduled release is based on the replacement time.
+4. Legacy schedule rows may be backfilled only where a series has exactly one active module assignment for its student, exactly 12 unambiguous session numbers, and that module has exactly 12 published Topics. All other legacy rows remain explicitly unmapped for Admin reconciliation; never infer from meeting titles or dates.
+5. The current persisted `practice-completed` state records completion of Practice checkpoints. Under the agreed lesson structure, Check quiz is formative, Challenge is optional, and Submission is portfolio-only; therefore Practice checkpoint completion is the only current candidate for core Topic completion. Before using it as the Final Boss gate, the trusted persistence function must validate the checkpoint set against the published Topic's actual Practice checkpoints rather than trusting a client-supplied state.
+6. Final Boss access must be checked in the trusted assessment endpoint on both load and submit, by verifying every published Topic in the module has valid core completion. Hiding the component in React alone is not authorization.
+
+### Current execution boundary
+
+- The repository currently has no Topic mapping fields in the canonical `ClassSession` type/adapter, and recurring-series RPC does not accept a module ID.
+- The production Student component loads all published Topics and does not read the student's schedule.
+- The assessment Edge Function checks role, active module enrollment, assessment/module status, and question availability, but not completion of all Topics.
+- The two out-of-contract curriculum modules and 518 previously unmapped meetings remain data-reconciliation blockers.
+- No production database write, migration application, Edge Function deployment, or Vercel deployment is authorized by this documentation update. Source implementation must be accompanied by a reviewed migration and tests before any production rollout.
