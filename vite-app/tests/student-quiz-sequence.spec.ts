@@ -99,19 +99,51 @@ test.describe("Sequential comprehension quiz", () => {
   test("hides quiz explanations until the student checks an answer", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
-      const { renderQuiz, attachInteractions } = await import("/src/content-renderer.js");
+      const { LessonWorkspace } = await import("/src/data/lesson-workspace-access.ts");
       const host = document.createElement("div");
-      host.innerHTML = renderQuiz({
-        id: "secure-feedback",
-        question: "Pertanyaan",
-        options: [
-          { id: "a", text: "Benar", correct: true, explanation: "Penjelasan jawaban." },
-          { id: "b", text: "Salah", correct: false, explanation: "Penjelasan jawaban." }
-        ]
-      });
+      host.innerHTML = '<div id="stage-content-area"></div>';
+      const workspace = Object.create(LessonWorkspace.prototype) as {
+        container: HTMLElement;
+        stages: Array<Record<string, unknown>>;
+        currentStageIndex: number;
+        currentCheckQuestionIndex: number;
+        serverValidatedStages: boolean;
+        stageProgress: Record<string, string>;
+        quizSubmitted: boolean;
+        quizAttemptHistory: unknown[];
+        checkedQuizQuestionIndexes: Set<number>;
+        renderStageFooter: () => string;
+        attachStageEvents: () => void;
+        handleQuizAnswer: () => Promise<void>;
+        renderStageContent: () => void;
+      };
+      workspace.container = host;
+      workspace.stages = [{
+        id: "check",
+        questions: [{
+          id: "secure-feedback",
+          questionIndex: 0,
+          type: "mcq",
+          prompt: "Pertanyaan",
+          options: [
+            { id: "a", text: "Benar", correct: true, explanation: "Penjelasan jawaban." },
+            { id: "b", text: "Salah", correct: false, explanation: "Penjelasan jawaban." }
+          ]
+        }]
+      }];
+      workspace.currentStageIndex = 0;
+      workspace.currentCheckQuestionIndex = 0;
+      workspace.serverValidatedStages = false;
+      workspace.stageProgress = {};
+      workspace.quizSubmitted = false;
+      workspace.quizAttemptHistory = [];
+      workspace.checkedQuizQuestionIndexes = new Set();
+      workspace.renderStageFooter = () => "";
+      workspace.attachStageEvents = () => {};
+      workspace.handleQuizAnswer = async () => {};
+      workspace.renderStageContent();
       const before = Array.from(host.querySelectorAll<HTMLElement>(".quiz-explanation"))
         .every((element) => element.hidden);
-      attachInteractions(host);
       host.querySelector<HTMLElement>(".quiz-option")?.click();
       host.querySelector<HTMLButtonElement>("[data-quiz-check]")?.click();
       const after = Array.from(host.querySelectorAll<HTMLElement>(".quiz-explanation"))
