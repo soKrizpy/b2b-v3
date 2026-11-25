@@ -76,6 +76,43 @@ test.describe("Supabase curriculum lesson adapter", () => {
     });
   });
 
+  test("parses legacy stringified lesson JSON and infers the Tinkercad submission domain", async ({ page }) => {
+    await page.goto("/");
+    const lesson = await page.evaluate(async () => {
+      const { adaptSupabaseTopicToLegacyLesson } = await import("/src/data/supabase-lesson-adapter.ts");
+      return adaptSupabaseTopicToLegacyLesson(
+        {
+          id: 31,
+          title: "3D Design Beginner",
+          description: "Belajar desain 3D",
+          sortOrder: 31,
+          isPublished: true
+        },
+        {
+          id: 121,
+          moduleId: 31,
+          title: "Project 1: Dadu Mainan 6 Sisi",
+          description: "Membuat dadu 3D",
+          sortOrder: 1,
+          lessonContent: JSON.stringify({
+            learningPath: [{ id: "step-1", order: 1, title: "Mulai", content: "Buka workplane." }],
+            quiz: [],
+            challenge: [{
+              title: "Dadu Warna-Warni",
+              instructions: "Buka Tinkercad dan buat dadu 6 sisi."
+            }]
+          })
+        }
+      );
+    });
+
+    expect(lesson.stages[1].slides).toHaveLength(1);
+    expect(lesson.requiredTool).toMatchObject({
+      name: "Tinkercad",
+      url: "https://www.tinkercad.com/"
+    });
+  });
+
   test("keeps an empty but valid lesson content renderable without inventing quiz questions", async ({ page }) => {
     await page.goto("/");
     const lesson = await page.evaluate(async () => {
