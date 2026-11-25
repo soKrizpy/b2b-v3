@@ -1321,8 +1321,8 @@ export class LessonWorkspace {
       if (!['http:', 'https:'].includes(submitted.protocol)) return false;
       const requiredToolUrl = this.lesson.requiredTool?.url;
       if (!requiredToolUrl) return true;
-      const requiredHost = new URL(requiredToolUrl).hostname.replace(/^www\\./i, '').toLowerCase();
-      const submittedHost = submitted.hostname.replace(/^www\\./i, '').toLowerCase();
+      const requiredHost = new URL(requiredToolUrl).hostname.replace(/^www\./i, '').toLowerCase();
+      const submittedHost = submitted.hostname.replace(/^www\./i, '').toLowerCase();
       return submittedHost === requiredHost || submittedHost.endsWith(`.${requiredHost}`);
     } catch {
       return false;
