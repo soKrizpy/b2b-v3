@@ -113,6 +113,28 @@ test.describe("Supabase curriculum lesson adapter", () => {
     });
   });
 
+  test("accepts only the configured project platform when a tool is known", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { LessonWorkspace } = await import("/src/data/lesson-workspace-access.ts");
+      const validate = LessonWorkspace.prototype.isValidSubmissionUrl;
+      const workspace = {
+        lesson: { requiredTool: { name: "Tinkercad", url: "https://www.tinkercad.com/" } }
+      };
+      return {
+        validProject: validate.call(workspace, "https://www.tinkercad.com/things/example"),
+        wrongPlatform: validate.call(workspace, "https://scratch.com/projects/example"),
+        invalidProtocol: validate.call(workspace, "javascript:alert(1)")
+      };
+    });
+
+    expect(result).toEqual({
+      validProject: true,
+      wrongPlatform: false,
+      invalidProtocol: false
+    });
+  });
+
   test("keeps an empty but valid lesson content renderable without inventing quiz questions", async ({ page }) => {
     await page.goto("/");
     const lesson = await page.evaluate(async () => {
