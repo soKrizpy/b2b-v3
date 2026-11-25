@@ -22,6 +22,17 @@ type LegacyLesson = {
 type JsonObject = { [key: string]: JsonValue };
 
 function asObject(value: JsonValue | undefined): JsonObject {
+  if (typeof value === "string") {
+    try {
+      const parsed: unknown = JSON.parse(value);
+      if (typeof parsed === "string") return asObject(parsed as JsonValue);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? parsed as JsonObject
+        : {};
+    } catch {
+      return {};
+    }
+  }
   return value && typeof value === "object" && !Array.isArray(value) ? value as JsonObject : {};
 }
 
