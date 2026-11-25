@@ -169,6 +169,10 @@
 .module-final-boss__eyebrow { margin:0; color:var(--color-text-muted); font-size:var(--font-size-xs); font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
 .module-final-boss__count { flex:0 0 auto; padding:var(--space-2) var(--space-3); border:1px solid var(--color-border-subtle); border-radius:var(--radius-full); color:var(--color-text-secondary); font-size:var(--font-size-xs); }
 .module-final-boss__meta { display:flex; flex-wrap:wrap; gap:var(--space-4); color:var(--color-text-secondary); font-size:var(--font-size-sm); }
+.module-final-boss__question-progress { display:grid; gap:var(--space-2); }
+.module-final-boss__question-progress-label { display:flex; justify-content:space-between; gap:var(--space-3); color:var(--color-text-secondary); font-size:var(--font-size-sm); font-weight:700; }
+.module-final-boss__progress-track { height:8px; overflow:hidden; border-radius:var(--radius-full); background:var(--color-bg-surface-subtle); }
+.module-final-boss__progress-fill { height:100%; border-radius:inherit; background:var(--color-primary); transition:width .2s ease; }
 .module-final-boss__questions { display:grid; gap:var(--space-3); }
 .module-final-boss__question { display:grid; gap:var(--space-2); min-width:0; margin:0; padding:var(--space-4); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); }
 .module-final-boss__question legend { max-width:100%; padding:0 var(--space-1); color:var(--color-text-primary); font-weight:700; line-height:var(--line-height-relaxed); }
