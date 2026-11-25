@@ -66,6 +66,62 @@ test.describe("Sequential comprehension quiz", () => {
     });
   });
 
+  test("restores stored quiz history instead of reopening an exhausted quiz", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { LessonWorkspace } = await import("/src/data/lesson-workspace-access.ts");
+      const workspace = Object.create(LessonWorkspace.prototype) as {
+        currentCheckQuestionIndex: number;
+        quizSubmitted: boolean;
+        quizAttemptHistory: Array<{ attemptNumber: number; score: number; submittedAt: string }>;
+        renderComprehensionCheck: (stage: { questions: Array<Record<string, unknown>> }) => string;
+      };
+      workspace.currentCheckQuestionIndex = 0;
+      workspace.quizSubmitted = true;
+      workspace.quizAttemptHistory = [
+        { attemptNumber: 1, score: 100, submittedAt: "2026-10-18T14:07:09.000Z" },
+        { attemptNumber: 2, score: 40, submittedAt: "2026-10-25T11:40:30.000Z" }
+      ];
+      const host = document.createElement("div");
+      host.innerHTML = workspace.renderComprehensionCheck({
+        questions: [{ prompt: "Tidak boleh dibuka lagi", options: [] }]
+      });
+      return {
+        quizCount: host.querySelectorAll(".quiz-container").length,
+        bestScore: host.querySelector(".quiz-result-summary")?.textContent?.includes("100/100"),
+        attemptsUsed: host.querySelector(".quiz-result-summary")?.textContent?.includes("2 dari 2")
+      };
+    });
+
+    expect(result).toEqual({ quizCount: 0, bestScore: true, attemptsUsed: true });
+  });
+
+  test("hides quiz explanations until the student checks an answer", async ({ page }) => {
+    await page.goto("/");
+    const result = await page.evaluate(async () => {
+      const { renderQuiz, attachInteractions } = await import("/src/content-renderer.js");
+      const host = document.createElement("div");
+      host.innerHTML = renderQuiz({
+        id: "secure-feedback",
+        question: "Pertanyaan",
+        options: [
+          { id: "a", text: "Benar", correct: true, explanation: "Penjelasan jawaban." },
+          { id: "b", text: "Salah", correct: false, explanation: "Penjelasan jawaban." }
+        ]
+      });
+      const before = Array.from(host.querySelectorAll<HTMLElement>(".quiz-explanation"))
+        .every((element) => element.hidden);
+      attachInteractions(host);
+      host.querySelector<HTMLElement>(".quiz-option")?.click();
+      host.querySelector<HTMLButtonElement>("[data-quiz-check]")?.click();
+      const after = Array.from(host.querySelectorAll<HTMLElement>(".quiz-explanation"))
+        .some((element) => !element.hidden);
+      return { before, after };
+    });
+
+    expect(result).toEqual({ before: true, after: true });
+  });
+
   test("does not render a next button for an empty quiz", async ({ page }) => {
     await page.goto("/");
     const result = await page.evaluate(async () => {
