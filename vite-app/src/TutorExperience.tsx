@@ -61,19 +61,18 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
   async function markAttendance(meetingId: number, studentId: string, status: "hadir" | "telat" | "absen") {
     setAttendanceSaving(true);
     setError("");
-    const result = await supabaseProductionCapabilities.tutorSchedule.recordAttendance(user.id, meetingId, studentId, status);
-    if (!result.success) {
-      setError(result.message ?? "Kehadiran gagal disimpan.");
-      setAttendanceSaving(false);
-      return;
-    }
     try {
+      const result = await supabaseProductionCapabilities.tutorSchedule.recordAttendance(user.id, meetingId, studentId, status);
+      if (!result.success) {
+        setError(result.message ?? "Kehadiran gagal disimpan.");
+        return;
+      }
       const snapshot = await supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id);
       setMeetings(snapshot.meetings);
       setStudentCounts(snapshot.studentCounts);
       setMeetingStudents(snapshot.meetingStudents);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Jadwal gagal dimuat ulang.");
+      setError(cause instanceof Error ? cause.message : "Kehadiran gagal disimpan karena koneksi bermasalah.");
     } finally {
       setAttendanceSaving(false);
     }
@@ -82,19 +81,18 @@ export default function TutorExperience({ user }: { user: TutorUser }) {
   async function completeMeeting(meetingId: number) {
     setAttendanceSaving(true);
     setError("");
-    const result = await supabaseProductionCapabilities.tutorSchedule.completeSession(user.id, meetingId);
-    if (!result.success) {
-      setError(result.message ?? "Sesi belum dapat diselesaikan.");
-      setAttendanceSaving(false);
-      return;
-    }
     try {
+      const result = await supabaseProductionCapabilities.tutorSchedule.completeSession(user.id, meetingId);
+      if (!result.success) {
+        setError(result.message ?? "Sesi belum dapat diselesaikan.");
+        return;
+      }
       const snapshot = await supabaseProductionCapabilities.tutorSchedule.listForCurrentTutor(user.id);
       setMeetings(snapshot.meetings);
       setStudentCounts(snapshot.studentCounts);
       setMeetingStudents(snapshot.meetingStudents);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Jadwal gagal dimuat ulang.");
+      setError(cause instanceof Error ? cause.message : "Sesi gagal diselesaikan karena koneksi bermasalah.");
     } finally {
       setAttendanceSaving(false);
     }
