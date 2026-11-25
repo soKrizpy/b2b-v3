@@ -341,8 +341,8 @@ export class LessonWorkspace {
               <span class="badge badge-level">Petualang Koding</span>
               <span class="badge badge-scratch">Jalur: ${escapeHtml(this.lesson.trackTitle || this.lesson.category || "Kurikulum Bits2Bytes")}</span>
             </div>
-            <h2 class="hero-greeting-title">Halo, ${escapeHtml(this.currentUser.name || "Teman")}! Siap Lanjut Berpetualang? 🚀</h2>
-            <p class="hero-greeting-sub">Jelajahi kepulauan koding, kumpulkan bintang, dan kuasai logika pemrograman!</p>
+            <h2 class="hero-greeting-title">Hai, ${escapeHtml(this.currentUser.name || "Teman")}! Yuk, lanjutkan petualangan codingmu! 🚀</h2>
+            <p class="hero-greeting-sub">Belajar hal baru, selesaikan misi, dan bangga dengan karya yang kamu buat sendiri.</p>
           </div>
         </div>
 
@@ -355,7 +355,7 @@ export class LessonWorkspace {
           <div class="dashboard-col-main">
 
             <!-- ACTIVE MISSION CARD -->
-            <div class="active-mission-card">
+            <div class="active-mission-card" id="student-active-mission">
               <div class="active-mission-header">
                 <div class="active-mission-eyebrow">
                   <span class="badge badge-scratch">Misi Utama Aktif</span>
@@ -384,29 +384,47 @@ export class LessonWorkspace {
 
               <div class="active-mission-footer">
                 <button type="button" class="btn btn-primary btn-enter-lesson" id="btn-enter-lesson">
-                  Lanjutkan Misi →
+                  Ayo, lanjutkan misi! →
                 </button>
               </div>
             </div>
 
-            <div class="card student-map-pending">
-              <h4 class="realms-title">Peta Petualangan</h4>
-              <p class="realms-sub">Peta wilayah dan status buka modul akan ditampilkan setelah progres kurikulum setiap siswa terhubung sepenuhnya. Materi yang tersedia tetap dapat dipilih melalui menu Modul dan Topik di atas.</p>
-            </div>
+            <section class="card student-map-pending quest-map-card" id="student-quest-map" aria-labelledby="quest-map-title">
+              <div class="quest-map-heading">
+                <div><span class="badge badge-scratch">Jelajahi dunia coding</span><h4 class="realms-title" id="quest-map-title">Peta Petualangan</h4></div>
+                <span class="quest-map-compass" aria-hidden="true">🧭</span>
+              </div>
+              <p class="realms-sub">Setiap topik adalah misi baru. Pilih modul dan topik yang tersedia di bagian atas untuk melanjutkan perjalananmu.</p>
+              <div class="quest-world-strip" aria-label="Dunia coding Bits2Bytes">
+                <div class="quest-world"><span aria-hidden="true">${SVG_ISLAND_SCRATCH}</span><strong>Hutan Scratch</strong><small>Belajar sambil bermain</small></div>
+                <div class="quest-world"><span aria-hidden="true">${SVG_ISLAND_ROBLOX}</span><strong>Kerajaan Roblox</strong><small>Bangun dunia sendiri</small></div>
+                <div class="quest-world"><span aria-hidden="true">${SVG_ISLAND_PYTHON}</span><strong>Laboratorium Python</strong><small>Asah logika coding</small></div>
+                <div class="quest-world"><span aria-hidden="true">${SVG_ISLAND_GAMEDEV}</span><strong>Dunia Game</strong><small>Ciptakan permainan</small></div>
+              </div>
+            </section>
           </div>
 
-          <!-- RIGHT: Production-backed gamification is not available yet. -->
+          <!-- RIGHT: show verified learning achievements; never invent reward totals. -->
           <div class="dashboard-col-side">
-            <div class="achievements-card">
+            <section class="achievements-card adventure-progress-card" id="student-achievements" aria-labelledby="adventure-progress-title">
               <div class="achievements-header">
                 <div class="achieve-icon-wrap" aria-hidden="true">${SVG_ICON_BADGE_SHIELD}</div>
                 <div>
-                  <h4 class="achieve-title">Gamifikasi</h4>
-                  <span class="badge badge-not-started">Belum tersedia</span>
+                  <h4 class="achieve-title" id="adventure-progress-title">Pencapaian Petualangan</h4>
+                  <span class="badge badge-practice-completed">Progres belajarmu</span>
                 </div>
               </div>
-              <p class="daily-sub">Target harian, streak, total poin, dan lencana akan ditampilkan setelah pencatatan gamifikasi terhubung ke data akun. Saat ini Bits2Bytes tidak menampilkan angka contoh sebagai progres asli.</p>
-            </div>
+              <div class="adventure-progress-stats">
+                <div><strong>${this.stages.filter(stage => this.isStageComplete(stage.id)).length}/${this.stages.length}</strong><span>Tahap selesai</span></div>
+                <div><strong>${this.quizAttemptHistory.length ? Math.max(...this.quizAttemptHistory.map(attempt => attempt.score)) + "/100" : "—"}</strong><span>Nilai kuis terbaik</span></div>
+                <div><strong>${this.activeStoreSubmission?.status === "approved" ? "Hebat!" : this.activeStoreSubmission?.status === "submitted" ? "Dikirim" : this.activeStoreSubmission?.status === "revision-required" ? "Revisi" : "Belum dikirim"}</strong><span>Karya proyek</span></div>
+              </div>
+              <div class="adventure-badge-preview">
+                <span class="adventure-badge-art" aria-hidden="true">${SVG_ICON_BADGE_SHIELD}</span>
+                <div><strong>Koleksi Lencana</strong><p>Lencana menjadi tanda kemampuan baru yang berhasil kamu kuasai. Terus selesaikan misi untuk membuka pencapaian berikutnya.</p></div>
+              </div>
+              <p class="adventure-points-note">Poin XP dan streak akan ditampilkan setelah catatannya tersedia untuk akunmu. Kami tidak akan menampilkan angka perkiraan sebagai hasil sungguhan.</p>
+            </section>
 
             <!-- Parent Hub is hidden from production until its repositories are production-backed. -->
             ${this.parentHubEnabled ? `
