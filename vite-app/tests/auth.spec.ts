@@ -2,6 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 
 const supabaseHost = "b2b-e2e.supabase.test";
 const supabaseOrigin = `https://${supabaseHost}`;
+const assessmentCorsHeaders = {
+  "access-control-allow-origin": "http://127.0.0.1:4173",
+  "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
+  "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+  "access-control-max-age": "86400"
+};
 
 async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student") {
   const userId = `e2e-${role}-user`;
@@ -116,6 +122,10 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
       return;
     }
     if (url.pathname === "/rest/v1/tutor_student_assignments" && request.method() === "GET") {
+      await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
+      return;
+    }
+    if (url.pathname === "/rest/v1/rpc/list_tutor_assigned_students" && request.method() === "POST") {
       await route.fulfill({ status: 200, headers: jsonHeaders, body: "[]" });
       return;
     }
@@ -235,12 +245,42 @@ async function mockSupabaseAuth(page: Page, role: "admin" | "teacher" | "student
   });
 }
 
+async function signInE2eStudent(page: Page) {
+  await mockSupabaseAuth(page, "student");
+  await page.goto("/");
+  await page.getByRole("button", { name: "Guru / Admin" }).click();
+  await page.getByLabel("Email").fill("student@bits2bytes.test");
+  await page.getByLabel("Password").fill("valid-e2e-password");
+  await page.getByRole("button", { name: "Masuk" }).click();
+  await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
+}
+
+async function mountFinalBoss(page: Page, assessmentId: number) {
+  await page.evaluate(async (id) => {
+    const [reactModule, reactDomModule, { default: ModuleFinalBoss }] = await Promise.all([
+      import("/node_modules/.vite/deps/react.js"),
+      import("/node_modules/.vite/deps/react-dom_client.js"),
+      import("/src/ModuleFinalBoss.tsx")
+    ]);
+    const createElement = reactModule.createElement ?? reactModule.default?.createElement;
+    const createRoot = reactDomModule.createRoot ?? reactDomModule.default?.createRoot;
+    if (typeof createElement !== "function" || typeof createRoot !== "function") {
+      throw new Error("Unable to resolve React DOM client exports for Final Boss test");
+    }
+    const mount = document.createElement("div");
+    mount.id = "final-boss-component-test";
+    document.body.append(mount);
+    createRoot(mount).render(createElement(ModuleFinalBoss, { assessmentId: id }));
+  }, assessmentId);
+}
+
 test.describe("Supabase Auth portal", () => {
   test("shows WhatsApp/MPIN student login by default and no demo-account selection", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Selamat datang di Bits2Bytes!" })).toBeVisible();
     await expect(page.getByLabel("Nomor WhatsApp")).toBeVisible();
     await expect(page.getByLabel("MPIN (6 digit)")).toBeVisible();
+    await expect(page.getByText(/Hubungi Admin Bits2Bytes/)).toBeVisible();
     await expect(page.getByLabel("Email")).toHaveCount(0);
     await expect(page.locator("#demo-account")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Pilih ruang/ })).toHaveCount(0);
@@ -263,6 +303,11 @@ test.describe("Supabase Auth portal", () => {
 
       await expect(page.getByRole("heading", { name: expectedTitle })).toBeVisible();
       await expect(page.getByRole("button", { name: "Keluar" })).toBeVisible();
+      if (role === "teacher") {
+        await expect(page.getByRole("navigation", { name: "Navigasi bagian tutor" })).toBeVisible();
+        await expect(page.getByRole("link", { name: "Jadwal & Presensi" })).toHaveAttribute("href", "#tutor-schedule");
+        await expect(page.getByRole("link", { name: "Catatan Pembelajaran" })).toHaveAttribute("href", "#tutor-learning-records");
+      }
       await expect(page.locator("#demo-account")).toHaveCount(0);
     });
   }
@@ -287,7 +332,9 @@ test.describe("Supabase Auth portal", () => {
     await page.getByRole("button", { name: "Masuk" }).click();
 
     await expect(page.getByRole("heading", { name: "Ruang Admin" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Akses Kurikulum/ })).toHaveAttribute("aria-pressed", "false");
     await page.getByRole("button", { name: /Akses Kurikulum/ }).click();
+    await expect(page.getByRole("button", { name: /Akses Kurikulum/ })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("heading", { name: "Akses Kurikulum Siswa" })).toBeVisible();
     await page.getByLabel("Siswa").selectOption("e2e-student-user");
     await page.getByLabel("Modul").selectOption("29");
@@ -427,25 +474,19 @@ test.describe("Supabase Auth portal", () => {
   }
 
   test("student Final Boss renders questions, submits answers, and refreshes attempt history", async ({ page }) => {
-    await mockSupabaseAuth(page, "student");
-
-    const corsHeaders = {
-      "access-control-allow-origin": "http://127.0.0.1:4173",
-      "access-control-allow-headers": "apikey, authorization, content-type, x-client-info, x-supabase-api-version",
-      "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
-      "access-control-max-age": "86400"
-    };
+    await signInE2eStudent(page);
 
     let submittedAnswers: Array<{ questionId: number; selectedOption: string }> = [];
+    let submitRequestCount = 0;
     let submitted = false;
     await page.route(`https://${supabaseHost}/functions/v1/student-module-assessment`, async (route) => {
       const request = route.request();
       const headers = {
-        ...corsHeaders,
+        ...assessmentCorsHeaders,
         "content-type": "application/json"
       };
       if (request.method() === "OPTIONS") {
-        await route.fulfill({ status: 204, headers: corsHeaders });
+        await route.fulfill({ status: 204, headers: assessmentCorsHeaders });
         return;
       }
       const payload = request.postDataJSON() as {
@@ -486,7 +527,9 @@ test.describe("Supabase Auth portal", () => {
         });
         return;
       }
+      submitRequestCount += 1;
       submittedAnswers = payload.answers ?? [];
+      await new Promise((resolve) => setTimeout(resolve, 150));
       submitted = true;
       await route.fulfill({
         status: 200,
@@ -505,44 +548,85 @@ test.describe("Supabase Auth portal", () => {
       });
     });
 
-    await page.goto("/");
-    await page.getByRole("button", { name: "Guru / Admin" }).click();
-    await page.getByLabel("Email").fill("student@bits2bytes.test");
-    await page.getByLabel("Password").fill("valid-e2e-password");
-    await page.getByRole("button", { name: "Masuk" }).click();
-    await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
-
-    await page.evaluate(async () => {
-      const [reactModule, reactDomModule, { default: ModuleFinalBoss }] = await Promise.all([
-        import("/node_modules/.vite/deps/react.js"),
-        import("/node_modules/.vite/deps/react-dom_client.js"),
-        import("/src/ModuleFinalBoss.tsx")
-      ]);
-      const createElement = reactModule.createElement ?? reactModule.default?.createElement;
-      const createRoot = reactDomModule.createRoot ?? reactDomModule.default?.createRoot;
-      if (typeof createElement !== "function" || typeof createRoot !== "function") {
-        throw new Error("Unable to resolve React DOM client exports for Final Boss test");
-      }
-      const mount = document.createElement("div");
-      mount.id = "final-boss-component-test";
-      document.body.append(mount);
-      createRoot(mount).render(createElement(ModuleFinalBoss, { assessmentId: 1 }));
-    });
+    await mountFinalBoss(page, 1);
 
     await expect(page.getByRole("heading", { name: "Ujian Basic Visual Web" })).toBeVisible();
     await expect(page.getByText("Apa fungsi HTML?")).toBeVisible();
-    await expect(page.getByText("Atribut untuk tujuan tautan adalah?")).toBeVisible();
+    await expect(page.getByText("Atribut untuk tujuan tautan adalah?")).toHaveCount(0);
+    await expect(page.getByText("Soal 1 dari 2")).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
+    const nextQuestion = page.getByRole("button", { name: "Soal Berikutnya" });
+    await expect(nextQuestion).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Kirim jawaban Final Boss" })).toHaveCount(0);
     await page.locator('input[name="assessment-question-101"][value="B"]').check();
+    await expect(nextQuestion).toBeEnabled();
+    await nextQuestion.click();
+    await expect(page.getByText("Apa fungsi HTML?")).toHaveCount(0);
+    await expect(page.getByText("Atribut untuk tujuan tautan adalah?")).toBeVisible();
+    await expect(page.getByText("Soal 2 dari 2")).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
+    await expect(page.locator(".module-final-boss__meta")).toContainText("Terjawab: 1 dari 2");
+    await expect(page.getByRole("button", { name: "Soal Berikutnya" })).toHaveCount(0);
+    const submitButton = page.getByRole("button", { name: "Kirim jawaban Final Boss" });
+    await expect(submitButton).toBeDisabled();
     await page.locator('input[name="assessment-question-102"][value="C"]').check();
-    await page.getByRole("button", { name: "Kirim jawaban Final Boss" }).click();
+    await expect(submitButton).toBeEnabled();
+    await submitButton.dblclick();
 
     await expect(page.getByText("Percobaan 1 selesai — nilai 50/100")).toBeVisible();
     await expect(page.getByText("Percobaan 1: 50/100")).toBeVisible();
     await expect(page.getByText("Sisa percobaan:").locator("..")).toContainText("1 dari 2");
+    expect(submitRequestCount).toBe(1);
     expect(submittedAnswers).toEqual([
       { questionId: 101, selectedOption: "B" },
       { questionId: 102, selectedOption: "C" }
     ]);
+  });
+
+  test("student Final Boss renders the empty-assessment state", async ({ page }) => {
+    await signInE2eStudent(page);
+    await page.route(`${supabaseOrigin}/functions/v1/student-module-assessment`, async (route) => {
+      if (route.request().method() === "OPTIONS") {
+        await route.fulfill({ status: 204, headers: assessmentCorsHeaders });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        headers: { ...assessmentCorsHeaders, "content-type": "application/json" },
+        body: JSON.stringify({
+          assessment: { id: 2, title: "Ujian Kosong", moduleId: 10 },
+          questions: [],
+          attempts: [],
+          attemptsRemaining: 2
+        })
+      });
+    });
+    await mountFinalBoss(page, 2);
+
+    await expect(page.getByText("Belum ada soal ujian yang tersedia.")).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Soal Berikutnya" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Kirim jawaban Final Boss" })).toHaveCount(0);
+  });
+
+  test("student Final Boss reports an assessment-load error", async ({ page }) => {
+    await signInE2eStudent(page);
+    await page.route(`${supabaseOrigin}/functions/v1/student-module-assessment`, async (route) => {
+      if (route.request().method() === "OPTIONS") {
+        await route.fulfill({ status: 204, headers: assessmentCorsHeaders });
+        return;
+      }
+      await route.fulfill({
+        status: 503,
+        headers: { ...assessmentCorsHeaders, "content-type": "application/json" },
+        body: JSON.stringify({ error: "Ujian sedang tidak dapat dimuat." })
+      });
+    });
+    await mountFinalBoss(page, 3);
+
+    await expect(page.locator(".module-final-boss__error")).toContainText("Ujian sedang tidak dapat dimuat.");
+    await expect(page.getByRole("button", { name: "Soal Berikutnya" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Kirim jawaban Final Boss" })).toHaveCount(0);
   });
 
 });

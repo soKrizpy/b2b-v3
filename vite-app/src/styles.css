@@ -37,6 +37,7 @@
 .student-dashboard { min-width: 0; width: 100%; max-width: 100%; }
 .student-loading { padding: var(--space-6); color: var(--color-text-secondary); }
 .student-portal-back { margin-top: var(--space-5); }
+.parent-hub-access-note { margin:0; color:var(--color-text-secondary); font-size:var(--font-size-xs); line-height:var(--line-height-relaxed); }
 
 /* React migration — keep tutor workspace readable on narrow screens. */
 .tutor-experience { display:grid; gap:var(--space-4); min-width:0; }
@@ -79,6 +80,7 @@
 .b2b-login-panel > .btn-primary { width:100%; min-height:44px; }
 .b2b-login-disclaimer { margin:0; padding:var(--space-3); color:var(--color-text-muted); background:var(--color-bg-surface-subtle); border-radius:var(--radius-md); font-size:var(--font-size-xs); line-height:var(--line-height-relaxed); }
 .b2b-login-error { margin:0; color:var(--color-danger); font-size:var(--font-size-sm); }
+.b2b-login-help { margin:0; color:var(--color-text-muted); font-size:var(--font-size-xs); line-height:var(--line-height-relaxed); }
 
 
 /* Authentication mode selector */
@@ -118,9 +120,12 @@
 .tutor-live-status.is-done { color:var(--color-success); }
 .tutor-live-status.is-cancelled { color:var(--color-danger); }
 .tutor-live-empty,.tutor-live-error { padding:var(--space-4); color:var(--color-text-secondary); }
+.tutor-section-nav { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+#tutor-schedule,#tutor-learning-records,#tutor-report-forms,#tutor-pending-submissions { scroll-margin-top:calc(64px + var(--space-4)); }
 @media(max-width:768px) {
   .tutor-live-header,.tutor-live-meeting { align-items:flex-start; flex-direction:column; }
   .tutor-live-stats { grid-template-columns:1fr; }
+  #tutor-schedule,#tutor-learning-records,#tutor-report-forms,#tutor-pending-submissions { scroll-margin-top:var(--space-4); }
 }
 
 

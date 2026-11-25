@@ -348,6 +348,9 @@ test("production student Parent Hub reads only submitted Supabase records and is
   await page.getByRole("button", { name: "Masuk" }).click();
 
   await expect(page.getByRole("heading", { name: "Ruang Belajarku" })).toBeVisible();
+  await expect(page.locator(".hero-xp-container, .hero-stat-pills, .mission-progress-box")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Gamifikasi" })).toBeVisible();
+  await expect(page.getByText(/Tidak ada akun orang tua terpisah/)).toBeVisible();
   await expect(page.locator(".parent-hub-entry-card").getByText("Lihat laporan belajar", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: /Buka Ruang Ayah\/Bunda/ }).click();
   await expect(page.getByRole("heading", { name: "Laporan Belajar Siswa E2E" })).toBeVisible();

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const classSessionStoreSource = readFileSync(resolve(process.cwd(), "../js/services/class-session-store.js"), "utf8");
 const billingStoreSource = readFileSync(resolve(process.cwd(), "../js/services/billing-store.js"), "utf8");
@@ -42,14 +43,12 @@ const adminListUsersFunctionSource = readFileSync(resolve(process.cwd(), "../sup
 test.describe("Bits2Bytes demo portal", () => {
   test("workspace repository gateway supports domain-level dependency overrides", () => {
     const gatewayPath = resolve(process.cwd(), "../js/services/workspace-repositories.js");
-    // The legacy JavaScript runtime is ESM but the repository root has no
-    // package.json type=module. Run Node with its ESM default explicitly so
-    // this test exercises the real module and its imported adapters.
+    // Let Node detect ESM syntax in the legacy .js modules without relying on
+    // a default-type flag that is unavailable in newer Node releases.
     const output = execFileSync(process.execPath, [
-      "--experimental-default-type=module",
       "--input-type=module",
       "-e",
-      `const gateway = await import(${JSON.stringify(gatewayPath)});
+      `const gateway = await import(${JSON.stringify(pathToFileURL(gatewayPath).href)});
        const replacement = { testAdapter: true };
        const resolved = gateway.createWorkspaceRepositories({ learning: replacement });
        process.stdout.write(JSON.stringify({
@@ -92,7 +91,7 @@ test.describe("Bits2Bytes demo portal", () => {
     expect(activeContent).toContain("renderBillingView()");
     expect(activeContent).toContain("renderScheduleView()");
 
-    const usersView = adminWorkspaceSource.match(/renderUsersView\(\)\s*\{([\s\S]*?)\n  \}\n\n  \/\*/)?.[1] ?? "";
+    const usersView = adminWorkspaceSource.match(/renderUsersView\(\)\s*\{([\s\S]*?)\n  \}\s*\n\s*\/\*/)?.[1] ?? "";
     expect(usersView).toContain("btn-admin-add-user");
     expect(usersView).toContain('data-action="edit-user"');
     expect(usersView).toContain('data-action="toggle-status"');

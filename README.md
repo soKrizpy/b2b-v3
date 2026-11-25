@@ -112,7 +112,7 @@ Repository ini sekarang mempertahankan aplikasi Vanilla sebagai **legacy referen
 
 ### Menjalankan aplikasi Vite
 
-Persyaratan: Node.js 20 atau lebih baru.
+Persyaratan: Node.js 22 atau lebih baru.
 
 ```bash
 cd vite-app
@@ -126,6 +126,8 @@ Perintah lain:
 - `npm run typecheck` — pemeriksaan tipe TypeScript.
 - `npm run build` — pemeriksaan tipe dan production build.
 - `npm run preview` — menjalankan hasil build secara lokal.
+
+Deploy Vercel dari root repository menggunakan konfigurasi di `vercel.json`, yang menginstal dan membangun aplikasi dari `vite-app/`. Aplikasi Vanilla di root tetap menjadi referensi legacy dan bukan entry point deployment.
 
 ### Status migrasi
 

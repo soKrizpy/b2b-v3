@@ -4,7 +4,7 @@ This is the new React-based frontend track for Bits2Bytes Learning Engine.
 
 ## Run locally
 
-Requirements: Node.js 20 or newer.
+Requirements: Node.js 22 or newer.
 
 ```bash
 cd vite-app

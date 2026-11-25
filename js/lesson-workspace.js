@@ -12,8 +12,7 @@ import {
   SVG_MASCOT,
   SVG_ISLAND_SCRATCH, SVG_ISLAND_ROBLOX, SVG_ISLAND_PYTHON, SVG_ISLAND_GAMEDEV,
   SVG_ICON_SCRATCH_CAT, SVG_ICON_LOCK, SVG_ICON_CHEST,
-  SVG_ICON_STAR, SVG_ICON_TROPHY, SVG_ICON_STREAK,
-  SVG_ICON_TARGET, SVG_ICON_BADGE_SHIELD, SVG_ICON_CHECK,
+  SVG_ICON_BADGE_SHIELD, SVG_ICON_CHECK,
   SVG_QUEST_MAP_BG,
   // GAS low-poly island assets (260×260 isometric hex)
   SVG_GAS_ISLAND_SCRATCH_FOREST,
@@ -283,12 +282,12 @@ export class LessonWorkspace {
      ========================================================================== */
   renderDashboard() {
     const progressLabels = {
-      'not-started':          { text: 'Belum dimulai',         badgeClass: 'badge-not-started',       pct: '0%' },
-      'in-progress':          { text: 'Sedang berjalan',         badgeClass: 'badge-in-progress',        pct: '35%' },
-      'practice-completed':   { text: 'Latihan selesai',  badgeClass: 'badge-practice-completed', pct: '75%' },
-      'submitted':            { text: 'Sudah dikirim',           badgeClass: 'badge-submitted',          pct: '100%' },
-      'revision-required':    { text: 'Perlu diperbaiki',   badgeClass: 'badge-revision-required',  pct: '85%' },
-      'approved':             { text: 'Disetujui',            badgeClass: 'badge-approved',           pct: '100%' }
+      'not-started':          { text: 'Belum dimulai',         badgeClass: 'badge-not-started' },
+      'in-progress':          { text: 'Sedang berjalan',         badgeClass: 'badge-in-progress' },
+      'practice-completed':   { text: 'Latihan selesai',  badgeClass: 'badge-practice-completed' },
+      'submitted':            { text: 'Sudah dikirim',           badgeClass: 'badge-submitted' },
+      'revision-required':    { text: 'Perlu diperbaiki',   badgeClass: 'badge-revision-required' },
+      'approved':             { text: 'Disetujui',            badgeClass: 'badge-approved' }
     };
     const cp = progressLabels[this.progressState] || progressLabels['in-progress'];
 
@@ -309,47 +308,6 @@ export class LessonWorkspace {
             </div>
             <h2 class="hero-greeting-title">Halo, ${escapeHtml(this.currentUser.name || "Teman")}! Siap Lanjut Berpetualang? 🚀</h2>
             <p class="hero-greeting-sub">Jelajahi kepulauan koding, kumpulkan bintang, dan kuasai logika pemrograman!</p>
-            <div class="hero-xp-container">
-              <div class="hero-xp-label">
-                <span>Poin pengalaman: <strong>Belum tersedia</strong></span>
-                <span class="hero-xp-pct">Menunggu integrasi XP</span>
-              </div>
-              <div class="hero-xp-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div class="hero-xp-bar-fill" style="width: 0%;"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stat Pills -->
-          <div class="hero-stat-pills">
-            <div class="stat-pill stat-pill--fire">
-              <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_STREAK}</div>
-              <div class="stat-pill-data">
-                <span class="stat-pill-value">—</span>
-                <span class="stat-pill-label">Hari belajar</span>
-              </div>
-            </div>
-            <div class="stat-pill stat-pill--gold">
-              <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_STAR}</div>
-              <div class="stat-pill-data">
-                <span class="stat-pill-value">—</span>
-                <span class="stat-pill-label">Total Poin</span>
-              </div>
-            </div>
-            <div class="stat-pill stat-pill--red">
-              <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_TARGET}</div>
-              <div class="stat-pill-data">
-                <span class="stat-pill-value">—</span>
-                <span class="stat-pill-label">Target Harian</span>
-              </div>
-            </div>
-            <div class="stat-pill stat-pill--purple">
-              <div class="stat-pill-icon" aria-hidden="true">${SVG_ICON_TROPHY}</div>
-              <div class="stat-pill-data">
-                <span class="stat-pill-value">—</span>
-                <span class="stat-pill-label">Lencana</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -390,16 +348,6 @@ export class LessonWorkspace {
               </div>
 
               <div class="active-mission-footer">
-                <div class="mission-progress-box">
-                  <div class="mission-progress-text">
-                    <span>Kelengkapan Misi</span>
-                    <span>${cp.pct}</span>
-                  </div>
-                  <div class="progress-bar-bg" role="progressbar"
-                       aria-valuenow="${cp.pct.replace('%', '')}" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar-fill" style="width: ${cp.pct};"></div>
-                  </div>
-                </div>
                 <button type="button" class="btn btn-primary btn-enter-lesson" id="btn-enter-lesson">
                   Lanjutkan Misi →
                 </button>
@@ -435,7 +383,7 @@ export class LessonWorkspace {
                   <span class="badge badge-in-progress">Lihat laporan belajar</span>
                 </div>
               </div>
-              <p class="daily-sub">Lihat laporan pertemuan, perkembangan bulanan, dan riwayat tagihan belajar ananda.</p>
+              <p class="parent-hub-access-note">Orang tua dapat melihat laporan pertemuan, perkembangan bulanan, dan riwayat tagihan dari sini. Tidak ada akun orang tua terpisah.</p>
               <button type="button" class="btn btn-secondary btn-sm" id="btn-open-parent-hub">Buka Ruang Ayah/Bunda →</button>
             </section>` : `
             <section class="card parent-hub-entry-card" aria-labelledby="parent-hub-entry-title">

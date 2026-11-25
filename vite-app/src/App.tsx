@@ -152,6 +152,7 @@ export default function App() {
               </>}
               {loginError && <p className="b2b-login-error" role="alert">{loginError}</p>}
               <button type="submit" className="btn btn-primary" disabled={!supabaseProductionCapabilities.auth.isConfigured || submitting}>{submitting ? "Memeriksa akun…" : "Masuk"}</button>
+              <p className="b2b-login-help">Kesulitan masuk? Hubungi Admin Bits2Bytes untuk bantuan mengatur ulang MPIN atau password.</p>
             </form>
           </section>}
 

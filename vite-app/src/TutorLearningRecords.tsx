@@ -206,7 +206,7 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
   }
 
   return (
-    <section className="card tutor-records" aria-label="Laporan sesi dan evaluasi siswa">
+    <section className="card tutor-records" id="tutor-learning-records" aria-label="Laporan sesi dan evaluasi siswa">
       <header>
         <p className="tutor-live-eyebrow">CATATAN PEMBELAJARAN</p>
         <h3>Laporan Sesi &amp; Evaluasi Bulanan</h3>
@@ -232,7 +232,7 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
             </select>
           </label>
 
-          <div className="tutor-record-grid">
+          <div className="tutor-record-grid" id="tutor-report-forms">
             <form onSubmit={(event) => void saveReport(event, "draft")}>
               <h4>Laporan Pertemuan</h4>
               <label>Pertemuan
@@ -300,7 +300,7 @@ export default function TutorLearningRecords({ tutorId, meetings, meetingStudent
             </form>
           </div>
 
-          <div className="tutor-record-history">
+          <div className="tutor-record-history" id="tutor-pending-submissions">
             <h4>Proyek menunggu review ({pendingSubmissions.length})</h4>
             {pendingSubmissions.length === 0 && <p className="tutor-live-empty">Tidak ada proyek yang menunggu review dari siswa yang ditugaskan.</p>}
             {pendingSubmissions.map((submission) => (

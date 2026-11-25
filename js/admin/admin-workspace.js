@@ -145,19 +145,19 @@ export class AdminWorkspace {
 
         <!-- SUB-NAVIGATION TABS -->
         <nav style="display: flex; gap: var(--space-2); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: var(--space-2); flex-wrap: wrap;" aria-label="Navigasi Manajemen Admin">
-          <button type="button" class="btn btn-sm ${this.activeTab === 'users' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="users">
+          <button type="button" class="btn btn-sm ${this.activeTab === 'users' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="users" aria-pressed="${this.activeTab === 'users'}" aria-controls="admin-tab-body">
             👥 Daftar Pengguna (${totalCount})
           </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations">
+          <button type="button" class="btn btn-sm ${this.activeTab === 'tutor-relations' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="tutor-relations" aria-pressed="${this.activeTab === 'tutor-relations'}" aria-controls="admin-tab-body">
             🧑‍🏫 Penugasan Tutor (${this.assignments.length})
           </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'student-modules' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="student-modules">
+          <button type="button" class="btn btn-sm ${this.activeTab === 'student-modules' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="student-modules" aria-pressed="${this.activeTab === 'student-modules'}" aria-controls="admin-tab-body">
             📚 Akses Kurikulum (${this.moduleAssignments.length})
           </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing">
+          <button type="button" class="btn btn-sm ${this.activeTab === 'billing' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="billing" aria-pressed="${this.activeTab === 'billing'}" aria-controls="admin-tab-body">
             🧾 Tarif & Tagihan (${this.invoices.length})
           </button>
-          <button type="button" class="btn btn-sm ${this.activeTab === 'schedule' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="schedule">
+          <button type="button" class="btn btn-sm ${this.activeTab === 'schedule' ? 'btn-primary' : 'btn-ghost'}" data-admin-tab="schedule" aria-pressed="${this.activeTab === 'schedule'}" aria-controls="admin-tab-body">
             📅 Jadwal & Sesi (${this.sessions.length})
           </button>
         </nav>
