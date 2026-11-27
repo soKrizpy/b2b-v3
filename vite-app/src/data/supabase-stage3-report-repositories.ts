@@ -153,8 +153,29 @@ export function createSupabaseSessionReportRepository(): SessionReportRepository
             .single();
         }
         const { data, error } = await query;
-        if (error || !data) {
-          return { success: false, error: { code: error?.code ?? "CONFLICT", message: "Laporan tidak tersimpan. Periksa akses sesi atau muat ulang versi terbaru." } };
+        if (error) {
+          console.error("Supabase session report save failed:", {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+          });
+          return {
+            success: false,
+            error: {
+              code: error.code ?? "REPORT_SAVE_FAILED",
+              message: error.message || "Laporan gagal disimpan. Periksa akses sesi dan coba lagi.",
+            },
+          };
+        }
+        if (!data) {
+          return {
+            success: false,
+            error: {
+              code: "CONFLICT",
+              message: "Laporan tidak tersimpan karena data tidak dikembalikan. Muat ulang laporan lalu coba lagi.",
+            },
+          };
         }
         return { success: true, data: mapSessionReport(data as Row) };
       } catch (error) {
